@@ -427,7 +427,7 @@ export default function App() {
                 <Editor path={active} text={texts[active]} onDirty={onDirty} onSave={onSave} goto={goto} onNotice={setNotice} />
               )}
             </Suspense>
-            {preview && <PreviewPane key={preview.path} data={preview} onClose={() => setPreview(null)} />}
+            {preview && <PreviewPane key={preview.path} data={preview} onClose={() => setPreview(null)} onEdit={(path) => void openFile(path)} />}
             <Console lines={lines} running={running} onClear={() => setLines([])} onOpen={openAt} />
             {active === null && !preview && <p className="empty">Pick a file to edit. Save with Cmd+S or Ctrl+S.</p>}
           </section>

@@ -61,6 +61,8 @@ export interface Preview {
   facts: PreviewFact[];
   note: string | null;
   body: PreviewBody;
+  /** Music written as text: the panel offers Edit. */
+  editable: boolean;
 }
 /** What the selected file is and how to show it ("text" goes to the editor). */
 export const previewFile = (path: string) => invoke<Preview>("preview_file", { path });

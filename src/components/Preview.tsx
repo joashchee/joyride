@@ -5,7 +5,7 @@ const clock = (t: number) => `${Math.floor(t / 60)}:${(t % 60).toFixed(1).padSta
 
 /** The selected file, shown by what it is: facts first, then the body. Sound
  *  and video have their own text-mode buttons; nothing here edits the file. */
-export default function Preview(props: { data: PreviewData; onClose: () => void }) {
+export default function Preview(props: { data: PreviewData; onClose: () => void; onEdit?: (path: string) => void }) {
   const { data } = props;
   const name = data.path.split("/").pop();
   const b = data.body;
@@ -15,6 +15,11 @@ export default function Preview(props: { data: PreviewData; onClose: () => void 
         <h2>
           {name} <span className="preview-kind">({data.kind})</span>
         </h2>
+        {data.editable && props.onEdit && (
+          <button onClick={() => props.onEdit!(data.path)} title="Open this file in the editor">
+            Edit
+          </button>
+        )}
         <button onClick={props.onClose} aria-label="Close preview" title="Close preview (Escape)">
           Close
         </button>

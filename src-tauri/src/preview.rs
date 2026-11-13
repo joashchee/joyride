@@ -72,6 +72,8 @@ pub struct Preview {
     /// What to tell the person when something could not be shown.
     pub note: Option<String>,
     pub body: Body,
+    /// Text the editor can open as well (music written as text): the panel offers Edit.
+    pub editable: bool,
 }
 
 fn fact(label: &str, value: impl ToString) -> Fact {
@@ -240,7 +242,7 @@ fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview
     let size = meta.len();
     let ext = real.extension().and_then(|e| e.to_str()).unwrap_or("").to_ascii_lowercase();
     let head = read_head(&real, 8192).map_err(|e| e.to_string())?;
-    let mut p = Preview { path: rel.to_string(), kind: "binary", size, facts: vec![fact("Size", human(size))], note: None, body: Body::Text };
+    let mut p = Preview { path: rel.to_string(), kind: "binary", size, facts: vec![fact("Size", human(size))], note: None, body: Body::Text, editable: false };
 
     let kind = sniff(&head, &ext);
     let shown = match kind {
@@ -278,6 +280,12 @@ fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview
     }
     // Not a known media type (or it would not open): text, music, then bytes.
     if kind == Sniff::Unknown && looks_like_text(&head, size) {
+        // Music written as text (ABC, MusicXML, RTTTL, Alda...) plays when nttplay reads it; a file it
+        // does not read (any other `.xml`, `.pro`) opens in the editor as before.
+        if MUSIC_TEXT.contains(&ext.as_str()) && size <= joyride_core::files::MAX_TEXT_BYTES && music(&mut p, &real, nttplay) {
+            p.editable = true;
+            return Ok(p);
+        }
         p.kind = "text";
         p.body = Body::Text;
         return Ok(p);
@@ -288,6 +296,9 @@ fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview
     hex(&mut p, &head);
     Ok(p)
 }
+
+/// Extensions nttplay reads that are text files.
+const MUSIC_TEXT: &[&str] = &["musicxml", "xml", "abc", "cho", "chordpro", "chopro", "crd", "pro", "mini", "strudel", "tidal", "rtttl", "rtx", "krn", "alda", "tmf", "ms2mml", "flmml", "sion", "mml"];
 
 fn hex(p: &mut Preview, head: &[u8]) {
     let mut s = String::new();
@@ -831,6 +842,21 @@ mod tests {
         let q = build(d.path(), "song.mid", None).unwrap();
         assert_eq!(q.kind, "binary");
         assert!(q.note.is_some());
+    }
+
+    #[test]
+    fn music_written_as_text_plays_and_can_still_be_edited() {
+        let Some(np) = find_nttplay(None) else { return eprintln!("no nttplay: skipped") };
+        let d = proj();
+        std::fs::write(d.path().join("tune.abc"), "X:1\nT:Scale\nM:4/4\nL:1/4\nK:C\nCDEF|GABc|\n").unwrap();
+        std::fs::write(d.path().join("data.xml"), "<root><a>1</a></root>\n").unwrap();
+        let p = build(d.path(), "tune.abc", Some(&np)).unwrap();
+        assert_eq!((p.kind, p.editable), ("music", true), "{:?} {:?}", p.facts, p.note);
+        assert!(matches!(p.body, Body::Audio { data_url: Some(_), .. }));
+        // Not music, or no nttplay: the editor, as before.
+        assert_eq!(build(d.path(), "data.xml", Some(&np)).unwrap().kind, "text");
+        let q = build(d.path(), "tune.abc", None).unwrap();
+        assert_eq!((q.kind, q.editable), ("text", false));
     }
 
     #[test]
