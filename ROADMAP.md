@@ -10,7 +10,7 @@ Last reviewed: 2026-11-13 (core logic built; shell, Monaco, project files and th
 
 - [x] Public repo, MIT licence, README, CLAUDE.md, CONTRIBUTING, SECURITY, templates. Spec only; no app code.
 - [x] Linux and Windows build workflows and release scripts, from Stylus. `.github/workflows/`, `scripts/`.
-- [ ] Push to GitHub as `joashchee/joyride` (public). Blocked on `gh` auth reaching GitHub from here.
+- [x] Pushed to GitHub as `joashchee/joyride` (2026-11-13; `git ls-remote` shows `main` at the local HEAD). Not confirmed from here: the repository's visibility and description (`gh` cannot verify GitHub's certificate inside this sandbox, so `gh repo create`/`view` fail here; check the repo page, and `gh repo edit joashchee/joyride --visibility public --description "..."` if needed).
 - [ ] Mac App Store record for `com.ansiapps.joyride` alongside the direct download. Needs the maintainer's accounts.
 
 ## 1. Scaffold, toolchain manager, core editor (spec milestone 1)
