@@ -32,10 +32,13 @@ jobs:
           workspaces: |
             asset-core
             joyride-core
+            ogv
       - run: cargo test --manifest-path asset-core/Cargo.toml
       - run: cargo test --manifest-path joyride-core/Cargo.toml
+      - run: cargo test --manifest-path ogv/Cargo.toml
       - run: cargo clippy --all-targets --manifest-path asset-core/Cargo.toml -- -D warnings
       - run: cargo clippy --all-targets --manifest-path joyride-core/Cargo.toml -- -D warnings
+      - run: cargo clippy --all-targets --manifest-path ogv/Cargo.toml -- -D warnings
       - name: Licenses (no copyleft, and the shipped license file is current)
         run: |
           python3 scripts/license-scan.py --online

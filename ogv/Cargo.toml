@@ -1,0 +1,9 @@
+[package]
+name = "ogv"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Ogg Theora video for JoyrIDE's file preview: probe a file (size, frame rate, length, the audio track) and decode its frames to RGBA, over the vendored libogg and libtheora decoder (vendor/xiph)."
+
+[build-dependencies]
+cc = "1"

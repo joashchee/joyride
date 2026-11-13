@@ -34,7 +34,7 @@ COPYLEFT = re.compile(r"\b(A?GPL|LGPL|EUPL|OSL|CDDL|CC-BY-SA|SSPL)", re.I)
 REVIEWED = {}
 
 # The Rust crates whose dependency trees ship: each folder holding a Cargo.toml.
-CRATES = ["asset-core", "joyride-core", "src-tauri"]
+CRATES = ["asset-core", "joyride-core", "ogv", "src-tauri"]
 
 
 def allowed(lic: str) -> bool:

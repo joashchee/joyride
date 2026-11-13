@@ -30,7 +30,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs/third-party-licenses.txt"
-CRATES = ["asset-core", "joyride-core", "src-tauri"]
+CRATES = ["asset-core", "joyride-core", "ogv", "src-tauri"]
 OFFLINE = "--online" not in sys.argv
 LICENSE_FILE = re.compile(r"^(licen[sc]e|copying|unlicense|notice|copyright)([-_.].*)?$", re.I)
 TEMPLATES = ROOT / "scripts/licenses"

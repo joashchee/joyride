@@ -6362,6 +6362,50 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ==============================================================================
+Bundled tools (NOTICE)
+==============================================================================
+JoyrIDE
+Copyright 2026 ansiapps
+
+Licensed under the MIT License (see LICENSE).
+
+JoyrIDE bundles or downloads the following, each under its own licence.
+An entry is added here when its binary is first bundled, and every
+third-party licence ships in the app (scripts/license-scan.py).
+
+- LÖVE (love2d.org), zlib licence.
+- lua-language-server, MIT.
+- love-api and LuaCATS definitions, MIT.
+- luacheck, MIT.
+- StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
+- love.js (Davidobot's, MIT), whose `love.js`/`love.wasm` carry LÖVE (zlib) and its libraries, and the `love` iOS Xcode project and `love-android` Gradle project (zlib / as their repositories state), when a build bundles them.
+- PortMaster runtimes, as the PortMaster project states.
+- Monaco Editor, MIT.
+- IBM VGA 8x16 (`WebPlus_IBM_VGA_8x16.woff`) from The Ultimate Oldschool PC Font Pack
+  v2.2 by VileR (int10h.org), CC BY-SA 4.0: shipped unmodified, byte for byte, as its own
+  file in `public/fonts/ansiapps/` with its licence beside it, and credited in Settings.
+  Never subset, convert or inline it.
+- Painter (`art-sprites`), Composer (`music-composer`) and Animator
+  (`sprite-animator`), ansiapps' own engines, vendored in `src/vendor/` and
+  relicensed MIT for JoyrIDE (decided 2026-11-13; the engines' own
+  repositories stay proprietary). Each keeps its own NOTICE for what it
+  includes from others: Painter's CoffeeMUD data (Apache-2.0, text in
+  `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
+  (CC BY-SA 4.0, unmodified, with its licence in
+  `src/vendor/art-sprites/docs/fonts/`).
+- libogg 1.3.6 and the decoder of libtheora 1.2.0 (Xiph.org Foundation, BSD-3-Clause),
+  vendored unmodified in `vendor/xiph/` by `scripts/vendor-xiph.sh` (pinned by SHA-256;
+  licences in `vendor/xiph/ogg/COPYING` and `vendor/xiph/theora/COPYING`), to play Theora video.
+- Neumetik's players (`midi`, `bgn`, `synth`, `visual`, `tracker`) and
+  `nttplay`, the command-line player built from them, ansiapps' own code,
+  vendored in `vendor/neumetik/` by `scripts/vendor-neumetik.sh` and
+  relicensed MIT for JoyrIDE (decided by the maintainer 2026-11-13, so the
+  file preview can play MIDI, tracker modules and music written as text; the
+  Neumetik repository stays proprietary apart from `midi/`). Standard library
+  only. It includes the Organya editor's waveforms and drum samples (BSD,
+  `vendor/neumetik/synth/data/organya/LICENSE`).
+
+==============================================================================
 idna_adapter 1.2.2
 ==============================================================================
 Copyright (c) The rust-url developers
@@ -13446,35 +13490,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-==============================================================================
-Bundled tools (NOTICE)
-==============================================================================
-JoyrIDE
-Copyright 2026 ansiapps
-
-Licensed under the MIT License (see LICENSE).
-
-JoyrIDE bundles or downloads the following, each under its own licence.
-An entry is added here when its binary is first bundled, and every
-third-party licence ships in the app (scripts/license-scan.py).
-
-- LÖVE (love2d.org), zlib licence.
-- lua-language-server, MIT.
-- love-api and LuaCATS definitions, MIT.
-- luacheck, MIT.
-- StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
-- love.js (Davidobot's, MIT), whose `love.js`/`love.wasm` carry LÖVE (zlib) and its libraries, and the `love` iOS Xcode project and `love-android` Gradle project (zlib / as their repositories state), when a build bundles them.
-- PortMaster runtimes, as the PortMaster project states.
-- Monaco Editor, MIT.
-- Painter (`art-sprites`), Composer (`music-composer`) and Animator
-  (`sprite-animator`), ansiapps' own engines, vendored in `src/vendor/` and
-  relicensed MIT for JoyrIDE (decided 2026-11-13; the engines' own
-  repositories stay proprietary). Each keeps its own NOTICE for what it
-  includes from others: Painter's CoffeeMUD data (Apache-2.0, text in
-  `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
-  (CC BY-SA 4.0, unmodified, with its licence in
-  `src/vendor/art-sprites/docs/fonts/`).
 
 ==============================================================================
 open 5.4.4
