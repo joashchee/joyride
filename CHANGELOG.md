@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- **Bundled tools** (2026-11-13): `scripts/fetch-toolchains.py` pins LÖVE 11.5,
+  lua-language-server and StyLua by SHA-256; Run uses the bundled LÖVE. PortMaster
+  keeps using its own runtimes (rule recorded in CLAUDE.md); `docs/platform-parity.md`.
 - **Run and console** (2026-11-13): stoppable `runner::start`, `find_love`, Run/Stop
   buttons (⌘R, ⌘.), a console whose error lines open the file at the line.
 - **Open a project** (2026-11-13): `joyride-core::files`, Tauri commands, file tree,

@@ -19,6 +19,15 @@ fn core_info() -> CoreInfo {
     CoreInfo { version: env!("CARGO_PKG_VERSION") }
 }
 
+/// The tools shipped inside the app: `Resources/resources/toolchains` in a
+/// built app, the source tree's copy under `tauri dev`.
+pub(crate) fn bundled_toolchains(app: &tauri::AppHandle) -> Option<std::path::PathBuf> {
+    use tauri::Manager;
+    let installed = app.path().resource_dir().ok().map(|d| d.join("resources/toolchains"));
+    let source = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/toolchains");
+    installed.filter(|p| p.is_dir()).or_else(|| source.is_dir().then_some(source))
+}
+
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())

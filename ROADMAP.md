@@ -4,7 +4,7 @@ Progress and next phases, in the order to do them. Update it in the same
 commit as the work. The design is `docs/JoyrIDE_LÖVE-Implementation-Spec.md`
 (section 6 is the milestone order); this file is the checklist.
 
-Last reviewed: 2026-11-13 (core logic built; shell, Monaco and project files built, toolchains and the language server next, see section 1).
+Last reviewed: 2026-11-13 (core logic built; shell, Monaco and project files built, `lsp_bridge` next, see section 1).
 
 ## 0. Repository
 
@@ -15,17 +15,17 @@ Last reviewed: 2026-11-13 (core logic built; shell, Monaco and project files bui
 
 ## 1. Scaffold, toolchain manager, core editor (spec milestone 1)
 
-The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`); the shell and editor now exist (npm is reachable when `registry.npmjs.org` is allowed for the command; use `--cache $TMPDIR/npm-cache`, since `~/.npm` has root-owned files). Next: bundled toolchains and the language server, then wrap the crates in `src-tauri` commands.
+The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`); the shell and editor now exist (npm is reachable when `registry.npmjs.org` is allowed for the command; use `--cache $TMPDIR/npm-cache`, since `~/.npm` has root-owned files). Next: `lsp_bridge` (the binary is now bundled), then wrap the crates in `src-tauri` commands.
 
 - [x] Tauri 2 + React + Vite scaffold with splash and fast start (CLAUDE.md rule 7), 2026-11-13: static splash in `index.html`, `components/Splash.tsx` (progress, error shown on it), `src-tauri` with a `core_info` command over the core crates; `npm run build` and `cargo build --offline` pass. **Not yet run as a window** (`npm run tauri dev`), icons are a placeholder PNG set (no `.icns`/`.ico`: run `tauri icon` on real art before the release build), no `lsp_bridge`, Monaco or menus yet. Spec 1.
 - [x] Toolchain core (`joyride-core/src/toolchain.rs`): LÖVE version rules (11.5, 12.0+), `.luarc.json` generation per version, **signed toolchain manifest** (Ed25519, refused if unsigned or altered) and download checking (size + BLAKE3).
 - [ ] Toolchain downloads and `tauri-plugin-updater`: fetching the manifest from GitHub, the pinned public key, installing into the app-data dir. Needs network and a signing key; the maintainer generates the key.
-- [ ] Bundle LÖVE 11.5 binaries, `lua-language-server`, `luacheck`, `stylua`, the 11.5 `love-api` and LuaCATS types in `src-tauri/resources` (NOTICE lists licences). Needs downloads.
+- [x] **Bundled tools** (2026-11-13, `scripts/fetch-toolchains.py`, `scripts/toolchains.lock.json`): LÖVE 11.5 (`love.app`), `lua-language-server` 3.19.2 and StyLua 2.6.0 (arm64 and x64 each), pinned by version and SHA-256 (GitHub's own digest cross-checked), unsafe archive paths refused, all three run on this Mac, listed in `bundle.resources`; Run uses the bundled LÖVE first. **PortMaster is the exception: its export uses PortMaster's own `love_<ver>` runtime and never carries a LÖVE** (CLAUDE.md). Still to do: Linux and Windows assets, signing the nested binaries at the first release build (`docs/platform-parity.md`), the `love-api` 11.5 JSON and LuaCATS types, **luacheck** (its release is a Linux/Windows executable only; needs a Lua to run it or a build from source).
 - [x] **Monaco editor** (2026-11-13, `src/components/Editor.tsx`, `src/monaco-setup.ts`): `monaco-editor` 0.57 (MIT), bundled with its own worker (no CDN), Lua highlighting only (the CSS/HTML/JSON/TypeScript services and their 7 MB worker are left out), loaded after the splash so the first screen stays 224 kB. Follows the system light/dark theme. **Not run in a window yet.**
 - [ ] `lsp_bridge.rs`: spawn `lua-language-server`, JSON-RPC over the Tauri channel into Monaco (0.57 ships `monaco-lsp-client`, try it first). Needs the binary; the `.luarc.json` side is done.
 - [x] **Open a project folder** (2026-11-13): `joyride-core/src/files.rs` (listing with folders first, text read, atomic write; paths and symlinks cannot leave the project; 5 tests), `src-tauri/src/project.rs` commands, folder dialog, `FileTree` (keyboard and VoiceOver roles), tabs with unsaved marks, one Monaco model per file, ⌘S/Ctrl+S saves. **Not run in a window.** Still to do: new/rename/delete file, find in files, restore the last project, a confirm on quitting with unsaved files.
 - [x] **Run, Stop and the console** (2026-11-13): `runner::start` (non-blocking, stoppable, exit status; test with a fake LÖVE) and `runner::find_love` (`JOYRIDE_LOVE`, the toolchains folder, then an installed LÖVE), `src-tauri/src/run.rs` (`run-line` and `run-exit` events; links resolved inside the project), `Console` with lines that open the file at the line, ⌘R and ⌘. **Not run in a window.** Uses a LÖVE found on the machine until the bundled one exists; it does not yet pick the project's version from `love.toml`.
-- [ ] `docs/platform-parity.md` started.
+- [x] `docs/platform-parity.md` started (bundled tools, signing, PortMaster, folder picker).
 
 ## 2. Runner and console (milestone 2)
 

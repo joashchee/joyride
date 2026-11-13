@@ -31,8 +31,13 @@ struct Exit {
 #[tauri::command]
 pub fn run_project(app: AppHandle, project: State<Project>, game: State<Game>) -> Result<(), String> {
     let root = project.root()?;
-    let toolchains = app.path().app_data_dir().ok().map(|d| d.join("toolchains"));
-    let love = runner::find_love(toolchains.as_deref(), None)
+    // The LÖVE shipped in the app first (scripts/fetch-toolchains.py), then one
+    // downloaded into the app-data folder, then any installed LÖVE.
+    let bundled = crate::bundled_toolchains(&app);
+    let downloaded = app.path().app_data_dir().ok().map(|d| d.join("toolchains"));
+    let love = runner::find_love(bundled.as_deref(), Some("11.5"))
+        .or_else(|| runner::find_love(downloaded.as_deref(), Some("11.5")))
+        .or_else(|| runner::find_love(None, None))
         .ok_or("LÖVE was not found. Install LÖVE, or set JOYRIDE_LOVE to its executable.")?;
     let spec = Spec { love, project: root.clone(), env: vec![] };
     let (a1, a2) = (app.clone(), app.clone());

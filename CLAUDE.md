@@ -124,6 +124,13 @@ unsupported API is never faked, so feature tests keep answering truthfully.
   (so a 12.0 project cannot target PortMaster yet: the exporter refuses),
   `port.json` version 4, `$GPTOKEYB "$LOVE_GPTK"`.
 
+- **PortMaster uses PortMaster's own LÖVE** (the maintainer, 2026-11-13:
+  PortMaster recommends its runtimes over bundled binaries). The exporter's
+  zip never contains a LÖVE binary: the launch script sources
+  `runtimes/love_<ver>/love.txt`. `scripts/fetch-toolchains.py` and the
+  toolchain manifest therefore have no PortMaster entry, and a PortMaster
+  build must never add a LÖVE.
+
 ## Build notes
 
 - macOS release: `scripts/build-release.sh` (universal, Developer ID,
@@ -136,4 +143,5 @@ unsupported API is never faked, so feature tests keep answering truthfully.
   published by `scripts/publish-release.sh`. Standard runners only, so
   it stays free. No AppImage of the IDE itself (it would ship LGPL
   WebKitGTK/GTK): `.deb` and `.rpm`.
+- `scripts/fetch-toolchains.py` downloads the bundled tools (LÖVE 11.5, lua-language-server, StyLua) into `src-tauri/resources/toolchains/` (git-ignored), pinned by SHA-256 in `scripts/toolchains.lock.json`; `--update` re-pins, and you read the lock diff.
 - Tests: `cargo test --manifest-path src-tauri/Cargo.toml`, `npx tsc --noEmit`.

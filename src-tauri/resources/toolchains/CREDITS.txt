@@ -1,0 +1,4 @@
+Bundled tools keep their own licences, listed in the repository's NOTICE.
+love-11.5 11.5 (love2d/love)
+lua-language-server 3.19.2 (LuaLS/lua-language-server)
+stylua 2.6.0 (JohnnyMorganz/StyLua)
