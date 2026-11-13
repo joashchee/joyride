@@ -1,0 +1,27 @@
+[package]
+name = "neumetik-synth"
+version = "0.1.0"
+edition = "2021"
+authors = ["ansiapps"]
+license = "MIT"
+description = "Synth: the synthesis methods Neumetik's other crates play, FM (OPL2 and OPL3) and OctaMED's synth sounds, written from scratch"
+publish = false
+
+# Written from public descriptions (datasheets, format specifications):
+# no dependencies, so every line is ansiapps' own.
+[dependencies]
+
+# private:start
+# The copies of the MIDI synthesizer's engines and BGN's procedural
+# sound (scripts/copies.py), which Neumetik's other crates play; none of
+# the trackers need them, and neumetik-tracker's open copy leaves them out.
+[features]
+default = ["copies"]
+copies = []
+# private:end
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("copies"))'] }
+
+[profile.test]
+opt-level = 3

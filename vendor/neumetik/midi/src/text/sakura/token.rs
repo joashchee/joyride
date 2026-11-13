@@ -1,0 +1,516 @@
+use std::vec;
+
+use super::svalue::SValue;
+
+/// TokenType::Comment の value_i - 通常のコメント (MIDIには何も出力しない)
+pub const COMMENT_NORMAL: isize = 0;
+/// TokenType::Comment の value_i - デバッグ用コメント「/// xxx」(MetaTextとして埋め込む)
+pub const COMMENT_DEBUG: isize = 1;
+
+/// TokenType
+#[allow(dead_code)]
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum TokenType {
+    Unimplemented,
+    Error,
+    Empty,
+    LineNo,
+    Comment,
+    TimeBase,
+    Print,
+    Note,
+    NoteN,
+    Rest,
+    Track,
+    Channel,
+    Voice,
+    Length,
+    Octave,
+    OctaveRel,
+    OctaveOnce,
+    QLen,
+    QLenRel,
+    Velocity,
+    VelocityRel,
+    Timing,
+    TimingRel,
+    ControlChange,
+    CConTime,
+    CConNote,
+    CConNoteWave,
+    /// CC・PBの .onNoteWaveEx --- 音符の長さに合わせて波形を伸縮する
+    CConNoteWaveEx,
+    /// CC・PBの .onNoteWaveR --- 音符が鳴っている間くり返す
+    CConNoteWaveR,
+    /// CC・PBの .onCycle --- 一定時間ごとに値を切り替える
+    CConCycle,
+    /// CC・PBの .Sine --- 正弦波を1回書き込む
+    CCSine,
+    /// CC・PBの .onNoteSine --- 音符ごとに正弦波を書き込む
+    CConNoteSine,
+    /// CC・PBの .Delay --- 書き込み位置の遅延
+    CCDelay,
+    /// CC・PBの .Random --- 書き込む値をランダムにばらつかせる
+    CCRandom,
+    /// CC・PBの .Range --- 書き込む値の下限と上限
+    CCRange,
+    /// CC・PBの .Repeat --- .onNote の値をくり返すか
+    CCRepeat,
+    CConTimeFreq,
+    Decresc,
+    Tempo,
+    TempoChange,
+    MetaText,
+    GSEffect,
+    Port,
+    SysEx,
+    TimeSignature,
+    PitchBend,
+    PBonTime,
+    PBonNoteWave,
+    /// ピッチベンドの .onNote --- 音符ごとに値を切り替える
+    PBonNote,
+    LoopBegin,
+    LoopEnd,
+    LoopBreak,
+    Time,
+    Rhythm,
+    HarmonyBegin,
+    HarmonyEnd,
+    Tokens, // should run children toknes
+    Div,
+    Sub,
+    KeyFlag,
+    KeyShift,
+    UseKeyShift,
+    TrackKey,
+    DefInt,
+    DefStr,
+    DefArray,
+    LetVar,
+    PlayFrom,
+    PlayFromHere,
+    OctaveRandom,
+    OctaveOnNote,
+    OctaveOnCycle,
+    OctaveOnTime,
+    QLenRandom,
+    TimingRandom,
+    VelocityRandom,
+    VelocityOnTime,
+    VelocityOnNote,
+    VelocityOnCycle,
+    QLenOnNote,
+    QLenOnCycle,
+    QLenOnTime,
+    LengthOnNote,
+    LengthOnCycle,
+    LengthOnTime,
+    LengthRandom,
+    TimingOnNote,
+    TimingOnCycle,
+    TimingOnTime,
+    /// 音符属性(v/q/t/o/l)の .Range --- 値の下限と上限 (value_i=対象)
+    NoteParamRange,
+    /// 音符属性(v/q/t/o/l)の .Delay --- 先行指定の遅延 (value_i=対象)
+    NoteParamDelay,
+    /// 音符属性(v/q/t/o/l)の .Repeat --- .onNote の値をくり返すか (value_i=対象)
+    NoteParamRepeat,
+    /// v/q の .Max --- 値の上限を変更する (value_i=対象)
+    NoteParamMax,
+    MeasureShift,
+    TrackSync,
+    TieMode,
+    If,
+    For,
+    While,
+    Break,
+    Continue,
+    CalcTree,
+    ConstInt,
+    ConstStr,
+    MakeArray,
+    GetVariable,
+    Value,
+    ValueInc,
+    SetConfig,
+    DefUserFunction,
+    CallUserFunction,
+    Return,
+    Play,
+    Include,
+    SongVelocityAdd,
+    SongQAdd,
+    SoundType,
+    DeviceNumber,
+    ControlChangeCommand,
+    RPN,
+    RPNCommand,
+    NRPN,
+    NRPNCommand,
+    FadeIO,
+    Cresc,
+    SysexReset,
+    SysExCommand,
+    SetRandomSeed,
+    DirectSMF,
+    NoteOn,
+    NoteOff,
+    StrVarReplace,
+    /// End --- これ以降のMMLの実行を中断する
+    End,
+}
+
+/// CC・ピッチベンドの先行指定の書き込み先を value_i で表す
+/// 0以上ならCC番号、負ならピッチベンド
+/// p (0〜127) の書式
+pub const WRITE_TARGET_PB_SMALL: isize = -1;
+/// PB (-8192〜8191) の書式
+pub const WRITE_TARGET_PB_BIG: isize = -2;
+
+/// 音符属性の先行指定の対象 (NoteParamRange などの value_i)
+pub const NOTE_PARAM_V: isize = 0;
+pub const NOTE_PARAM_Q: isize = 1;
+pub const NOTE_PARAM_T: isize = 2;
+pub const NOTE_PARAM_O: isize = 3;
+pub const NOTE_PARAM_L: isize = 4;
+
+/// Token.value_type
+pub const VALUE_UNKNOWN: isize = 0x00;
+pub const VALUE_CONST_INT: isize = 0x01;
+pub const VALUE_CONST_STR: isize = 0x02;
+pub const VALUE_VARIABLE: isize = 0x10;
+
+#[derive(Debug, Clone)]
+pub enum TokenValueType {
+    VOID,
+    INT,
+    STR,
+    ARRAY,
+    VARIABLE,
+}
+
+#[derive(Debug, Clone)]
+pub struct Token {
+    pub ttype: TokenType,
+    pub value_i: isize,
+    pub value_s: Option<String>,
+    pub value_type: TokenValueType,
+    pub tag: isize,
+    pub operator_flag: char,
+    pub data: Vec<SValue>,
+    pub children: Option<Vec<Token>>,
+    pub lineno: isize,
+}
+
+impl Token {
+    pub fn new_lineno(lineno: isize) -> Self {
+        Self {
+            ttype: TokenType::LineNo,
+            value_i: 0,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data: vec![],
+            children: None,
+            lineno,
+        }
+    }
+    pub fn new(ttype: TokenType, value: isize, data: Vec<SValue>) -> Self {
+        Self {
+            ttype,
+            value_i: value,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data,
+            children: None,
+            lineno: 0,
+        }
+    }
+    pub fn new_const0() -> Self {
+        Self {
+            ttype: TokenType::ConstInt,
+            value_i: 0,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data: vec![],
+            children: None,
+            lineno: 0,
+        }
+    }
+    pub fn new_const(
+        ttype: TokenType,
+        value_i: isize,
+        value_s: Option<String>,
+        value_type: TokenValueType,
+    ) -> Self {
+        Self {
+            ttype,
+            value_i,
+            value_s,
+            value_type,
+            tag: 0,
+            operator_flag: '\0',
+            data: vec![],
+            children: None,
+            lineno: 0,
+        }
+    }
+    pub fn new_variable(
+        ttype: TokenType,
+        var_name: String,
+        init_tokens: Option<Vec<Token>>,
+    ) -> Self {
+        Self {
+            ttype,
+            value_i: 0,
+            value_s: Some(var_name),
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data: vec![],
+            children: init_tokens,
+            lineno: 0,
+        }
+    }
+    pub fn new_value(ttype: TokenType, value: isize) -> Self {
+        Self {
+            ttype,
+            value_i: value,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data: vec![],
+            children: None,
+            lineno: 0,
+        }
+    }
+    pub fn new_value_tag(ttype: TokenType, value: isize, tag: isize) -> Self {
+        Self {
+            ttype,
+            value_i: value,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag,
+            operator_flag: '\0',
+            data: vec![],
+            children: None,
+            lineno: 0,
+        }
+    }
+    pub fn new_tokens(ttype: TokenType, value_i: isize, tokens: Vec<Token>) -> Self {
+        Self {
+            ttype,
+            value_i,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data: vec![],
+            children: Some(tokens),
+            lineno: 0,
+        }
+    }
+    pub fn new_calc_token(operator_ch: char, priority: isize, children: Vec<Token>) -> Self {
+        Self {
+            ttype: TokenType::CalcTree,
+            value_i: priority,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: operator_ch,
+            data: vec![],
+            children: Some(children),
+            lineno: 0,
+        }
+    }
+    pub fn new_tokens_lineno(
+        ttype: TokenType,
+        value: isize,
+        tokens: Vec<Token>,
+        lineno: isize,
+    ) -> Self {
+        Self {
+            ttype,
+            value_i: value,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data: vec![],
+            children: Some(tokens),
+            lineno,
+        }
+    }
+    pub fn new_data_tokens(
+        ttype: TokenType,
+        value: isize,
+        data: Vec<SValue>,
+        tokens: Vec<Token>,
+    ) -> Self {
+        Self {
+            ttype,
+            value_i: value,
+            value_s: None,
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data,
+            children: Some(tokens),
+            lineno: 0,
+        }
+    }
+    pub fn new_empty(cmd: &str, lineno: isize) -> Self {
+        Self {
+            ttype: TokenType::Empty,
+            value_i: 0,
+            value_s: Some(String::from(cmd)),
+            value_type: TokenValueType::VOID,
+            tag: 0,
+            operator_flag: '\0',
+            data: vec![],
+            children: None,
+            lineno,
+        }
+    }
+    pub fn new_comment(commet: &str, lineno: isize) -> Self {
+        let mut t = Token::new_empty(commet, lineno);
+        t.ttype = TokenType::Comment;
+        t
+    }
+    pub fn new_sysex(a: Vec<isize>) -> Self {
+        let mut sa: Vec<SValue> = vec![];
+        for (i, v) in a.iter().enumerate() {
+            if i == 0 && *v == 0xF0 {
+                continue;
+            }
+            sa.push(SValue::from_i(*v));
+        }
+        Self::new(TokenType::SysEx, 0, sa)
+    }
+    pub fn to_debug_str(&self, level: isize) -> String {
+        // LineNoは除外
+        if self.ttype == TokenType::LineNo {
+            return String::new();
+        }
+        match self.ttype {
+            TokenType::Comment => {
+                let line = format!(
+                    "[{:?}#{}]",
+                    self.ttype,
+                    self.value_s.as_ref().unwrap_or(&String::from(""))
+                );
+                return line;
+            }
+            TokenType::CalcTree => {
+                if let Some(children) = &self.children {
+                    let mut s = String::new();
+                    for t in children.iter() {
+                        s.push_str(&t.to_debug_str(level + 1));
+                    }
+                    return format!(
+                        "[{:?} {}({}){{{}}}]",
+                        self.ttype, self.operator_flag, self.value_i, s
+                    );
+                }
+                let line = format!("[{:?},{}]", self.ttype, self.value_i);
+                return line;
+            }
+            _ => {}
+        }
+        let line = format!("[{:?},{}]", self.ttype, self.value_i);
+        line
+    }
+}
+
+// indent line for debug print
+fn indent_line(src: &str, level: isize) -> String {
+    let part0 = " │  ";
+    let part1 = " ├──";
+    let mut s = String::new();
+    for i in 0..level {
+        if i == level - 1 {
+            s.push_str(part1);
+            continue;
+        }
+        s.push_str(part0);
+    }
+    s.push_str(src);
+    s
+}
+
+pub fn tokens_to_str(tokens: &[Token]) -> String {
+    let mut s = String::new();
+    for t in tokens.iter() {
+        s.push_str(&t.to_debug_str(0));
+    }
+    s
+}
+
+fn opt_str_short(s: &Option<String>, head: &str) -> String {
+    match s {
+        Some(s) => format!("{}{}", head, s),
+        None => String::from(""),
+    }
+}
+
+pub fn tokens_to_debug_str(tokens: &[Token], level: isize) -> String {
+    let mut lineno = 0;
+    let mut s = String::new();
+    for t in tokens.iter() {
+        if t.ttype == TokenType::LineNo {
+            lineno = t.lineno;
+        }
+        let line = format!(
+            "[{:?}](i:{}{},line:{})\n",
+            t.ttype,
+            t.value_i,
+            opt_str_short(&t.value_s, ",s:"),
+            lineno
+        );
+        s.push_str(&indent_line(&line, level));
+        if let Some(children) = &t.children {
+            s.push_str(&tokens_to_debug_str(children, level + 1));
+        }
+    }
+    s
+}
+
+pub fn char_from_u32(i: u32, def: char) -> char {
+    char::from_u32(i).unwrap_or(def)
+}
+
+/// 全角記号を半角記号に変換
+pub fn zen2han(c: char) -> char {
+    match c {
+        // half ascii code
+        '\u{0020}'..='\u{007E}' => c,
+        // FullWidth
+        // '！'..='～' = '\u{FF01}'..='\u{FF5E}'
+        '\u{FF01}'..='\u{FF5E}' => char_from_u32(c as u32 - 0xFF01 + 0x21, c),
+        // space
+        '\u{2002}'..='\u{200B}' => ' ',
+        '\u{3000}' | '\u{FEFF}' => ' ',
+        // others
+        _ => c,
+    }
+}
+
+pub type Tokens = Vec<Token>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_zen2han() {
+        assert_eq!(zen2han('Ａ'), 'A');
+        assert_eq!(zen2han('３'), '3');
+        assert_eq!(zen2han('　'), ' ');
+    }
+}

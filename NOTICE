@@ -27,3 +27,11 @@ third-party licence ships in the app (scripts/license-scan.py).
   `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
   (CC BY-SA 4.0, unmodified, with its licence in
   `src/vendor/art-sprites/docs/fonts/`).
+- Neumetik's players (`midi`, `bgn`, `synth`, `visual`, `tracker`) and
+  `nttplay`, the command-line player built from them, ansiapps' own code,
+  vendored in `vendor/neumetik/` by `scripts/vendor-neumetik.sh` and
+  relicensed MIT for JoyrIDE (decided by the maintainer 2026-11-13, so the
+  file preview can play MIDI, tracker modules and music written as text; the
+  Neumetik repository stays proprietary apart from `midi/`). Standard library
+  only. It includes the Organya editor's waveforms and drum samples (BSD,
+  `vendor/neumetik/synth/data/organya/LICENSE`).

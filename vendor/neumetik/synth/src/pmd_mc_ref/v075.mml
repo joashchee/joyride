@@ -1,0 +1,6 @@
+#LFOSpeed Extend
+J f
+A c+32 o8 t200 @128
+D > d3. a b2 o1 o8
+I v15 c-8 x g++48. a+$0c r24
+I r$18 b=2 f++8.. d= & x d- g d- x12 d

@@ -1,0 +1,15 @@
+[package]
+name = "neumetik-bgn"
+version = "0.1.0"
+edition = "2021"
+authors = ["ansiapps"]
+license = "MIT"
+description = "BGN: layered background noise for games and films, synthesized, no recordings"
+publish = false
+
+[dependencies]
+
+# The tests render minutes of sound: optimized, but still checking for
+# overflow, as a debug build of the app would.
+[profile.test]
+opt-level = 3

@@ -1,0 +1,9 @@
+Neumetik players (midi, bgn, synth, visual, tracker, nttplay)
+Copyright 2026 ansiapps
+
+Licensed under the MIT License (see LICENSE in each folder). Vendored into
+JoyrIDE from ansiapps' own Neumetik (scripts/vendor-neumetik.sh), which stays
+proprietary apart from midi/, already MIT. Standard library only.
+
+synth/data/organya: the Organya editor's waveforms and drum samples, BSD
+licensed; its LICENSE is kept beside them.

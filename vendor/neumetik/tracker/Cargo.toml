@@ -1,0 +1,37 @@
+[package]
+name = "neumetik-tracker"
+version = "0.2.0"
+edition = "2021"
+authors = ["ansiapps"]
+license = "MIT"
+description = "Tracker: music tracker modules read and played, their samples kept once in a repository, and UMF, the format that refers to them"
+publish = false
+
+# Written from scratch on the formats' public descriptions: no
+# third-party dependencies, so every line is ansiapps' own.
+[dependencies]
+# The synths the formats need (FM for AdLib instruments, OctaMED's synth
+# sounds), proprietary, in ../synth.
+neumetik-synth = { path = "../synth" }
+# private:start
+# ANSI art: a song's cover painted and kept (UMF's COVR chunk), and how it
+# likes to be seen (VISL), proprietary, in ../visual.
+neumetik-visual = { path = "../visual", optional = true }
+# private:end
+
+# private:start
+# What only Neumetik has. Without them, what's left is open source:
+# neumetik-tracker, as scripts/sync-tracker.sh publishes it.
+[features]
+default = ["repository", "visual"]
+# The samples repository, its database, Modland's index and parity checks.
+repository = []
+# A cover painted for a song that has none (neumetik-visual).
+visual = ["dep:neumetik-visual"]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("repository", "visual"))'] }
+
+# The tests play whole modules: optimized, still checking for overflow.
+[profile.test]
+opt-level = 3

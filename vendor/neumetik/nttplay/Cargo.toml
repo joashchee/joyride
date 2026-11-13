@@ -1,0 +1,40 @@
+[package]
+name = "neumetik-r36s"
+version = "0.1.0"
+edition = "2021"
+authors = ["ansiapps"]
+license = "MIT"
+description = "Neumetik for the R36S handheld: MIDI, tracker modules, background noise and Visual behind a small C API for r36s/host"
+publish = false
+
+# Its own workspace: the repository's crates are each their own, and
+# this one only reads them.
+[workspace]
+
+[lib]
+# A static library for the C host (r36s/host/neumetik.c); `rlib` too, so
+# the tests and the bench tool can call it from Rust.
+crate-type = ["staticlib", "rlib"]
+
+# nttplay: a command-line player of everything Neumetik reads, for Commander and for a shell (probe a file, decode it to PCM or a WAV). Standard library
+# only, no SDL: r3i6nos's Commander runs it the way it runs ffmpeg. See r36s/README.md.
+[[bin]]
+name = "nttplay"
+path = "src/bin/nttplay.rs"
+
+[dependencies]
+# ansiapps' own crates, standard library only: no third-party code comes in.
+neumetik-midi = { path = "../midi" }
+neumetik-bgn = { path = "../bgn" }
+# Without the samples repository (a desktop library) or the cover painter.
+neumetik-tracker = { path = "../tracker", default-features = false }
+neumetik-visual = { path = "../visual" }
+
+[profile.release]
+opt-level = 3
+# Thin, with the default codegen units: full LTO of neumetik-synth needs more
+# memory than a small build VM has (Colima's 2 GB was killed mid-build).
+lto = "thin"
+
+[profile.test]
+opt-level = 3

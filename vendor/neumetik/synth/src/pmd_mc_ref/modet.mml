@@ -1,0 +1,11 @@
+#Option /t
+#Tempo 100
+#Timer 200
+#Zenlength 192
+#VolumeDown F-4,S+2,P8,R3
+A @0 cdefg o4 @3 cde
+B @200 c d e
+J cdefg
+K \b \s
+R cdef
+G v8 cde

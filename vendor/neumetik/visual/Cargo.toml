@@ -1,0 +1,16 @@
+[package]
+name = "neumetik-visual"
+version = "0.1.0"
+edition = "2021"
+authors = ["ansiapps"]
+license = "MIT"
+description = "Visual: music played by Neumetik seen as animated ANSI art (spectrum bars, scopes, meters and two dozen more), ANSI art read and written the way Stylus does, and the cover painter"
+publish = false
+
+# Written from scratch on public descriptions (the formats' specifications,
+# papers, the demoscene's well-known effects): no dependencies, so every
+# line is ansiapps' own.
+[dependencies]
+
+[profile.test]
+opt-level = 3

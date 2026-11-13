@@ -1,0 +1,6 @@
+K R2  R2  \vi31 R2  R3  \vs+3
+K R0 R1 R2 R3
+R0 @2 g1 a2 \b c4 \b l4 e16 d8 \bp
+R1 @7 l16 e4 c x%12
+R2 @0 g4 \c \s \h \s
+R3 @5 \sp
