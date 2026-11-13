@@ -76,6 +76,13 @@ CREATE TABLE IF NOT EXISTS rights (
     territory TEXT NOT NULL DEFAULT 'worldwide',
     expires TEXT NOT NULL DEFAULT ''
 );
+CREATE TABLE IF NOT EXISTS previews (
+    asset_id INTEGER PRIMARY KEY REFERENCES assets(id) ON DELETE CASCADE,
+    thumb_png BLOB,
+    thumb_w INTEGER,
+    thumb_h INTEGER,
+    waveform BLOB
+);
 CREATE TABLE IF NOT EXISTS hash_cache (
     path TEXT PRIMARY KEY,
     size INTEGER NOT NULL,
@@ -134,6 +141,15 @@ pub struct Filter {
     pub bpm: Option<(u32, u32)>,
     /// Inclusive length in milliseconds (audio only).
     pub duration_ms: Option<(u64, u64)>,
+}
+
+/// What the library shows for an asset: a thumbnail for images, peaks for sound.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Preview {
+    pub thumb_png: Option<Vec<u8>>,
+    pub thumb_size: Option<(u32, u32)>,
+    /// Peak level per bin, 0 to 255.
+    pub waveform: Option<Vec<u8>>,
 }
 
 /// How much of an asset's making was a machine's.
@@ -352,6 +368,26 @@ impl Catalog {
                     Ok((info, lv))
                 },
             )
+            .optional()?)
+    }
+
+    pub fn set_preview(&mut self, id: i64, p: &Preview) -> Result<()> {
+        let (w, h) = p.thumb_size.map(|(w, h)| (Some(w), Some(h))).unwrap_or((None, None));
+        self.conn.execute(
+            "INSERT INTO previews (asset_id, thumb_png, thumb_w, thumb_h, waveform) VALUES (?1,?2,?3,?4,?5)
+             ON CONFLICT(asset_id) DO UPDATE SET thumb_png=?2, thumb_w=?3, thumb_h=?4, waveform=?5",
+            params![id, p.thumb_png, w, h, p.waveform],
+        )?;
+        Ok(())
+    }
+
+    pub fn preview(&self, id: i64) -> Result<Option<Preview>> {
+        Ok(self
+            .conn
+            .query_row("SELECT thumb_png, thumb_w, thumb_h, waveform FROM previews WHERE asset_id=?", [id], |r| {
+                let (w, h): (Option<u32>, Option<u32>) = (r.get(1)?, r.get(2)?);
+                Ok(Preview { thumb_png: r.get(0)?, thumb_size: w.zip(h), waveform: r.get(3)? })
+            })
             .optional()?)
     }
 

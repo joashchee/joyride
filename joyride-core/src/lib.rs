@@ -3,7 +3,8 @@
 //! tested alone and shared with a web build. `src-tauri` will wrap it in
 //! commands.
 //!
-//! - [`manifest`]: `love.toml` and `love.lock` (spec 3D); [`pkg`] installs.
+//! - [`manifest`]: `love.toml` and `love.lock` (spec 3D); [`pkg`] installs;
+//!   [`library`] the curated list of libraries, pinned and licensed.
 //! - [`toolchain`]: LÖVE versions, `.luarc.json`, the signed toolchain
 //!   manifest (spec 3A, 3B).
 //! - [`lua`]: a small Lua lexer; [`scan`] the auto-porter's static analysis
@@ -20,6 +21,7 @@ pub mod compat;
 pub mod docs;
 pub mod editor;
 pub mod export;
+pub mod library;
 pub mod lint;
 pub mod lua;
 pub mod manifest;

@@ -9,7 +9,8 @@
 //! held it is recorded as a use.
 
 use crate::audio::{self, AudioInfo};
-use crate::catalog::{Catalog, NewAsset};
+use crate::catalog::{Catalog, NewAsset, Preview};
+use crate::preview;
 use crate::kind::{self, Kind};
 use crate::licence::{self, Guess, Licence, Status};
 use crate::{Error, Result};
@@ -227,6 +228,22 @@ fn apply_one(cat: &mut Catalog, library_dir: &Path, plan: &Plan, a: &PlannedAsse
             for t in audio::tags_from_name(&g) {
                 cat.add_tag(id, &t)?;
             }
+        }
+    }
+    if a.kind == Kind::Image {
+        // Previews are a convenience: an image that will not decode is still imported.
+        if let Ok(facts) = preview::image_facts(&a.source) {
+            for t in preview::image_tags(&facts) {
+                cat.add_tag(id, &t)?;
+            }
+            if let Ok((png, w, h)) = preview::thumbnail_png(&a.source, preview::THUMB_EDGE) {
+                cat.set_preview(id, &Preview { thumb_png: Some(png), thumb_size: Some((w, h)), waveform: None })?;
+            }
+        }
+    }
+    if a.kind == Kind::Audio {
+        if let Ok(Some(w)) = preview::waveform(&a.source, 128) {
+            cat.set_preview(id, &Preview { waveform: Some(w), ..Default::default() })?;
         }
     }
     for t in &d.tags {

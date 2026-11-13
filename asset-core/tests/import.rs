@@ -182,3 +182,46 @@ fn audio_is_probed_measured_and_tagged_from_its_name() {
     assert_eq!((info.sample_rate, info.duration_ms), (8000, 1000));
     assert!((lv.unwrap().peak_dbfs + 6.02).abs() < 0.01);
 }
+
+#[test]
+fn images_and_sounds_get_previews_and_facet_tags_on_import() {
+    use asset_core::Kind;
+    let d = tempfile::tempdir().unwrap();
+    let (proj, lib) = (d.path().join("p"), d.path().join("lib"));
+    fs::create_dir_all(proj.join("art")).unwrap();
+    image::RgbaImage::from_fn(16, 16, |x, _| if x < 8 { image::Rgba([255, 0, 0, 255]) } else { image::Rgba([0, 0, 255, 255]) }).save(proj.join("art/tile.png")).unwrap();
+    fs::write(proj.join("art/broken.png"), b"not really a png").unwrap();
+    let samples: Vec<u8> = (0..800).flat_map(|i| (if i < 400 { 0i16 } else { 16384 }).to_le_bytes()).collect();
+    let mut w = b"RIFF".to_vec();
+    w.extend((36 + samples.len() as u32).to_le_bytes());
+    w.extend(b"WAVEfmt ");
+    w.extend(16u32.to_le_bytes());
+    w.extend([1, 0, 1, 0]);
+    w.extend(8000u32.to_le_bytes());
+    w.extend(16000u32.to_le_bytes());
+    w.extend([2, 0, 16, 0]);
+    w.extend(b"data");
+    w.extend((samples.len() as u32).to_le_bytes());
+    w.extend(samples);
+    fs::write(proj.join("art/beep.wav"), w).unwrap();
+    let mut cat = Catalog::in_memory().unwrap();
+    let p = plan(&mut cat, &proj, &Options::default()).unwrap();
+    let ds: Vec<Decision> = p.assets.iter().map(|a| decide(&a.hash, "CC0-1.0", "me")).collect();
+    let rep = apply(&mut cat, &lib, &p, &ds).unwrap();
+    assert_eq!(rep.imported.len(), 3, "an undecodable image is still imported");
+    let by = |name: &str| cat.search(name, &Filter::default()).unwrap().remove(0);
+    let tile = by("tile");
+    for t in ["size:16x16", "style:pixel-art", "palette:limited", "size-class:tiny"] {
+        assert!(tile.tags.contains(&t.to_string()), "{t} in {:?}", tile.tags);
+    }
+    let pv = cat.preview(tile.id).unwrap().unwrap();
+    assert_eq!(pv.thumb_size, Some((128, 128)));
+    assert!(pv.thumb_png.unwrap().starts_with(b"\x89PNG"));
+    assert_eq!(cat.preview(by("broken").id).unwrap(), None);
+    let beep = by("beep");
+    let wave = cat.preview(beep.id).unwrap().unwrap().waveform.unwrap();
+    assert_eq!((wave.len(), wave[0], wave[127]), (128, 0, 128));
+    // Facets work as filters.
+    let hits = cat.search("", &Filter { kind: Some(Kind::Image), tag: Some("style:pixel-art".into()), ..Default::default() }).unwrap();
+    assert_eq!(hits.len(), 1);
+}

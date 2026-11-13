@@ -1,0 +1,113 @@
+# The libraries JoyrIDE offers by name. `cargo run --example curate_libraries`
+# clones each, pins a real commit (the newest tag if it has one) and reads its
+# licence, then writes libraries.toml. With `-- --probe` it also requires each
+# on real LÖVE 11.5 and 12.0 headless (that runs the library's code: opt-in).
+# module = what to `require` after the repo is on the Lua path.
+
+[[library]]
+name = "hump"
+git = "https://github.com/vrld/hump"
+module = "hump.class"
+summary = "Helper utilities: classes, gamestates, timers, vectors, signals, cameras."
+
+[[library]]
+name = "bump"
+git = "https://github.com/kikito/bump.lua"
+module = "bump"
+summary = "Collision detection for axis-aligned rectangles."
+
+[[library]]
+name = "anim8"
+git = "https://github.com/kikito/anim8"
+module = "anim8"
+summary = "Spritesheet animations."
+
+[[library]]
+name = "middleclass"
+git = "https://github.com/kikito/middleclass"
+module = "middleclass"
+summary = "Object orientation for Lua."
+
+[[library]]
+name = "inspect"
+git = "https://github.com/kikito/inspect.lua"
+module = "inspect"
+summary = "Human-readable representations of Lua tables."
+
+[[library]]
+name = "tween"
+git = "https://github.com/kikito/tween.lua"
+module = "tween"
+summary = "Tweening and easing functions."
+
+[[library]]
+name = "semver"
+git = "https://github.com/kikito/semver.lua"
+module = "semver"
+summary = "Semantic version parsing and comparison."
+
+[[library]]
+name = "lume"
+git = "https://github.com/rxi/lume"
+module = "lume"
+summary = "Collection of functions for game development."
+
+[[library]]
+name = "classic"
+git = "https://github.com/rxi/classic"
+module = "classic"
+summary = "Tiny class module."
+
+[[library]]
+name = "flux"
+git = "https://github.com/rxi/flux"
+module = "flux"
+summary = "Fast, lightweight tweening."
+
+[[library]]
+name = "json"
+git = "https://github.com/rxi/json.lua"
+module = "json"
+summary = "Lightweight JSON encode and decode."
+
+[[library]]
+name = "log"
+git = "https://github.com/rxi/log.lua"
+module = "log"
+summary = "Tiny logging module."
+
+[[library]]
+name = "lurker"
+git = "https://github.com/rxi/lurker"
+module = "lurker"
+summary = "Auto-swaps changed Lua files in a running game (needs lume)."
+
+[[library]]
+name = "baton"
+git = "https://github.com/tesselode/baton"
+module = "baton"
+summary = "Input library: keyboard, mouse and gamepad bindings."
+
+[[library]]
+name = "push"
+git = "https://github.com/Ulydev/push"
+module = "push"
+summary = "Resolution-handling library."
+
+[[library]]
+name = "sti"
+git = "https://github.com/karai17/Simple-Tiled-Implementation"
+module = "sti"
+summary = "Tiled map loader and renderer."
+
+[[library]]
+name = "binser"
+git = "https://github.com/bakpakin/binser"
+module = "binser"
+summary = "Customizable Lua serializer."
+
+[[library]]
+name = "HC"
+git = "https://github.com/vrld/HC"
+module = "HC"
+summary = "General purpose collision detection with arbitrary shapes."

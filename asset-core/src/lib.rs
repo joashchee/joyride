@@ -17,9 +17,10 @@ pub mod generated;
 pub mod import;
 pub mod kind;
 pub mod licence;
+pub mod preview;
 pub mod project;
 
-pub use catalog::{Asset, Catalog, Filter, NewAsset};
+pub use catalog::{Asset, Catalog, Filter, NewAsset, Preview};
 pub use kind::Kind;
 pub use licence::{Licence, Status, Tri};
 

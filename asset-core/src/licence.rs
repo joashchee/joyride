@@ -191,8 +191,6 @@ pub struct Guess {
     pub source: PathBuf,
 }
 
-const NOTICE_NAMES: [&str; 6] = ["license", "licence", "copying", "credits", "readme", "notice"];
-
 /// Looks for the licence an asset travels with: a sidecar `<file>.license`
 /// first, then licence/credits/readme files in its folder and each folder up
 /// to (and including) `root`. The nearest folder wins.
@@ -234,14 +232,25 @@ fn stem_lower(p: &Path) -> String {
     p.file_stem().and_then(|s| s.to_str()).unwrap_or("").to_lowercase()
 }
 
-fn is_notice_file(p: &Path) -> bool {
-    let s = stem_lower(p);
-    NOTICE_NAMES.iter().any(|n| s == *n || s.starts_with(&format!("{n}-")) || s.starts_with(&format!("{n}_")))
+/// Names a project keeps its licence in: `LICENSE`, `LICENCE.md`,
+/// `MIT-LICENSE.txt`, `license_mit`, `COPYING`, credits, readme and notice files.
+fn notice_keyword(stem: &str) -> Option<usize> {
+    const WORDS: [&str; 7] = ["licen", "copying", "credits", "readme", "notice", "copyright", "unlicense"];
+    WORDS.iter().position(|w| stem.contains(w))
 }
 
+fn is_notice_file(p: &Path) -> bool {
+    notice_keyword(&stem_lower(p)).is_some()
+}
+
+/// Licence files first, then credits, then readmes.
 fn notice_rank(p: &Path) -> usize {
-    let s = stem_lower(p);
-    NOTICE_NAMES.iter().position(|n| s.starts_with(n)).unwrap_or(NOTICE_NAMES.len())
+    match notice_keyword(&stem_lower(p)) {
+        Some(0) | Some(1) | Some(6) => 0,
+        Some(2) => 1,
+        Some(_) => 2,
+        None => 3,
+    }
 }
 
 fn guess_in_file(p: &Path) -> Option<Guess> {
@@ -311,6 +320,19 @@ mod tests {
         assert_eq!(guess_for(&root.join("art/sfx/boom.wav"), root).unwrap().spdx, "CC-BY-4.0");
         std::fs::write(root.join("loose.png"), b"x").unwrap();
         assert_eq!(guess_for(&root.join("loose.png"), root).unwrap().spdx, "MIT");
+    }
+
+    #[test]
+    fn licence_files_with_other_names_are_found() {
+        let d = tempfile::tempdir().unwrap();
+        std::fs::write(d.path().join("MIT-LICENSE.txt"), "Permission is hereby granted, free of charge, to any person").unwrap();
+        std::fs::write(d.path().join("thing.lua"), "x").unwrap();
+        assert_eq!(guess_for(&d.path().join("thing.lua"), d.path()).unwrap().spdx, "MIT");
+        let e = tempfile::tempdir().unwrap();
+        std::fs::write(e.path().join("COPYING"), "This is free and unencumbered software released into the public domain.").unwrap();
+        std::fs::write(e.path().join("README.md"), "Permission is hereby granted, free of charge").unwrap();
+        std::fs::write(e.path().join("a.lua"), "x").unwrap();
+        assert_eq!(guess_for(&e.path().join("a.lua"), e.path()).unwrap().spdx, "Unlicense", "the licence file outranks the readme");
     }
 
     #[test]

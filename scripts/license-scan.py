@@ -2,17 +2,16 @@
 """License scan for JoyrIDE's dependencies. Run it whenever Cargo.lock or
 package-lock.json changes (CLAUDE.md rule 2).
 
-JoyrIDE is MIT and takes no GPL/AGPL/LGPL dependencies, so that
-the Rust crates stay reusable. This lists
-every license in the Rust tree (src-tauri, which includes the Rust crates) and
-the npm production tree, and fails on anything copyleft-only, missing, or
+JoyrIDE is MIT and takes no GPL/AGPL/LGPL dependencies. This lists every
+license in the Rust trees (asset-core, joyride-core, src-tauri once it exists)
+and the npm production tree, and fails on anything copyleft-only, missing, or
 not yet reviewed. A license that offers a permissive choice ("MIT OR
 LGPL-2.1") passes: we take the permissive option.
 
 REVIEWED holds crates checked by hand, with why they're allowed. Add to it
 only after reading the crate's actual license.
 
-Usage: scripts/license-scan.py   (needs the crates fetched: cargo fetch)
+Usage: scripts/license-scan.py [--online]   (offline by default: the cargo cache)
 """
 import json
 import re
@@ -22,6 +21,7 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+OFFLINE = "--online" not in sys.argv  # the cargo cache is enough; --online to let cargo fetch
 
 COPYLEFT = re.compile(r"\b(A?GPL|LGPL|EUPL|OSL|CDDL|CC-BY-SA|SSPL)", re.I)
 # MPL-2.0 is file-level copyleft: fine to link unmodified, and Tauri itself
@@ -29,13 +29,12 @@ COPYLEFT = re.compile(r"\b(A?GPL|LGPL|EUPL|OSL|CDDL|CC-BY-SA|SSPL)", re.I)
 # app. Listed in the counts, not failed. Modifying an MPL file would mean
 # publishing that file's changes.
 
-# name -> why it's allowed (checked 2026-09-30 at icy_tools da0d287).
-REVIEWED = {
-    "icy_engine": "icy_tools, no license field in its Cargo.toml; the repo is MIT OR Apache-2.0 (LICENSE-MIT, LICENSE-APACHE)",
-    "icy_sauce": "license-file is Apache-2.0 (github.com/mkrueger/icy_sauce)",
-    "codepages": "icy_board repo, no license field; the repo's LICENSE is Apache-2.0",
-    "icy_terminal_emulation": "icy_board repo, no license field; the repo's LICENSE is Apache-2.0",
-}
+# name -> why it's allowed. Add to it only after reading the crate's actual
+# license. Empty: every crate so far declares a permissive license.
+REVIEWED = {}
+
+# The Rust crates whose dependency trees ship: each folder holding a Cargo.toml.
+CRATES = ["asset-core", "joyride-core", "src-tauri"]
 
 
 def allowed(lic: str) -> bool:
@@ -47,31 +46,41 @@ def allowed(lic: str) -> bool:
 
 
 def cargo_tree():
-    out = subprocess.run(
-        ["cargo", "metadata", "--format-version", "1", "--manifest-path", str(ROOT / "src-tauri/Cargo.toml")],
-        check=True, capture_output=True, text=True,
-    ).stdout
-    meta = json.loads(out)
-    nodes = {n["id"]: n for n in meta["resolve"]["nodes"]}
-    pkgs = {p["id"]: p for p in meta["packages"]}
-    seen, stack = set(), [meta["resolve"]["root"]]
-    while stack:
-        pid = stack.pop()
-        if pid in seen:
+    """Every third-party crate any shipping JoyrIDE crate depends on."""
+    seen_names = set()
+    for crate in CRATES:
+        manifest = ROOT / crate / "Cargo.toml"
+        if not manifest.exists():
             continue
-        seen.add(pid)
-        for dep in nodes[pid]["deps"]:
-            # Normal and build dependencies ship or run in the build; dev ones don't.
-            if any(k["kind"] in (None, "build") for k in dep["dep_kinds"]):
-                stack.append(dep["pkg"])
-    for pid in seen:
-        p = pkgs[pid]
-        if p["source"] is None:
-            continue  # our own crates
-        yield p["name"], p["version"], p.get("license") or ""
+        out = subprocess.run(
+            ["cargo", "metadata", "--format-version", "1", "--manifest-path", str(manifest)] + (["--offline"] if OFFLINE else []),
+            check=True, capture_output=True, text=True,
+        ).stdout
+        meta = json.loads(out)
+        nodes = {n["id"]: n for n in meta["resolve"]["nodes"]}
+        pkgs = {p["id"]: p for p in meta["packages"]}
+        seen, stack = set(), [meta["resolve"]["root"]]
+        while stack:
+            pid = stack.pop()
+            if pid in seen:
+                continue
+            seen.add(pid)
+            for dep in nodes[pid]["deps"]:
+                # Normal and build dependencies ship or run in the build; dev ones don't.
+                if any(k["kind"] in (None, "build") for k in dep["dep_kinds"]):
+                    stack.append(dep["pkg"])
+        for pid in seen:
+            p = pkgs[pid]
+            if p["source"] is None:
+                continue  # our own crates
+            if (p["name"], p["version"]) not in seen_names:
+                seen_names.add((p["name"], p["version"]))
+                yield p["name"], p["version"], p.get("license") or ""
 
 
 def npm_tree():
+    if not (ROOT / "package-lock.json").exists():
+        return  # no app shell yet
     lock = json.loads((ROOT / "package-lock.json").read_text())
     for path, info in lock.get("packages", {}).items():
         if not path or info.get("dev"):
@@ -100,7 +109,7 @@ def scan(label, entries):
 
 
 def main():
-    problems = scan("Rust (src-tauri + the Rust crates)", cargo_tree())
+    problems = scan("Rust (" + ", ".join(CRATES) + ")", cargo_tree())
     problems += scan("npm (production)", npm_tree())
     print("Reviewed by hand:")
     for name, why in REVIEWED.items():

@@ -36,6 +36,10 @@ jobs:
       - run: cargo test --manifest-path joyride-core/Cargo.toml
       - run: cargo clippy --all-targets --manifest-path asset-core/Cargo.toml -- -D warnings
       - run: cargo clippy --all-targets --manifest-path joyride-core/Cargo.toml -- -D warnings
+      - name: Licenses (no copyleft, and the shipped license file is current)
+        run: |
+          python3 scripts/license-scan.py --online
+          python3 scripts/third-party-licenses.py --online --check
 
   engines:
     runs-on: ubuntu-22.04

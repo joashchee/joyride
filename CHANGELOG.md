@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+- **Third-party licence file and scan** (2026-11-13):
+  `scripts/third-party-licenses.py` writes `docs/third-party-licenses.txt`
+  (every Rust crate in `asset-core` and `joyride-core`, the vendored engines'
+  notices, `NOTICE`; identical texts once, a crate without a licence file
+  listed as declared only); `scripts/license-scan.py` now scans the real
+  crates and passes; both run in the Tests workflow.
+- **Asset previews and image facets** (2026-11-13): thumbnails (pixel art
+  stays crisp), palette, size, alpha and a pixel-art guess as tags, and WAV
+  waveforms, stored in the catalog on import (`asset-core/src/preview.rs`).
+- **Curated libraries** (2026-11-13): `library.rs` and a generated
+  `data/libraries.toml` of 18 LÖVE libraries pinned to exact commits with
+  their licences read from the repositories (all MIT), search, per-version
+  load badges and add-to-`love.toml`. The generator reads tags, commits and
+  licence files only; loading each library on real LÖVE (`--probe`) runs
+  their code, so it is opt-in. The licence guesser now finds
+  `MIT-LICENSE.txt`-style names and ranks licence files above readmes.
 - **The 11.5 variant of a 12.0 game, for every export** (2026-11-13):
   `compat.rs` classifies each 12.0-only API a project uses as exact,
   reduced or unsupported, and `pipeline::Compat` builds an 11.5 variant for
