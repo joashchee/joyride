@@ -44,6 +44,7 @@ pub mod pkg;
 pub mod runner;
 pub mod scan;
 pub mod shim;
+pub mod simulator;
 pub mod toolchain;
 pub mod web;
 pub mod trace;

@@ -33,7 +33,7 @@ The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`);
 - [x] Runner core (`runner.rs`): spawns LÖVE on a project, streams stdout and stderr, links errors; links cannot escape the project.
 - [x] Stack-trace linking (`trace.rs`): `Error: file:line:`, `[string "…"]:line:` and traceback frames.
 - [x] Console UI with clickable links (see Run, Stop and the console in section 1).
-- [ ] Viewport, touch and gamepad simulator (spec 5.6): the shim already reads its design size and screen; a simulator needs the runner to set a window size and send events. Frontend plus a `JOYRIDE_SIM` env hook in the shim.
+- [x] **Viewport simulator, first part** (2026-11-13, spec 5.6): `joyride-core/src/simulator.rs` (8 screens: PortMaster 640x480, 720x720, 1280x720, iPhone and Android landscape/portrait, iPad) stages the project with that target's overlay and forces the preset's window size (it beats the overlay's own `[conf]`; source untouched, 1 test); Run takes a `screen`, runs the staged copy and maps console links back to the project's files; a `Screen:` button in the toolbar cycles the presets. **Not yet tried in a window.** Still to do: safe-area guides, DPI scaling, touch and gamepad event emulation, a window the same shape as the preset on a smaller display.
 - [x] Shim behaviour tested under LuaJIT with a mocked `love` (`tests/shim_lua.rs`).
 - [x] Real LÖVE 11.5 and 12.0 (r3i6nos's builds) run staged PortMaster, mobile and web builds headless: wrapper chain, conf patch, version pin (`tests/e2e_love.rs`). The dummy video driver has no OpenGL, so drawing is not exercised: on a Mac with a display, add a windowed run (`--graphics`).
 

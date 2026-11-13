@@ -10,7 +10,7 @@ import Docs from "./components/Docs";
 import AutoPort from "./components/AutoPort";
 import GitHub from "./components/GitHub";
 import Settings from "./components/Settings";
-import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
+import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -256,12 +256,13 @@ export default function App() {
     try {
       setLines([]);
       setRunning(true);
-      await runProject();
+      await runProject(screen);
     } catch (e) {
       setRunning(false);
       fail(e);
     }
   };
+  const [screen, setScreen] = useState("");
   const stop = () => void stopProject();
   const openAt = async (file: string, line: number) => {
     await openFile(file);
@@ -318,6 +319,13 @@ export default function App() {
           <button onClick={openFolder}>Open Folder…</button>
           <button onClick={run} disabled={!project || running} title="Run (Cmd+R)">Run</button>
           <button onClick={stop} disabled={!running} title="Stop (Cmd+.)">Stop</button>
+          <button
+            onClick={() => setScreen((c) => SCREENS[(SCREENS.findIndex((x) => x.id === c) + 1) % SCREENS.length].id)}
+            disabled={running}
+            title="Screen to run on: a target's overlay in a simulated screen (click to change)"
+          >
+            Screen: {SCREENS.find((x) => x.id === screen)?.name}
+          </button>
           <button onClick={() => setDocsOpen((x) => !x)} aria-expanded={docsOpen} title="LÖVE reference (Cmd+Shift+D)">Reference…</button>
           <button onClick={() => setLibsOpen((x) => !x)} disabled={!project} aria-expanded={libsOpen}>Libraries…</button>
           <button onClick={() => setGhOpen((x) => !x)} disabled={!project} aria-expanded={ghOpen}>GitHub…</button>

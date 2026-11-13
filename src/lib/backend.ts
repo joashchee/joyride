@@ -178,7 +178,21 @@ export interface RunLine {
   file: string | null;
   line: number | null;
 }
-export const runProject = () => invoke<void>("run_project");
+/** `screen` is a simulator preset id (see `SCREENS`); empty runs as it is. */
+export const runProject = (screen = "") => invoke<void>("run_project", { screen: screen || null });
+
+/** The simulated screens (mirrors `joyride_core::simulator::PRESETS`). */
+export const SCREENS: { id: string; name: string }[] = [
+  { id: "", name: "Desktop (as is)" },
+  { id: "pm-640x480", name: "PortMaster 640x480 (4:3)" },
+  { id: "pm-720x720", name: "PortMaster 720x720 (1:1)" },
+  { id: "pm-1280x720", name: "PortMaster 1280x720 (16:9)" },
+  { id: "iphone", name: "iPhone landscape 844x390" },
+  { id: "iphone-portrait", name: "iPhone portrait 390x844" },
+  { id: "ipad", name: "iPad landscape 1180x820" },
+  { id: "android", name: "Android landscape 915x412" },
+  { id: "android-portrait", name: "Android portrait 412x915" },
+];
 export const stopProject = () => invoke<void>("stop_project");
 
 /** Subscribes to the game's output and end; returns the unsubscribe. */

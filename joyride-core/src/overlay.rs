@@ -122,6 +122,12 @@ pub fn stage(root: &Path, target: Target, staging: &Path, extra_conf: &BTreeMap<
 /// [`stage`] plus an optional `_jr_compat.lua` (see `compat`), which the
 /// wrapper `main.lua` requires before anything else.
 pub fn stage_with(root: &Path, target: Target, staging: &Path, extra_conf: &BTreeMap<String, toml::Value>, compat: Option<&str>) -> Result<Staged> {
+    stage_forced(root, target, staging, extra_conf, &BTreeMap::new(), compat)
+}
+
+/// [`stage_with`] plus `forced_conf`, applied after the overlay's own `[conf]`
+/// so it wins (the simulator's screen size beats a target's).
+pub fn stage_forced(root: &Path, target: Target, staging: &Path, extra_conf: &BTreeMap<String, toml::Value>, forced_conf: &BTreeMap<String, toml::Value>, compat: Option<&str>) -> Result<Staged> {
     if staging.exists() && fs::read_dir(staging)?.next().is_some() {
         return err(format!("staging folder {} is not empty", staging.display()));
     }
@@ -184,6 +190,7 @@ pub fn stage_with(root: &Path, target: Target, staging: &Path, extra_conf: &BTre
     // conf.lua, in the copy only.
     let mut conf = extra_conf.clone();
     conf.extend(patch.conf.clone());
+    conf.extend(forced_conf.clone());
     if !conf.is_empty() {
         let base = staging.join("conf.lua");
         let had = base.is_file();

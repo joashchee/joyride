@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Viewport simulator** (2026-11-13): a `Screen:` button in the toolbar runs the game with a target's overlay in a simulated screen (PortMaster 4:3, 1:1, 16:9; iPhone, iPad, Android). The project is staged to a scratch copy; your source is not changed.
 - **Text-mode UI only** (2026-11-13): the whole interface follows the ANSIapps theme
   (IBM VGA 8x16 on an 8 by 16 grid, blue desktop, light-gray menu bar, double-line frames,
   flat one-row buttons, a black DOS console); there is no graphical theme and no switch for
