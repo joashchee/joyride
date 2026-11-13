@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import Splash from "./components/Splash";
-import { STARTER } from "./starter.lua";
-import { coreInfo, type CoreInfo } from "./lib/backend";
+import FileTree from "./components/FileTree";
+import { chooseFolder, coreInfo, openProject, readFile, writeFile, type CoreInfo, type Listing } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
+const closeDoc = (p: string) => import("./components/Editor").then((m) => m.closeDoc(p));
 
 // What the first screen needs, in order. Heavy things (Monaco, the language
 // server, toolchain checks) load after the editor is usable, not here.
@@ -16,6 +17,12 @@ export default function App() {
   const [info, setInfo] = useState<CoreInfo | null>(null);
   const [leaving, setLeaving] = useState(false);
   const [gone, setGone] = useState(false);
+  const [project, setProject] = useState<Listing | null>(null);
+  const [tabs, setTabs] = useState<string[]>([]);
+  const [active, setActive] = useState<string | null>(null);
+  const [texts, setTexts] = useState<Record<string, string>>({});
+  const [dirty, setDirty] = useState<Set<string>>(new Set());
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,21 +40,118 @@ export default function App() {
     };
   }, []);
 
+  const fail = (e: unknown) => setNotice(String(e));
+
+  const openFolder = async () => {
+    try {
+      const dir = await chooseFolder();
+      if (!dir) return;
+      const l = await openProject(dir);
+      tabs.forEach(closeDoc);
+      setProject(l);
+      setTabs([]);
+      setActive(null);
+      setTexts({});
+      setDirty(new Set());
+      setNotice(l.truncated ? "This project has more files than the tree shows." : null);
+      if (l.hasMain) void openFile("main.lua");
+    } catch (e) {
+      fail(e);
+    }
+  };
+
+  const openFile = async (path: string) => {
+    try {
+      if (!(path in texts)) {
+        const text = await readFile(path);
+        setTexts((t) => ({ ...t, [path]: text }));
+      }
+      setTabs((t) => (t.includes(path) ? t : [...t, path]));
+      setActive(path);
+      setNotice(null);
+    } catch (e) {
+      fail(e);
+    }
+  };
+
+  const closeTab = (path: string) => {
+    if (dirty.has(path) && !window.confirm(`Close ${path} without saving?`)) return;
+    void closeDoc(path);
+    setDirty((d) => {
+      const n = new Set(d);
+      n.delete(path);
+      return n;
+    });
+    setTexts((t) => {
+      const { [path]: _drop, ...rest } = t;
+      return rest;
+    });
+    const rest = tabs.filter((t) => t !== path);
+    setTabs(rest);
+    if (active === path) setActive(rest[rest.length - 1] ?? null);
+  };
+
+  const onDirty = (path: string, d: boolean) =>
+    setDirty((s) => {
+      if (s.has(path) === d) return s;
+      const n = new Set(s);
+      d ? n.add(path) : n.delete(path);
+      return n;
+    });
+
+  const onSave = async (path: string, text: string) => {
+    try {
+      await writeFile(path, text);
+      setNotice(null);
+    } catch (e) {
+      fail(e);
+      throw e;
+    }
+  };
+
   return (
     <>
       {!gone && (
-        <Splash
-          label={STEPS[step]}
-          progress={step / (STEPS.length - 1)}
-          error={error}
-          leaving={leaving}
-        />
+        <Splash label={STEPS[step]} progress={step / (STEPS.length - 1)} error={error} leaving={leaving} />
       )}
       <main className="shell" aria-label="JoyrIDE">
-        <Suspense fallback={<p className="editor-loading" role="status">Loading the editor…</p>}>
-          {gone && <Editor value={STARTER} />}
-        </Suspense>
-        <footer className="statusbar">Core {info?.version ?? "…"}</footer>
+        <div className="toolbar">
+          <button onClick={openFolder}>Open Folder…</button>
+          <span className="project-name">{project?.name ?? "No project open"}</span>
+        </div>
+        <div className="workspace">
+          <nav className="sidebar" aria-label="Explorer">
+            {project ? (
+              <FileTree entries={project.entries} active={active} onOpen={openFile} />
+            ) : (
+              <p className="empty">Open a folder with a LÖVE project.</p>
+            )}
+          </nav>
+          <section className="main" aria-label="Editor">
+            <div className="tabs" role="tablist" aria-label="Open files">
+              {tabs.map((t) => (
+                <span key={t} className={"tab" + (t === active ? " active" : "")}>
+                  <button role="tab" aria-selected={t === active} onClick={() => setActive(t)}>
+                    {t.split("/").pop()}
+                    {dirty.has(t) ? " ●" : ""}
+                  </button>
+                  <button aria-label={`Close ${t}`} className="tab-close" onClick={() => closeTab(t)}>
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+            <Suspense fallback={<p className="editor-loading" role="status">Loading the editor…</p>}>
+              {gone && active !== null && active in texts && (
+                <Editor path={active} text={texts[active]} onDirty={onDirty} onSave={onSave} />
+              )}
+            </Suspense>
+            {active === null && <p className="empty">Pick a file to edit. Save with ⌘S or Ctrl+S.</p>}
+          </section>
+        </div>
+        <footer className="statusbar" role="status">
+          {notice ?? `Core ${info?.version ?? "…"}`}
+        </footer>
       </main>
     </>
   );

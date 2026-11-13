@@ -4,6 +4,8 @@
 
 use serde::Serialize;
 
+mod project;
+
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct CoreInfo {
@@ -19,8 +21,16 @@ fn core_info() -> CoreInfo {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
+        .manage(project::Project::default())
         .plugin(tauri_plugin_log::Builder::new().level(log::LevelFilter::Info).build())
-        .invoke_handler(tauri::generate_handler![core_info])
+        .invoke_handler(tauri::generate_handler![
+            core_info,
+            project::open_project,
+            project::project_listing,
+            project::read_project_file,
+            project::write_project_file
+        ])
         .run(tauri::generate_context!())
         .expect("error while running JoyrIDE");
 }

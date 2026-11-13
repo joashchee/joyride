@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Open a project** (2026-11-13): `joyride-core::files`, Tauri commands, file tree,
+  tabs and save. File access is confined to the project folder, symlinks included.
 - **Monaco editor** (2026-11-13): bundled `monaco-editor` 0.57, Lua only, own
   worker, lazy-loaded after the splash. No network use.
 - **App shell scaffold** (2026-11-13): Tauri 2 + React 19 + Vite 8 + TypeScript.

@@ -17,6 +17,7 @@
 //! - [`android`]: a `love-android` Gradle project around a `.love` (spec 5.3).
 //! - [`compat`]: the 11.5 variant of a 12.0 game, for every export.
 //! - [`export`]: `.love`, desktop and PortMaster packages (spec 5).
+//! - [`files`]: the open project's tree and text files, confined to the folder.
 //! - [`editor`]: what Monaco's providers need (colour swatches, asset hover);
 //!   [`docs`]: the offline API reference search and snippets (spec 3B).
 
@@ -26,6 +27,7 @@ pub mod compat;
 pub mod docs;
 pub mod editor;
 pub mod export;
+pub mod files;
 pub mod library;
 pub mod lint;
 pub mod lua;
