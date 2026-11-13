@@ -36,6 +36,11 @@ export const readFile = (path: string) => invoke<string>("read_project_file", { 
 export const writeFile = (path: string, text: string) =>
   invoke<void>("write_project_file", { path, text });
 
+export const createFile = (path: string) => invoke<Listing>("create_project_file", { path });
+export const createDir = (path: string) => invoke<Listing>("create_project_dir", { path });
+export const renamePath = (from: string, to: string) => invoke<Listing>("rename_project_path", { from, to });
+export const deletePath = (path: string) => invoke<Listing>("delete_project_path", { path });
+
 export interface RunLine {
   stream: "out" | "err";
   text: string;

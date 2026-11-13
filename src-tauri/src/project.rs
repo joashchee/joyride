@@ -43,3 +43,33 @@ pub fn read_project_file(state: State<Project>, path: String) -> Result<String, 
 pub fn write_project_file(state: State<Project>, path: String, text: String) -> Result<(), String> {
     files::write_text(&state.root()?, &path, &text).map_err(msg)
 }
+
+/// Each change returns the fresh listing, so the tree never drifts from disk.
+#[tauri::command]
+pub fn create_project_file(state: State<Project>, path: String) -> Result<Listing, String> {
+    let root = state.root()?;
+    files::create_file(&root, &path).map_err(msg)?;
+    files::list(&root).map_err(msg)
+}
+
+#[tauri::command]
+pub fn create_project_dir(state: State<Project>, path: String) -> Result<Listing, String> {
+    let root = state.root()?;
+    files::create_dir(&root, &path).map_err(msg)?;
+    files::list(&root).map_err(msg)
+}
+
+#[tauri::command]
+pub fn rename_project_path(state: State<Project>, from: String, to: String) -> Result<Listing, String> {
+    let root = state.root()?;
+    files::rename(&root, &from, &to).map_err(msg)?;
+    files::list(&root).map_err(msg)
+}
+
+/// Permanent: the frontend confirms first.
+#[tauri::command]
+pub fn delete_project_path(state: State<Project>, path: String) -> Result<Listing, String> {
+    let root = state.root()?;
+    files::delete(&root, &path).map_err(msg)?;
+    files::list(&root).map_err(msg)
+}

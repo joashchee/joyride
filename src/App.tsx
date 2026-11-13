@@ -2,7 +2,8 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import Splash from "./components/Splash";
 import FileTree from "./components/FileTree";
 import Console from "./components/Console";
-import { chooseFolder, coreInfo, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
+import NameBox from "./components/NameBox";
+import { chooseFolder, coreInfo, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -27,6 +28,8 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [lines, setLines] = useState<RunLine[]>([]);
   const [running, setRunning] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [asking, setAsking] = useState<null | { kind: "file" | "dir" | "rename"; label: string; initial: string }>(null);
   const [lspState, setLspState] = useState<string>("off");
   const [goto, setGoto] = useState<{ line: number; n: number }>({ line: 1, n: 0 });
 
@@ -86,6 +89,8 @@ export default function App() {
       await L.setProjectRoot();
       void L.startLsp().catch((e) => setNotice(String(e)));
       setProject(l);
+      setSelected(null);
+      setAsking(null);
       setTabs([]);
       setActive(null);
       setTexts({});
@@ -126,6 +131,68 @@ export default function App() {
     const rest = tabs.filter((t) => t !== path);
     setTabs(rest);
     if (active === path) setActive(rest[rest.length - 1] ?? null);
+  };
+
+  // ---- New, rename, delete (the tree's buttons) ----
+  const sel = project?.entries.find((e) => e.path === selected) ?? null;
+  const within = (base: string) => (p: string) => p === base || p.startsWith(base + "/");
+  /** The folder new things go in: the selected folder, or the selected file's folder. */
+  const folderOfSelection = !sel ? "" : sel.dir ? sel.path + "/" : sel.path.includes("/") ? sel.path.slice(0, sel.path.lastIndexOf("/") + 1) : "";
+
+  const dropTabs = (match: (p: string) => boolean) => {
+    tabs.filter(match).forEach(closeDoc);
+    const rest = tabs.filter((t) => !match(t));
+    setTabs(rest);
+    setTexts((t) => Object.fromEntries(Object.entries(t).filter(([p]) => !match(p))));
+    setDirty((d) => new Set([...d].filter((p) => !match(p))));
+    if (active !== null && match(active)) setActive(rest[rest.length - 1] ?? null);
+  };
+  const unsaved = (match: (p: string) => boolean) => [...dirty].find(match);
+
+  const submitName = async (name: string) => {
+    const a = asking;
+    setAsking(null);
+    if (!a) return;
+    try {
+      if (a.kind === "file") {
+        setProject(await createFile(name));
+        setSelected(name);
+        await openFile(name);
+      } else if (a.kind === "dir") {
+        setProject(await createDir(name));
+        setSelected(name);
+      } else if (sel && name !== sel.path) {
+        const match = within(sel.path);
+        const u = unsaved(match);
+        if (u) return setNotice(`Save or close ${u} first.`);
+        const l = await renamePath(sel.path, name);
+        const was = active !== null && match(active) ? active : null;
+        dropTabs(match);
+        setProject(l);
+        setSelected(name);
+        if (was) await openFile(name + was.slice(sel.path.length));
+      }
+      setNotice(null);
+    } catch (e) {
+      fail(e);
+    }
+  };
+  const removeSelected = async () => {
+    if (!sel) return;
+    const match = within(sel.path);
+    const u = unsaved(match);
+    if (u) return setNotice(`Save or close ${u} first.`);
+    const what = sel.dir ? `the folder ${sel.path} and everything in it` : sel.path;
+    if (!window.confirm(`Delete ${what}? This cannot be undone.`)) return;
+    try {
+      const l = await deletePath(sel.path);
+      dropTabs(match);
+      setProject(l);
+      setSelected(null);
+      setNotice(null);
+    } catch (e) {
+      fail(e);
+    }
   };
 
   const run = async () => {
@@ -193,7 +260,16 @@ export default function App() {
         <div className="workspace">
           <nav className="sidebar" aria-label="Explorer">
             {project ? (
-              <FileTree entries={project.entries} active={active} onOpen={openFile} />
+              <>
+                <div className="tree-actions" role="toolbar" aria-label="File actions">
+                  <button onClick={() => setAsking({ kind: "file", label: "New file", initial: folderOfSelection })}>New File</button>
+                  <button onClick={() => setAsking({ kind: "dir", label: "New folder", initial: folderOfSelection })}>New Folder</button>
+                  <button disabled={!sel} onClick={() => sel && setAsking({ kind: "rename", label: `Rename ${sel.path} to`, initial: sel.path })}>Rename</button>
+                  <button disabled={!sel} onClick={() => void removeSelected()}>Delete</button>
+                </div>
+                {asking && <NameBox key={asking.kind + asking.initial} label={asking.label} initial={asking.initial} onSubmit={(n) => void submitName(n)} onCancel={() => setAsking(null)} />}
+                <FileTree entries={project.entries} active={active} onOpen={openFile} selected={selected} onSelect={setSelected} />
+              </>
             ) : (
               <p className="empty">Open a folder with a LÖVE project.</p>
             )}

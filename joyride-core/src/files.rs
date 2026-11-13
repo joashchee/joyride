@@ -141,6 +141,77 @@ pub fn write_text(root: &Path, rel: &str, text: &str) -> Result<()> {
     Ok(())
 }
 
+/// A path for a change (create, rename, delete): inside the project, not the
+/// project folder itself, and with no empty or `.`-only parts.
+fn target(root: &Path, rel: &str) -> Result<PathBuf> {
+    if rel.trim().is_empty() || Path::new(rel).components().any(|c| matches!(c, Component::CurDir)) {
+        return err(format!("`{rel}` is not a path in the project"));
+    }
+    if rel.split('/').any(|part| part.trim().is_empty() || part.contains('\\') || part.contains('\0')) {
+        return err(format!("`{rel}` is not a valid name"));
+    }
+    resolve(root, rel)
+}
+
+/// Creates an empty file (and its folders); refuses to replace anything.
+pub fn create_file(root: &Path, rel: &str) -> Result<()> {
+    let p = target(root, rel)?;
+    if p.exists() || p.symlink_metadata().is_ok() {
+        return err(format!("`{rel}` already exists"));
+    }
+    write_text(root, rel, "")
+}
+
+/// Creates a folder (and its parents); refuses if the name is taken by a file.
+pub fn create_dir(root: &Path, rel: &str) -> Result<()> {
+    let p = target(root, rel)?;
+    if p.is_file() {
+        return err(format!("`{rel}` is a file"));
+    }
+    fs::create_dir_all(&p)?;
+    if !p.canonicalize()?.starts_with(root.canonicalize()?) {
+        let _ = fs::remove_dir(&p);
+        return err(format!("`{rel}` leaves the project"));
+    }
+    Ok(())
+}
+
+/// Moves or renames a file or folder inside the project; refuses to replace
+/// anything and to move a folder into itself.
+pub fn rename(root: &Path, from: &str, to: &str) -> Result<()> {
+    let (a, b) = (target(root, from)?, target(root, to)?);
+    if !a.exists() {
+        return err(format!("`{from}` does not exist"));
+    }
+    if b.symlink_metadata().is_ok() {
+        return err(format!("`{to}` already exists"));
+    }
+    if b.starts_with(&a) {
+        return err(format!("`{from}` cannot move into itself"));
+    }
+    if let Some(parent) = b.parent() {
+        fs::create_dir_all(parent)?;
+        if !parent.canonicalize()?.starts_with(root.canonicalize()?) {
+            return err(format!("`{to}` leaves the project"));
+        }
+    }
+    fs::rename(&a, &b)?;
+    Ok(())
+}
+
+/// Deletes a file or a folder with everything in it. This is permanent (the
+/// UI asks first); the project folder itself is never deleted.
+pub fn delete(root: &Path, rel: &str) -> Result<()> {
+    let p = target(root, rel)?;
+    let meta = fs::symlink_metadata(&p).map_err(|_| crate::Error::Msg(format!("`{rel}` does not exist")))?;
+    if meta.is_dir() {
+        fs::remove_dir_all(&p)?;
+    } else {
+        fs::remove_file(&p)?;
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -203,5 +274,54 @@ mod tests {
         fs::write(d.path().join("img.png"), [0x89, 0x50, 0xff, 0xfe]).unwrap();
         assert!(read_text(d.path(), "img.png").is_err());
         assert!(read_text(d.path(), "src").is_err());
+    }
+
+    #[test]
+    fn creates_renames_and_deletes_inside_the_project() {
+        let d = project();
+        let r = d.path();
+        create_file(r, "src/new/c.lua").unwrap();
+        assert_eq!(read_text(r, "src/new/c.lua").unwrap(), "");
+        assert!(create_file(r, "main.lua").is_err(), "never replaces");
+        create_dir(r, "assets/img").unwrap();
+        assert!(r.join("assets/img").is_dir());
+        assert!(create_dir(r, "main.lua").is_err());
+        rename(r, "src/a.lua", "src/sub/a2.lua").unwrap();
+        assert!(!r.join("src/a.lua").exists() && r.join("src/sub/a2.lua").is_file());
+        assert!(rename(r, "src/sub/a2.lua", "main.lua").is_err(), "never replaces");
+        assert!(rename(r, "src", "src/sub/deeper").is_err(), "not into itself");
+        assert!(rename(r, "nope.lua", "x.lua").is_err());
+        delete(r, "src/sub").unwrap();
+        assert!(!r.join("src/sub").exists());
+        delete(r, "main.lua").unwrap();
+        assert!(delete(r, "main.lua").is_err());
+    }
+
+    #[test]
+    fn changes_refuse_odd_and_escaping_paths() {
+        let d = project();
+        let r = d.path();
+        for bad in ["", " ", ".", "./x", "../x", "/abs", "a//b", "src/../../x", "a\\b"] {
+            assert!(create_file(r, bad).is_err(), "{bad:?}");
+            assert!(delete(r, bad).is_err(), "{bad:?}");
+        }
+        assert!(rename(r, "main.lua", "../moved.lua").is_err());
+        assert!(r.join("main.lua").exists());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn changes_cannot_follow_a_link_out() {
+        let d = project();
+        let outside = tempfile::tempdir().unwrap();
+        fs::write(outside.path().join("keep.txt"), "k").unwrap();
+        std::os::unix::fs::symlink(outside.path(), d.path().join("link")).unwrap();
+        assert!(delete(d.path(), "link/keep.txt").is_err());
+        assert!(create_file(d.path(), "link/new.txt").is_err());
+        assert!(create_dir(d.path(), "link/sub").is_err());
+        assert!(rename(d.path(), "main.lua", "link/main.lua").is_err());
+        assert!(outside.path().join("keep.txt").exists());
+        assert!(!outside.path().join("new.txt").exists() && !outside.path().join("sub").exists());
+        assert!(d.path().join("main.lua").exists());
     }
 }

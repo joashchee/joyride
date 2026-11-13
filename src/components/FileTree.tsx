@@ -6,6 +6,9 @@ export default function FileTree(props: {
   entries: Entry[];
   active: string | null;
   onOpen: (path: string) => void;
+  /** The entry the New/Rename/Delete buttons act on. */
+  selected: string | null;
+  onSelect: (path: string) => void;
 }) {
   const [closed, setClosed] = useState<Set<string>>(new Set());
   const hidden = (e: Entry) => [...closed].some((c) => e.path.startsWith(c + "/"));
@@ -25,10 +28,13 @@ export default function FileTree(props: {
               role="treeitem"
               aria-level={depth + 1}
               aria-expanded={e.dir ? !closed.has(e.path) : undefined}
-              aria-selected={e.path === props.active}
-              className={"tree-item" + (e.path === props.active ? " active" : "")}
+              aria-selected={e.path === props.selected}
+              className={"tree-item" + (e.path === props.active ? " active" : "") + (e.path === props.selected ? " selected" : "")}
               style={{ paddingLeft: 8 + depth * 14 }}
-              onClick={() => (e.dir ? toggle(e.path) : props.onOpen(e.path))}
+              onClick={() => {
+                props.onSelect(e.path);
+                e.dir ? toggle(e.path) : props.onOpen(e.path);
+              }}
             >
               <span aria-hidden="true">{e.dir ? (closed.has(e.path) ? "▸" : "▾") : "·"}</span> {e.name}
             </button>

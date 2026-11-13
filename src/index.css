@@ -42,3 +42,10 @@ button:focus-visible { outline: 2px solid #ff6fa8; outline-offset: -2px; }
 @media (prefers-color-scheme: light) { .cline.err { color: #b3261e; } }
 .cline.link { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-decoration: underline; }
 button:disabled { opacity: 0.5; }
+
+.tree-actions { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.tree-actions button { font-size: 12px; padding: 2px 6px; }
+.namebox { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 8px; border-bottom: 1px solid var(--line); font-size: 12px; }
+.namebox label { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+.namebox input { font: inherit; padding: 2px 4px; }
+.tree-item.selected { outline: 1px solid color-mix(in srgb, var(--fg) 40%, transparent); outline-offset: -1px; }

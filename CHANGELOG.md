@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **New file, new folder, rename, delete** (2026-11-13): `files::create_file`,
+  `create_dir`, `rename`, `delete` (confined to the project, never replace, refuse
+  links out), Tauri commands that return the fresh listing, tree buttons and an
+  inline name box. Delete is permanent after a confirm.
 - **Language server** (2026-11-13): `joyride-core::lsp` (Content-Length framing,
   finding the bundled `lua-language-server`, a child process with a message
   callback), Tauri commands `lsp_start`/`lsp_send`/`lsp_stop`, and `src/lib/lsp.ts`,
