@@ -244,8 +244,8 @@ fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview
 
     let kind = sniff(&head, &ext);
     let shown = match kind {
-        Sniff::Image => image(&mut p, &real) || texture(&mut p, &head),
-        Sniff::Texture => texture(&mut p, &head),
+        Sniff::Image => image(&mut p, &real) || texture(&mut p, &real, &head),
+        Sniff::Texture => texture(&mut p, &real, &head),
         Sniff::Wav | Sniff::Flac | Sniff::Mp3 => audio(&mut p, &real, kind, size),
         Sniff::Ogg => {
             if head.windows(7).any(|w| w == b"\x80theora") {
@@ -312,8 +312,8 @@ fn hex(p: &mut Preview, head: &[u8]) {
     p.body = Body::Hex { dump: s };
 }
 
-/// A GPU-texture container: its header facts, and the first bytes. No picture: no decoder for these.
-fn texture(p: &mut Preview, head: &[u8]) -> bool {
+/// A GPU-texture container: its header facts, a picture where the format is one `blocktex` decodes, else the first bytes.
+fn texture(p: &mut Preview, path: &Path, head: &[u8]) -> bool {
     let Some(t) = asset_core::texture::probe(head) else { return false };
     p.facts.push(fact("Texture", t.container));
     p.facts.push(fact("Picture", if t.depth > 1 { format!("{} x {} x {}", t.width, t.height, t.depth) } else { format!("{} x {}", t.width, t.height) }));
@@ -323,7 +323,19 @@ fn texture(p: &mut Preview, head: &[u8]) -> bool {
         p.facts.push(fact("Faces or layers", t.faces));
     }
     p.facts.push(fact("Compression", if t.compressed { "compressed for the GPU" } else { "not compressed" }));
-    p.note = Some(if t.love_unknown { "This picture is not drawn here, and LÖVE is not known to load this version of the container.".into() } else { "This is a texture for the GPU; it is not drawn here (there is no decoder for it yet), so here are its first bytes.".into() });
+    // BC1 to BC5 and ETC1 are drawn; the other formats keep the facts and the bytes.
+    if !t.love_unknown && p.size <= MAX_READ {
+        if let Some(d) = std::fs::read(path).ok().and_then(|b| asset_core::blocktex::decode(&b)) {
+            let (w, h) = (d.width, d.height);
+            if let Ok(png) = asset_core::preview::png_from_rgba(w, h, d.rgba) {
+                p.note = Some("Decoded here for the preview; LÖVE sends this texture to the GPU as it is.".into());
+                p.body = Body::Image { data_url: data_url("image/png", &png), width: w, height: h, pixel_art: false, palette: Vec::new() };
+                p.kind = "image";
+                return true;
+            }
+        }
+    }
+    p.note = Some(if t.love_unknown { "This picture is not drawn here, and LÖVE is not known to load this version of the container.".into() } else { "This is a texture for the GPU; this format is not drawn here (only BC1 to BC5 and ETC1 are), so here are its first bytes.".into() });
     hex(p, head);
     p.kind = "image";
     true
@@ -906,6 +918,23 @@ mod tests {
         assert!(matches!(p.body, Body::Hex { .. }) && p.note.unwrap().contains("not drawn"));
         let q = build(d.path(), "tile.astc", None).unwrap();
         assert_eq!((fact_of(&q, "Picture"), fact_of(&q, "Format")), (Some("256 x 256"), Some("ASTC 4x4")));
+    }
+
+    #[test]
+    fn a_dxt1_texture_is_drawn() {
+        let d = proj();
+        let mut f = vec![0u8; 128];
+        f[..4].copy_from_slice(b"DDS ");
+        f[12..16].copy_from_slice(&4u32.to_le_bytes());
+        f[16..20].copy_from_slice(&4u32.to_le_bytes());
+        f[28..32].copy_from_slice(&1u32.to_le_bytes());
+        f[84..88].copy_from_slice(b"DXT1");
+        f.extend([0x00, 0xF8, 0x1F, 0x00, 0, 0, 0, 0]);
+        std::fs::write(d.path().join("red.dds"), &f).unwrap();
+        let p = build(d.path(), "red.dds", None).unwrap();
+        assert_eq!(p.kind, "image");
+        assert_eq!(fact_of(&p, "Format"), Some("BC1 (DXT1)"));
+        assert!(matches!(p.body, Body::Image { width: 4, height: 4, .. }));
     }
 
     /// A one-pattern, four-channel ProTracker module.

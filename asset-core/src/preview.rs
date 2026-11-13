@@ -147,6 +147,14 @@ pub fn jpeg_from_rgba(width: u32, height: u32, rgba: &[u8], quality: u8) -> Resu
     Ok(out)
 }
 
+/// A PNG of RGBA pixels, alpha kept.
+pub fn png_from_rgba(width: u32, height: u32, rgba: Vec<u8>) -> Result<Vec<u8>> {
+    let img = image::RgbaImage::from_raw(width, height, rgba).ok_or_else(|| Error::Other("the pixels do not match the size".into()))?;
+    let mut out = Cursor::new(Vec::new());
+    img.write_to(&mut out, ImageFormat::Png).map_err(|e| Error::Other(e.to_string()))?;
+    Ok(out.into_inner())
+}
+
 /// Peak level per bin, 0 to 255, for a WAV (8, 16, 24, 32-bit PCM or 32-bit
 /// float, any channel count). `None` for any other file.
 pub fn waveform(path: &Path, bins: usize) -> Result<Option<Vec<u8>>> {

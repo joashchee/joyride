@@ -21,6 +21,7 @@ pub mod kind;
 pub mod licence;
 pub mod preview;
 pub mod project;
+pub mod blocktex;
 pub mod texture;
 
 pub use catalog::{Asset, Catalog, Filter, NewAsset, Preview};
