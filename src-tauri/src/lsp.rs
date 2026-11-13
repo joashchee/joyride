@@ -82,8 +82,9 @@ pub fn lsp_stop(lsp: State<Lsp>) {
 
 /// What the server asks for with `workspace/configuration`.
 #[tauri::command]
-pub fn lsp_settings() -> serde_json::Value {
-    lsp::settings(None)
+pub fn lsp_settings(app: AppHandle) -> serde_json::Value {
+    let bundled = crate::bundled_toolchains(&app);
+    lsp::settings(lsp::find_love_types(bundled.as_deref()).as_deref())
 }
 
 /// The open project's `file://` URI, so the editor can name its models

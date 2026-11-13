@@ -8,7 +8,8 @@
   a small client feeding Monaco diagnostics, completion, hover, signature help and
   go-to-definition. Settings (LuaJIT, `love` global) are answered over the protocol,
   so the project gets no `.luarc.json` of ours; logs and metadata go in the app-data
-  folder. Tested against the real bundled server.
+  folder. Tested against the real bundled server. The LÖVE 11.5 types that ship inside it
+  (`meta/3rd/love2d`) are the workspace library, so `love.*` completes and hovers.
 - **Bundled tools** (2026-11-13): `scripts/fetch-toolchains.py` pins LÖVE 11.5,
   lua-language-server and StyLua by SHA-256; Run uses the bundled LÖVE. PortMaster
   keeps using its own runtimes (rule recorded in CLAUDE.md); `docs/platform-parity.md`.

@@ -79,6 +79,16 @@ pub fn find_server(toolchains: Option<&Path>) -> Option<PathBuf> {
     order.iter().map(|a| base.join(a).join("bin").join(exe)).find(|p| p.is_file())
 }
 
+/// The LuaCATS definitions of LÖVE 11.5 that ship inside the bundled
+/// language server (`meta/3rd/love2d/library`, generated from love-api; MIT,
+/// as the server is), for the same architectures [`find_server`] tries. A
+/// 12.0 project has no 12.0 types yet: it gets these, so 12-only functions
+/// show as unknown fields (the lints say which are 12-only).
+pub fn find_love_types(toolchains: Option<&Path>) -> Option<PathBuf> {
+    let base = toolchains?.join("lua-language-server");
+    ["arm64", "x64"].iter().map(|a| base.join(a).join("meta/3rd/love2d/library")).find(|p| p.join("love.lua").is_file())
+}
+
 /// A running language server. Messages from it arrive on a background thread
 /// through the callback given to [`Server::start`]; [`Server::send`] writes
 /// one to it. Dropping it, or [`Server::stop`], kills the process.
@@ -218,6 +228,18 @@ mod tests {
         s.stop();
         end_rx.recv_timeout(t).expect("the end callback runs when the server stops");
         assert!(s.send("{}").is_err(), "sending after stop is an error");
+    }
+
+    #[test]
+    fn love_types_are_found_only_where_they_exist() {
+        let d = tempfile::tempdir().unwrap();
+        assert!(find_love_types(Some(d.path())).is_none());
+        let lib = d.path().join("lua-language-server/x64/meta/3rd/love2d/library");
+        std::fs::create_dir_all(&lib).unwrap();
+        assert!(find_love_types(Some(d.path())).is_none(), "an empty folder is not the types");
+        std::fs::write(lib.join("love.lua"), "").unwrap();
+        assert_eq!(find_love_types(Some(d.path())).unwrap(), lib);
+        assert!(find_love_types(None).is_none());
     }
 
     #[test]
