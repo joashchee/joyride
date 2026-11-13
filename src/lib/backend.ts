@@ -53,6 +53,17 @@ export interface LintItem {
 }
 export const lintLua = (path: string, text: string) => invoke<LintItem[]>("lint_lua", { path, text });
 
+export interface ColorItem {
+  start: number;
+  end: number;
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+}
+export const colorLiterals = (text: string) => invoke<ColorItem[]>("color_literals", { text });
+export const colorText = (r: number, g: number, b: number, a: number) => invoke<string>("color_text", { r, g, b, a });
+
 export interface Hit {
   path: string;
   line: number;

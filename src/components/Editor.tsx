@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor/editor/editor.api.js";
 import "../monaco-setup";
-import { formatLua, inTauri, lintLua } from "../lib/backend";
+import { colorLiterals, colorText, formatLua, inTauri, lintLua } from "../lib/backend";
 import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 
@@ -123,11 +123,33 @@ export default function Editor(props: {
           },
         })
       : null;
+    // Colour swatches on love.graphics.setColor(0.2, 0.4, 1): click to pick, the numbers are rewritten.
+    const colors = inTauri
+      ? monaco.languages.registerColorProvider("lua", {
+          async provideDocumentColors(model) {
+            const items = await colorLiterals(model.getValue()).catch(() => []);
+            return items.map((c) => {
+              const a = model.getPositionAt(c.start);
+              const b = model.getPositionAt(c.end);
+              return {
+                color: { red: c.r, green: c.g, blue: c.b, alpha: c.a },
+                range: { startLineNumber: a.lineNumber, startColumn: a.column, endLineNumber: b.lineNumber, endColumn: b.column },
+              };
+            });
+          },
+          async provideColorPresentations(_model, info) {
+            const { red, green, blue, alpha } = info.color;
+            const label = await colorText(red, green, blue, alpha);
+            return [{ label, textEdit: { range: info.range, text: label } }];
+          },
+        })
+      : null;
     const theme = () => monaco.editor.setTheme(dark.matches ? "vs-dark" : "vs");
     dark.addEventListener("change", theme);
     return () => {
       dark.removeEventListener("change", theme);
       formatter?.dispose();
+      colors?.dispose();
       sub.dispose();
       editor.dispose();
       ed.current = null;

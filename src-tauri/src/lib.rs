@@ -54,6 +54,8 @@ pub fn run() {
             project::search_project,
             project::format_lua,
             project::lint_lua,
+            project::color_literals,
+            project::color_text,
             export::export_info,
             export::export_project,
             docs::docs_search,

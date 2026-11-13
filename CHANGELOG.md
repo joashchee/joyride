@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Colour swatches** (2026-11-13): `love.graphics.setColor(0.2, 0.4, 1)` shows a swatch
+  and a picker that rewrites the numbers.
 - **LÖVE lints in the editor** (2026-11-13): 0-1 colours, boolean `vsync`, 12.0-only and
   removed APIs, shown as markers for the project's LÖVE version.
 - **Format Document** (2026-11-13): the bundled StyLua through `joyride-core::format`;

@@ -148,3 +148,46 @@ pub fn lint_lua(state: State<Project>, path: String, text: String) -> Result<Vec
         })
         .collect())
 }
+
+#[derive(serde::Serialize)]
+pub struct ColorItem {
+    /// UTF-16 offsets (what the editor counts) of the numbers inside the parentheses.
+    start: usize,
+    end: usize,
+    r: f64,
+    g: f64,
+    b: f64,
+    a: f64,
+}
+
+/// `love.graphics.setColor(0.2, 0.4, 1)` literals, for the editor's colour swatches.
+#[tauri::command]
+pub fn color_literals(text: String) -> Vec<ColorItem> {
+    let u16_at = |byte: usize| text.get(..byte).map(|s| s.encode_utf16().count()).unwrap_or(0);
+    joyride_core::editor::color_literals(&text)
+        .into_iter()
+        .map(|c| ColorItem { start: u16_at(c.start), end: u16_at(c.end), r: c.r, g: c.g, b: c.b, a: c.a })
+        .collect()
+}
+
+/// The text to write back for a picked colour: `0.2, 0.4, 1`.
+#[tauri::command]
+pub fn color_text(r: f64, g: f64, b: f64, a: f64) -> String {
+    joyride_core::editor::format_color(r, g, b, a)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn colour_offsets_count_utf16_not_bytes() {
+        // "é" is two bytes but one UTF-16 unit, "😀" four bytes and two units.
+        let text = "-- é😀\nlove.graphics.setColor(0.5, 0.25, 1)";
+        let c = &color_literals(text.to_string())[0];
+        let units: Vec<u16> = text.encode_utf16().collect();
+        let inside = String::from_utf16(&units[c.start..c.end]).unwrap();
+        assert_eq!(inside, "0.5, 0.25, 1");
+        assert_eq!(color_text(0.5, 0.25, 1.0, 1.0), "0.5, 0.25, 1");
+    }
+}
