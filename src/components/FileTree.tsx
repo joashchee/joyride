@@ -9,6 +9,8 @@ export default function FileTree(props: {
   /** The entry the New/Rename/Delete buttons act on. */
   selected: string | null;
   onSelect: (path: string) => void;
+  /** Files LÖVE cannot use, by path, with the reason. */
+  warnings?: Map<string, string>;
 }) {
   const [closed, setClosed] = useState<Set<string>>(new Set());
   const hidden = (e: Entry) => [...closed].some((c) => e.path.startsWith(c + "/"));
@@ -31,12 +33,14 @@ export default function FileTree(props: {
               aria-selected={e.path === props.selected}
               className={"tree-item" + (e.path === props.active ? " active" : "") + (e.path === props.selected ? " selected" : "")}
               style={{ paddingLeft: 8 + depth * 8 }}
+              title={props.warnings?.get(e.path)}
+              aria-label={props.warnings?.has(e.path) ? `${e.name}, warning: ${props.warnings.get(e.path)}` : undefined}
               onClick={() => {
                 props.onSelect(e.path);
                 e.dir ? toggle(e.path) : props.onOpen(e.path);
               }}
             >
-              <span aria-hidden="true">{e.dir ? (closed.has(e.path) ? "►" : "▼") : "·"}</span> {e.name}
+              <span aria-hidden="true">{e.dir ? (closed.has(e.path) ? "►" : "▼") : "·"}</span> {e.name}{props.warnings?.has(e.path) && <span aria-hidden="true"> !</span>}
             </button>
           </li>
         );

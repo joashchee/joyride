@@ -50,6 +50,10 @@ pub fn run_project(app: AppHandle, project: State<Project>, game: State<Game>, s
         }
         _ => (root.clone(), false),
     };
+    // Files this LÖVE version cannot use, said first in the console (a warning, the game still runs).
+    for u in asset_core::kind::unusable_files(&root, &version) {
+        let _ = app.emit("run-line", Line { stream: "err", text: format!("Warning: {}: {}", u.path, u.message), file: Some(u.path), line: Some(1) });
+    }
     let spec = Spec { love, project: run_dir.clone(), env: vec![] };
     let (a1, a2) = (app.clone(), app.clone());
     let base = run_dir.canonicalize().map_err(|e| e.to_string())?;

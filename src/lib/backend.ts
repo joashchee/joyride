@@ -12,6 +12,12 @@ export async function coreInfo(): Promise<CoreInfo> {
   return invoke<CoreInfo>("core_info");
 }
 
+export interface FileWarning {
+  path: string;
+  message: string;
+}
+export const projectWarnings = () => invoke<FileWarning[]>("project_warnings");
+
 export interface Entry {
   path: string;
   name: string;
@@ -116,6 +122,7 @@ export interface ExportInfo {
   variantOffered: boolean;
   uses: UseRow[];
   accepted: string[];
+  unusable: string[];
 }
 export const exportInfo = () => invoke<ExportInfo>("export_info");
 export const exportProject = (kind: "love" | "portmaster", variant: boolean, accept: string[]) =>

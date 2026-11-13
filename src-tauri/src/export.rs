@@ -20,6 +20,8 @@ pub struct ExportInfo {
     pub uses: Vec<UseRow>,
     /// The unsupported APIs the person accepted earlier (`.joyride/variant.toml`).
     pub accepted: Vec<String>,
+    /// Files this LÖVE version cannot use as they are: "path: why".
+    pub unusable: Vec<String>,
 }
 
 #[derive(Serialize)]
@@ -67,7 +69,7 @@ pub fn export_info(project: State<Project>) -> Result<ExportInfo, String> {
             uses.push(UseRow { api: u.api, support, note, file: u.file, line: u.line, count: 1 });
         }
     }
-    Ok(ExportInfo { love_version: v.to_string(), variant_offered: offered, uses, accepted: read_accepted(&root) })
+    Ok(ExportInfo { love_version: v.to_string(), variant_offered: offered, uses, accepted: read_accepted(&root), unusable: asset_core::kind::unusable_files(&root, &v.to_string()).into_iter().map(|u| format!("{}: {}", u.path, u.message)).collect() })
 }
 
 /// Builds `kind` ("love" or "portmaster"); `variant` builds the 11.5 variant

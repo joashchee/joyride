@@ -12,7 +12,7 @@ import Docs from "./components/Docs";
 import AutoPort from "./components/AutoPort";
 import GitHub from "./components/GitHub";
 import Settings from "./components/Settings";
-import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
+import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -214,6 +214,18 @@ export default function App() {
   };
 
   // ---- New, rename, delete (the tree's buttons) ----
+  // Files this project's LÖVE version cannot use, marked in the tree.
+  const [warnings, setWarnings] = useState<Map<string, string>>(new Map());
+  useEffect(() => {
+    if (!project) return setWarnings(new Map());
+    let live = true;
+    projectWarnings()
+      .then((w) => live && setWarnings(new Map(w.map((x) => [x.path, x.message]))))
+      .catch(() => live && setWarnings(new Map()));
+    return () => {
+      live = false;
+    };
+  }, [project]);
   const sel = project?.entries.find((e) => e.path === selected) ?? null;
   const within = (base: string) => (p: string) => p === base || p.startsWith(base + "/");
   /** The folder new things go in: the selected folder, or the selected file's folder. */
@@ -389,7 +401,7 @@ export default function App() {
                 </div>
                 <Search onOpen={openAt} focusKey={findKey} />
                 {asking && <NameBox key={asking.kind + asking.initial} label={asking.label} initial={asking.initial} onSubmit={(n) => void submitName(n)} onCancel={() => setAsking(null)} />}
-                <FileTree entries={project.entries} active={active} onOpen={pickFile} selected={selected} onSelect={setSelected} />
+                <FileTree warnings={warnings} entries={project.entries} active={active} onOpen={pickFile} selected={selected} onSelect={setSelected} />
               </>
             ) : (
               <p className="empty">Open a folder with a LÖVE project.</p>

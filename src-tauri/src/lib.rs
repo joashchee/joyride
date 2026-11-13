@@ -50,6 +50,7 @@ pub fn run() {
             project::open_project,
             project::last_project,
             project::project_listing,
+            project::project_warnings,
             project::read_project_file,
             project::write_project_file,
             project::create_project_file,

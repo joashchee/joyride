@@ -53,6 +53,16 @@ export default function ExportPanel(props: { onClose: () => void }) {
           <p className="hint">Tick an unsupported function to build anyway, when the game guards it.</p>
         </fieldset>
       )}
+      {info && info.unusable.length > 0 && (
+        <fieldset className="variant-uses">
+          <legend>Files LÖVE {info.loveVersion} cannot use</legend>
+          {info.unusable.slice(0, 8).map((u) => (
+            <p key={u} className="lib-meta">{u}</p>
+          ))}
+          {info.unusable.length > 8 && <p className="hint">… and {info.unusable.length - 8} more (they are in the Console when you Run).</p>}
+          <p className="hint">The export still builds; remove or convert these if the game loads them.</p>
+        </fieldset>
+      )}
       <div className="row-buttons">
         <button disabled={busy !== null || (info?.variantOffered && variant)} onClick={() => void build("love")} title="A .love file for desktop LÖVE">
           {busy === "love" ? "Building…" : ".love file"}

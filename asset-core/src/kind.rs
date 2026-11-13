@@ -150,6 +150,45 @@ pub fn love_support(path: &Path) -> LoveSupport {
     }
 }
 
+/// A project file the project's LÖVE version cannot use as it is.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Unusable {
+    /// Project-relative, with `/`.
+    pub path: String,
+    pub message: String,
+}
+
+/// Every file in the project that LÖVE `version` ("11.5", "12.0") refuses or
+/// cannot yet load (`LoveSupport::blocks`). Skips hidden folders, `build`,
+/// `libs` and `node_modules`; stops at 500 files. A warning, never an error:
+/// the game may not load the file at all.
+pub fn unusable_files(root: &Path, version: &str) -> Vec<Unusable> {
+    let mut out = Vec::new();
+    let walk = walkdir::WalkDir::new(root).follow_links(false).sort_by_file_name().into_iter().filter_entry(|e| {
+        e.depth() == 0 || !(e.file_type().is_dir() && matches!(e.file_name().to_str(), Some(n) if n.starts_with('.') || matches!(n, "build" | "libs" | "node_modules")))
+    });
+    for e in walk.flatten() {
+        if !e.file_type().is_file() {
+            continue;
+        }
+        let sup = love_support(e.path());
+        if !sup.blocks(version) {
+            continue;
+        }
+        let Ok(rel) = e.path().strip_prefix(root) else { continue };
+        let message = match sup {
+            LoveSupport::Only12 { .. } => format!("LÖVE {version} cannot load this; it needs LÖVE 12.0"),
+            LoveSupport::Refused(why) => format!("LÖVE {version} cannot load this: {why}"),
+            _ => continue,
+        };
+        out.push(Unusable { path: rel.to_string_lossy().replace('\\', "/"), message });
+        if out.len() >= 500 {
+            break;
+        }
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -210,5 +249,20 @@ mod tests {
             let s = love_support(Path::new(&format!("x.{e}")));
             assert!(matches!(s, Loads { measured: true } | Unchecked(_)), "{e}: {s:?}");
         }
+    }
+
+    #[test]
+    fn finds_files_the_version_cannot_use() {
+        let d = tempfile::tempdir().unwrap();
+        for f in ["main.lua", "hero.png", "a.qoi", "gfx/anim.gif", "libs/x/doc.gif", "build/old.gif", ".git/y.gif", "music.mp4"] {
+            let p = d.path().join(f);
+            std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+            std::fs::write(p, b"x").unwrap();
+        }
+        let on_11: Vec<_> = unusable_files(d.path(), "11.5").into_iter().map(|u| u.path).collect();
+        assert_eq!(on_11, ["a.qoi", "gfx/anim.gif", "music.mp4"]);
+        let on_12: Vec<_> = unusable_files(d.path(), "12.0").into_iter().map(|u| u.path).collect();
+        assert_eq!(on_12, ["gfx/anim.gif", "music.mp4"]);
+        assert!(unusable_files(d.path(), "11.5")[0].message.contains("12.0"));
     }
 }

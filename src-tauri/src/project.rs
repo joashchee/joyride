@@ -191,3 +191,22 @@ mod tests {
         assert_eq!(color_text(0.5, 0.25, 1.0, 1.0), "0.5, 0.25, 1");
     }
 }
+
+#[derive(serde::Serialize)]
+pub struct FileWarning {
+    path: String,
+    message: String,
+}
+
+/// Files in the project that its LÖVE version cannot use as they are
+/// (`asset_core::kind::unusable_files`). Off the UI thread.
+#[tauri::command]
+pub async fn project_warnings(state: State<'_, Project>) -> Result<Vec<FileWarning>, String> {
+    let root = state.root()?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let v = joyride_core::toolchain::project_love_version(&root).map_err(msg)?.to_string();
+        Ok(asset_core::kind::unusable_files(&root, &v).into_iter().map(|u| FileWarning { path: u.path, message: u.message }).collect())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
