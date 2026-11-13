@@ -51,6 +51,19 @@ function scheduleLint(path: string, model: monaco.editor.ITextModel) {
   }, 400);
 }
 
+/** The editor on screen, if any, for the Reference panel's Insert. */
+let liveEditor: monaco.editor.IStandaloneCodeEditor | null = null;
+
+/** Inserts a snippet (Monaco syntax: `${1:name}`, `$0`) at the cursor and focuses the editor.
+ *  False when no file is open in the editor. */
+export function insertSnippet(snippet: string): boolean {
+  const e = liveEditor;
+  if (!e || !e.getModel()) return false;
+  e.focus();
+  (e.getContribution("snippetController2") as { insert?: (s: string) => void } | null)?.insert?.(snippet);
+  return true;
+}
+
 /** Forgets a closed file's text and undo history. */
 export function closeDoc(path: string) {
   const m = docs.get(path)?.model;
@@ -94,6 +107,7 @@ export default function Editor(props: {
     // yet, measure again once it is, so the cells are exactly 8 by 16.
     void document.fonts.load('16px "ansiapps VGA"').then(() => monaco.editor.remeasureFonts());
     ed.current = editor;
+    liveEditor = editor;
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, async () => {
       const m = editor.getModel();
       const path = m && [...docs].find(([, d]) => d.model === m)?.[0];
@@ -156,6 +170,7 @@ export default function Editor(props: {
       sub.dispose();
       editor.dispose();
       ed.current = null;
+      if (liveEditor === editor) liveEditor = null;
     };
   }, []);
 

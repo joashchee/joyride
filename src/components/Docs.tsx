@@ -3,7 +3,7 @@ import { docsGet, docsSearch, type DocFound } from "../lib/backend";
 import Panel from "./Panel";
 
 /** The offline LÖVE reference: search by name (fuzzy), read the signatures and description. */
-export default function Docs(props: { onClose: () => void; focusKey: number }) {
+export default function Docs(props: { onClose: () => void; focusKey: number; onInsert?: (snippet: string) => void }) {
   const [q, setQ] = useState("");
   const [version, setVersion] = useState("");
   const [results, setResults] = useState<DocFound[]>([]);
@@ -55,7 +55,12 @@ export default function Docs(props: { onClose: () => void; focusKey: number }) {
             <pre className="docs-text">{detail.text.replace(/```lua\n|```/g, "")}</pre>
             {detail.snippet && (
               <>
-                <strong>Snippet</strong>
+                <strong>Snippet</strong>{" "}
+                {props.onInsert && (
+                  <button onClick={() => props.onInsert!(detail.snippet!)} title="Insert at the cursor in the editor">
+                    Insert
+                  </button>
+                )}
                 <pre className="docs-text">{detail.snippet.replace(/\$\{\d+:([^}]*)\}/g, "$1").replace(/\$0/g, "")}</pre>
               </>
             )}

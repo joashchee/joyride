@@ -372,7 +372,15 @@ export default function App() {
           <span className="project-name">{project?.name ?? "No project open"}</span>
         </div>
         {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
-        {docsOpen && <Docs onClose={() => setDocsOpen(false)} focusKey={docsKey} />}
+        {docsOpen && <Docs
+            onClose={() => setDocsOpen(false)}
+            focusKey={docsKey}
+            onInsert={(snippet) =>
+              void import("./components/Editor").then((m) => {
+                if (!m.insertSnippet(snippet)) setNotice("Open a file in the editor to insert the snippet.");
+              })
+            }
+          />}
         {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {ghOpen && project && <GitHub onClose={() => setGhOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} onOpen={(f, l) => void openAt(f, l)} />}
         {portOpen && project && <AutoPort onClose={() => setPortOpen(false)} onOpen={(f, l) => void openAt(f, l)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
