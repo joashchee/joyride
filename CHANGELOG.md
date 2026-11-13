@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- **Web exporter** (2026-11-13): `web.rs` and `pipeline::build_web` package a
+  love.js page without Node, by reproducing the few steps of love.js's
+  `index.js` (data file, filled-in `game.js` and `index.html`, runtime files,
+  `_headers` for the standard version). Reproducible output; a 12.0 project
+  uses its 11.5 variant. Saved games persist (love.js mounts IndexedDB
+  itself and syncs on `beforeunload`); a first note here saying they did not
+  was wrong and is corrected.
+- **love.js fork survey** (2026-11-13): `docs/lovejs-forks.md`,
+  `scripts/check-lovejs-forks.py` and a weekly workflow. Davidobot/love.js has
+  had no commit since 2024-05-13; `pkhead/love.js` `lua52` (Oct 2026: Lua 5.2,
+  Emscripten 6.0.1, WASM exceptions) is the most current engine. The exporter
+  now packages its template layout too; Davidobot's stays the default.
 - **iOS and iPadOS exporter** (2026-11-13): `apple_mobile.rs` and
   `pipeline::build_ios` stage an Xcode project around the mobile `.love`
   (or its 11.5 variant), written against the real `love` repository's

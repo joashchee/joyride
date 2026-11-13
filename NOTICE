@@ -12,7 +12,7 @@ third-party licence ships in the app (scripts/license-scan.py).
 - love-api and LuaCATS definitions, MIT.
 - luacheck, MIT.
 - StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
-- love.js, and the LÖVE iOS and Android templates, as their repositories state.
+- love.js (Davidobot's, MIT), whose `love.js`/`love.wasm` carry LÖVE (zlib) and its libraries, and the `love` iOS Xcode project and `love-android` Gradle project (zlib / as their repositories state), when a build bundles them.
 - PortMaster runtimes, as the PortMaster project states.
 - Monaco Editor, MIT.
 - Painter (`art-sprites`), Composer (`music-composer`) and Animator

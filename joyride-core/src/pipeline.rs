@@ -10,6 +10,7 @@ use crate::compat;
 use crate::export::{self, Port};
 use crate::manifest::Manifest;
 use crate::overlay;
+use crate::web::{self, WebApp};
 use crate::scan::{self, Target};
 use crate::toolchain::LoveVersion;
 use crate::{err, Result};
@@ -201,6 +202,26 @@ pub fn build_ios(b: &Build, template: &Path, family: Family, team: Option<&str>,
     let r = apple_mobile::stage_project(template, &love, &project, &app, icon, libraries);
     let _ = std::fs::remove_file(&love);
     r
+}
+
+/// The love.js page for a game, in `<out_dir>/<slug>-web` (or `-web-compat`).
+/// love.js runs LÖVE 11.5 only, so a 12.0 project needs `b.compat` (its 11.5
+/// variant). `template_src` is the `src` folder of a love.js checkout.
+pub fn build_web(b: &Build, template_src: &Path, compatibility_page: bool) -> Result<PathBuf> {
+    let m = manifest_for(b.root)?;
+    let version = effective_version(&m, b)?.to_string();
+    if !web::WEB_LOVE_VERSIONS.contains(&version.as_str()) {
+        return err(format!("love.js runs LÖVE {} only; build the 11.5 variant of this {version} project for the web", web::WEB_LOVE_VERSIONS.join(", ")));
+    }
+    let love = build_love(b, Target::Web)?;
+    let out = b.out_dir.join(format!("{}-web{}", export::slug(&m.project.name), if compatibility_page { "-compat" } else { "" }));
+    if out.exists() {
+        std::fs::remove_dir_all(&out)?;
+    }
+    let r = web::package(template_src, &love, &out, &WebApp { title: m.project.name.clone(), compat: compatibility_page, memory: None });
+    let _ = std::fs::remove_file(&love);
+    r?;
+    Ok(out)
 }
 
 fn tempdir_in(dir: &Path) -> Result<PathBuf> {
@@ -411,6 +432,42 @@ mod tests {
         // Needing the iOS libraries is an explicit choice, with an instruction when they are missing.
         let e = build_ios(&Build { root: &root, out_dir: &d.path().join("o2"), gate: None, compat: None }, &t, Family::Universal, None, None, true).unwrap_err().to_string();
         assert!(e.contains("love-apple-dependencies"), "{e}");
+    }
+
+    fn web_template(d: &Path) -> PathBuf {
+        let s = d.join("lovejs");
+        for f in ["release", "compat"] {
+            std::fs::create_dir_all(s.join(f).join("theme")).unwrap();
+            std::fs::write(s.join(f).join("index.html"), "{{title}} {{{arguments}}} {{memory}}").unwrap();
+            std::fs::write(s.join(f).join("love.js"), "js").unwrap();
+            std::fs::write(s.join(f).join("love.wasm"), "wasm").unwrap();
+        }
+        std::fs::write(s.join("release/love.worker.js"), "w").unwrap();
+        std::fs::write(s.join("game.js"), "{{{create_file_paths}}} loadPackage({{{metadata}}});").unwrap();
+        s
+    }
+
+    #[test]
+    fn a_web_page_carries_the_web_build_and_a_12_project_needs_its_variant() {
+        let d = tempfile::tempdir().unwrap();
+        let root = project(d.path());
+        let t = web_template(d.path());
+        let out = d.path().join("out");
+        let page = build_web(&Build { root: &root, out_dir: &out, gate: None, compat: None }, &t, true).unwrap();
+        assert!(page.ends_with("my-game-web-compat") && page.join("game.data").is_file() && page.join("index.html").is_file());
+        let mut z = zip::ZipArchive::new(std::io::Cursor::new(std::fs::read(page.join("game.data")).unwrap())).unwrap();
+        let mut shim = String::new();
+        z.by_name("_jr_shim.lua").unwrap().read_to_string(&mut shim).unwrap();
+        assert!(shim.contains("io.popen") && shim.contains("web"), "the web shim is in the game");
+        assert!(!out.join("my-game-web.love").exists());
+        // A 12.0 project is refused for the web until it builds its 11.5 variant.
+        let d2 = tempfile::tempdir().unwrap();
+        let p12 = project12(d2.path(), "love.event.restart()");
+        let t2 = web_template(d2.path());
+        let e = build_web(&Build { root: &p12, out_dir: &d2.path().join("o"), gate: None, compat: None }, &t2, false).unwrap_err().to_string();
+        assert!(e.contains("11.5 variant"), "{e}");
+        let ok = build_web(&Build { root: &p12, out_dir: &d2.path().join("o"), gate: None, compat: Some(Compat { allow: &[] }) }, &t2, false).unwrap();
+        assert!(ok.join("_headers").is_file() && ok.join("love.worker.js").is_file());
     }
 
     #[test]

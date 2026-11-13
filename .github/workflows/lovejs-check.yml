@@ -1,0 +1,24 @@
+# Surveys the love.js fork network weekly (Davidobot/love.js has had no commit
+# since 2024-05-13): lists forks with newer work, for a person to read before
+# changing which template the web exporter targets. Informational; it never
+# fails the build. See docs/lovejs-forks.md. Standard runner only.
+name: love.js forks
+
+on:
+  schedule:
+    - cron: "41 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  survey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Forks with commits Davidobot/love.js lacks, active in the last year
+        run: |
+          python3 scripts/check-lovejs-forks.py --days 365 | tee survey.txt
+          { echo '## love.js forks'; echo '```'; cat survey.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

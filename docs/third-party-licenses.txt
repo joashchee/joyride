@@ -3575,35 +3575,6 @@ dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 
 ==============================================================================
-Bundled tools (NOTICE)
-==============================================================================
-JoyrIDE
-Copyright 2026 ansiapps
-
-Licensed under the MIT License (see LICENSE).
-
-JoyrIDE bundles or downloads the following, each under its own licence.
-An entry is added here when its binary is first bundled, and every
-third-party licence ships in the app (scripts/license-scan.py).
-
-- LÖVE (love2d.org), zlib licence.
-- lua-language-server, MIT.
-- love-api and LuaCATS definitions, MIT.
-- luacheck, MIT.
-- StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
-- love.js, and the LÖVE iOS and Android templates, as their repositories state.
-- PortMaster runtimes, as the PortMaster project states.
-- Monaco Editor, MIT.
-- Painter (`art-sprites`), Composer (`music-composer`) and Animator
-  (`sprite-animator`), ansiapps' own engines, vendored in `src/vendor/` and
-  relicensed MIT for JoyrIDE (decided 2026-11-13; the engines' own
-  repositories stay proprietary). Each keeps its own NOTICE for what it
-  includes from others: Painter's CoffeeMUD data (Apache-2.0, text in
-  `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
-  (CC BY-SA 4.0, unmodified, with its licence in
-  `src/vendor/art-sprites/docs/fonts/`).
-
-==============================================================================
 sha2 0.10.9
 ==============================================================================
 Copyright (c) 2006-2009 Graydon Hoare
@@ -5757,6 +5728,35 @@ Apache License
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+==============================================================================
+Bundled tools (NOTICE)
+==============================================================================
+JoyrIDE
+Copyright 2026 ansiapps
+
+Licensed under the MIT License (see LICENSE).
+
+JoyrIDE bundles or downloads the following, each under its own licence.
+An entry is added here when its binary is first bundled, and every
+third-party licence ships in the app (scripts/license-scan.py).
+
+- LÖVE (love2d.org), zlib licence.
+- lua-language-server, MIT.
+- love-api and LuaCATS definitions, MIT.
+- luacheck, MIT.
+- StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
+- love.js (Davidobot's, MIT), whose `love.js`/`love.wasm` carry LÖVE (zlib) and its libraries, and the `love` iOS Xcode project and `love-android` Gradle project (zlib / as their repositories state), when a build bundles them.
+- PortMaster runtimes, as the PortMaster project states.
+- Monaco Editor, MIT.
+- Painter (`art-sprites`), Composer (`music-composer`) and Animator
+  (`sprite-animator`), ansiapps' own engines, vendored in `src/vendor/` and
+  relicensed MIT for JoyrIDE (decided 2026-11-13; the engines' own
+  repositories stay proprietary). Each keeps its own NOTICE for what it
+  includes from others: Painter's CoffeeMUD data (Apache-2.0, text in
+  `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
+  (CC BY-SA 4.0, unmodified, with its licence in
+  `src/vendor/art-sprites/docs/fonts/`).
 
 ==============================================================================
 libc 0.2.190

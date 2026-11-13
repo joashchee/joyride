@@ -13,6 +13,7 @@
 //! - [`shim`], [`overlay`]: target shims and the zero-mutation patch
 //!   overlay, merged into a staged copy at build time (spec 4A, 4C).
 //! - [`apple_mobile`]: an Xcode project around a `.love` for iOS and iPadOS (spec 5.2).
+//! - [`web`]: a love.js page around a `.love` (spec 5.4).
 //! - [`android`]: a `love-android` Gradle project around a `.love` (spec 5.3).
 //! - [`compat`]: the 11.5 variant of a 12.0 game, for every export.
 //! - [`export`]: `.love`, desktop and PortMaster packages (spec 5).
@@ -36,6 +37,7 @@ pub mod runner;
 pub mod scan;
 pub mod shim;
 pub mod toolchain;
+pub mod web;
 pub mod trace;
 
 #[derive(Debug, thiserror::Error)]

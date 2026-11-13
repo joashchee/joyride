@@ -83,6 +83,14 @@ needs the network to build or test (`cargo ... --offline`).
   `cargo test --offline --manifest-path joyride-core/Cargo.toml`.
 - `src/vendor/`: Painter, Composer, Animator (MIT; `scripts/vendor-sync.sh`).
 
+## love.js and its forks
+
+The web exporter targets `Davidobot/love.js` (LuaJIT, 11.5; untouched since
+2024). Forks have newer work, notably `pkhead/love.js` `lua52` (Lua 5.2,
+Emscripten 6.0.1): `docs/lovejs-forks.md`, re-checked weekly by
+`scripts/check-lovejs-forks.py`. Do not switch templates silently: Lua 5.2 is
+a different Lua, and the web build must behave like the other exports.
+
 ## The 11.5 variant of a 12.0 game
 
 A 12.0 project can build an 11.5 variant for any target
