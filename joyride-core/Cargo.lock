@@ -434,8 +434,10 @@ name = "joyride-core"
 version = "0.1.0"
 dependencies = [
  "asset-core",
+ "blake3",
  "ed25519-dalek",
  "hex",
+ "image",
  "plist",
  "regex",
  "serde",

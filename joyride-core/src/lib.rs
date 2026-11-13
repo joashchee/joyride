@@ -12,11 +12,15 @@
 //! - [`trace`] and [`runner`]: running a game and linking its errors (3C).
 //! - [`shim`], [`overlay`]: target shims and the zero-mutation patch
 //!   overlay, merged into a staged copy at build time (spec 4A, 4C).
+//! - [`apple_mobile`]: an Xcode project around a `.love` for iOS and iPadOS (spec 5.2).
+//! - [`android`]: a `love-android` Gradle project around a `.love` (spec 5.3).
 //! - [`compat`]: the 11.5 variant of a 12.0 game, for every export.
 //! - [`export`]: `.love`, desktop and PortMaster packages (spec 5).
 //! - [`editor`]: what Monaco's providers need (colour swatches, asset hover);
 //!   [`docs`]: the offline API reference search and snippets (spec 3B).
 
+pub mod android;
+pub mod apple_mobile;
 pub mod compat;
 pub mod docs;
 pub mod editor;

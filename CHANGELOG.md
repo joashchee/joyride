@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- **iOS and iPadOS exporter** (2026-11-13): `apple_mobile.rs` and
+  `pipeline::build_ios` stage an Xcode project around the mobile `.love`
+  (or its 11.5 variant), written against the real `love` repository's
+  project (`main` and `11.x`): the game in the `love-ios` target's Resources
+  phase, the app's identity on its three build configurations only,
+  orientation and full-screen in the plist, one-size icon. `xcodebuild -list`
+  accepts the edited projects. The build itself needs LÖVE's iOS dependencies
+  and is not run here.
+- **Android exporter** (2026-11-13): `android.rs` and `pipeline::build_android`
+  stage a `love-android` Gradle project around the mobile `.love` (or its
+  11.5 variant), written against the real template's `12.x` and `11.x`
+  branches. Gradle itself is not run (needs the Android SDK and executes the
+  template's build scripts).
 - **Third-party licence file and scan** (2026-11-13):
   `scripts/third-party-licenses.py` writes `docs/third-party-licenses.txt`
   (every Rust crate in `asset-core` and `joyride-core`, the vendored engines'

@@ -4,6 +4,8 @@
 //! staged copy; the project is never modified except for writing a missing
 //! overlay under `.joyride/`.
 
+use crate::android::{self, AndroidApp};
+use crate::apple_mobile::{self, Family, IosApp, Orientation};
 use crate::compat;
 use crate::export::{self, Port};
 use crate::manifest::Manifest;
@@ -156,6 +158,49 @@ pub fn build_portmaster(b: &Build) -> Result<PathBuf> {
     export::portmaster(&love, &gptk, &port, &zip)?;
     std::fs::remove_file(&love)?; // the zip carries it; the intermediate is not a deliverable
     Ok(zip)
+}
+
+/// The Android Gradle project for a game: the mobile `.love` (the 11.5
+/// variant if `b.compat` asks) inside a `love-android` checkout of the matching
+/// branch. Returns the project folder; building it (`android::gradle_args`) and
+/// signing are the caller's steps.
+pub fn build_android(b: &Build, template: &Path, icon: Option<&Path>) -> Result<PathBuf> {
+    let m = manifest_for(b.root)?;
+    let version = effective_version(&m, b)?;
+    let love = build_love(b, Target::Mobile)?;
+    let scan = scan::scan_project(b.root);
+    let landscape = scan.window.width.unwrap_or(800.0) >= scan.window.height.unwrap_or(600.0);
+    let app = AndroidApp { name: m.project.name.clone(), bundle_id: m.project.bundle_id.clone(), version_name: m.project.version.clone(), landscape, love_version: version };
+    let project = b.out_dir.join(format!("{}-android-project", export::slug(&m.project.name)));
+    if project.exists() {
+        std::fs::remove_dir_all(&project)?;
+    }
+    let r = android::stage_project(template, &love, &project, &app, icon);
+    let _ = std::fs::remove_file(&love); // the project carries it
+    r?;
+    Ok(project)
+}
+
+/// The Xcode project for an iOS or iPadOS game: the mobile `.love` (or its
+/// 11.5 variant) in a `love` checkout of the matching branch. Returns
+/// `…/platform/xcode` of the staged copy; `apple_mobile::xcodebuild_args` and
+/// signing are the caller's steps. `libraries` demands LÖVE's iOS dependencies
+/// be in the template already.
+pub fn build_ios(b: &Build, template: &Path, family: Family, team: Option<&str>, icon: Option<&Path>, libraries: bool) -> Result<PathBuf> {
+    let m = manifest_for(b.root)?;
+    let version = effective_version(&m, b)?;
+    let love = build_love(b, Target::Mobile)?;
+    let scan = scan::scan_project(b.root);
+    let (w, h) = (scan.window.width.unwrap_or(800.0), scan.window.height.unwrap_or(600.0));
+    let orientation = if w > h { Orientation::Landscape } else if h > w { Orientation::Portrait } else { Orientation::Any };
+    let app = IosApp { name: m.project.name.clone(), bundle_id: m.project.bundle_id.clone(), version: m.project.version.clone(), family, orientation, team: team.map(String::from), love_version: version };
+    let project = b.out_dir.join(format!("{}-ios-project", export::slug(&m.project.name)));
+    if project.exists() {
+        std::fs::remove_dir_all(&project)?;
+    }
+    let r = apple_mobile::stage_project(template, &love, &project, &app, icon, libraries);
+    let _ = std::fs::remove_file(&love);
+    r
 }
 
 fn tempdir_in(dir: &Path) -> Result<PathBuf> {
@@ -319,6 +364,53 @@ mod tests {
         let p12 = project12(d2.path(), "love.event.restart()\nlove.markDeprecated(1)");
         let r = compat_offer(&p12).unwrap().expect("a 12.0 project is offered the variant");
         assert_eq!((r.uses.len(), r.reduced().len(), r.blockers(&[]).len()), (2, 1, 0));
+    }
+
+    #[test]
+    fn an_android_project_carries_the_staged_game_and_the_games_orientation() {
+        let d = tempfile::tempdir().unwrap();
+        let root = project(d.path()); // conf: 640x480, so landscape
+        let t = d.path().join("tpl");
+        for dir in ["app/src/main/cpp/love/src", "app/src/main/cpp/megasource", "app/src/embed/assets"] {
+            std::fs::create_dir_all(t.join(dir)).unwrap();
+        }
+        std::fs::write(t.join("app/src/main/cpp/love/src/a.cpp"), "x").unwrap();
+        std::fs::write(t.join("app/src/main/cpp/megasource/b.cpp"), "x").unwrap();
+        std::fs::write(t.join("app/build.gradle"), "").unwrap();
+        std::fs::write(t.join("app/src/main/AndroidManifest.xml"), "").unwrap();
+        std::fs::write(t.join("gradlew"), "").unwrap();
+        std::fs::write(t.join("gradle.properties"), "app.name=x\napp.orientation=portrait\n").unwrap();
+        let out = d.path().join("out");
+        let p = build_android(&Build { root: &root, out_dir: &out, gate: None, compat: None }, &t, None).unwrap();
+        assert!(p.ends_with("my-game-android-project"));
+        let props = std::fs::read_to_string(p.join("gradle.properties")).unwrap();
+        assert!(props.contains("app.orientation=landscape") && props.contains("app.name=My Game"), "{props}");
+        let mut z = zip::ZipArchive::new(std::fs::File::open(p.join("app/src/embed/assets/game.love")).unwrap()).unwrap();
+        assert!(z.by_name("_jr_shim.lua").is_ok(), "the mobile build, shim and all");
+        assert!(!out.join("my-game-mobile.love").exists());
+    }
+
+    #[test]
+    fn an_ios_project_carries_the_game_and_the_games_orientation() {
+        let d = tempfile::tempdir().unwrap();
+        let root = project(d.path()); // 640x480: landscape
+        let t = d.path().join("love");
+        for dir in ["platform/xcode/love.xcodeproj", "platform/xcode/ios", "platform/xcode/Images.xcassets", "src"] {
+            std::fs::create_dir_all(t.join(dir)).unwrap();
+        }
+        std::fs::write(t.join("platform/xcode/love.xcodeproj/project.pbxproj"), crate::apple_mobile::tests::MINI_PBX).unwrap();
+        plist::Value::Dictionary(plist::Dictionary::new()).to_file_xml(t.join("platform/xcode/ios/love-ios.plist")).unwrap();
+        let out = d.path().join("out");
+        let xcode = build_ios(&Build { root: &root, out_dir: &out, gate: None, compat: None }, &t, Family::Iphone, Some("ABCDE12345"), None, false).unwrap();
+        assert!(xcode.ends_with("my-game-ios-project/platform/xcode"));
+        assert!(xcode.join("game.love").is_file());
+        let p = std::fs::read_to_string(xcode.join("love.xcodeproj/project.pbxproj")).unwrap();
+        assert!(p.contains("PRODUCT_BUNDLE_IDENTIFIER = dev.joyride.mygame;") && p.contains("DEVELOPMENT_TEAM = ABCDE12345;") && p.contains("TARGETED_DEVICE_FAMILY = 1;"), "{p}");
+        let plist = plist::Value::from_file(xcode.join("ios/love-ios.plist")).unwrap();
+        assert_eq!(plist.as_dictionary().unwrap()["UISupportedInterfaceOrientations"].as_array().unwrap().len(), 2, "landscape: left and right");
+        // Needing the iOS libraries is an explicit choice, with an instruction when they are missing.
+        let e = build_ios(&Build { root: &root, out_dir: &d.path().join("o2"), gate: None, compat: None }, &t, Family::Universal, None, None, true).unwrap_err().to_string();
+        assert!(e.contains("love-apple-dependencies"), "{e}");
     }
 
     #[test]
