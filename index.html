@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <title>JoyrIDE</title>
+    <!-- The splash lives here so it paints before any JS or bundled CSS loads
+         (CLAUDE.md rule 7). components/Splash.tsx renders the same markup,
+         with progress and any load error, once React mounts. -->
+    <style>
+      html, body { margin: 0; height: 100%; background: #16181d; }
+      .splash {
+        position: fixed; inset: 0; z-index: 1000;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+        background: #16181d; color: #e8eaf0;
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        transition: opacity 0.2s ease;
+      }
+      .splash.leaving { opacity: 0; pointer-events: none; }
+      .splash-mark { width: 88px; height: 88px; }
+      .splash-name { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; }
+      .splash-accent { color: #ff6fa8; }
+      .splash-progress { width: 220px; height: 6px; }
+      .splash-label { min-height: 16px; font-size: 12px; color: #9aa1b0; font-family: ui-monospace, Menlo, monospace; }
+      .splash-error { max-width: 520px; padding: 0 16px; color: #ff8a8a; font-size: 13px; text-align: center; white-space: pre-wrap; }
+      @media (prefers-color-scheme: light) {
+        html, body, .splash { background: #f6f7fa; color: #1b1e25; }
+        .splash-label { color: #5b6270; }
+        .splash-error { color: #b3261e; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="splash" role="status" aria-live="polite">
+        <img class="splash-mark" src="/favicon.svg" alt="" />
+        <div class="splash-name">JoyrIDE<span class="splash-accent">.</span></div>
+        <progress class="splash-progress" aria-label="Starting JoyrIDE"></progress>
+        <div class="splash-label">Starting…</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

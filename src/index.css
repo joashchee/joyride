@@ -1,0 +1,17 @@
+:root { color-scheme: dark light; --bg: #16181d; --fg: #e8eaf0; --muted: #9aa1b0; }
+@media (prefers-color-scheme: light) { :root { --bg: #f6f7fa; --fg: #1b1e25; --muted: #5b6270; } }
+html, body, #root { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--fg); font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+.shell { padding: 24px; }
+.splash {
+  position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px; background: var(--bg); color: var(--fg);
+  transition: opacity 0.2s ease;
+}
+.splash.leaving { opacity: 0; pointer-events: none; }
+.splash-mark { width: 88px; height: 88px; }
+.splash-name { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; }
+.splash-accent { color: #ff6fa8; }
+.splash-progress { width: 220px; height: 6px; }
+.splash-label { min-height: 16px; font-size: 12px; color: var(--muted); font-family: ui-monospace, Menlo, monospace; }
+.splash-error { max-width: 520px; padding: 0 16px; color: #ff8a8a; font-size: 13px; text-align: center; white-space: pre-wrap; }

@@ -1,0 +1,33 @@
+[package]
+name = "joyride"
+version = "0.1.0"
+description = "JoyrIDE: a zero-config IDE for LÖVE"
+authors = ["ansiapps"]
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# MIT, and no GPL/AGPL/LGPL dependencies (CLAUDE.md rule 2): run
+# scripts/license-scan.py whenever Cargo.lock or package-lock.json changes.
+[dependencies]
+joyride-core = { path = "../joyride-core" }
+asset-core = { path = "../asset-core" }
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-log = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+log = "0.4"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true

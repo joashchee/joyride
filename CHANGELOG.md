@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **App shell scaffold** (2026-11-13): Tauri 2 + React 19 + Vite 8 + TypeScript.
+  Static splash in `index.html` that paints first, a React `Splash` with
+  progress and load errors, `src-tauri` over `joyride-core` and `asset-core`
+  (`core_info` command), bundle id `com.ansiapps.joyride`. Placeholder icons.
+- **Web demo tooling** (2026-11-13): `joyride-core/examples/web_demo.rs` and
+  `scripts/serve-web.py` to try the love.js templates in a real browser.
 - **Web exporter** (2026-11-13): `web.rs` and `pipeline::build_web` package a
   love.js page without Node, by reproducing the few steps of love.js's
   `index.js` (data file, filled-in `game.js` and `index.html`, runtime files,
