@@ -15,3 +15,11 @@ third-party licence ships in the app (scripts/license-scan.py).
 - love.js, and the LÖVE iOS and Android templates, as their repositories state.
 - PortMaster runtimes, as the PortMaster project states.
 - Monaco Editor, MIT.
+- Painter (`art-sprites`), Composer (`music-composer`) and Animator
+  (`sprite-animator`), ansiapps' own engines, vendored in `src/vendor/` and
+  relicensed MIT for JoyrIDE (decided 2026-11-13; the engines' own
+  repositories stay proprietary). Each keeps its own NOTICE for what it
+  includes from others: Painter's CoffeeMUD data (Apache-2.0, text in
+  `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
+  (CC BY-SA 4.0, unmodified, with its licence in
+  `src/vendor/art-sprites/docs/fonts/`).

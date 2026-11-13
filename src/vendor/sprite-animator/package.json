@@ -1,0 +1,39 @@
+{
+  "name": "sprite-animator",
+  "version": "0.3.1",
+  "private": true,
+  "license": "MIT",
+  "description": "A dependency-free, seeded motion engine for sprite and cell animation: walk, run and jump loops as integer pose tracks, with lint, tempo fitting for Composer and a bridge to Painter.",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./recipes/*": "./recipes/*",
+    "./kits/*": "./kits/*",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "animate": "./cli.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "recipes",
+    "kits",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

@@ -13,10 +13,12 @@ Diskette (ROADMAP format).
 **`CHANGELOG.md`**: add a bullet whenever a change lands. **`ROADMAP.md`**:
 tick and update it in the same commit as the work.
 
-## Current milestone: none started
+## Current milestone: the app shell
 
-Repository set up (2026-11-13); next is spec milestone 1, scaffold,
-toolchain manager and core editor (`ROADMAP.md`).
+The Tauri-free core is built and tested (`asset-core/`, `joyride-core/`).
+Next is the Tauri 2 + React + Monaco shell around it, which needs a machine
+with npm network access (`ROADMAP.md` section 1). Nothing in the core
+needs the network to build or test (`cargo ... --offline`).
 
 ## Non-negotiable rules
 
@@ -50,6 +52,69 @@ toolchain manager and core editor (`ROADMAP.md`).
 9. **Accessible**: every control works by keyboard alone and is named for
    VoiceOver.
 10. **No first-run warning dialog.**
+11. **Asset licences are confirmed before use** (`docs/asset-library.md`):
+    nothing is imported, added to a project or exported with an unknown
+    licence unless the user overrides and says why. Imports never copy
+    before confirmation and never delete originals. Generators are
+    seeded and deterministic (own PRNG, integer math, recipe + version +
+    seed stored). Painter, Composer and Animator are vendored under MIT in
+    `src/vendor/` (decided 2026-11-13) by `scripts/vendor-sync.sh`: change
+    them in their own repos and re-sync, never only here. Any other
+    proprietary sister code (Neumetik chipbank, Diskette, Crunchy) still
+    needs the maintainer's decision recorded in `NOTICE` first.
+
+## Where things live
+
+- `asset-core/`: the Tauri-free Rust crate for the Asset Library
+  (`docs/asset-library.md`), written clean-room from the ideas in Diskette
+  and Crunchy, no code from either: `catalog.rs` (SQLite + FTS5, licences,
+  tags, uses, origins, hash cache), `licence.rs`, `dedup.rs` (staged
+  duplicate finding), `import.rs` (plan, then apply with confirmed
+  licences), `kind.rs`. `cargo test --offline --manifest-path
+  asset-core/Cargo.toml`.
+- `joyride-core/`: the other Tauri-free crate, one module per spec area:
+  `manifest`/`pkg` (love.toml, installer), `toolchain` (versions, signed
+  manifest, `.luarc.json`), `lua`/`scan`/`lint` (lexer, auto-porter analysis,
+  version lints), `trace`/`runner`, `shim`/`overlay` (generated Lua shims,
+  zero-mutation staging), `export`/`pipeline` (.love, desktop, PortMaster,
+  one-call builds with the asset gate), `editor`/`docs` (Monaco provider data,
+  API search). Tests under LuaJIT with a mocked `love` (`tests/shim_lua.rs`);
+  `tests/e2e_love.rs` needs a display and skips without one.
+  `cargo test --offline --manifest-path joyride-core/Cargo.toml`.
+- `src/vendor/`: Painter, Composer, Animator (MIT; `scripts/vendor-sync.sh`).
+
+## The 11.5 variant of a 12.0 game
+
+A 12.0 project can build an 11.5 variant for any target
+(`pipeline::Compat`, `joyride-core/src/compat.rs`); it is the way a 12.0 game
+reaches PortMaster, which has only `love_11.5`. Never define a 12.0 function in
+the variant unless it was compared with the real 11.5 and 12.0 binaries
+(`tests/e2e_love.rs`); anything else is unsupported and stops the build. An
+unsupported API is never faked, so feature tests keep answering truthfully.
+
+## Local LÖVE, Docker and PortMaster
+
+- **Real LÖVE 11.5 and 12.0 are on this Mac** in r3i6nos's checkout
+  (`../r3i6nos/vendor/love-mac/<version>/love.app`; the tests also look in
+  `/Applications` and at `JOYRIDE_LOVE_11_5` / `JOYRIDE_LOVE_12_0`). Use
+  them, not guesses: `tests/e2e_love.rs` runs staged builds on both and checks
+  the lint tables against them; `scripts/love-api-diff.py` measures API
+  differences. Under SDL's dummy drivers there is **no OpenGL**, so only
+  headless modules run (no window, graphics, input); drawing and input are
+  tested against a mocked `love` under LuaJIT, and on a Mac with a display
+  `--graphics` widens the measurements.
+- **Docker** (Colima, as r3i6nos uses) is for Debian 12 and linux/arm64:
+  `scripts/check-linux.sh [--arm64]`. The build sandbox cannot reach it;
+  the maintainer runs it.
+- **12. Check PortMaster's GitHub repo before changing or trusting the
+  PortMaster exporter, and keep it current.** `scripts/check-portmaster.py`
+  runs the exporter and compares its launch script and `port.json` with
+  PortMaster-New's real LÖVE ports; the weekly `portmaster-check` workflow
+  runs it too. A failure means the exporter is out of date. `github.com` is
+  allowed in `.claude/settings.local.json`, so run it here. As of PortMaster-New
+  `40186ea1` (2026-11-13): 68 LÖVE ports, **only the `love_11.5` runtime**
+  (so a 12.0 project cannot target PortMaster yet: the exporter refuses),
+  `port.json` version 4, `$GPTOKEYB "$LOVE_GPTK"`.
 
 ## Build notes
 

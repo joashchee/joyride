@@ -1,0 +1,56 @@
+// The browser-safe entry point: everything that draws, with no Node built-ins anywhere behind it, so it runs in a page, a worker,
+// Node or Deno unchanged. The Node-only parts are separate entries: `./png` (PNG files) and `./sheet` (contact sheets).
+//
+//   import { draw, Pixels, rng, C, RAMPS, toCanvas, play, createLookCache } from "art-sprites";
+//   const art = draw('character', { loadout: 'rogue' });       // { id, frames, fps, loop, clips, layers, anchors }
+//   document.body.append(toCanvas(art.frames[0], { scale: 6 }));
+export { Pixels } from './pixels.js';
+export { Cells, NONE, BOLD, BLINK, foldPixels, foldArt, colorMap, halves, tone, legalCell, legalize, ladder, rampCells } from './cells.js';
+export { CP437, writeAnsi, readAnsi, toSpans, toPlainText } from './ansi.js';
+export { lintAnsi, lintAnsiFrames } from './ansi-lint.js';
+export { paint, runSteps, overlay, OVERLAY_IDS, lettering, LETTERING_FACES, LETTERING_CHARS } from './ansi-craft.js';
+export { gradient, bayer, tones, resolveTones } from './ansi-depth.js';
+export { fromImage } from './ansi-image.js';
+export { light } from './ansi-light.js';
+export { writeAnsimation, readAnsimation } from './ansimation.js';
+export { ASCII_RAMP, foldText, asciiFromCells, textFromPixelArt, textFromAnsiArt, writeText, lintText } from './text-art.js';
+export { renderCells } from './ansi-render.js';
+export { VGA16, V, XTERM256, DB32_VGA, ANSI_RAMPS, nearest, indexHex } from './palette-ansi.js';
+export { rng, hashSeed } from './rng.js';
+export { DB32, C, RAMPS, ramp, luma } from './palette.js';
+export { shade, rim, dither } from './shade.js';
+export { squash, flash, idle, collapse, clip } from './anim.js';
+export { lint, lintFrames, lintArt, lintSilhouettes, compare, SIZES } from './lint.js';
+export { roomSeed, TERRAINS, hasSky } from './recipes/vista.js';
+export { faceShape, readFace, readFaceWords, hurtStep, hurtClass, effectLook, FACE_MOODS, FACE_SIZES, FACE_LOOKS, FACE_SHAPES, FACE_PARTS, HURT_STEPS } from './recipes/face.js';
+export { thingKind, materialClass, thingWear, auraGlow, readThing, THING_KINDS, THING_CLASSES, THING_WEARS, THING_AURAS, THING_PARTS } from './recipes/item-art.js';
+export { raceFacts, classFacts, portraitSeed, couplerRng, bulkFor, CREATION_KINDS, CLASS_KINDS, RACE_FEATURES, RACE_NAMES, CLASS_NAMES } from './recipes/portrait.js';
+export { wildTerrain, placeLayer, lay, stamp, lightFigures, headSpan, figureOnPlace, Layer, LIGHTER, SHADE, RECEDE, CLEAR, SUN_ARCS, darken } from './recipes/figure.js';
+export { blowFrames, slideFrames, FIGHT_LAYOUTS, BIG_HIT, BLOW_MS, SLIDE_MS, FLASH_GAP_MS } from './recipes/fight.js';
+export { RECIPES, RECIPE_IDS, STYLES, DEFAULT_STYLE, recipeStyles, isNative, draw } from './recipes/index.js';
+export { KITS, registerKit, coverage, subjectStatus } from './kits/index.js';
+export { moveFrame, withMotion, motionClips, POSE_KEYS } from './motion.js';
+export { MOTION_TYPES, MOTION_OF, motionType, motionPresets, resolveMotion, lintMotion } from './motion-types.js';
+export { createLookCache } from './cache.js';
+export { ENGINE_VERSION } from './version.js';
+export { recolor, recolorArt } from './recolor.js';
+export { resolveLook, dye, DYE_GROUPS } from './look.js';
+export { boxAnchors, altOf, PROJECTION } from './art-meta.js';
+export { BODY_PROFILES, FACINGS, SEMANTIC_IDS, weaponAttack, NECK_KINDS, SCARS, JEWELLERY, HELM_STYLES } from './recipes/characters.js';
+export { pixelText } from './recipes/pixel-text.js';
+export { drawNumber, NUMBER_KINDS, TELEGRAPH_SHAPES, TARGET_KINDS } from './recipes/telegraph.js';
+export { FAMILIES, FAMILY_IDS, composeFamily } from './recipes/families.js';
+export { ENEMY_CLIPS, STATUSES, INTENTS, RANKS, SEGMENT_IDS } from './recipes/enemy-clips.js';
+export { TOP_PLAN, TOP_CANVASES } from './recipes/top-creature.js';
+export { TOP_PARTS, TOP_BIOMES, TOP_SIZES, TOP_LOOKS, NOTCHES, DOOR_STATES } from './recipes/dungeon.js';
+export { TOP_PROP_IDS } from './recipes/topprops.js';
+export { TEMPLATES, TEMPLATE_IDS, lintDress } from './recipes/dress.js';
+export { SPLASH_SCENES, SPLASH_W, SPLASH_H, SPLASH_MAX_TITLE } from './recipes/splash.js';
+export { MAP_STATES, MAP_KINDS, MAP_MARKERS, MAP_SIZES } from './recipes/map.js';
+export { MATERIAL_IDS, DENOMINATIONS, CURRENCY_KINDS, KEY_LOOKS } from './recipes/material.js';
+export { SERVICES, SERVICE_IDS, SHELLS, THEMES, BUILDING_STATES, TOWN_PATHS } from './recipes/town.js';
+export { ICON_SIZES } from './recipes/items.js';
+export { EXHIBIT_STYLES, EXHIBIT_STATES, AWARD_KINDS, AWARD_TIERS } from './recipes/exhibit.js';
+export { RARITIES, MARKS } from './recipes/overlay.js';
+export { PLACEHOLDER_KINDS, PLACEHOLDER_FAMILIES, PLACEHOLDER_CATEGORIES, PLACEHOLDER_SIZES } from './recipes/placeholder.js';
+export { toImageData, toCanvas, toDataUrl, drawFrame, play } from './render.js';

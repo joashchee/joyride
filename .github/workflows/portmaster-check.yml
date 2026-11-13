@@ -1,0 +1,31 @@
+# Compares what JoyrIDE writes for PortMaster (joyride-core/src/export.rs)
+# with PortMaster's own repository, weekly and on demand: it runs the exporter
+# and compares its launch script and port.json with the real LÖVE ports (the
+# runtimes they source, the helpers they call, port.json's version and fields). A failure means PortMaster moved: update export.rs and
+# its tests, then rerun scripts/check-portmaster.py. Standard runner only.
+name: PortMaster check
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - joyride-core/src/export.rs
+      - scripts/check-portmaster.py
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: joyride-core
+      - run: python3 scripts/test_check_portmaster.py
+      - run: scripts/check-portmaster.py

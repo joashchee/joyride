@@ -1,0 +1,38 @@
+{
+  "name": "music-composer",
+  "version": "1.2.0",
+  "description": "A dependency-free, seeded music composing engine: recipes for melodies, chords, basslines, drums, songs, game jingles and ambient loops, with lint, a MIDI codec, a WAV preview synth and a CLI.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./recipes/*": "./recipes/*",
+    "./kits/*": "./kits/*",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "compose": "./cli.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "recipes",
+    "kits",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

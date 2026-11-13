@@ -1,0 +1,15 @@
+[package]
+name = "asset-core"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "JoyrIDE's Asset Library core: catalog, licences, de-duplication and import. No Tauri, so the web build can share it."
+
+[dependencies]
+blake3 = "1"
+rusqlite = { version = "0.32", features = ["bundled"] }
+thiserror = "2"
+walkdir = "2"
+
+[dev-dependencies]
+tempfile = "3"

@@ -1,0 +1,57 @@
+{
+  "name": "art-sprites",
+  "version": "1.31.1",
+  "license": "MIT",
+  "private": true,
+  "description": "A dependency-free, seeded art drawing engine (pixel art now, more styles planned): recipes for items, faces, creatures, modular characters, rooms, scenes and effects, with lint and a PNG codec.",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./png": {
+      "types": "./png.d.ts",
+      "default": "./png.js"
+    },
+    "./sheet": {
+      "types": "./sheet.d.ts",
+      "default": "./sheet.js"
+    },
+    "./pack": {
+      "types": "./pack.d.ts",
+      "default": "./pack.js"
+    },
+    "./atlas": {
+      "types": "./atlas.d.ts",
+      "default": "./atlas.js"
+    },
+    "./recipes/*": "./recipes/*",
+    "./kits/*": "./kits/*",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "sprites": "./cli.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "recipes",
+    "kits",
+    "docs",
+    "!docs/coupler-handover",
+    "README.md",
+    "LICENSE",
+    "LICENSES",
+    "NOTICE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.ts"
+  }
+}

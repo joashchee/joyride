@@ -1,0 +1,10 @@
+sprite-animator (the Animator engine)
+Copyright 2026 ansiapps
+
+Licensed under the MIT License (see LICENSE). Vendored into JoyrIDE
+from ansiapps' own engine (scripts/vendor-sync.sh).
+
+Animator includes:
+
+- rng.js, copied from Painter (art-sprites), Copyright 2026 ansiapps
+  (MIT here, as Animator is).

@@ -1,0 +1,2127 @@
+{
+  "bayer": {
+    "matrix": [
+      [
+        0,
+        8,
+        2,
+        10
+      ],
+      [
+        12,
+        4,
+        14,
+        6
+      ],
+      [
+        3,
+        11,
+        1,
+        9
+      ],
+      [
+        15,
+        7,
+        13,
+        5
+      ]
+    ],
+    "rule": "mix(x, y, a, b, t) = b when BAYER[y & 3][x & 3] < t (t in sixteenths), else a"
+  },
+  "coffeemud": "720aec6 (2026-10-03, CoffeeMUD 5.11.0.4)",
+  "defaults": {
+    "arc": "when absent: dawn 60, dusk 940, otherwise 500",
+    "light": "day when unknown",
+    "weather": "clear when unknown",
+    "weatherOnlyWhereThereIsASky": "indoors and underwater are Clear whatever the weather"
+  },
+  "dim": {
+    "rule": "a color at night (Canvas::darken): bright colors go to their dark self (c - 8), darkgray dithers with black at 8 of 16, the other dark colors dither with black at 8 of 16, black stays",
+    "table": [
+      {
+        "atNight": {
+          "to": {
+            "index": 0,
+            "name": "black"
+          }
+        },
+        "from": {
+          "index": 0,
+          "name": "black"
+        }
+      },
+      {
+        "atNight": {
+          "dither": {
+            "a": {
+              "index": 1,
+              "name": "red"
+            },
+            "b": {
+              "index": 0,
+              "name": "black"
+            },
+            "of16": 8
+          }
+        },
+        "from": {
+          "index": 1,
+          "name": "red"
+        }
+      },
+      {
+        "atNight": {
+          "dither": {
+            "a": {
+              "index": 2,
+              "name": "green"
+            },
+            "b": {
+              "index": 0,
+              "name": "black"
+            },
+            "of16": 8
+          }
+        },
+        "from": {
+          "index": 2,
+          "name": "green"
+        }
+      },
+      {
+        "atNight": {
+          "dither": {
+            "a": {
+              "index": 3,
+              "name": "brown"
+            },
+            "b": {
+              "index": 0,
+              "name": "black"
+            },
+            "of16": 8
+          }
+        },
+        "from": {
+          "index": 3,
+          "name": "brown"
+        }
+      },
+      {
+        "atNight": {
+          "dither": {
+            "a": {
+              "index": 4,
+              "name": "blue"
+            },
+            "b": {
+              "index": 0,
+              "name": "black"
+            },
+            "of16": 8
+          }
+        },
+        "from": {
+          "index": 4,
+          "name": "blue"
+        }
+      },
+      {
+        "atNight": {
+          "dither": {
+            "a": {
+              "index": 5,
+              "name": "magenta"
+            },
+            "b": {
+              "index": 0,
+              "name": "black"
+            },
+            "of16": 8
+          }
+        },
+        "from": {
+          "index": 5,
+          "name": "magenta"
+        }
+      },
+      {
+        "atNight": {
+          "dither": {
+            "a": {
+              "index": 6,
+              "name": "cyan"
+            },
+            "b": {
+              "index": 0,
+              "name": "black"
+            },
+            "of16": 8
+          }
+        },
+        "from": {
+          "index": 6,
+          "name": "cyan"
+        }
+      },
+      {
+        "atNight": {
+          "dither": {
+            "a": {
+              "index": 7,
+              "name": "lightgray"
+            },
+            "b": {
+              "index": 0,
+              "name": "black"
+            },
+            "of16": 8
+          }
+        },
+        "from": {
+          "index": 7,
+          "name": "lightgray"
+        }
+      },
+      {
+        "atNight": {
+          "dither": {
+            "a": {
+              "index": 8,
+              "name": "darkgray"
+            },
+            "b": {
+              "index": 0,
+              "name": "black"
+            },
+            "of16": 8
+          }
+        },
+        "from": {
+          "index": 8,
+          "name": "darkgray"
+        }
+      },
+      {
+        "atNight": {
+          "to": {
+            "index": 1,
+            "name": "red"
+          }
+        },
+        "from": {
+          "index": 9,
+          "name": "lightred"
+        }
+      },
+      {
+        "atNight": {
+          "to": {
+            "index": 2,
+            "name": "green"
+          }
+        },
+        "from": {
+          "index": 10,
+          "name": "lightgreen"
+        }
+      },
+      {
+        "atNight": {
+          "to": {
+            "index": 3,
+            "name": "brown"
+          }
+        },
+        "from": {
+          "index": 11,
+          "name": "yellow"
+        }
+      },
+      {
+        "atNight": {
+          "to": {
+            "index": 4,
+            "name": "blue"
+          }
+        },
+        "from": {
+          "index": 12,
+          "name": "lightblue"
+        }
+      },
+      {
+        "atNight": {
+          "to": {
+            "index": 5,
+            "name": "magenta"
+          }
+        },
+        "from": {
+          "index": 13,
+          "name": "lightmagenta"
+        }
+      },
+      {
+        "atNight": {
+          "to": {
+            "index": 6,
+            "name": "cyan"
+          }
+        },
+        "from": {
+          "index": 14,
+          "name": "lightcyan"
+        }
+      },
+      {
+        "atNight": {
+          "to": {
+            "index": 7,
+            "name": "lightgray"
+          }
+        },
+        "from": {
+          "index": 15,
+          "name": "white"
+        }
+      }
+    ]
+  },
+  "horizon": {
+    "rule": "horizon pixel row = h * percent / 100; air has none (100: all sky is the whole picture); a room's terrain unknown to the painter is plains at 45",
+    "terrains": [
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "city"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "woods"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "rocky"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "plains"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": false,
+        "terrain": "underwater"
+      },
+      {
+        "indoors": false,
+        "percent": 100,
+        "sky": true,
+        "terrain": "air"
+      },
+      {
+        "indoors": false,
+        "percent": 50,
+        "sky": true,
+        "terrain": "watersurface"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "jungle"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "swamp"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "desert"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "hills"
+      },
+      {
+        "indoors": false,
+        "percent": 60,
+        "sky": true,
+        "terrain": "mountains"
+      },
+      {
+        "indoors": false,
+        "percent": 45,
+        "sky": true,
+        "terrain": "spaceport"
+      },
+      {
+        "indoors": false,
+        "percent": 50,
+        "sky": true,
+        "terrain": "seaport"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "stone"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "wooden"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "cave"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "magic"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "in_underwater"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "gap"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "cavelakesurface"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "metal"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "innerseaport"
+      },
+      {
+        "indoors": true,
+        "percent": 45,
+        "sky": false,
+        "terrain": "caveseaport"
+      }
+    ]
+  },
+  "made": "2026-10-29",
+  "materials": {
+    "indoorsDefaultIsStone": true,
+    "rows": [
+      {
+        "ceiling": {
+          "index": 0,
+          "name": "black"
+        },
+        "floor": {
+          "index": 7,
+          "name": "lightgray"
+        },
+        "floorJoint": {
+          "index": 8,
+          "name": "darkgray"
+        },
+        "joint": {
+          "index": 7,
+          "name": "lightgray"
+        },
+        "laid": "bricks",
+        "side": {
+          "index": 8,
+          "name": "darkgray"
+        },
+        "terrain": "stone",
+        "wall": {
+          "index": 8,
+          "name": "darkgray"
+        }
+      },
+      {
+        "ceiling": {
+          "index": 0,
+          "name": "black"
+        },
+        "floor": {
+          "index": 3,
+          "name": "brown"
+        },
+        "floorJoint": {
+          "index": 0,
+          "name": "black"
+        },
+        "joint": {
+          "index": 1,
+          "name": "red"
+        },
+        "laid": "planks",
+        "side": {
+          "index": 1,
+          "name": "red"
+        },
+        "terrain": "wooden",
+        "wall": {
+          "index": 3,
+          "name": "brown"
+        }
+      },
+      {
+        "drawnBy": "cave()",
+        "terrain": "cave"
+      },
+      {
+        "ceiling": {
+          "index": 0,
+          "name": "black"
+        },
+        "floor": {
+          "index": 4,
+          "name": "blue"
+        },
+        "floorJoint": {
+          "index": 5,
+          "name": "magenta"
+        },
+        "joint": {
+          "index": 13,
+          "name": "lightmagenta"
+        },
+        "laid": "runes",
+        "side": {
+          "index": 4,
+          "name": "blue"
+        },
+        "terrain": "magic",
+        "wall": {
+          "index": 5,
+          "name": "magenta"
+        }
+      },
+      {
+        "ceiling": {
+          "index": 0,
+          "name": "black"
+        },
+        "floor": {
+          "index": 6,
+          "name": "cyan"
+        },
+        "floorJoint": {
+          "index": 4,
+          "name": "blue"
+        },
+        "joint": {
+          "index": 6,
+          "name": "cyan"
+        },
+        "laid": "bricks",
+        "side": {
+          "index": 4,
+          "name": "blue"
+        },
+        "terrain": "in_underwater",
+        "wall": {
+          "index": 4,
+          "name": "blue"
+        }
+      },
+      {
+        "drawnBy": "gap()",
+        "terrain": "gap"
+      },
+      {
+        "drawnBy": "cave()",
+        "terrain": "cavelakesurface"
+      },
+      {
+        "ceiling": {
+          "index": 0,
+          "name": "black"
+        },
+        "floor": {
+          "index": 8,
+          "name": "darkgray"
+        },
+        "floorJoint": {
+          "index": 0,
+          "name": "black"
+        },
+        "joint": {
+          "index": 8,
+          "name": "darkgray"
+        },
+        "laid": "panels",
+        "side": {
+          "index": 8,
+          "name": "darkgray"
+        },
+        "terrain": "metal",
+        "wall": {
+          "index": 7,
+          "name": "lightgray"
+        }
+      },
+      {
+        "ceiling": {
+          "index": 0,
+          "name": "black"
+        },
+        "floor": {
+          "index": 7,
+          "name": "lightgray"
+        },
+        "floorJoint": {
+          "index": 8,
+          "name": "darkgray"
+        },
+        "joint": {
+          "index": 7,
+          "name": "lightgray"
+        },
+        "laid": "bricks",
+        "side": {
+          "index": 8,
+          "name": "darkgray"
+        },
+        "terrain": "innerseaport",
+        "wall": {
+          "index": 8,
+          "name": "darkgray"
+        }
+      },
+      {
+        "drawnBy": "cave()",
+        "terrain": "caveseaport"
+      }
+    ],
+    "rule": "indoor rooms: back wall in bricks, planks, panels or runes; stone and the sea ports' halls take the stone row; caves and the gap have their own drawing"
+  },
+  "recede": {
+    "rule": "a step back (Canvas::recede, for places behind a face or item)",
+    "table": [
+      {
+        "from": {
+          "index": 0,
+          "name": "black"
+        },
+        "to": {
+          "index": 0,
+          "name": "black"
+        }
+      },
+      {
+        "from": {
+          "index": 1,
+          "name": "red"
+        },
+        "to": {
+          "index": 1,
+          "name": "red"
+        }
+      },
+      {
+        "from": {
+          "index": 2,
+          "name": "green"
+        },
+        "to": {
+          "index": 2,
+          "name": "green"
+        }
+      },
+      {
+        "from": {
+          "index": 3,
+          "name": "brown"
+        },
+        "to": {
+          "index": 3,
+          "name": "brown"
+        }
+      },
+      {
+        "from": {
+          "index": 4,
+          "name": "blue"
+        },
+        "to": {
+          "index": 4,
+          "name": "blue"
+        }
+      },
+      {
+        "from": {
+          "index": 5,
+          "name": "magenta"
+        },
+        "to": {
+          "index": 5,
+          "name": "magenta"
+        }
+      },
+      {
+        "from": {
+          "index": 6,
+          "name": "cyan"
+        },
+        "to": {
+          "index": 6,
+          "name": "cyan"
+        }
+      },
+      {
+        "from": {
+          "index": 7,
+          "name": "lightgray"
+        },
+        "to": {
+          "index": 8,
+          "name": "darkgray"
+        }
+      },
+      {
+        "from": {
+          "index": 8,
+          "name": "darkgray"
+        },
+        "to": {
+          "index": 0,
+          "name": "black"
+        }
+      },
+      {
+        "from": {
+          "index": 9,
+          "name": "lightred"
+        },
+        "to": {
+          "index": 1,
+          "name": "red"
+        }
+      },
+      {
+        "from": {
+          "index": 10,
+          "name": "lightgreen"
+        },
+        "to": {
+          "index": 2,
+          "name": "green"
+        }
+      },
+      {
+        "from": {
+          "index": 11,
+          "name": "yellow"
+        },
+        "to": {
+          "index": 3,
+          "name": "brown"
+        }
+      },
+      {
+        "from": {
+          "index": 12,
+          "name": "lightblue"
+        },
+        "to": {
+          "index": 4,
+          "name": "blue"
+        }
+      },
+      {
+        "from": {
+          "index": 13,
+          "name": "lightmagenta"
+        },
+        "to": {
+          "index": 5,
+          "name": "magenta"
+        }
+      },
+      {
+        "from": {
+          "index": 14,
+          "name": "lightcyan"
+        },
+        "to": {
+          "index": 6,
+          "name": "cyan"
+        }
+      },
+      {
+        "from": {
+          "index": 15,
+          "name": "white"
+        },
+        "to": {
+          "index": 7,
+          "name": "lightgray"
+        }
+      }
+    ]
+  },
+  "rng": {
+    "algorithm": "xorshift64*: state = seed | 1; next(): s ^= s >> 12; s ^= s << 25; s ^= s >> 27; return s * 0x2545f4914f6cdd1d (wrapping)",
+    "below": "(next() >> 33) as i32 % n; 0 when n <= 0",
+    "between": "a + below(b - a + 1)",
+    "chance": "below(100) < percent",
+    "firstSixOfStandardMidgaard3001Look0": [
+      "2576889914819265126",
+      "17186911206065790242",
+      "15011274164318645579",
+      "9549098927224807421",
+      "1866004976969264152",
+      "6471394514896383646"
+    ],
+    "seed": "paint::seed (FNV-1a 64, world, 0, room, again as 4 LE bytes)"
+  },
+  "size": {
+    "columns": [
+      8,
+      160
+    ],
+    "pixels": "two square pixels a cell (the half block: top pixel the foreground, bottom the background)",
+    "rows": [
+      4,
+      45
+    ]
+  },
+  "skyStops": {
+    "rule": "canvas.gradient(0, horizon, stops): bands from the top; solid, dithered (Bayer, t from the position within the band: t = clamp((at % 16 - 5) * 16 / 6, 0, 16), at = (y - y0) * (stops - 1) * 16 / (y1 - y0)) only where one meets the next",
+    "stops": [
+      {
+        "sky": "clear",
+        "stops": [
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "clear",
+        "stops": [
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 12,
+            "name": "lightblue"
+          },
+          {
+            "index": 14,
+            "name": "lightcyan"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "clear",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 1,
+            "name": "red"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "clear",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "cloudy",
+        "stops": [
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "cloudy",
+        "stops": [
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 12,
+            "name": "lightblue"
+          },
+          {
+            "index": 14,
+            "name": "lightcyan"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "cloudy",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 1,
+            "name": "red"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "cloudy",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "windy",
+        "stops": [
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "windy",
+        "stops": [
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 12,
+            "name": "lightblue"
+          },
+          {
+            "index": 14,
+            "name": "lightcyan"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "windy",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 1,
+            "name": "red"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "windy",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "rain",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "rain",
+        "stops": [
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "rain",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "rain",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "storm",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "storm",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "storm",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "storm",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "snow",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "snow",
+        "stops": [
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "snow",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "snow",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "blizzard",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "blizzard",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "blizzard",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "blizzard",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "hail",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "hail",
+        "stops": [
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "hail",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "hail",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "sleet",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "sleet",
+        "stops": [
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "sleet",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "sleet",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "fog",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "fog",
+        "stops": [
+          {
+            "index": 7,
+            "name": "lightgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          },
+          {
+            "index": 15,
+            "name": "white"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "fog",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          },
+          {
+            "index": 7,
+            "name": "lightgray"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "fog",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 8,
+            "name": "darkgray"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "dust",
+        "stops": [
+          {
+            "index": 3,
+            "name": "brown"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "dust",
+        "stops": [
+          {
+            "index": 3,
+            "name": "brown"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "dust",
+        "stops": [
+          {
+            "index": 3,
+            "name": "brown"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "dust",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 3,
+            "name": "brown"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "hot",
+        "stops": [
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "hot",
+        "stops": [
+          {
+            "index": 12,
+            "name": "lightblue"
+          },
+          {
+            "index": 14,
+            "name": "lightcyan"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "hot",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 1,
+            "name": "red"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "hot",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          }
+        ],
+        "time": "night"
+      },
+      {
+        "sky": "cold",
+        "stops": [
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          },
+          {
+            "index": 11,
+            "name": "yellow"
+          }
+        ],
+        "time": "dawn"
+      },
+      {
+        "sky": "cold",
+        "stops": [
+          {
+            "index": 12,
+            "name": "lightblue"
+          },
+          {
+            "index": 14,
+            "name": "lightcyan"
+          },
+          {
+            "index": 15,
+            "name": "white"
+          }
+        ],
+        "time": "day"
+      },
+      {
+        "sky": "cold",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          },
+          {
+            "index": 5,
+            "name": "magenta"
+          },
+          {
+            "index": 1,
+            "name": "red"
+          },
+          {
+            "index": 9,
+            "name": "lightred"
+          }
+        ],
+        "time": "dusk"
+      },
+      {
+        "sky": "cold",
+        "stops": [
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 0,
+            "name": "black"
+          },
+          {
+            "index": 4,
+            "name": "blue"
+          }
+        ],
+        "time": "night"
+      }
+    ]
+  },
+  "source": "painter.rs at this checkout (functions the painter draws with), exported by painter_tables",
+  "underwaterStops": [
+    {
+      "index": 6,
+      "name": "cyan"
+    },
+    {
+      "index": 4,
+      "name": "blue"
+    },
+    {
+      "index": 4,
+      "name": "blue"
+    },
+    {
+      "index": 0,
+      "name": "black"
+    }
+  ],
+  "vga": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      170,
+      0,
+      0
+    ],
+    [
+      0,
+      170,
+      0
+    ],
+    [
+      170,
+      85,
+      0
+    ],
+    [
+      0,
+      0,
+      170
+    ],
+    [
+      170,
+      0,
+      170
+    ],
+    [
+      0,
+      170,
+      170
+    ],
+    [
+      170,
+      170,
+      170
+    ],
+    [
+      85,
+      85,
+      85
+    ],
+    [
+      255,
+      85,
+      85
+    ],
+    [
+      85,
+      255,
+      85
+    ],
+    [
+      255,
+      255,
+      85
+    ],
+    [
+      85,
+      85,
+      255
+    ],
+    [
+      255,
+      85,
+      255
+    ],
+    [
+      85,
+      255,
+      255
+    ],
+    [
+      255,
+      255,
+      255
+    ]
+  ],
+  "vgaNames": [
+    "black",
+    "red",
+    "green",
+    "brown",
+    "blue",
+    "magenta",
+    "cyan",
+    "lightgray",
+    "darkgray",
+    "lightred",
+    "lightgreen",
+    "yellow",
+    "lightblue",
+    "lightmagenta",
+    "lightcyan",
+    "white"
+  ],
+  "weather": {
+    "kinds": [
+      {
+        "every": 0,
+        "marks": [],
+        "overcast": false,
+        "sky": "clear"
+      },
+      {
+        "every": 0,
+        "marks": [],
+        "overcast": false,
+        "sky": "cloudy"
+      },
+      {
+        "every": 0,
+        "marks": [],
+        "overcast": false,
+        "sky": "windy"
+      },
+      {
+        "every": 10,
+        "marks": [
+          {
+            "color": {
+              "index": 12,
+              "name": "lightblue"
+            },
+            "glyph": "/"
+          },
+          {
+            "color": {
+              "index": 14,
+              "name": "lightcyan"
+            },
+            "glyph": "/"
+          }
+        ],
+        "overcast": true,
+        "sky": "rain"
+      },
+      {
+        "every": 5,
+        "marks": [
+          {
+            "color": {
+              "index": 12,
+              "name": "lightblue"
+            },
+            "glyph": "/"
+          },
+          {
+            "color": {
+              "index": 7,
+              "name": "lightgray"
+            },
+            "glyph": "/"
+          }
+        ],
+        "overcast": true,
+        "sky": "storm"
+      },
+      {
+        "every": 9,
+        "marks": [
+          {
+            "color": {
+              "index": 15,
+              "name": "white"
+            },
+            "glyph": "*"
+          },
+          {
+            "color": {
+              "index": 15,
+              "name": "white"
+            },
+            "glyph": "∙"
+          },
+          {
+            "color": {
+              "index": 7,
+              "name": "lightgray"
+            },
+            "glyph": "."
+          }
+        ],
+        "overcast": true,
+        "sky": "snow"
+      },
+      {
+        "every": 3,
+        "marks": [
+          {
+            "color": {
+              "index": 15,
+              "name": "white"
+            },
+            "glyph": "*"
+          },
+          {
+            "color": {
+              "index": 15,
+              "name": "white"
+            },
+            "glyph": "∙"
+          },
+          {
+            "color": {
+              "index": 15,
+              "name": "white"
+            },
+            "glyph": "░"
+          }
+        ],
+        "overcast": true,
+        "sky": "blizzard"
+      },
+      {
+        "every": 10,
+        "marks": [
+          {
+            "color": {
+              "index": 15,
+              "name": "white"
+            },
+            "glyph": "o"
+          },
+          {
+            "color": {
+              "index": 7,
+              "name": "lightgray"
+            },
+            "glyph": "∙"
+          }
+        ],
+        "overcast": true,
+        "sky": "hail"
+      },
+      {
+        "every": 8,
+        "marks": [
+          {
+            "color": {
+              "index": 7,
+              "name": "lightgray"
+            },
+            "glyph": "/"
+          },
+          {
+            "color": {
+              "index": 15,
+              "name": "white"
+            },
+            "glyph": "*"
+          }
+        ],
+        "overcast": true,
+        "sky": "sleet"
+      },
+      {
+        "every": 0,
+        "marks": [],
+        "overcast": true,
+        "sky": "fog"
+      },
+      {
+        "every": 5,
+        "marks": [
+          {
+            "color": {
+              "index": 11,
+              "name": "yellow"
+            },
+            "glyph": "∙"
+          },
+          {
+            "color": {
+              "index": 3,
+              "name": "brown"
+            },
+            "glyph": "."
+          },
+          {
+            "color": {
+              "index": 3,
+              "name": "brown"
+            },
+            "glyph": "░"
+          }
+        ],
+        "overcast": true,
+        "sky": "dust"
+      },
+      {
+        "every": 0,
+        "marks": [],
+        "overcast": false,
+        "sky": "hot"
+      },
+      {
+        "every": 0,
+        "marks": [],
+        "overcast": false,
+        "sky": "cold"
+      }
+    ],
+    "rule": "for `every` > 0: (w * h / 2 / every).max(1) marks, each a random pixel and a random mark of the list; at night a white mark shows lightgray; snow and blizzard also whiten the land that is not lit; a thunderstorm draws a lightning bolt from the top to the horizon"
+  }
+}

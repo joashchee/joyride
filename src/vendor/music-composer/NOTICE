@@ -1,0 +1,7 @@
+music-composer (the Composer engine)
+Copyright 2026 ansiapps
+
+Licensed under the MIT License (see LICENSE). Vendored into JoyrIDE
+from ansiapps' own engine (scripts/vendor-sync.sh).
+
+

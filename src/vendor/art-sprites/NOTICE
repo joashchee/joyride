@@ -1,0 +1,21 @@
+art-sprites (the Painter engine)
+Copyright 2026 ansiapps
+
+Licensed under the MIT License (see LICENSE). Vendored into JoyrIDE
+from ansiapps' own engine (scripts/vendor-sync.sh).
+
+Painter includes:
+
+- Data taken from CoffeeMUD (coffeemud.net) by way of Coupler: its races
+  and their categories, sizes and weights, and its class names
+  (recipes/portrait-data.js, recipes/face-data.js and the tables made
+  from them), Copyright 2000-2026 Bo Zimmerman (Apache License 2.0, as
+  CoffeeMUD is distributed; the licence text is LICENSES/Apache-2.0.txt
+  and goes with this data wherever it goes).
+
+Not part of Painter's own code:
+
+- IBM VGA 8x16 from The Ultimate Oldschool PC Font Pack by VileR
+  (int10h.org/oldschool-pc-fonts), CC BY-SA 4.0, kept unmodified with its
+  license in docs/fonts/. Only the Node-only `art-sprites/atlas` and the
+  PNG renderers read it; the browser-safe main entry does not.

@@ -1,0 +1,53 @@
+# Tests the Tauri-free crates (asset-core, joyride-core) and the vendored
+# engines on every push and pull request. Standard GitHub-hosted runner only,
+# so it stays free (CLAUDE.md, "Build notes"). LuaJIT lets the shim tests
+# run the generated Lua; without it they skip. The real-LÖVE test skips on a
+# runner with no display.
+name: Tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y luajit git
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            asset-core
+            joyride-core
+      - run: cargo test --manifest-path asset-core/Cargo.toml
+      - run: cargo test --manifest-path joyride-core/Cargo.toml
+      - run: cargo clippy --all-targets --manifest-path asset-core/Cargo.toml -- -D warnings
+      - run: cargo clippy --all-targets --manifest-path joyride-core/Cargo.toml -- -D warnings
+
+  engines:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+        working-directory: src/vendor/art-sprites
+      - run: npm test
+        working-directory: src/vendor/music-composer
+      - run: npm test
+        working-directory: src/vendor/sprite-animator
