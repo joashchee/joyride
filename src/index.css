@@ -87,3 +87,14 @@ button:disabled { opacity: 0.5; }
 .variant-uses { display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--line); padding: 6px 8px; max-height: 22vh; overflow: auto; }
 .variant-uses label { display: block; }
 .use-unsupported code { color: #d33; }
+
+.autoport { padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 13px; max-height: 45vh; overflow: auto; display: flex; flex-direction: column; gap: 6px; }
+.autoport header { display: flex; align-items: center; gap: 8px; }
+.autoport header [role="tablist"] { display: flex; gap: 4px; flex: 1; }
+.autoport header button.active { font-weight: 600; }
+.port-findings { list-style: none; margin: 0; padding: 0; }
+.port-findings button { display: block; width: 100%; text-align: left; background: none; border: 0; border-left: 3px solid transparent; color: inherit; font: inherit; padding: 3px 6px; cursor: pointer; }
+.port-findings button:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); }
+.port-blocker button { border-left-color: #d33; }
+.port-warning button { border-left-color: #e0a020; }
+.port-info button { border-left-color: var(--line); }

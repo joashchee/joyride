@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Auto-Port panel** (2026-11-13): findings per target, generate or refresh the overlay,
+  open its `patch.toml`, `.gptk` and shim.
 - **11.5 variant list** (2026-11-13): the Export panel shows each 12.0-only function a
   game uses and lets you accept the unsupported ones, remembered in `.joyride/variant.toml`.
 - **Colour swatches** (2026-11-13): `love.graphics.setColor(0.2, 0.4, 1)` shows a swatch

@@ -4,6 +4,7 @@
 
 use serde::Serialize;
 
+mod autoport;
 mod docs;
 mod export;
 mod libs;
@@ -58,6 +59,8 @@ pub fn run() {
             project::color_text,
             export::export_info,
             export::export_project,
+            autoport::autoport_scan,
+            autoport::autoport_generate,
             docs::docs_search,
             docs::docs_get,
             libs::library_list,

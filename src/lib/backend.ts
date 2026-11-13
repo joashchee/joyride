@@ -112,6 +112,32 @@ export interface DocFound {
 export const docsSearch = (query: string) => invoke<{ version: string; results: DocFound[] }>("docs_search", { query });
 export const docsGet = (name: string) => invoke<{ text: string; snippet: string | null } | null>("docs_get", { name });
 
+export interface PortFinding {
+  level: "info" | "warning" | "blocker";
+  file: string;
+  line: number;
+  rule: string;
+  message: string;
+}
+export interface PortTarget {
+  name: string;
+  title: string;
+  findings: PortFinding[];
+  blockers: number;
+  overlayFiles: string[];
+}
+export interface PortReport {
+  files: number;
+  keyboard: boolean;
+  mouse: boolean;
+  touch: boolean;
+  gamepad: boolean;
+  keys: string[];
+  targets: PortTarget[];
+}
+export const autoportScan = () => invoke<PortReport>("autoport_scan");
+export const autoportGenerate = (target: string) => invoke<PortReport>("autoport_generate", { target });
+
 export interface RunLine {
   stream: "out" | "err";
   text: string;

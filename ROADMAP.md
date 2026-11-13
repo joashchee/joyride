@@ -80,7 +80,8 @@ Tracks every usable asset with its licence, category, tags and preview, makes li
 - [x] Overlays (`overlay.rs`): `.joyride/patches/<target>/` written and read; staging copies the project and merges the overlay without touching the source (tested by comparing the tree before and after); `conf.lua` values patched in the copy; unified diffs applied exactly or refused; drop-in overrides.
 - [x] Shims (`shim.rs`): letterboxed integer or smooth scaler with mouse and touch mapping; PortMaster right-stick cursor, Select+Start quit; mobile touch pad that fires synthetic key events; web stubs. Tested under LuaJIT.
 - [x] `.gptk` generator from the scanned keys.
-- [ ] Overlay UI: Auto-Port panel, handheld diagram, editing the `.gptk`.
+- [x] **Auto-Port panel** (2026-11-13): `autoport_scan` and `autoport_generate` commands (off the UI thread; a test), a panel with a tab per target (PortMaster, mobile, web) showing the input found, each finding by level (will not work, check, handled) that opens the file at the line, a Generate/Refresh overlay button and buttons that open the overlay's `patch.toml`, `game.gptk` and shim in the editor (so the `.gptk` is edited as text; an edited `patch.toml` or `.gptk` is kept on refresh). Your source is not changed. **Not yet tried in a window.**
+- [ ] Auto-Port, still to do: the handheld diagram (a picture of the pad with the keys mapped), edits to `patch.toml` conf values through a form, adding diffs and overrides from the panel.
 - [ ] Shim polish needing a real device: canvas stencil use, shaders on GLES, safe-area on notched phones.
 
 ## 7. Exporters (milestone 6)
