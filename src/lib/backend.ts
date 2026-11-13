@@ -31,6 +31,7 @@ export async function chooseFolder(): Promise<string | null> {
   const r = await open({ directory: true, multiple: false, title: "Open a LÖVE project" });
   return typeof r === "string" ? r : null;
 }
+export const lastProject = () => (inTauri ? invoke<string | null>("last_project") : Promise.resolve(null));
 export const openProject = (path: string) => invoke<Listing>("open_project", { path });
 export const readFile = (path: string) => invoke<string>("read_project_file", { path });
 export const writeFile = (path: string, text: string) =>

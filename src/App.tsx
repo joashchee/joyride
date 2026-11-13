@@ -1,10 +1,10 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import Splash from "./components/Splash";
 import FileTree from "./components/FileTree";
 import Console from "./components/Console";
 import NameBox from "./components/NameBox";
 import Search from "./components/Search";
-import { chooseFolder, coreInfo, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
+import { chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -51,6 +51,39 @@ export default function App() {
     };
   }, []);
 
+  // Back where it was: the last project reopens once the splash is gone.
+  const restored = useRef(false);
+  useEffect(() => {
+    if (!gone || restored.current) return;
+    restored.current = true;
+    void lastProject()
+      .then(async (d) => {
+        if (d) await openDir(d);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gone]);
+
+  // Closing the window with unsaved files asks first.
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
+  useEffect(() => {
+    if (!inTauri) return;
+    let off = () => {};
+    let dead = false;
+    void import("@tauri-apps/api/window").then(async ({ getCurrentWindow }) => {
+      const u = await getCurrentWindow().onCloseRequested((e) => {
+        const n = dirtyRef.current.size;
+        if (n > 0 && !window.confirm(`${n} file${n === 1 ? " has" : "s have"} unsaved changes. Quit without saving?`)) e.preventDefault();
+      });
+      dead ? u() : (off = u);
+    });
+    return () => {
+      dead = true;
+      off();
+    };
+  }, []);
+
   useEffect(() => {
     let off = () => {};
     let dead = false;
@@ -83,7 +116,14 @@ export default function App() {
   const openFolder = async () => {
     try {
       const dir = await chooseFolder();
-      if (!dir) return;
+      if (dir) await openDir(dir);
+    } catch (e) {
+      fail(e);
+    }
+  };
+
+  const openDir = async (dir: string) => {
+    try {
       const l = await openProject(dir);
       tabs.forEach(closeDoc);
       const L = await lsp();

@@ -5,7 +5,7 @@
 use joyride_core::files::{self, Listing};
 use std::path::PathBuf;
 use std::sync::Mutex;
-use tauri::State;
+use tauri::{AppHandle, Manager, State};
 
 #[derive(Default)]
 pub struct Project(Mutex<Option<PathBuf>>);
@@ -22,11 +22,36 @@ fn msg(e: joyride_core::Error) -> String {
 
 /// Opens a folder as the project and lists it.
 #[tauri::command]
-pub fn open_project(state: State<Project>, path: String) -> Result<Listing, String> {
+pub fn open_project(app: AppHandle, state: State<Project>, path: String) -> Result<Listing, String> {
     let root = PathBuf::from(path);
     let listing = files::list(&root).map_err(msg)?;
-    *state.0.lock().unwrap() = Some(root.canonicalize().map_err(|e| e.to_string())?);
+    let canon = root.canonicalize().map_err(|e| e.to_string())?;
+    remember(&app, &canon);
+    *state.0.lock().unwrap() = Some(canon);
     Ok(listing)
+}
+
+/// Where the last project's path is kept: the app-data folder, never the project.
+fn last_file(app: &AppHandle) -> Option<PathBuf> {
+    app.path().app_data_dir().ok().map(|d| d.join("last-project.txt"))
+}
+
+fn remember(app: &AppHandle, root: &std::path::Path) {
+    if let Some(f) = last_file(app) {
+        if let Some(d) = f.parent() {
+            let _ = std::fs::create_dir_all(d);
+        }
+        let _ = std::fs::write(f, root.to_string_lossy().as_bytes());
+    }
+}
+
+/// The folder opened last time, if it is still a folder; the frontend opens it
+/// after the first screen so the editor comes back where it was.
+#[tauri::command]
+pub fn last_project(app: AppHandle) -> Option<String> {
+    let p = std::fs::read_to_string(last_file(&app)?).ok()?;
+    let p = PathBuf::from(p.trim());
+    p.is_dir().then(|| p.to_string_lossy().into_owned())
 }
 
 #[tauri::command]

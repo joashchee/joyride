@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Restore the last project and confirm on close** (2026-11-13): the last folder
+  reopens after the splash; closing with unsaved files asks first.
 - **Find in files** (2026-11-13): `files::search` and a sidebar panel (⌘⇧F); plain
   text, capped, never reads through links.
 - **New file, new folder, rename, delete** (2026-11-13): `files::create_file`,

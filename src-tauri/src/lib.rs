@@ -40,6 +40,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             core_info,
             project::open_project,
+            project::last_project,
             project::project_listing,
             project::read_project_file,
             project::write_project_file,
