@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **PortMaster's LÖVE ports are in the games catalogue** (2026-11-14): 68 handheld ports with their description, genres, free or paid, the LÖVE version and the PortMaster download, merged with the same game from other places.
 - **Games and apps panel** (2026-11-14): `Games…` in the toolbar opens the LÖVE games and apps catalogue: search, filter by kind, platform and open source, see the licence and latest version, and open a page or download in your browser. It is empty until the catalogue is filled.
 - **LÖVE games and apps catalogue, first part** (2026-11-14): a second library for what has been made with LÖVE: where to download, licence, latest version. Entries from several places are de-duplicated and the newest version kept; same-name games by different authors stay apart. The data model, search and GitHub reader are written and tested; the catalogue is empty until the fetcher is run with network access, and there is no panel yet. `docs/love-games-library.md`.
 - **Insert from the Reference** (2026-11-14): the LÖVE reference panel has an Insert button that puts a function's snippet at the cursor, with Tab moving between the placeholders.

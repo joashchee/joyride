@@ -48,7 +48,7 @@ a BLAKE3 once someone has fetched it), `archived`, `checked` (last refresh).
 | Source | State |
 |---|---|
 | GitHub repositories (seeds, then topic `love2d`) | `from_github` and `curate_games` written and tested on GitHub's JSON shape; **not yet run against GitHub** (the sandbox's `gh` cannot verify GitHub's certificate) |
-| PortMaster-New's LÖVE ports (68 as of `40186ea1`) | not yet; `scripts/check-portmaster.py` already reads them |
+| PortMaster-New's LÖVE ports (68 as of `40186ea1`) | `curate_portmaster` written and run (2026-11-14): 68 entries, each with its zip, store links and runtime; licences unknown (a port does not state the game's licence) |
 | itch.io (the `made-with-love` tag; it has an API key flow, so the person supplies theirs) | not yet |
 | LÖVE forums showcase, awesome-love2d | not yet |
 

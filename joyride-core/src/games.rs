@@ -156,10 +156,21 @@ pub fn canonical_url(url: &str) -> String {
     let mut parts = u.split('/');
     let host = parts.next().unwrap_or("");
     if matches!(host, "github.com" | "gitlab.com" | "codeberg.org") {
-        let rest: Vec<&str> = parts.take(2).collect();
-        return std::iter::once(host).chain(rest).collect::<Vec<_>>().join("/");
+        let segs: Vec<&str> = parts.collect();
+        // A folder inside a repository (`/tree/main/ports/arco`) is its own page: a repository that holds many games
+        // (PortMaster-New) must not make them all one. Anything else under a repository is the repository.
+        let keep = if matches!(segs.get(2), Some(&"tree" | &"blob" | &"-")) && segs.len() > 4 { segs.len() } else { 2.min(segs.len()) };
+        return std::iter::once(host).chain(segs.into_iter().take(keep)).collect::<Vec<_>>().join("/");
     }
     u.to_string()
+}
+
+/// A download URL for comparing: like `canonical_url` but never cut to the repository, since two files under one repository's
+/// releases are two files.
+pub fn canonical_download(url: &str) -> String {
+    let u = url.trim().to_lowercase();
+    let u = u.split_once("://").map_or(u.as_str(), |(_, r)| r);
+    u.split(['?', '#']).next().unwrap_or("").trim_end_matches('/').to_string()
 }
 
 /// `The Quick-Brown Fox!` → `the-quick-brown-fox`.
@@ -222,7 +233,7 @@ fn newer(a: &Option<Latest>, b: &Option<Latest>) -> bool {
 fn same_game(o: &Entry, e: &Entry) -> bool {
     let urls: Vec<String> = e.sources.iter().map(|s| canonical_url(&s.url)).collect();
     o.sources.iter().any(|s| urls.contains(&canonical_url(&s.url)))
-        || o.downloads.iter().any(|d| e.downloads.iter().any(|x| canonical_url(&x.url) == canonical_url(&d.url) || (d.blake3.is_some() && d.blake3 == x.blake3)))
+        || o.downloads.iter().any(|d| e.downloads.iter().any(|x| canonical_download(&x.url) == canonical_download(&d.url) || (d.blake3.is_some() && d.blake3 == x.blake3)))
         || (!name_key(&e.name).is_empty() && name_key(&o.name) == name_key(&e.name) && same_author(o, e))
 }
 
@@ -388,7 +399,7 @@ fn merge(into: &mut Entry, from: Entry) {
     }
     // A download known by URL is updated in place (it may have gained a hash or size); a new one is added.
     for d in from.downloads {
-        match into.downloads.iter_mut().find(|x| canonical_url(&x.url) == canonical_url(&d.url)) {
+        match into.downloads.iter_mut().find(|x| canonical_download(&x.url) == canonical_download(&d.url)) {
             Some(x) => {
                 x.blake3 = x.blake3.take().or(d.blake3);
                 x.size = x.size.or(d.size);
@@ -517,6 +528,48 @@ pub fn from_github(repo: &serde_json::Value, release: Option<&serde_json::Value>
     })
 }
 
+/// An entry from a PortMaster-New port: its `port.json` (parsed), the port's folder name, and the LÖVE runtime its launch
+/// script sources (`love_11.5`). The port's own page is its folder in the PortMaster-New repository; the zip is PortMaster's
+/// latest release asset; the game's store and developer pages (Steam, itch.io, a website) are sources too, so a game that is
+/// also in the catalogue from itch.io or GitHub merges with it. A port says nothing about the game's licence, so it stays
+/// unknown; `availability` (free, paid) and the genres become tags.
+pub fn from_portmaster(port: &serde_json::Value, folder: &str, love_runtime: Option<&str>, today: &str) -> Option<Entry> {
+    let attr = port.get("attr")?;
+    let title = attr.get("title")?.as_str()?.to_string();
+    let zip = port.get("name").and_then(|x| x.as_str()).filter(|n| n.ends_with(".zip"));
+    let strs = |v: Option<&serde_json::Value>| -> Vec<String> { v.and_then(|a| a.as_array()).map(|a| a.iter().filter_map(|x| x.as_str().map(str::to_string)).collect()).unwrap_or_default() };
+    let mut sources = vec![Source { kind: SourceKind::Portmaster, url: format!("https://github.com/PortsMaster/PortMaster-New/tree/main/ports/{folder}") }];
+    for st in attr.get("store").and_then(|s| s.as_array()).into_iter().flatten() {
+        for key in ["gameurl", "developerurl"] {
+            if let Some(u) = st.get(key).and_then(|x| x.as_str()).filter(|u| u.starts_with("https://")) {
+                let kind = if u.contains(".itch.io") { SourceKind::Itch } else if u.contains("github.com/") { SourceKind::Github } else { SourceKind::Web };
+                if !sources.iter().any(|s| canonical_url(&s.url) == canonical_url(u)) {
+                    sources.push(Source { kind, url: u.to_string() });
+                }
+            }
+        }
+    }
+    let mut tags = strs(attr.get("genres"));
+    if let Some(a) = attr.get("availability").and_then(|x| x.as_str()) {
+        tags.push(a.to_string());
+    }
+    Some(Entry {
+        id: slug(&title),
+        name: title,
+        kind: Kind::Game,
+        summary: attr.get("desc").and_then(|x| x.as_str()).unwrap_or_default().to_string(),
+        authors: strs(attr.get("porter")).into_iter().map(|p| format!("{p} (PortMaster port)")).collect(),
+        tags,
+        licence: Licence::default(),
+        love_version: love_runtime.map(|r| r.trim_start_matches("love_").to_string()),
+        latest: None,
+        sources,
+        downloads: zip.map(|z| vec![Download { url: format!("https://github.com/PortsMaster/PortMaster-New/releases/latest/download/{z}"), platform: Platform::Portmaster, version: None, date: None, size: None, blake3: None }]).unwrap_or_default(),
+        archived: false,
+        checked: Some(today.to_string()),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -532,6 +585,11 @@ mod tests {
             assert_eq!(canonical_url(u), "github.com/foo/bar", "{u}");
         }
         assert_eq!(canonical_url("https://someone.itch.io/pong/"), "someone.itch.io/pong");
+        // A folder inside a repository is its own page.
+        assert_eq!(canonical_url("https://github.com/PortsMaster/PortMaster-New/tree/main/ports/arco"), "github.com/portsmaster/portmaster-new/tree/main/ports/arco");
+        assert_eq!(canonical_url("https://github.com/a/b/tree/main"), "github.com/a/b");
+        // Two files under one repository's releases are two files.
+        assert_ne!(canonical_download("https://github.com/a/b/releases/download/v1/x.zip"), canonical_download("https://github.com/a/b/releases/download/v1/y.zip"));
         assert_eq!(slug("The Quick-Brown Fox!"), "the-quick-brown-fox");
     }
 
@@ -660,6 +718,30 @@ mod tests {
         assert!(u.licence.is_unknown() && u.licence.from.unwrap().contains("read it"));
         let mit = Licence { id: "MIT".into(), from: None, confirmed: false };
         assert!(is_open(&mit) && !is_open(&Licence { id: "CC-BY-ND-4.0".into(), ..mit.clone() }));
+    }
+
+    #[test]
+    fn a_portmaster_port_becomes_an_entry_and_ports_in_one_repository_stay_apart() {
+        let port = json!({"version":4,"name":"arco.zip","attr":{"title":"Arco","porter":["Fraxinus88"],"desc":"An RPG.","genres":["action","rpg"],
+            "availability":"paid","store":[{"name":"Steam","gameurl":"https://store.steampowered.com/app/2366970/Arco/","developerurl":"https://arco.game/"}]}});
+        let e = from_portmaster(&port, "arco", Some("love_11.5"), "2026-11-14").unwrap();
+        assert_eq!((e.name.as_str(), e.love_version.as_deref(), e.authors[0].as_str()), ("Arco", Some("11.5"), "Fraxinus88 (PortMaster port)"));
+        assert_eq!(e.tags, ["action", "rpg", "paid"]);
+        assert_eq!(e.sources.len(), 3);
+        assert_eq!(e.downloads[0].platform, Platform::Portmaster);
+        assert!(e.downloads[0].url.ends_with("/releases/latest/download/arco.zip"));
+        assert!(e.licence.is_unknown());
+        // A second port from the same repository is a different game, not a duplicate.
+        let other = json!({"name":"hades.zip","attr":{"title":"Hades Clone","porter":["x"],"desc":"d","genres":[]}});
+        let mut c = Catalogue::default();
+        c.add(e);
+        assert!(matches!(c.add(from_portmaster(&other, "hades", Some("love_11.5"), "d").unwrap()), Added::New(_)));
+        assert_eq!(c.entries.len(), 2);
+        // The same game from its itch.io page merges with the port through the store link.
+        let mut itch = game("Arco (itch)", "https://arco.game/", None);
+        itch.licence = Licence { id: "proprietary".into(), from: None, confirmed: false };
+        assert!(matches!(c.add(itch), Added::Merged(_)));
+        assert_eq!(c.entries.len(), 2);
     }
 
     #[test]
