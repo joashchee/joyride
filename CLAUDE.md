@@ -104,6 +104,7 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
   `src/monaco-theme.ts` (the editor's two palettes), `components/Panel.tsx`
   (a framed window): the text-mode UI, `docs/text-mode-ui.md`.
 - `src/vendor/`: Painter, Composer, Animator (MIT; `scripts/vendor-sync.sh`).
+- `vendor/xiph/`: libogg and libtheora's decoder (BSD-3-Clause, unmodified; `scripts/vendor-xiph.sh`).
 - `vendor/neumetik/`: Neumetik's players and `nttplay` (MIT; `scripts/vendor-neumetik.sh`; change them in Neumetik and re-sync).
 
 ## love.js and its forks

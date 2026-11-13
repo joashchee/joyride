@@ -28,7 +28,7 @@ The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`);
   - [ ] PNG, JPEG, GIF, BMP: the `image` crate in `asset-core` (done); WebP and TIFF: enable its features (MIT/Apache).
   - [ ] WAV, FLAC, Ogg Vorbis, MP3: pure-Rust decoders (prefer `lewton`, `claxon`; `symphonia` is MPL-2.0 from memory) or the webview where it plays them; run `scripts/license-scan.py` on whatever is added.
   - [ ] MIDI, tracker modules, ABC, MusicXML, MML: the vendored `nttplay` (above).
-  - [ ] **`.ogv` video (Theora), the one hole**: vendor libtheora and libogg (BSD) as C source and decode frames in Rust, else show facts only. Decision wanted.
+  - [ ] **`.ogv` video (Theora), the one hole**: **libogg 1.3.6 and libtheora 1.2.0's decoder are vendored** (2026-11-13, BSD-3-Clause, `vendor/xiph/`, `scripts/vendor-xiph.sh`, SHA-256 pinned; all 15 C files compile with no warnings under clang, link, and report the version; **no real `.ogv` has been decoded yet**). Still to do: a small Rust crate (`cc` build script) with a safe wrapper that decodes frames to RGBA and reads the Vorbis track's length, and a test on a real `.ogv` (LÖVE's own tests or a short one made with ffmpeg); Vorbis audio for the video comes from the Ogg audio decoder above.
   - [ ] `.mp4`, `.webm` video: the macOS webview (Windows and Linux untested).
   - [ ] Fonts, archives, text and hex: own code.
   Still to do: build it universal for macOS and bundle it as a toolchain (`scripts/fetch-toolchains.py` style, signed with the app's nested binaries), run it off the UI thread from a `preview` command, and the preview UI itself. Needs a `docs/platform-parity.md` row for any macOS-specific player. Spec 3, `docs/asset-library.md`.

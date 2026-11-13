@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **libogg and libtheora vendored** (2026-11-13): `vendor/xiph/`, BSD-3-Clause, the portable C decoder only, pinned by SHA-256, for previewing Ogg Theora video (`.ogv`).
 - **Neumetik's players vendored** (2026-11-13): `vendor/neumetik/` (`midi`, `bgn`, `synth`, `visual`, `tracker`, `nttplay`), MIT, for previewing MIDI, tracker modules and music written as text. `nttplay` builds offline and plays a one-note MIDI.
 - **Viewport simulator** (2026-11-13): a `Screen:` button in the toolbar runs the game with a target's overlay in a simulated screen (PortMaster 4:3, 1:1, 16:9; iPhone, iPad, Android). The project is staged to a scratch copy; your source is not changed.
 - **Text-mode UI only** (2026-11-13): the whole interface follows the ANSIapps theme

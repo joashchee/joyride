@@ -27,6 +27,9 @@ third-party licence ships in the app (scripts/license-scan.py).
   `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
   (CC BY-SA 4.0, unmodified, with its licence in
   `src/vendor/art-sprites/docs/fonts/`).
+- libogg 1.3.6 and the decoder of libtheora 1.2.0 (Xiph.org Foundation, BSD-3-Clause),
+  vendored unmodified in `vendor/xiph/` by `scripts/vendor-xiph.sh` (pinned by SHA-256;
+  licences in `vendor/xiph/ogg/COPYING` and `vendor/xiph/theora/COPYING`), to play Theora video.
 - Neumetik's players (`midi`, `bgn`, `synth`, `visual`, `tracker`) and
   `nttplay`, the command-line player built from them, ansiapps' own code,
   vendored in `vendor/neumetik/` by `scripts/vendor-neumetik.sh` and
