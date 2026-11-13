@@ -52,6 +52,15 @@ pub fn luarc(version: LoveVersion, types_dir: &str, has_libs: bool) -> String {
     serde_json::to_string_pretty(&v).unwrap() + "\n"
 }
 
+/// The LÖVE version a project folder targets: `love_version` in its
+/// `love.toml`, 11.5 when there is no `love.toml`. A version that is not 11.5
+/// or 12.0+ is an error naming it.
+pub fn project_love_version(root: &std::path::Path) -> Result<LoveVersion> {
+    let Ok(text) = std::fs::read_to_string(root.join("love.toml")) else { return Ok(BUNDLED) };
+    let m = crate::manifest::Manifest::parse(&text)?;
+    LoveVersion::parse(&m.project.love_version).ok_or_else(|| crate::Error::Msg(format!("love.toml asks for LÖVE {}, which JoyrIDE does not support (11.5, or 12.0 and later)", m.project.love_version)))
+}
+
 /// The `conf.lua` version line to enforce for a target.
 pub fn conf_version_line(version: LoveVersion) -> String {
     format!("t.version = \"{version}\"")
@@ -124,6 +133,19 @@ pub fn check_download(bytes: &[u8], e: &Entry) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn project_version_comes_from_love_toml() {
+        let d = tempfile::tempdir().unwrap();
+        assert_eq!(super::project_love_version(d.path()).unwrap(), super::BUNDLED, "no love.toml");
+        let toml = |v: &str| format!("[project]\nname = \"g\"\nbundle_id = \"com.x.g\"\nversion = \"0.1.0\"\nlove_version = \"{v}\"\n");
+        std::fs::write(d.path().join("love.toml"), toml("12.0")).unwrap();
+        assert_eq!(super::project_love_version(d.path()).unwrap().to_string(), "12.0");
+        std::fs::write(d.path().join("love.toml"), toml("0.10")).unwrap();
+        assert!(super::project_love_version(d.path()).unwrap_err().to_string().contains("0.10"));
+        std::fs::write(d.path().join("love.toml"), "not toml [").unwrap();
+        assert!(super::project_love_version(d.path()).is_err());
+    }
+
     use super::*;
     use ed25519_dalek::{Signer, SigningKey};
 

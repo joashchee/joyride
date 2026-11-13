@@ -145,7 +145,25 @@ pub fn find_love(toolchains: Option<&Path>, version: Option<&str>) -> Option<Pat
     candidates.push(PathBuf::from("/usr/bin/love"));
     candidates.push(PathBuf::from("/usr/local/bin/love"));
     candidates.push(PathBuf::from("/opt/homebrew/bin/love"));
-    candidates.into_iter().find(|p| p.is_file())
+    candidates.into_iter().filter(|p| p.is_file()).find(|p| match (version, installed_version(p)) {
+        // A LÖVE whose version is known must be the one asked for; an unknown one is accepted.
+        (Some(want), Some(have)) => same_minor(want, &have),
+        _ => true,
+    })
+}
+
+/// "11.5" and "11.5.0" are the same release line.
+fn same_minor(a: &str, b: &str) -> bool {
+    let key = |s: &str| s.trim().split('.').take(2).map(str::to_string).collect::<Vec<_>>();
+    key(a) == key(b)
+}
+
+/// The version a macOS `love.app` says it is (`Contents/Info.plist`), from
+/// the path of its `Contents/MacOS/love`; None for any other layout.
+pub fn installed_version(exe: &Path) -> Option<String> {
+    let contents = exe.parent()?.parent()?;
+    let v = plist::Value::from_file(contents.join("Info.plist")).ok()?;
+    v.as_dictionary()?.get("CFBundleShortVersionString")?.as_string().map(str::to_string)
 }
 
 /// Resolves a link's file against the project, only if it stays inside it.
@@ -228,5 +246,27 @@ mod tests {
         assert!(run(&spec, |_, _, _| {}).is_err());
         std::fs::write(d.path().join("main.lua"), "").unwrap();
         assert!(run(&spec, |_, _, _| {}).is_err());
+    }
+
+    #[test]
+    fn find_love_matches_the_version_a_bundle_reports() {
+        let d = tempfile::tempdir().unwrap();
+        let app = |v: &str, ver: &str| {
+            let c = d.path().join(format!("love-{v}/love.app/Contents"));
+            std::fs::create_dir_all(c.join("MacOS")).unwrap();
+            std::fs::write(c.join("MacOS/love"), "").unwrap();
+            let mut p = plist::Dictionary::new();
+            p.insert("CFBundleShortVersionString".into(), plist::Value::String(ver.into()));
+            plist::Value::Dictionary(p).to_file_xml(c.join("Info.plist")).unwrap();
+            c.join("MacOS/love")
+        };
+        let eleven = app("11.5", "11.5");
+        let wrong = app("12.0", "11.5"); // a folder named 12.0 that holds 11.5
+        assert_eq!(installed_version(&eleven).as_deref(), Some("11.5"));
+        if std::env::var_os("JOYRIDE_LOVE").is_none() {
+            assert_eq!(find_love(Some(d.path()), Some("11.5")), Some(eleven));
+            assert_ne!(find_love(Some(d.path()), Some("12.0")), Some(wrong), "the plist wins over the folder name");
+        }
+        assert!(same_minor("11.5", "11.5.1") && !same_minor("11.5", "12.0"));
     }
 }

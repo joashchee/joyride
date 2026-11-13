@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Run uses the project's LÖVE version** (2026-11-13): from `love.toml`; an installed
+  LÖVE is matched by the version in its own `Info.plist`.
 - **App icon** (2026-11-13): original joystick art drawn by `scripts/build-icons.ts`;
   `.icns` and `.ico` made with `tauri icon`.
 - **Restore the last project and confirm on close** (2026-11-13): the last folder
