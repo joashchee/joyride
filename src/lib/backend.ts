@@ -33,6 +33,7 @@ export async function chooseFolder(): Promise<string | null> {
 }
 export const lastProject = () => (inTauri ? invoke<string | null>("last_project") : Promise.resolve(null));
 export const openProject = (path: string) => invoke<Listing>("open_project", { path });
+export const projectListing = () => invoke<Listing>("project_listing");
 export const readFile = (path: string) => invoke<string>("read_project_file", { path });
 export const writeFile = (path: string, text: string) =>
   invoke<void>("write_project_file", { path, text });
@@ -57,6 +58,20 @@ export interface ExportInfo {
 export const exportInfo = () => invoke<ExportInfo>("export_info");
 export const exportProject = (kind: "love" | "portmaster", variant: boolean) =>
   invoke<string>("export_project", { kind, variant });
+
+export interface LibraryView {
+  name: string;
+  summary: string;
+  licence: string;
+  git: string;
+  version: string;
+  badge: string;
+  broken: boolean;
+  installed: boolean;
+}
+export const libraryList = (query: string) => invoke<LibraryView[]>("library_list", { query });
+export const libraryAdd = (name: string, query: string) => invoke<LibraryView[]>("library_add", { name, query });
+export const libraryRemove = (name: string, query: string) => invoke<LibraryView[]>("library_remove", { name, query });
 
 export interface RunLine {
   stream: "out" | "err";

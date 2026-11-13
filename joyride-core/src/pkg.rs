@@ -42,6 +42,52 @@ pub fn install(project_dir: &Path, m: &Manifest, old: &Lock) -> Result<(Lock, Ve
     Ok((lock, outcomes))
 }
 
+/// Adds a curated library to the project (clicking Add is the person's
+/// decision to create or rewrite `love.toml`: it is made from the folder name
+/// when missing, and rewritten without comments otherwise), installs it at
+/// the curated commit, and updates `love.lock`.
+pub fn add_library(project_dir: &Path, lib: &crate::library::Library, name: &str) -> Result<Vec<(String, Outcome)>> {
+    let mut m = crate::pipeline::manifest_for(project_dir)?;
+    lib.add_to(&mut m, name)?;
+    let old = read_lock(project_dir)?;
+    let (_, outcomes) = install(project_dir, &m, &old)?;
+    // Written only once the install worked, so a failed clone leaves no half state.
+    std::fs::write(project_dir.join("love.toml"), m.to_toml())?;
+    Ok(outcomes)
+}
+
+/// Removes a library from `love.toml` and `love.lock` and deletes its folder
+/// under `libs/` (only that folder: the name is checked, and a link there is
+/// unlinked, never followed).
+pub fn remove_library(project_dir: &Path, name: &str) -> Result<()> {
+    if !manifest::valid_dep_name(name) {
+        return err(format!("`{name}` is not a library name"));
+    }
+    let toml_path = project_dir.join("love.toml");
+    let mut m = Manifest::parse(&std::fs::read_to_string(&toml_path).map_err(|_| crate::Error::Msg("the project has no love.toml".into()))?)?;
+    if m.dependencies.remove(name).is_none() {
+        return err(format!("`{name}` is not one of this project's libraries"));
+    }
+    let dest = project_dir.join("libs").join(name);
+    match std::fs::symlink_metadata(&dest) {
+        Ok(meta) if meta.is_dir() => std::fs::remove_dir_all(&dest)?,
+        Ok(_) => std::fs::remove_file(&dest)?,
+        Err(_) => {}
+    }
+    let mut lock = read_lock(project_dir)?;
+    lock.packages.retain(|p| p.name != name);
+    std::fs::write(&toml_path, m.to_toml())?;
+    std::fs::write(project_dir.join("love.lock"), lock.to_toml())?;
+    Ok(())
+}
+
+fn read_lock(project_dir: &Path) -> Result<Lock> {
+    match std::fs::read_to_string(project_dir.join("love.lock")) {
+        Ok(t) => Lock::parse(&t),
+        Err(_) => Ok(Lock::default()),
+    }
+}
+
 fn git(args: &[&str], cwd: Option<&Path>) -> Result<String> {
     let mut c = Command::new("git");
     // No remote helpers, no prompts for credentials.
@@ -167,5 +213,66 @@ mod tests {
         let m = manifest_with("--upload-pack=x", None);
         assert!(install(d.path(), &m, &Lock::default()).is_err());
         assert!(!d.path().join("libs").exists());
+    }
+
+    #[test]
+    fn adds_and_removes_a_curated_library() {
+        let d = tempfile::tempdir().unwrap();
+        let (url, c1, _) = lib_repo(d.path());
+        let lib = crate::library::Library::parse(&format!(
+            "[[library]]\nname = \"lib\"\ngit = \"{url}\"\nrev = \"{c1}\"\nlicence = \"MIT\"\nmodule = \"lib\"\nsummary = \"s\"\nloads_11_5 = \"unmeasured\"\nloads_12_0 = \"unmeasured\"\n"
+        ))
+        .unwrap();
+        let proj = d.path().join("game");
+        std::fs::create_dir_all(&proj).unwrap();
+        // No love.toml yet: adding makes one.
+        let out = add_library(&proj, &lib, "lib").unwrap();
+        assert_eq!(out, vec![("lib".to_string(), Outcome::Installed)]);
+        assert_eq!(std::fs::read_to_string(proj.join("libs/lib/lib.lua")).unwrap(), "return 1");
+        let m = Manifest::parse(&std::fs::read_to_string(proj.join("love.toml")).unwrap()).unwrap();
+        assert_eq!(m.dependencies["lib"].rev.as_deref(), Some(c1.as_str()));
+        assert_eq!(Lock::parse(&std::fs::read_to_string(proj.join("love.lock")).unwrap()).unwrap().get("lib").unwrap().commit, c1);
+        // Again: nothing to do.
+        assert_eq!(add_library(&proj, &lib, "lib").unwrap()[0].1, Outcome::UpToDate);
+        // A name that is not curated, and a failed clone, leave things alone.
+        assert!(add_library(&proj, &lib, "nope").is_err());
+        remove_library(&proj, "lib").unwrap();
+        assert!(!proj.join("libs/lib").exists());
+        assert!(Manifest::parse(&std::fs::read_to_string(proj.join("love.toml")).unwrap()).unwrap().dependencies.is_empty());
+        assert!(Lock::parse(&std::fs::read_to_string(proj.join("love.lock")).unwrap()).unwrap().packages.is_empty());
+        assert!(remove_library(&proj, "lib").is_err(), "already gone");
+        for bad in ["..", "a/b", "", "."] {
+            assert!(remove_library(&proj, bad).is_err(), "{bad:?}");
+        }
+    }
+
+    #[test]
+    fn a_failed_install_writes_no_love_toml() {
+        let d = tempfile::tempdir().unwrap();
+        let lib = crate::library::Library::parse(
+            "[[library]]\nname = \"gone\"\ngit = \"file:///no/such/repo\"\nrev = \"abc\"\nlicence = \"MIT\"\nmodule = \"gone\"\nsummary = \"s\"\nloads_11_5 = \"unmeasured\"\nloads_12_0 = \"unmeasured\"\n",
+        )
+        .unwrap();
+        let proj = d.path().join("game");
+        std::fs::create_dir_all(&proj).unwrap();
+        assert!(add_library(&proj, &lib, "gone").is_err());
+        assert!(!proj.join("love.toml").exists());
+    }
+
+    /// Opt-in (needs the network): `cargo test -- --ignored real_curated`.
+    #[test]
+    #[ignore]
+    fn real_curated_library_installs_from_github() {
+        let d = tempfile::tempdir().unwrap();
+        let proj = d.path().join("game");
+        std::fs::create_dir_all(&proj).unwrap();
+        let lib = crate::library::Library::bundled();
+        add_library(&proj, &lib, "bump").unwrap();
+        assert!(proj.join("libs/bump/bump.lua").is_file());
+        let e = lib.get("bump").unwrap();
+        assert_eq!(Lock::parse(&std::fs::read_to_string(proj.join("love.lock")).unwrap()).unwrap().get("bump").unwrap().commit, e.rev);
+        assert!(!proj.join("libs/bump/.git").exists());
+        remove_library(&proj, "bump").unwrap();
+        assert!(!proj.join("libs/bump").exists());
     }
 }

@@ -5,7 +5,8 @@ import Console from "./components/Console";
 import NameBox from "./components/NameBox";
 import Search from "./components/Search";
 import ExportPanel from "./components/ExportPanel";
-import { chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
+import Libraries from "./components/Libraries";
+import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -30,6 +31,7 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [lines, setLines] = useState<RunLine[]>([]);
   const [running, setRunning] = useState(false);
+  const [libsOpen, setLibsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [findKey, setFindKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -302,9 +304,11 @@ export default function App() {
           <button onClick={openFolder}>Open Folder…</button>
           <button onClick={run} disabled={!project || running} title="Run (⌘R)">Run</button>
           <button onClick={stop} disabled={!running} title="Stop (⌘.)">Stop</button>
+          <button onClick={() => setLibsOpen((x) => !x)} disabled={!project} aria-expanded={libsOpen}>Libraries…</button>
           <button onClick={() => setExporting((x) => !x)} disabled={!project} aria-expanded={exporting}>Export…</button>
           <span className="project-name">{project?.name ?? "No project open"}</span>
         </div>
+        {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {exporting && project && <ExportPanel onClose={() => setExporting(false)} />}
         <div className="workspace">
           <nav className="sidebar" aria-label="Explorer">

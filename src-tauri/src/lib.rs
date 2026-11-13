@@ -5,6 +5,7 @@
 use serde::Serialize;
 
 mod export;
+mod libs;
 mod lsp;
 mod project;
 mod run;
@@ -52,6 +53,9 @@ pub fn run() {
             project::search_project,
             export::export_info,
             export::export_project,
+            libs::library_list,
+            libs::library_add,
+            libs::library_remove,
             run::run_project,
             run::stop_project,
             lsp::lsp_start,

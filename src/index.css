@@ -65,3 +65,11 @@ button:disabled { opacity: 0.5; }
 .export-buttons { display: flex; gap: 8px; }
 .export .hint { margin: 0; color: var(--muted); }
 .export-error { margin: 0; white-space: pre-wrap; color: #d33; font: inherit; }
+
+.libraries { padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 13px; max-height: 40vh; overflow: auto; }
+.libraries header { display: flex; align-items: center; gap: 8px; }
+.libraries header input { flex: 1; font: inherit; padding: 2px 4px; }
+.libraries ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.libraries li { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; padding: 4px 0; border-top: 1px solid var(--line); }
+.lib-meta { color: var(--muted); font-size: 12px; }
+.lib-broken { color: #d33; }
