@@ -58,3 +58,10 @@ button:disabled { opacity: 0.5; }
 .search-hits button { display: block; width: 100%; text-align: left; background: none; border: 0; color: inherit; font: inherit; padding: 2px 0; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .search-hits button:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); }
 .hit-where { color: var(--muted); }
+
+.export { padding: 8px 12px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.export header { display: flex; align-items: center; gap: 6px; }
+.export header button { margin-left: auto; }
+.export-buttons { display: flex; gap: 8px; }
+.export .hint { margin: 0; color: var(--muted); }
+.export-error { margin: 0; white-space: pre-wrap; color: #d33; font: inherit; }

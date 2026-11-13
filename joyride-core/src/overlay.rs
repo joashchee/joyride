@@ -107,7 +107,7 @@ pub struct Staged {
 }
 
 /// Skipped when copying a project: version control, builds and the overlay itself.
-fn skipped(rel: &Path) -> bool {
+pub(crate) fn skipped(rel: &Path) -> bool {
     let first = rel.components().next().and_then(|c| c.as_os_str().to_str()).unwrap_or("");
     matches!(first, ".git" | "build" | ".joyride" | ".DS_Store") || rel.extension().is_some_and(|e| e == "love") || rel.file_name().is_some_and(|n| n == ".DS_Store")
 }

@@ -4,6 +4,7 @@ import FileTree from "./components/FileTree";
 import Console from "./components/Console";
 import NameBox from "./components/NameBox";
 import Search from "./components/Search";
+import ExportPanel from "./components/ExportPanel";
 import { chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
@@ -29,6 +30,7 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [lines, setLines] = useState<RunLine[]>([]);
   const [running, setRunning] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [findKey, setFindKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [asking, setAsking] = useState<null | { kind: "file" | "dir" | "rename"; label: string; initial: string }>(null);
@@ -300,8 +302,10 @@ export default function App() {
           <button onClick={openFolder}>Open Folder…</button>
           <button onClick={run} disabled={!project || running} title="Run (⌘R)">Run</button>
           <button onClick={stop} disabled={!running} title="Stop (⌘.)">Stop</button>
+          <button onClick={() => setExporting((x) => !x)} disabled={!project} aria-expanded={exporting}>Export…</button>
           <span className="project-name">{project?.name ?? "No project open"}</span>
         </div>
+        {exporting && project && <ExportPanel onClose={() => setExporting(false)} />}
         <div className="workspace">
           <nav className="sidebar" aria-label="Explorer">
             {project ? (

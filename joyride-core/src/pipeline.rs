@@ -144,6 +144,55 @@ pub fn build_love(b: &Build, target: Target) -> Result<PathBuf> {
     Ok(out)
 }
 
+/// A plain `<slug>.love` of the project as it is (no target shim, for
+/// desktop LÖVE): the project copied without `.git`, `build`, `.joyride` and
+/// other `.love` files, the asset gate applied, `CREDITS.txt` added.
+pub fn build_plain_love(b: &Build) -> Result<PathBuf> {
+    let m = manifest_for(b.root)?;
+    if b.compat.is_some() {
+        return err("the 11.5 variant needs a target shim; build it for PortMaster, web or mobile");
+    }
+    if !b.root.join("main.lua").is_file() {
+        return err("the project has no main.lua");
+    }
+    if let Some(g) = &b.gate {
+        let issues = project::export_issues(g.catalog, g.project, ExportContext { commercial: g.commercial, today: g.today }).map_err(|e| crate::Error::Msg(e.to_string()))?;
+        if !issues.is_empty() {
+            return err(gate_message(&issues));
+        }
+    }
+    let tmp = tempdir_in(b.out_dir)?;
+    let stage = tmp.join("stage");
+    let copied = (|| -> Result<()> {
+        for e in walkdir::WalkDir::new(b.root).sort_by_file_name().into_iter().filter_entry(|e| !overlay::skipped(e.path().strip_prefix(b.root).unwrap_or(e.path()))) {
+            let e = e.map_err(|e| crate::Error::Msg(e.to_string()))?;
+            let rel = e.path().strip_prefix(b.root).unwrap();
+            if rel.as_os_str().is_empty() {
+                continue;
+            }
+            // Links are neither followed nor copied: a project cannot pull files from outside itself.
+            if e.file_type().is_dir() {
+                std::fs::create_dir_all(stage.join(rel))?;
+            } else if e.file_type().is_file() {
+                if let Some(p) = stage.join(rel).parent() {
+                    std::fs::create_dir_all(p)?;
+                }
+                std::fs::copy(e.path(), stage.join(rel))?;
+            }
+        }
+        if let Some(g) = &b.gate {
+            let text = project::credits(g.catalog, g.project).map_err(|e| crate::Error::Msg(e.to_string()))?;
+            std::fs::write(stage.join("CREDITS.txt"), text)?;
+        }
+        Ok(())
+    })();
+    let out = b.out_dir.join(format!("{}.love", export::slug(&m.project.name)));
+    let r = copied.and_then(|_| export::love_archive(&stage, &out));
+    let _ = std::fs::remove_dir_all(&tmp);
+    r?;
+    Ok(out)
+}
+
 /// The PortMaster zip for a project.
 pub fn build_portmaster(b: &Build) -> Result<PathBuf> {
     let m = manifest_for(b.root)?;
@@ -254,6 +303,29 @@ mod tests {
     fn zip_names(p: &Path) -> Vec<String> {
         let mut a = zip::ZipArchive::new(std::fs::File::open(p).unwrap()).unwrap();
         (0..a.len()).map(|i| a.by_index(i).unwrap().name().to_string()).collect()
+    }
+
+    #[test]
+    fn a_plain_love_is_the_project_as_it_is() {
+        let d = tempfile::tempdir().unwrap();
+        let root = project(d.path());
+        std::fs::create_dir_all(root.join("src")).unwrap();
+        std::fs::write(root.join("src/a.lua"), "return 1").unwrap();
+        std::fs::create_dir_all(root.join(".git")).unwrap();
+        std::fs::write(root.join(".git/HEAD"), "x").unwrap();
+        std::fs::create_dir_all(root.join(".joyride/patches")).unwrap();
+        std::fs::write(root.join("old.love"), "x").unwrap();
+        let out = root.join("build");
+        let love = build_plain_love(&Build { root: &root, out_dir: &out, gate: None, compat: None }).unwrap();
+        assert!(love.ends_with("build/my-game.love"));
+        assert_eq!(zip_names(&love), ["conf.lua", "main.lua", "src/a.lua"], "no .git, .joyride, other .love, and no shim");
+        assert!(!out.join(format!(".joyride-build-{}", std::process::id())).exists());
+        // Building again (now with build/ present) does not pack the build folder.
+        let again = build_plain_love(&Build { root: &root, out_dir: &out, gate: None, compat: None }).unwrap();
+        assert_eq!(std::fs::read(&love).unwrap(), std::fs::read(&again).unwrap());
+        assert!(build_plain_love(&Build { root: &root, out_dir: &out, gate: None, compat: Some(Compat { allow: &[] }) }).is_err());
+        std::fs::remove_file(root.join("main.lua")).unwrap();
+        assert!(build_plain_love(&Build { root: &root, out_dir: &out, gate: None, compat: None }).is_err());
     }
 
     #[test]

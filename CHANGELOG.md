@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Export panel** (2026-11-13): `.love` and PortMaster zip (with the 11.5 variant of a
+  12.0 project) into `<project>/build/`; `pipeline::build_plain_love`.
 - **Run uses the project's LÖVE version** (2026-11-13): from `love.toml`; an installed
   LÖVE is matched by the version in its own `Info.plist`.
 - **App icon** (2026-11-13): original joystick art drawn by `scripts/build-icons.ts`;

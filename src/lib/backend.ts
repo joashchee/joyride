@@ -50,6 +50,14 @@ export interface Hit {
 export const searchProject = (query: string, caseSensitive: boolean) =>
   invoke<{ hits: Hit[]; truncated: boolean }>("search_project", { query, caseSensitive });
 
+export interface ExportInfo {
+  loveVersion: string;
+  variantOffered: boolean;
+}
+export const exportInfo = () => invoke<ExportInfo>("export_info");
+export const exportProject = (kind: "love" | "portmaster", variant: boolean) =>
+  invoke<string>("export_project", { kind, variant });
+
 export interface RunLine {
   stream: "out" | "err";
   text: string;
