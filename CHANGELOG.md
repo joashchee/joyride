@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Find in files** (2026-11-13): `files::search` and a sidebar panel (⌘⇧F); plain
+  text, capped, never reads through links.
 - **New file, new folder, rename, delete** (2026-11-13): `files::create_file`,
   `create_dir`, `rename`, `delete` (confined to the project, never replace, refuse
   links out), Tauri commands that return the fresh listing, tree buttons and an

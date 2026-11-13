@@ -47,6 +47,7 @@ pub fn run() {
             project::create_project_dir,
             project::rename_project_path,
             project::delete_project_path,
+            project::search_project,
             run::run_project,
             run::stop_project,
             lsp::lsp_start,

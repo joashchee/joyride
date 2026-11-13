@@ -41,6 +41,14 @@ export const createDir = (path: string) => invoke<Listing>("create_project_dir",
 export const renamePath = (from: string, to: string) => invoke<Listing>("rename_project_path", { from, to });
 export const deletePath = (path: string) => invoke<Listing>("delete_project_path", { path });
 
+export interface Hit {
+  path: string;
+  line: number;
+  text: string;
+}
+export const searchProject = (query: string, caseSensitive: boolean) =>
+  invoke<{ hits: Hit[]; truncated: boolean }>("search_project", { query, caseSensitive });
+
 export interface RunLine {
   stream: "out" | "err";
   text: string;

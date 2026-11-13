@@ -3,6 +3,7 @@ import Splash from "./components/Splash";
 import FileTree from "./components/FileTree";
 import Console from "./components/Console";
 import NameBox from "./components/NameBox";
+import Search from "./components/Search";
 import { chooseFolder, coreInfo, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
@@ -28,6 +29,7 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [lines, setLines] = useState<RunLine[]>([]);
   const [running, setRunning] = useState(false);
+  const [findKey, setFindKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [asking, setAsking] = useState<null | { kind: "file" | "dir" | "rename"; label: string; initial: string }>(null);
   const [lspState, setLspState] = useState<string>("off");
@@ -215,7 +217,10 @@ export default function App() {
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (!(e.metaKey || e.ctrlKey)) return;
-      if (e.key === "r") {
+      if (e.shiftKey && e.key.toLowerCase() === "f" && project) {
+        e.preventDefault();
+        setFindKey((k) => k + 1);
+      } else if (e.key === "r") {
         e.preventDefault();
         void run();
       } else if (e.key === ".") {
@@ -267,6 +272,7 @@ export default function App() {
                   <button disabled={!sel} onClick={() => sel && setAsking({ kind: "rename", label: `Rename ${sel.path} to`, initial: sel.path })}>Rename</button>
                   <button disabled={!sel} onClick={() => void removeSelected()}>Delete</button>
                 </div>
+                <Search onOpen={openAt} focusKey={findKey} />
                 {asking && <NameBox key={asking.kind + asking.initial} label={asking.label} initial={asking.initial} onSubmit={(n) => void submitName(n)} onCancel={() => setAsking(null)} />}
                 <FileTree entries={project.entries} active={active} onOpen={openFile} selected={selected} onSelect={setSelected} />
               </>

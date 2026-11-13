@@ -49,3 +49,12 @@ button:disabled { opacity: 0.5; }
 .namebox label { display: flex; flex-direction: column; gap: 2px; width: 100%; }
 .namebox input { font: inherit; padding: 2px 4px; }
 .tree-item.selected { outline: 1px solid color-mix(in srgb, var(--fg) 40%, transparent); outline-offset: -1px; }
+
+.search { padding: 6px 8px; border-bottom: 1px solid var(--line); font-size: 12px; }
+.search form { display: flex; flex-direction: column; gap: 4px; }
+.search input[type="text"], .search input:not([type]) { font: inherit; padding: 2px 4px; }
+.search-count { margin: 4px 0; color: var(--muted); }
+.search-hits { list-style: none; margin: 0; padding: 0; max-height: 220px; overflow: auto; }
+.search-hits button { display: block; width: 100%; text-align: left; background: none; border: 0; color: inherit; font: inherit; padding: 2px 0; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-hits button:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); }
+.hit-where { color: var(--muted); }

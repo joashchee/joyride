@@ -212,6 +212,63 @@ pub fn delete(root: &Path, rel: &str) -> Result<()> {
     Ok(())
 }
 
+/// One match of a text search.
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct Hit {
+    pub path: String,
+    /// 1-based line.
+    pub line: u32,
+    /// The line, trimmed and cut to a readable length.
+    pub text: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Found {
+    pub hits: Vec<Hit>,
+    /// More matches exist than `hits` holds.
+    pub truncated: bool,
+}
+
+/// Most hits one search returns.
+pub const MAX_HITS: usize = 500;
+
+/// Finds `query` as plain text (not a pattern) in the project's text files,
+/// in tree order. Files over [`MAX_TEXT_BYTES`], non-UTF-8 files and
+/// symlinks are skipped; hidden folders are not searched.
+pub fn search(root: &Path, query: &str, case_sensitive: bool) -> Result<Found> {
+    if query.is_empty() {
+        return Ok(Found { hits: vec![], truncated: false });
+    }
+    let root = root.canonicalize()?;
+    let listing = list(&root)?;
+    let needle = if case_sensitive { query.to_string() } else { query.to_lowercase() };
+    let mut hits = Vec::new();
+    for e in listing.entries.iter().filter(|e| !e.dir) {
+        let p = root.join(&e.path);
+        let Ok(meta) = fs::symlink_metadata(&p) else { continue };
+        if !meta.is_file() || meta.len() > MAX_TEXT_BYTES {
+            continue;
+        }
+        let Ok(bytes) = fs::read(&p) else { continue };
+        let Ok(text) = String::from_utf8(bytes) else { continue };
+        for (i, line) in text.lines().enumerate() {
+            let found = if case_sensitive { line.contains(&needle) } else { line.to_lowercase().contains(&needle) };
+            if !found {
+                continue;
+            }
+            if hits.len() >= MAX_HITS {
+                return Ok(Found { hits, truncated: true });
+            }
+            let t = line.trim();
+            let t: String = if t.chars().count() > 200 { t.chars().take(200).collect::<String>() + "…" } else { t.to_string() };
+            hits.push(Hit { path: e.path.clone(), line: i as u32 + 1, text: t });
+        }
+    }
+    Ok(Found { hits, truncated: false })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -323,5 +380,43 @@ mod tests {
         assert!(outside.path().join("keep.txt").exists());
         assert!(!outside.path().join("new.txt").exists() && !outside.path().join("sub").exists());
         assert!(d.path().join("main.lua").exists());
+    }
+
+    #[test]
+    fn searches_text_files_only() {
+        let d = project();
+        let r = d.path();
+        fs::write(r.join("src/a.lua"), "local Player = 1\nprint(player)\n").unwrap();
+        fs::write(r.join("blob.bin"), [0xff, 0xfe, b'p', b'l', b'a', b'y', b'e', b'r']).unwrap();
+        fs::write(r.join(".git/config"), "player").unwrap();
+        let f = search(r, "player", false).unwrap();
+        let got: Vec<_> = f.hits.iter().map(|h| (h.path.as_str(), h.line)).collect();
+        assert_eq!(got, [("src/a.lua", 1), ("src/a.lua", 2)], "no binary, no .git");
+        assert_eq!(search(r, "player", true).unwrap().hits.len(), 1, "case sensitive");
+        assert!(search(r, "", false).unwrap().hits.is_empty());
+        assert_eq!(search(r, "t(p", false).unwrap().hits.len(), 1, "plain text, not a pattern");
+    }
+
+    #[test]
+    fn search_is_capped_and_cuts_long_lines() {
+        let d = project();
+        fs::write(d.path().join("big.txt"), "x\n".repeat(MAX_HITS + 10)).unwrap();
+        fs::write(d.path().join("long.txt"), format!("needle {}", "y".repeat(500))).unwrap();
+        let f = search(d.path(), "x", true).unwrap();
+        assert_eq!(f.hits.len(), MAX_HITS);
+        assert!(f.truncated);
+        let l = search(d.path(), "needle", true).unwrap();
+        assert!(l.hits[0].text.chars().count() <= 201 && l.hits[0].text.ends_with('…'));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn search_does_not_read_through_links() {
+        let d = project();
+        let outside = tempfile::tempdir().unwrap();
+        fs::write(outside.path().join("s.txt"), "needle").unwrap();
+        std::os::unix::fs::symlink(outside.path().join("s.txt"), d.path().join("l.txt")).unwrap();
+        std::os::unix::fs::symlink(outside.path(), d.path().join("ldir")).unwrap();
+        assert!(search(d.path(), "needle", true).unwrap().hits.is_empty());
     }
 }

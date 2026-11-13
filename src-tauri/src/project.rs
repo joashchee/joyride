@@ -73,3 +73,12 @@ pub fn delete_project_path(state: State<Project>, path: String) -> Result<Listin
     files::delete(&root, &path).map_err(msg)?;
     files::list(&root).map_err(msg)
 }
+
+/// Plain-text search over the project, off the UI thread.
+#[tauri::command]
+pub async fn search_project(state: State<'_, Project>, query: String, case_sensitive: bool) -> Result<files::Found, String> {
+    let root = state.root()?;
+    tauri::async_runtime::spawn_blocking(move || files::search(&root, &query, case_sensitive).map_err(msg))
+        .await
+        .map_err(|e| e.to_string())?
+}
