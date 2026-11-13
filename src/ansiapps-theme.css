@@ -465,6 +465,38 @@ fieldset:disabled .swatch-row { color: var(--r-disabled); cursor: default; }
   font-family: var(--font) !important;
 }
 .monaco-editor, .monaco-editor .monaco-hover, .monaco-editor .suggest-widget, .monaco-editor .find-widget { font-family: var(--font); }
+/* Hover tips and suggestions sit on a light-gray window, but Monaco colours their code with the
+   editor's syntax colours (yellow on light gray is unreadable) and gives them its own 24px
+   lines, margins, dividers and code-block tints. Everything in them is window ink on the
+   16px grid; links are the window's dim colour, underlined. */
+.monaco-hover, .monaco-editor .suggest-widget, .monaco-editor .parameter-hints-widget { line-height: 16px !important; color: var(--r-ink) !important; }
+.monaco-hover *, .monaco-editor .suggest-widget *, .monaco-editor .parameter-hints-widget * {
+  color: var(--r-ink) !important;
+  line-height: 16px !important;
+  text-decoration: none !important;
+  background-image: none !important;
+  text-shadow: none !important;
+}
+.monaco-hover a, .monaco-hover a * { color: var(--r-winmuted) !important; text-decoration: underline !important; }
+/* A cell of space (and a row above and below) between the tip's edge and its words. */
+.monaco-hover .hover-contents:not(.html-hover-contents) { padding: 0 !important; }
+.monaco-editor .monaco-hover .hover-row { padding: 0 16px !important; }
+.monaco-editor .monaco-hover .hover-row:first-child { padding-top: 16px !important; }
+.monaco-editor .monaco-hover .hover-row:last-child { padding-bottom: 16px !important; }
+.monaco-hover p, .monaco-hover .code, .monaco-hover ul, .monaco-hover h1, .monaco-hover h2, .monaco-hover h3, .monaco-hover h4 { margin: 16px 0 !important; }
+.monaco-hover p:first-child, .monaco-hover ul:first-child { margin-top: 0 !important; }
+.monaco-hover p:last-child, .monaco-hover ul:last-child { margin-bottom: 0 !important; }
+.monaco-hover hr { display: block; height: 0; margin: 0 !important; border: 0 !important; }
+.monaco-hover code, .monaco-hover .monaco-tokenized-source { background: none !important; padding: 0 !important; }
+.monaco-hover :focus, .monaco-hover :focus-visible { outline: none !important; }
+.monaco-editor .suggest-widget .monaco-list-row.focused, .monaco-editor .suggest-widget .monaco-list-row.focused * { background: var(--r-menuhi) !important; }
+
+/* A hover tip or list that can scroll always shows its bar: a 16px cyan track and a solid thumb,
+   in the two cells the tip's side padding leaves free. */
+.needs-scroll > .scrollbar { opacity: 1 !important; transition: none !important; width: 16px !important; background: var(--r-track) !important; }
+.needs-scroll > .scrollbar > .slider { width: 16px !important; left: 0 !important; background: var(--r-thumb) !important; border: 3px solid var(--r-track); box-sizing: border-box; }
+.needs-scroll > .scrollbar > .slider:hover, .needs-scroll > .scrollbar > .slider.active { background: var(--r-hover) !important; }
+
 .monaco-editor .scroll-decoration { box-shadow: none !important; }
 .monaco-editor .cursor { border-radius: 0 !important; }
 

@@ -107,6 +107,8 @@ const popups = {
   "editorLink.activeForeground": D.white,
   "editorCodeLens.foreground": D.lightgray,
   "editorLightBulb.foreground": D.yellow,
+  "textCodeBlock.background": D.lightgray,
+  "editor.hoverHighlightBackground": D.darkgray,
 };
 
 /** Colours in "dos16" that Monaco takes as colours: nothing translucent. */
@@ -185,6 +187,7 @@ function swatchTheme(sw: Swatch): monaco.editor.IStandaloneThemeData {
     "editorOverviewRuler.border": u.bg,
     "editorError.foreground": u.bad, "editorWarning.foreground": u.code, "editorInfo.foreground": u.strong,
     "editorLink.activeForeground": u.text, "editorCodeLens.foreground": u.muted, "editorLightBulb.foreground": u.code,
+    "textCodeBlock.background": u.win, "editor.hoverHighlightBackground": e.word,
   };
   return { base: sw.dark ? "vs-dark" : "vs", inherit: false, rules: rules(tones), colors };
 }

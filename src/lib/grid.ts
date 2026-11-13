@@ -35,6 +35,34 @@ export function installRowSnap(): () => void {
   };
 }
 
+/**
+ * Monaco shows the scroll bar of a hover tip or suggestion list only while
+ * the pointer is on it, and offers no option to change that. A text-mode
+ * screen shows a scroll bar whenever there is something to scroll to, so this
+ * marks each such box whose content overflows (`needs-scroll`), and the
+ * stylesheet keeps its bar visible. Returns the remover.
+ */
+export function installScrollMarker(): () => void {
+  const BOXES = ".monaco-hover .monaco-scrollable-element, .suggest-widget .monaco-scrollable-element, .parameter-hints-widget .monaco-scrollable-element";
+  let queued = false;
+  const mark = () => {
+    queued = false;
+    document.querySelectorAll<HTMLElement>(BOXES).forEach((el) => {
+      // Monaco scrolls the element itself, so an overflow is scrollHeight over clientHeight.
+      el.classList.toggle("needs-scroll", el.scrollHeight > el.clientHeight + 1);
+    });
+  };
+  const queue = () => {
+    if (!queued) {
+      queued = true;
+      requestAnimationFrame(mark);
+    }
+  };
+  const mo = new MutationObserver(queue);
+  mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["style", "class"] });
+  return () => mo.disconnect();
+}
+
 export interface GridReport {
   checked: number;
   /** What's off the grid, in words: the text and where its first character is. */
