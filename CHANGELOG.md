@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Exports check asset licences** (2026-11-14): the Export panel's `.love` and PortMaster builds now stop when a library asset the project uses has an unconfirmed licence, rights that have lapsed, a share-alike licence, or (with "This game is sold" ticked) a licence that forbids sale, and add a `CREDITS.txt` for assets that need a credit line.
 - **Asset library panel** (2026-11-14): `Assets…` in the toolbar. Browse and search the library (name, tag, licence, author; filter by kind, confirmed licences, can be sold) with thumbnails, the licence line and where each asset is used; **Use** copies a confirmed asset into the open project (never over a file, never outside the project, checked against its recorded hash); **Confirm…** records a person's name against an unconfirmed licence. **Import from this project** scans the project, shows each distinct file once with the licence guessed from its licence files, and copies nothing until you choose a licence for each and give your name; originals are never changed.
 - **PortMaster's LÖVE ports are in the games catalogue** (2026-11-14): 68 handheld ports with their description, genres, free or paid, the LÖVE version and the PortMaster download, merged with the same game from other places.
 - **Games and apps panel** (2026-11-14): `Games…` in the toolbar opens the LÖVE games and apps catalogue: search, filter by kind, platform and open source, see the licence and latest version, and open a page or download in your browser. It is empty until the catalogue is filled.

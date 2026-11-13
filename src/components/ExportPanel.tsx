@@ -6,6 +6,7 @@ import Panel from "./Panel";
 export default function ExportPanel(props: { onClose: () => void }) {
   const [info, setInfo] = useState<ExportInfo | null>(null);
   const [variant, setVariant] = useState(false);
+  const [commercial, setCommercial] = useState(false);
   const [accept, setAccept] = useState<string[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export default function ExportPanel(props: { onClose: () => void }) {
     setDone(null);
     setErr(null);
     try {
-      setDone(await exportProject(kind, variant, accept));
+      setDone(await exportProject(kind, variant, accept, commercial));
     } catch (e) {
       setErr(String(e));
     } finally {
@@ -63,6 +64,9 @@ export default function ExportPanel(props: { onClose: () => void }) {
           <p className="hint">The export still builds; remove or convert these if the game loads them.</p>
         </fieldset>
       )}
+      <label>
+        <input type="checkbox" checked={commercial} onChange={(e) => setCommercial(e.target.checked)} /> This game is sold (stops the build on an asset whose licence forbids sale)
+      </label>
       <div className="row-buttons">
         <button disabled={busy !== null || (info?.variantOffered && variant)} onClick={() => void build("love")} title="A .love file for desktop LÖVE">
           {busy === "love" ? "Building…" : ".love file"}

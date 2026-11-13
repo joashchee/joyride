@@ -127,8 +127,8 @@ export interface ExportInfo {
   unusable: string[];
 }
 export const exportInfo = () => invoke<ExportInfo>("export_info");
-export const exportProject = (kind: "love" | "portmaster", variant: boolean, accept: string[]) =>
-  invoke<string>("export_project", { kind, variant, accept });
+export const exportProject = (kind: "love" | "portmaster", variant: boolean, accept: string[], commercial: boolean) =>
+  invoke<string>("export_project", { kind, variant, accept, commercial });
 
 export interface LibraryView {
   name: string;
