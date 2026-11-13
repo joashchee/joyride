@@ -35,3 +35,27 @@ export const openProject = (path: string) => invoke<Listing>("open_project", { p
 export const readFile = (path: string) => invoke<string>("read_project_file", { path });
 export const writeFile = (path: string, text: string) =>
   invoke<void>("write_project_file", { path, text });
+
+export interface RunLine {
+  stream: "out" | "err";
+  text: string;
+  file: string | null;
+  line: number | null;
+}
+export const runProject = () => invoke<void>("run_project");
+export const stopProject = () => invoke<void>("stop_project");
+
+/** Subscribes to the game's output and end; returns the unsubscribe. */
+export async function onRun(
+  line: (l: RunLine) => void,
+  exit: (code: number | null) => void,
+): Promise<() => void> {
+  if (!inTauri) return () => {};
+  const { listen } = await import("@tauri-apps/api/event");
+  const a = await listen<RunLine>("run-line", (e) => line(e.payload));
+  const b = await listen<{ code: number | null }>("run-exit", (e) => exit(e.payload.code));
+  return () => {
+    a();
+    b();
+  };
+}

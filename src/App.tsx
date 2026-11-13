@@ -1,7 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import Splash from "./components/Splash";
 import FileTree from "./components/FileTree";
-import { chooseFolder, coreInfo, openProject, readFile, writeFile, type CoreInfo, type Listing } from "./lib/backend";
+import Console from "./components/Console";
+import { chooseFolder, coreInfo, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -23,6 +24,25 @@ export default function App() {
   const [texts, setTexts] = useState<Record<string, string>>({});
   const [dirty, setDirty] = useState<Set<string>>(new Set());
   const [notice, setNotice] = useState<string | null>(null);
+  const [lines, setLines] = useState<RunLine[]>([]);
+  const [running, setRunning] = useState(false);
+  const [goto, setGoto] = useState<{ line: number; n: number }>({ line: 1, n: 0 });
+
+  useEffect(() => {
+    let off = () => {};
+    let dead = false;
+    onRun(
+      (l) => setLines((a) => (a.length >= 2000 ? [...a.slice(-1500), l] : [...a, l])),
+      (code) => {
+        setRunning(false);
+        setLines((a) => [...a, { stream: code === 0 || code === null ? "out" : "err", text: code === null ? "— stopped —" : `— exited with code ${code} —`, file: null, line: null }]);
+      },
+    ).then((u) => (dead ? u() : (off = u)));
+    return () => {
+      dead = true;
+      off();
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -91,6 +111,38 @@ export default function App() {
     if (active === path) setActive(rest[rest.length - 1] ?? null);
   };
 
+  const run = async () => {
+    if (!project) return setNotice("Open a project first.");
+    try {
+      setLines([]);
+      setRunning(true);
+      await runProject();
+    } catch (e) {
+      setRunning(false);
+      fail(e);
+    }
+  };
+  const stop = () => void stopProject();
+  const openAt = async (file: string, line: number) => {
+    await openFile(file);
+    setGoto((g) => ({ line, n: g.n + 1 }));
+  };
+
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if (!(e.metaKey || e.ctrlKey)) return;
+      if (e.key === "r") {
+        e.preventDefault();
+        void run();
+      } else if (e.key === ".") {
+        e.preventDefault();
+        stop();
+      }
+    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  });
+
   const onDirty = (path: string, d: boolean) =>
     setDirty((s) => {
       if (s.has(path) === d) return s;
@@ -117,6 +169,8 @@ export default function App() {
       <main className="shell" aria-label="JoyrIDE">
         <div className="toolbar">
           <button onClick={openFolder}>Open Folder…</button>
+          <button onClick={run} disabled={!project || running} title="Run (⌘R)">Run</button>
+          <button onClick={stop} disabled={!running} title="Stop (⌘.)">Stop</button>
           <span className="project-name">{project?.name ?? "No project open"}</span>
         </div>
         <div className="workspace">
@@ -143,9 +197,10 @@ export default function App() {
             </div>
             <Suspense fallback={<p className="editor-loading" role="status">Loading the editor…</p>}>
               {gone && active !== null && active in texts && (
-                <Editor path={active} text={texts[active]} onDirty={onDirty} onSave={onSave} />
+                <Editor path={active} text={texts[active]} onDirty={onDirty} onSave={onSave} goto={goto} />
               )}
             </Suspense>
+            <Console lines={lines} running={running} onClear={() => setLines([])} onOpen={openAt} />
             {active === null && <p className="empty">Pick a file to edit. Save with ⌘S or Ctrl+S.</p>}
           </section>
         </div>

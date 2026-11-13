@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Run and console** (2026-11-13): stoppable `runner::start`, `find_love`, Run/Stop
+  buttons (⌘R, ⌘.), a console whose error lines open the file at the line.
 - **Open a project** (2026-11-13): `joyride-core::files`, Tauri commands, file tree,
   tabs and save. File access is confined to the project folder, symlinks included.
 - **Monaco editor** (2026-11-13): bundled `monaco-editor` 0.57, Lua only, own

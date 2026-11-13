@@ -4,7 +4,7 @@ Progress and next phases, in the order to do them. Update it in the same
 commit as the work. The design is `docs/JoyrIDE_LÖVE-Implementation-Spec.md`
 (section 6 is the milestone order); this file is the checklist.
 
-Last reviewed: 2026-11-13 (core logic built; shell, Monaco and project files built, Run and console next, see section 1).
+Last reviewed: 2026-11-13 (core logic built; shell, Monaco and project files built, toolchains and the language server next, see section 1).
 
 ## 0. Repository
 
@@ -15,7 +15,7 @@ Last reviewed: 2026-11-13 (core logic built; shell, Monaco and project files bui
 
 ## 1. Scaffold, toolchain manager, core editor (spec milestone 1)
 
-The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`); the shell and editor now exist (npm is reachable when `registry.npmjs.org` is allowed for the command; use `--cache $TMPDIR/npm-cache`, since `~/.npm` has root-owned files). Next: Run and console, then wrap the crates in `src-tauri` commands.
+The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`); the shell and editor now exist (npm is reachable when `registry.npmjs.org` is allowed for the command; use `--cache $TMPDIR/npm-cache`, since `~/.npm` has root-owned files). Next: bundled toolchains and the language server, then wrap the crates in `src-tauri` commands.
 
 - [x] Tauri 2 + React + Vite scaffold with splash and fast start (CLAUDE.md rule 7), 2026-11-13: static splash in `index.html`, `components/Splash.tsx` (progress, error shown on it), `src-tauri` with a `core_info` command over the core crates; `npm run build` and `cargo build --offline` pass. **Not yet run as a window** (`npm run tauri dev`), icons are a placeholder PNG set (no `.icns`/`.ico`: run `tauri icon` on real art before the release build), no `lsp_bridge`, Monaco or menus yet. Spec 1.
 - [x] Toolchain core (`joyride-core/src/toolchain.rs`): LÖVE version rules (11.5, 12.0+), `.luarc.json` generation per version, **signed toolchain manifest** (Ed25519, refused if unsigned or altered) and download checking (size + BLAKE3).
@@ -24,14 +24,14 @@ The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`);
 - [x] **Monaco editor** (2026-11-13, `src/components/Editor.tsx`, `src/monaco-setup.ts`): `monaco-editor` 0.57 (MIT), bundled with its own worker (no CDN), Lua highlighting only (the CSS/HTML/JSON/TypeScript services and their 7 MB worker are left out), loaded after the splash so the first screen stays 224 kB. Follows the system light/dark theme. **Not run in a window yet.**
 - [ ] `lsp_bridge.rs`: spawn `lua-language-server`, JSON-RPC over the Tauri channel into Monaco (0.57 ships `monaco-lsp-client`, try it first). Needs the binary; the `.luarc.json` side is done.
 - [x] **Open a project folder** (2026-11-13): `joyride-core/src/files.rs` (listing with folders first, text read, atomic write; paths and symlinks cannot leave the project; 5 tests), `src-tauri/src/project.rs` commands, folder dialog, `FileTree` (keyboard and VoiceOver roles), tabs with unsaved marks, one Monaco model per file, ⌘S/Ctrl+S saves. **Not run in a window.** Still to do: new/rename/delete file, find in files, restore the last project, a confirm on quitting with unsaved files.
-- [ ] Run button and console wired to `runner.rs` (needs the bundled LÖVE; until then it can use a LÖVE found on the machine).
+- [x] **Run, Stop and the console** (2026-11-13): `runner::start` (non-blocking, stoppable, exit status; test with a fake LÖVE) and `runner::find_love` (`JOYRIDE_LOVE`, the toolchains folder, then an installed LÖVE), `src-tauri/src/run.rs` (`run-line` and `run-exit` events; links resolved inside the project), `Console` with lines that open the file at the line, ⌘R and ⌘. **Not run in a window.** Uses a LÖVE found on the machine until the bundled one exists; it does not yet pick the project's version from `love.toml`.
 - [ ] `docs/platform-parity.md` started.
 
 ## 2. Runner and console (milestone 2)
 
 - [x] Runner core (`runner.rs`): spawns LÖVE on a project, streams stdout and stderr, links errors; links cannot escape the project.
 - [x] Stack-trace linking (`trace.rs`): `Error: file:line:`, `[string "…"]:line:` and traceback frames.
-- [ ] Console UI with clickable links (frontend; blocked on scaffold).
+- [x] Console UI with clickable links (see Run, Stop and the console in section 1).
 - [ ] Viewport, touch and gamepad simulator (spec 5.6): the shim already reads its design size and screen; a simulator needs the runner to set a window size and send events. Frontend plus a `JOYRIDE_SIM` env hook in the shim.
 - [x] Shim behaviour tested under LuaJIT with a mocked `love` (`tests/shim_lua.rs`).
 - [x] Real LÖVE 11.5 and 12.0 (r3i6nos's builds) run staged PortMaster, mobile and web builds headless: wrapper chain, conf patch, version pin (`tests/e2e_love.rs`). The dummy video driver has no OpenGL, so drawing is not exercised: on a Mac with a display, add a windowed run (`--graphics`).

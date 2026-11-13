@@ -5,7 +5,7 @@ use crate::{err, Result};
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitStatus, Stdio};
-use std::sync::mpsc;
+use std::sync::{mpsc, Arc, Mutex};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Stream {
@@ -63,6 +63,91 @@ pub fn run(spec: &Spec, mut on_line: impl FnMut(Stream, &str, Option<Link>)) -> 
     Ok(child.wait()?)
 }
 
+/// A game started by [`start`]: it can be stopped while it runs.
+pub struct Running {
+    child: Arc<Mutex<std::process::Child>>,
+}
+
+impl Running {
+    /// Kills the game; its output ends and `on_exit` runs.
+    pub fn stop(&self) {
+        let _ = self.child.lock().unwrap().kill();
+    }
+}
+
+/// Starts the game and returns at once. Output lines go to `on_line` and the
+/// exit status (None when it could not be read) to `on_exit`, both on a
+/// background thread, so the UI never waits on the game.
+pub fn start(
+    spec: &Spec,
+    mut on_line: impl FnMut(Stream, &str, Option<Link>) + Send + 'static,
+    on_exit: impl FnOnce(Option<i32>) + Send + 'static,
+) -> Result<Running> {
+    let mut child = spec.command()?.stdout(Stdio::piped()).stderr(Stdio::piped()).spawn().map_err(|e| crate::Error::Msg(format!("could not start {}: {e}", spec.love.display())))?;
+    let (tx, rx) = mpsc::channel();
+    let mut readers = Vec::new();
+    let pipes: [(Stream, Option<Box<dyn std::io::Read + Send>>); 2] = [
+        (Stream::Stdout, child.stdout.take().map(|p| Box::new(p) as _)),
+        (Stream::Stderr, child.stderr.take().map(|p| Box::new(p) as _)),
+    ];
+    for (stream, pipe) in pipes {
+        let Some(pipe) = pipe else { continue };
+        let tx = tx.clone();
+        readers.push(std::thread::spawn(move || {
+            for line in BufReader::new(pipe).split(b'\n').flatten() {
+                let _ = tx.send((stream, String::from_utf8_lossy(&line).trim_end_matches('\r').to_string()));
+            }
+        }));
+    }
+    drop(tx);
+    let child = Arc::new(Mutex::new(child));
+    let waiter = child.clone();
+    std::thread::spawn(move || {
+        for (stream, line) in rx {
+            let l = trace::link(&line);
+            on_line(stream, &line, l);
+        }
+        for r in readers {
+            let _ = r.join();
+        }
+        // The pipes are closed, so the game is ending; poll rather than hold
+        // the lock, which `stop` needs.
+        let code = loop {
+            match waiter.lock().unwrap().try_wait() {
+                Ok(Some(st)) => break st.code(),
+                Ok(None) => {}
+                Err(_) => break None,
+            }
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        };
+        on_exit(code);
+    });
+    Ok(Running { child })
+}
+
+/// Finds a LÖVE to run with: `JOYRIDE_LOVE`, then the toolchain folder's own
+/// (`toolchains/love-<version>/love.app` on a Mac, once downloaded), then an
+/// installed one. `version` is "11.5", "12.0"…; None accepts any installed.
+pub fn find_love(toolchains: Option<&Path>, version: Option<&str>) -> Option<PathBuf> {
+    if let Some(p) = std::env::var_os("JOYRIDE_LOVE").map(PathBuf::from) {
+        return p.is_file().then_some(p);
+    }
+    let mac = |app: PathBuf| app.join("Contents/MacOS/love");
+    let mut candidates = Vec::new();
+    if let (Some(t), Some(v)) = (toolchains, version) {
+        candidates.push(mac(t.join(format!("love-{v}")).join("love.app")));
+        candidates.push(t.join(format!("love-{v}")).join("love"));
+    }
+    if let Some(v) = version {
+        candidates.push(mac(PathBuf::from(format!("/Applications/love-{v}.app"))));
+    }
+    candidates.push(mac(PathBuf::from("/Applications/love.app")));
+    candidates.push(PathBuf::from("/usr/bin/love"));
+    candidates.push(PathBuf::from("/usr/local/bin/love"));
+    candidates.push(PathBuf::from("/opt/homebrew/bin/love"));
+    candidates.into_iter().find(|p| p.is_file())
+}
+
 /// Resolves a link's file against the project, only if it stays inside it.
 pub fn resolve_link(project: &Path, link: &Link) -> Option<PathBuf> {
     let p = project.join(&link.file);
@@ -80,6 +165,32 @@ mod tests {
         std::fs::write(&p, format!("#!/bin/sh\n{script}\n")).unwrap();
         std::fs::set_permissions(&p, std::fs::Permissions::from_mode(0o755)).unwrap();
         p
+    }
+
+    #[test]
+    fn start_streams_then_reports_exit_and_can_stop() {
+        let d = tempfile::tempdir().unwrap();
+        let proj = d.path().join("game");
+        std::fs::create_dir_all(&proj).unwrap();
+        std::fs::write(proj.join("main.lua"), "").unwrap();
+        let (tx, rx) = mpsc::channel();
+        let (txe, rxe) = mpsc::channel();
+        let love = fake_love(d.path(), "echo hello; echo 'Error: main.lua:3: boom' >&2; exit 3");
+        let spec = Spec { love, project: proj.clone(), env: vec![] };
+        let _r = start(&spec, move |s, l, k| tx.send((s, l.to_string(), k)).unwrap(), move |c| txe.send(c).unwrap()).unwrap();
+        assert_eq!(rxe.recv_timeout(std::time::Duration::from_secs(10)).unwrap(), Some(3));
+        let lines: Vec<_> = rx.try_iter().collect();
+        assert!(lines.iter().any(|(_, l, _)| l == "hello"));
+        assert!(lines.iter().any(|(_, _, k)| k.as_ref().is_some_and(|k| k.line == 3)));
+
+        let love = fake_love(d.path(), "echo up; exec sleep 60");
+        let (txe, rxe) = mpsc::channel();
+        let spec = Spec { love, project: proj, env: vec![] };
+        let r = start(&spec, |_, _, _| {}, move |c| txe.send(c).unwrap()).unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(200));
+        r.stop();
+        // Killed by a signal: no exit code.
+        assert_eq!(rxe.recv_timeout(std::time::Duration::from_secs(10)).unwrap(), None);
     }
 
     #[test]

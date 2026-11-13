@@ -34,3 +34,11 @@ body { background: var(--bg); color: var(--fg); font: 14px system-ui, -apple-sys
 .tab button { background: none; border: 0; color: inherit; font: inherit; padding: 6px 8px; cursor: pointer; }
 .tab-close { color: var(--muted); }
 button:focus-visible { outline: 2px solid #ff6fa8; outline-offset: -2px; }
+.console { height: 180px; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.console-head { display: flex; justify-content: space-between; align-items: center; padding: 2px 10px; font-size: 12px; color: var(--muted); }
+.console-body { flex: 1; overflow: auto; padding: 0 10px 6px; font: 12px ui-monospace, Menlo, monospace; }
+.cline { white-space: pre-wrap; }
+.cline.err { color: #ff8a8a; }
+@media (prefers-color-scheme: light) { .cline.err { color: #b3261e; } }
+.cline.link { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-decoration: underline; }
+button:disabled { opacity: 0.5; }

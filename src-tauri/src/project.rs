@@ -11,7 +11,7 @@ use tauri::State;
 pub struct Project(Mutex<Option<PathBuf>>);
 
 impl Project {
-    fn root(&self) -> Result<PathBuf, String> {
+    pub fn root(&self) -> Result<PathBuf, String> {
         self.0.lock().unwrap().clone().ok_or_else(|| "no project is open".to_string())
     }
 }

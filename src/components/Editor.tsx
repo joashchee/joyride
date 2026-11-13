@@ -33,6 +33,8 @@ export default function Editor(props: {
   text: string;
   onDirty: (path: string, dirty: boolean) => void;
   onSave: (path: string, text: string) => Promise<void>;
+  /** Moves the cursor to a line; `n` changes on each request, so the same line can be asked for twice. */
+  goto?: { line: number; n: number };
 }) {
   const host = useRef<HTMLDivElement>(null);
   const ed = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -85,6 +87,15 @@ export default function Editor(props: {
     ed.current?.setModel(d.model);
     ed.current?.focus();
   }, [props.path, props.text]);
+
+  useEffect(() => {
+    const g = props.goto;
+    if (!g || !ed.current) return;
+    ed.current.revealLineInCenter(g.line);
+    ed.current.setPosition({ lineNumber: g.line, column: 1 });
+    ed.current.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.goto?.n]);
 
   return <div ref={host} className="editor-host" />;
 }
