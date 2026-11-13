@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor/editor/editor.api.js";
 import "../monaco-setup";
-import { formatLua, inTauri } from "../lib/backend";
+import { formatLua, inTauri, lintLua } from "../lib/backend";
 import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 
@@ -17,6 +17,37 @@ interface Doc {
   saved: number;
 }
 const docs = new Map<string, Doc>();
+
+let lintTimer: ReturnType<typeof setTimeout> | undefined;
+/** JoyrIDE's own LÖVE lints (version-calibrated) as markers, a moment after typing stops. */
+function scheduleLint(path: string, model: monaco.editor.ITextModel) {
+  if (!inTauri || !path.endsWith(".lua")) return;
+  clearTimeout(lintTimer);
+  lintTimer = setTimeout(async () => {
+    try {
+      const items = await lintLua(path, model.getValue());
+      if (model.isDisposed()) return;
+      monaco.editor.setModelMarkers(
+        model,
+        "joyride-lint",
+        items
+          .filter((i) => i.line >= 1 && i.line <= model.getLineCount())
+          .map((i) => ({
+            startLineNumber: i.line,
+            startColumn: 1,
+            endLineNumber: i.line,
+            endColumn: model.getLineMaxColumn(i.line),
+            severity: i.severity === "error" ? monaco.MarkerSeverity.Error : monaco.MarkerSeverity.Warning,
+            message: i.message,
+            source: "JoyrIDE",
+            code: i.rule,
+          })),
+      );
+    } catch {
+      /* no project or no lints: leave the markers as they were */
+    }
+  }, 400);
+}
 
 /** Forgets a closed file's text and undo history. */
 export function closeDoc(path: string) {
@@ -71,7 +102,10 @@ export default function Editor(props: {
     const sub = editor.onDidChangeModelContent(() => {
       const m = editor.getModel();
       const path = m && [...docs].find(([, d]) => d.model === m)?.[0];
-      if (path) cb.current.onDirty(path, m.getAlternativeVersionId() !== docs.get(path)!.saved);
+      if (path) {
+        cb.current.onDirty(path, m.getAlternativeVersionId() !== docs.get(path)!.saved);
+        scheduleLint(path, m);
+      }
     });
     // Format Document (⇧⌥F) with the bundled StyLua; a syntax error is reported, the text left alone.
     const formatter = inTauri
@@ -111,6 +145,7 @@ export default function Editor(props: {
       docs.set(props.path, d);
     }
     ed.current?.setModel(d.model);
+    scheduleLint(props.path, d.model);
     ed.current?.focus();
   }, [props.path, props.text]);
 

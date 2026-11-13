@@ -45,6 +45,14 @@ export const deletePath = (path: string) => invoke<Listing>("delete_project_path
 
 export const formatLua = (text: string) => invoke<string>("format_lua", { text });
 
+export interface LintItem {
+  line: number;
+  severity: "error" | "warning";
+  rule: string;
+  message: string;
+}
+export const lintLua = (path: string, text: string) => invoke<LintItem[]>("lint_lua", { path, text });
+
 export interface Hit {
   path: string;
   line: number;

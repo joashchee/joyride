@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **LÖVE lints in the editor** (2026-11-13): 0-1 colours, boolean `vsync`, 12.0-only and
+  removed APIs, shown as markers for the project's LÖVE version.
 - **Format Document** (2026-11-13): the bundled StyLua through `joyride-core::format`;
   ⇧⌥F or the context menu; a project's `stylua.toml` is honoured.
 - **LÖVE reference** (2026-11-13): searchable offline docs (⌘⇧D) built from the LÖVE types

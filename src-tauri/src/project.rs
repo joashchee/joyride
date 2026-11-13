@@ -121,3 +121,30 @@ pub async fn format_lua(app: AppHandle, state: State<'_, Project>, text: String)
     .await
     .map_err(|e| e.to_string())?
 }
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LintItem {
+    line: u32,
+    /// "error" or "warning".
+    severity: &'static str,
+    rule: &'static str,
+    message: String,
+}
+
+/// The LÖVE lints (`joyride_core::lint`) for one file's text, calibrated to
+/// the project's LÖVE version. Fast (a lexer pass), so it runs inline.
+#[tauri::command]
+pub fn lint_lua(state: State<Project>, path: String, text: String) -> Result<Vec<LintItem>, String> {
+    let root = state.root()?;
+    let v = joyride_core::toolchain::project_love_version(&root).map_err(msg)?;
+    Ok(joyride_core::lint::lint(&text, &path, v)
+        .into_iter()
+        .map(|d| LintItem {
+            line: d.line,
+            severity: if d.severity == joyride_core::lint::Severity::Error { "error" } else { "warning" },
+            rule: d.rule,
+            message: d.message,
+        })
+        .collect())
+}

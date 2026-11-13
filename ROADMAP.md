@@ -39,6 +39,7 @@ The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`);
 ## 3. LÖVE tooling and docs (milestone 3)
 
 - [x] Version-calibrated lints (`lint.rs`): 0-1 colours, boolean `vsync`, 12.0-only APIs on 11.5, removed-in-12 APIs with their replacements, `.luacheckrc`. **The API tables were measured on the real 11.5 and 12.0 binaries** (`scripts/love-api-diff.py`, checked by `tests/e2e_love.rs`): 7 removed, 29 added, from the non-graphics modules. `love.graphics`, window and input need a display: rerun with `--graphics` on the Mac and extend the tables.
+- [x] **The lints are shown in the editor** (2026-11-13): `lint_lua` command (calibrated to the project's `love.toml` version) and `joyride-lint` markers on the whole line, a moment after typing stops. **Not yet tried in a window.**
 - [x] Colour swatch data (`editor.rs`): `setColor`/`setBackgroundColor` literals with ranges, and writing a colour back.
 - [x] Asset hover data (`editor.rs`): image/audio path strings, safe resolution inside the project, PNG/GIF/JPEG sizes.
 - [x] Docs search, snippets and hover with version badges (`docs.rs`) over the `love-api` JSON schema.
