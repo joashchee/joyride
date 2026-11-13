@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Bitmap fonts are drawn** (2026-11-13): BDF, PSF and BMFont (`.fnt` with its page pictures) show a sample in the preview, with the font's name, glyph count and cell size; PCF and Type 1 are named.
 - **Music written as text plays** (2026-11-13): clicking an ABC, MusicXML, RTTTL, Alda, kern or similar file plays it in the preview, with an Edit button to open it in the editor.
 - **Warnings for files LÖVE cannot use** (2026-11-13): a file the project's LÖVE version refuses (a GIF, MP4, WebM, WOFF2, BDF; a QOI or WebP on 11.5) is marked `!` in the file tree, printed as a warning in the Console when you Run, and listed in the Export panel. Nothing is blocked.
 - **Compressed textures are drawn** (2026-11-13): DDS, KTX, PKM and PVR files in the BC1 to BC5 (DXT) and ETC1 formats now show as a picture in the preview, decoded by our own code; other texture formats still show their facts and bytes.

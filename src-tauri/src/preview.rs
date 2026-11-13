@@ -279,6 +279,9 @@ fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview
         return Ok(p);
     }
     // Not a known media type (or it would not open): text, music, then bytes.
+    if kind == Sniff::Unknown && bitmap_font(&mut p, &real, &head) {
+        return Ok(p);
+    }
     if kind == Sniff::Unknown && looks_like_text(&head, size) {
         // Music written as text (ABC, MusicXML, RTTTL, Alda...) plays when nttplay reads it; a file it
         // does not read (any other `.xml`, `.pro`) opens in the editor as before.
@@ -295,6 +298,39 @@ fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview
     }
     hex(&mut p, &head);
     Ok(p)
+}
+
+/// BDF, PSF and BMFont drawn as a sample; PCF and Type 1 named. Not for a text file that only has the extension.
+fn bitmap_font(p: &mut Preview, path: &Path, head: &[u8]) -> bool {
+    use asset_core::bitmapfont as bf;
+    let Some(kind) = bf::detect(head) else { return false };
+    p.kind = "font";
+    p.facts.push(fact("Font", kind.name()));
+    match bf::render(path) {
+        Ok(Some(s)) => {
+            if let Some(n) = &s.name {
+                p.facts.push(fact("Name", n));
+            }
+            p.facts.push(fact("Glyphs", s.glyphs));
+            p.facts.push(fact("Cell", format!("{} x {}", s.cell.0, s.cell.1)));
+            p.note = s.warning.clone();
+            match asset_core::preview::png_from_rgba(s.width, s.height, s.rgba) {
+                Ok(png) => p.body = Body::Image { data_url: data_url("image/png", &png), width: s.width, height: s.height, pixel_art: true, palette: Vec::new() },
+                Err(_) => hex(p, head),
+            }
+        }
+        Ok(None) => {
+            p.note = Some(format!("This is a {}; this preview names it but cannot draw a sample of it.", kind.name()));
+            hex(p, head);
+            p.kind = "font";
+        }
+        Err(e) => {
+            p.note = Some(format!("This {} could not be drawn: {e}", kind.name()));
+            hex(p, head);
+            p.kind = "font";
+        }
+    }
+    true
 }
 
 /// Extensions nttplay reads that are text files.
@@ -842,6 +878,21 @@ mod tests {
         let q = build(d.path(), "song.mid", None).unwrap();
         assert_eq!(q.kind, "binary");
         assert!(q.note.is_some());
+    }
+
+    #[test]
+    fn bitmap_fonts_draw_a_sample_and_a_bad_page_says_so() {
+        let d = proj();
+        std::fs::write(d.path().join("t.bdf"), "STARTFONT 2.1\nFONTBOUNDINGBOX 8 8 0 0\nFONT_ASCENT 8\nFONT_DESCENT 0\nCHARS 1\nSTARTCHAR T\nENCODING 84\nDWIDTH 8 0\nBBX 8 2 0 6\nBITMAP\nFF\n18\nENDCHAR\nENDFONT\n").unwrap();
+        std::fs::write(d.path().join("b.fnt"), "info face=\"B\" size=8\ncommon lineHeight=8 base=6\npage id=0 file=\"gone.png\"\nchar id=84 x=0 y=0 width=4 height=4 xoffset=0 yoffset=0 xadvance=5 page=0\n").unwrap();
+        let p = build(d.path(), "t.bdf", None).unwrap();
+        assert_eq!(p.kind, "font");
+        assert_eq!(fact_of(&p, "Glyphs"), Some("1"));
+        assert!(matches!(p.body, Body::Image { pixel_art: true, .. }));
+        assert!(fact_of(&p, "In LÖVE").unwrap().starts_with("no"));
+        let q = build(d.path(), "b.fnt", None).unwrap();
+        assert_eq!(q.kind, "font");
+        assert!(q.note.unwrap().contains("gone.png"));
     }
 
     #[test]
