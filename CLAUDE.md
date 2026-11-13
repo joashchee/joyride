@@ -13,12 +13,17 @@ Diskette (ROADMAP format).
 **`CHANGELOG.md`**: add a bullet whenever a change lands. **`ROADMAP.md`**:
 tick and update it in the same commit as the work.
 
-## Current milestone: the app shell
+## Current milestone: the app shell, filling out
 
-The Tauri-free core is built and tested (`asset-core/`, `joyride-core/`).
-Next is the Tauri 2 + React + Monaco shell around it, which needs a machine
-with npm network access (`ROADMAP.md` section 1). Nothing in the core
-needs the network to build or test (`cargo ... --offline`).
+The Tauri-free core is built and tested (`asset-core/`, `joyride-core/`) and
+the Tauri 2 + React + Monaco shell runs around it (`src-tauri/`, `src/`):
+project files, editor with the language server, StyLua, lints and colour
+swatches, Run and console, find in files, libraries, the LÖVE reference,
+Auto-Port and Export (`.love`, PortMaster). `ROADMAP.md` has what is left
+(Asset Library and generator panels, the toolchain download and updater,
+the other exporters' UI, the first signed release). Nothing in the core
+needs the network to build or test (`cargo ... --offline`); `npm` needs
+`registry.npmjs.org` allowed.
 
 ## Non-negotiable rules
 
