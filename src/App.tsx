@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import Splash from "./components/Splash";
 import FileTree from "./components/FileTree";
 import Console from "./components/Console";
+import PreviewPane from "./components/Preview";
 import NameBox from "./components/NameBox";
 import Search from "./components/Search";
 import ExportPanel from "./components/ExportPanel";
@@ -10,7 +11,7 @@ import Docs from "./components/Docs";
 import AutoPort from "./components/AutoPort";
 import GitHub from "./components/GitHub";
 import Settings from "./components/Settings";
-import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
+import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -46,6 +47,8 @@ export default function App() {
   const [selected, setSelected] = useState<string | null>(null);
   const [asking, setAsking] = useState<null | { kind: "file" | "dir" | "rename"; label: string; initial: string }>(null);
   const [lspState, setLspState] = useState<string>("off");
+  const [preview, setPreview] = useState<Preview | null>(null);
+  const picked = useRef(0);
   const [goto, setGoto] = useState<{ line: number; n: number }>({ line: 1, n: 0 });
 
   useEffect(() => {
@@ -158,8 +161,27 @@ export default function App() {
     }
   };
 
+  /** A click in the tree: text opens in the editor, anything else previews. */
+  const pickFile = async (path: string) => {
+    const n = ++picked.current;
+    try {
+      const p = inTauri ? await previewFile(path) : null;
+      if (n !== picked.current) return; // a later click won
+      if (!p || p.kind === "text") {
+        setPreview(null);
+        await openFile(path);
+      } else {
+        setPreview(p);
+        setNotice(null);
+      }
+    } catch (e) {
+      if (n === picked.current) fail(e);
+    }
+  };
+
   const openFile = async (path: string) => {
     try {
+      setPreview(null);
       if (!(path in texts)) {
         const text = await readFile(path);
         setTexts((t) => ({ ...t, [path]: text }));
@@ -353,7 +375,7 @@ export default function App() {
                 </div>
                 <Search onOpen={openAt} focusKey={findKey} />
                 {asking && <NameBox key={asking.kind + asking.initial} label={asking.label} initial={asking.initial} onSubmit={(n) => void submitName(n)} onCancel={() => setAsking(null)} />}
-                <FileTree entries={project.entries} active={active} onOpen={openFile} selected={selected} onSelect={setSelected} />
+                <FileTree entries={project.entries} active={active} onOpen={pickFile} selected={selected} onSelect={setSelected} />
               </>
             ) : (
               <p className="empty">Open a folder with a LÖVE project.</p>
@@ -364,7 +386,7 @@ export default function App() {
             <div className="tabs" role="tablist" aria-label="Open files">
               {tabs.map((t) => (
                 <span key={t} className={"tab" + (t === active ? " active" : "")}>
-                  <button role="tab" aria-selected={t === active} onClick={() => setActive(t)}>
+                  <button role="tab" aria-selected={t === active && !preview} onClick={() => { setPreview(null); setActive(t); }}>
                     {t.split("/").pop()}
                     {dirty.has(t) ? " •" : ""}
                   </button>
@@ -375,12 +397,13 @@ export default function App() {
               ))}
             </div>
             <Suspense fallback={<p className="editor-loading" role="status">Loading the editor…</p>}>
-              {gone && active !== null && active in texts && (
+              {gone && !preview && active !== null && active in texts && (
                 <Editor path={active} text={texts[active]} onDirty={onDirty} onSave={onSave} goto={goto} onNotice={setNotice} />
               )}
             </Suspense>
+            {preview && <PreviewPane key={preview.path} data={preview} onClose={() => setPreview(null)} />}
             <Console lines={lines} running={running} onClear={() => setLines([])} onOpen={openAt} />
-            {active === null && <p className="empty">Pick a file to edit. Save with Cmd+S or Ctrl+S.</p>}
+            {active === null && !preview && <p className="empty">Pick a file to edit. Save with Cmd+S or Ctrl+S.</p>}
           </section>
         </div>
         <footer className="statusbar" role="status">

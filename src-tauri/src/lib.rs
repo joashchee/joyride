@@ -11,6 +11,7 @@ mod github;
 mod libs;
 mod lsp;
 mod project;
+mod preview;
 mod run;
 
 #[derive(Serialize)]
@@ -40,6 +41,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .manage(project::Project::default())
         .manage(run::Game::default())
+        .manage(preview::VideoSession::default())
         .manage(lsp::Lsp::default())
         .plugin(tauri_plugin_log::Builder::new().level(log::LevelFilter::Info).build())
         .invoke_handler(tauri::generate_handler![
@@ -75,6 +77,8 @@ pub fn run() {
             libs::library_list,
             libs::library_add,
             libs::library_remove,
+            preview::preview_file,
+            preview::preview_video_frames,
             run::run_project,
             run::stop_project,
             lsp::lsp_start,

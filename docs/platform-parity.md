@@ -11,3 +11,4 @@ Mac, and what the Linux and Windows builds do instead.
 | PortMaster export | Not LÖVE-related: the zip never carries a LÖVE binary, it sources PortMaster's own `love_<ver>` runtime (see CLAUDE.md rule 12) | same | same |
 | Folder picker | Native `NSOpenPanel` through `tauri-plugin-dialog` | GTK portal | Windows dialog |
 | Finding `gh` | `PATH`, then `/opt/homebrew/bin`, `/usr/local/bin` (a Dock-launched app has a short `PATH`); login is `gh`'s own keychain entry | `PATH`, `/usr/bin` | `PATH`, `gh.exe` |
+| File preview: sound and MP4/WebM video | Played by WKWebView's own decoders (MP3, WAV, AAC, FLAC, H.264); Ogg Vorbis may not play there (the preview says so). Theora `.ogv` and MIDI/tracker music do not depend on it (`ogv`, `nttplay`) | WebKitGTK through GStreamer: which codecs play depends on the installed plugins (untested) | WebView2: MP3, WAV, AAC, H.264, WebM, Ogg Vorbis (untested) |

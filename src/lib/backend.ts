@@ -35,6 +35,37 @@ export const lastProject = () => (inTauri ? invoke<string | null>("last_project"
 export const openProject = (path: string) => invoke<Listing>("open_project", { path });
 export const projectListing = () => invoke<Listing>("project_listing");
 export const readFile = (path: string) => invoke<string>("read_project_file", { path });
+
+export interface PreviewFact {
+  label: string;
+  value: string;
+}
+export type PreviewBody =
+  | { type: "text" }
+  | { type: "image"; dataUrl: string; width: number; height: number; pixelArt: boolean; palette: string[] }
+  | { type: "audio"; dataUrl: string | null; waveform: number[] | null; seconds: number | null }
+  | { type: "video"; source: "ogv" | "web"; dataUrl: string | null; width: number; height: number; fps: number; frames: number | null; seconds: number | null; poster: string | null }
+  | { type: "font"; dataUrl: string }
+  | { type: "members"; names: { name: string; size: number }[]; more: number }
+  | { type: "hex"; dump: string };
+export interface Preview {
+  path: string;
+  kind: "text" | "image" | "audio" | "video" | "font" | "archive" | "music" | "binary";
+  size: number;
+  facts: PreviewFact[];
+  note: string | null;
+  body: PreviewBody;
+}
+/** What the selected file is and how to show it ("text" goes to the editor). */
+export const previewFile = (path: string) => invoke<Preview>("preview_file", { path });
+export interface VideoFrame {
+  index: number;
+  time: number;
+  jpeg: string;
+}
+/** Up to `count` frames of an Ogg Theora video from frame `from`. */
+export const previewVideoFrames = (path: string, from: number, count: number) =>
+  invoke<{ frames: VideoFrame[]; end: boolean }>("preview_video_frames", { path, from, count });
 export const writeFile = (path: string, text: string) =>
   invoke<void>("write_project_file", { path, text });
 

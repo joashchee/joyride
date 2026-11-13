@@ -285,6 +285,27 @@ label { cursor: pointer; }
 .editor-host { flex: 1; min-height: 0; }
 .editor-loading { margin: 16px 8px; color: var(--muted); }
 
+/* File preview: the facts, then the body, in whole cells. */
+.preview { flex: 1; min-height: 0; overflow: auto; padding: 0 8px; display: flex; flex-direction: column; gap: 16px; }
+.preview-head { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 8px; }
+.preview-head h2 { margin: 0; font: inherit; color: var(--r-strong); flex: 1; min-width: 0; }
+.preview-kind { color: var(--muted); }
+.preview-facts { margin: 0; display: flex; flex-direction: column; }
+.preview-fact { display: flex; gap: 0 16px; }
+.preview-fact dt { width: 192px; flex: none; color: var(--muted); }
+.preview-fact dd { margin: 0; min-width: 0; }
+.preview-note { margin: 0; color: var(--muted); }
+.preview-stage { display: flex; flex-direction: column; gap: 16px; }
+.preview-stage img, .preview-stage canvas, .preview-stage video { display: block; max-width: 100%; height: auto; }
+.preview-stage img.pixelated, .preview-stage canvas { image-rendering: pixelated; }
+.preview-palette { margin: 0; }
+.preview-swatch { display: inline-block; width: 16px; height: 16px; vertical-align: top; }
+.preview-wave { margin: 0; word-break: break-all; color: var(--r-strong); }
+.preview-members { list-style: none; margin: 0; padding: 0; }
+.preview-hex { margin: 0; white-space: pre; overflow: auto; }
+.preview-font p { margin: 0; font-size: 32px; line-height: 48px; }
+
+
 .namebox { display: flex; flex-wrap: wrap; gap: 16px 8px; align-items: flex-start; }
 .namebox label { display: flex; flex-direction: column; width: 100%; }
 .namebox input { width: 100%; }

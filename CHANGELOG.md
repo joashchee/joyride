@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **File preview** (2026-11-13): clicking a file that is not text shows it instead of an error: pictures (now also WebP and TIFF), sound, MIDI and tracker music, Theora video, MP4 and WebM, fonts, `.love` and zip members, and a hex dump with the facts for anything else. Chosen by the file's bytes, never edited or written.
 - **`ogv` crate** (2026-11-13): probes and decodes Ogg Theora video to RGBA frames over the vendored libogg and libtheora, for the video preview.
 - **libogg and libtheora vendored** (2026-11-13): `vendor/xiph/`, BSD-3-Clause, the portable C decoder only, pinned by SHA-256, for previewing Ogg Theora video (`.ogv`).
 - **Neumetik's players vendored** (2026-11-13): `vendor/neumetik/` (`midi`, `bgn`, `synth`, `visual`, `tracker`, `nttplay`), MIT, for previewing MIDI, tracker modules and music written as text. `nttplay` builds offline and plays a one-note MIDI.

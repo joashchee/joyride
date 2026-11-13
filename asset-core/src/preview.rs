@@ -116,6 +116,17 @@ pub fn thumbnail_png(path: &Path, max_edge: u32) -> Result<(Vec<u8>, u32, u32)> 
     Ok((buf.into_inner(), ow, oh))
 }
 
+/// A JPEG of RGBA pixels (alpha ignored), for video frames sent to the screen.
+pub fn jpeg_from_rgba(width: u32, height: u32, rgba: &[u8], quality: u8) -> Result<Vec<u8>> {
+    if rgba.len() != width as usize * height as usize * 4 {
+        return Err(Error::Other("the pixels do not match the size".into()));
+    }
+    let rgb: Vec<u8> = rgba.chunks_exact(4).flat_map(|p| [p[0], p[1], p[2]]).collect();
+    let mut out = Vec::new();
+    image::codecs::jpeg::JpegEncoder::new_with_quality(&mut out, quality).encode(&rgb, width, height, image::ExtendedColorType::Rgb8).map_err(|e| Error::Other(e.to_string()))?;
+    Ok(out)
+}
+
 /// Peak level per bin, 0 to 255, for a WAV (8, 16, 24, 32-bit PCM or 32-bit
 /// float, any channel count). `None` for any other file.
 pub fn waveform(path: &Path, bins: usize) -> Result<Option<Vec<u8>>> {
