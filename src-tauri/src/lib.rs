@@ -4,6 +4,7 @@
 
 use serde::Serialize;
 
+mod assets;
 mod autoport;
 mod docs;
 mod export;
@@ -82,6 +83,11 @@ pub fn run() {
             libs::library_list,
             libs::library_add,
             libs::library_remove,
+            assets::assets_search,
+            assets::assets_import_plan,
+            assets::assets_import_apply,
+            assets::assets_confirm,
+            assets::assets_use,
             fonts::font_inspect,
             fonts::font_add,
             preview::preview_file,

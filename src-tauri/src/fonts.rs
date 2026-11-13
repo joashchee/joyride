@@ -205,7 +205,7 @@ pub fn add(library: &Path, root: &Path, r: &FontAdd) -> Result<FontAdded, String
     Ok(FontAdded { dest: a.dest, already_in_library: a.already_in_library })
 }
 
-fn library_dir(app: &AppHandle) -> Result<PathBuf, String> {
+pub(crate) fn library_dir(app: &AppHandle) -> Result<PathBuf, String> {
     app.path().app_data_dir().map(|d| d.join("asset-library")).map_err(|e| e.to_string())
 }
 

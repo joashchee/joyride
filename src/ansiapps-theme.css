@@ -373,6 +373,7 @@ label { cursor: pointer; }
 /* Panel sizes in whole rows, never beyond what the window has. */
 .panel-docs, .panel-autoport, .panel-github, .panel-font { max-height: 304px; max-height: min(304px, round(down, 50vh, 16px)); }
 .panel-libraries { max-height: 272px; max-height: min(272px, round(down, 45vh, 16px)); }
+.panel-assets { max-height: 336px; max-height: min(336px, round(down, 60vh, 16px)); }
 .panel-games { max-height: 320px; max-height: min(320px, round(down, 50vh, 16px)); }
 .games-detail { padding-left: 16px; display: flex; flex-direction: column; gap: 0; }
 .games-detail ul { list-style: none; padding: 0; }
@@ -385,6 +386,8 @@ label { cursor: pointer; }
 .libraries-list li { display: flex; gap: 8px; align-items: flex-start; }
 .lib-main { flex: 1; min-width: 0; }
 .lib-broken { color: var(--r-bad); }
+.asset-thumb { width: 64px; min-width: 64px; height: 64px; image-rendering: pixelated; object-fit: contain; }
+.asset-form label { display: block; margin-top: 16px; }
 .libraries-list li button { min-width: 80px; }
 
 /* Docs: the results at the left, the reading at the right. */

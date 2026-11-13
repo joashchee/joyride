@@ -320,3 +320,76 @@ export interface GamesResult {
 export const gamesSearch = (query: string, kind: string, platform: string, openSource: boolean, includeArchived: boolean) =>
   invoke<GamesResult>("games_search", { query, kind, platform, openSource, includeArchived });
 export const gamesOpenUrl = (url: string) => invoke<void>("games_open_url", { url });
+
+// ---- Asset Library ----
+export interface AssetView {
+  id: number;
+  name: string;
+  kind: string;
+  size: number;
+  spdx: string;
+  status: "confirmed" | "guessed" | "unknown";
+  confirmedBy: string;
+  commercial: "yes" | "no" | "unknown";
+  attributionRequired: boolean;
+  shareAlike: boolean;
+  author: string;
+  sourceUrl: string;
+  tags: string[];
+  thumb: string | null;
+  uses: string[];
+}
+export interface AssetList {
+  assets: AssetView[];
+  matched: number;
+  total: number;
+}
+export interface PlannedView {
+  hash: string;
+  name: string;
+  kind: string;
+  size: number;
+  paths: string[];
+  guess: string | null;
+  guessFrom: string | null;
+  existing: number | null;
+  existingLicence: string | null;
+}
+export interface ImportPlanView {
+  project: string;
+  assets: PlannedView[];
+  duplicateBytes: number;
+  unreadable: string[];
+}
+export interface DecisionIn {
+  hash: string;
+  licence: string;
+  confirmedBy: string;
+  note: string;
+  author: string;
+  sourceUrl: string;
+  attribution: string;
+}
+export interface ImportReportView {
+  imported: number;
+  linked: number;
+  skipped: number;
+  conflicts: { name: string; existing: string; proposed: string }[];
+  failed: string[];
+  bytesSaved: number;
+}
+export interface ConfirmIn {
+  id: number;
+  licence: string;
+  confirmedBy: string;
+  note: string;
+  author: string;
+  sourceUrl: string;
+  attribution: string;
+}
+export const assetsSearch = (query: string, kind: string, confirmedOnly: boolean, commercialOnly: boolean) =>
+  invoke<AssetList>("assets_search", { query, kind, confirmedOnly, commercialOnly });
+export const assetsImportPlan = (includeCode: boolean) => invoke<ImportPlanView>("assets_import_plan", { includeCode });
+export const assetsImportApply = (includeCode: boolean, decisions: DecisionIn[]) => invoke<ImportReportView>("assets_import_apply", { includeCode, decisions });
+export const assetsConfirm = (request: ConfirmIn) => invoke<void>("assets_confirm", { request });
+export const assetsUse = (id: number, dest: string) => invoke<string>("assets_use", { id, dest });

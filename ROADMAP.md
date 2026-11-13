@@ -4,7 +4,7 @@ Progress and next phases, in the order to do them. Update it in the same
 commit as the work. The design is `docs/JoyrIDE_LÖVE-Implementation-Spec.md`
 (section 6 is the milestone order); this file is the checklist.
 
-Last reviewed: 2026-11-13 (core logic built; shell, Monaco, project files and the language server and 11.5 types built and seen running in a window; file operations next to try, see section 1).
+Last reviewed: 2026-11-14 (core logic built; shell, Monaco, project files and the language server and 11.5 types built and seen running in a window; file operations next to try, see section 1).
 
 ## 0. Repository
 
@@ -86,7 +86,8 @@ Tracks every usable asset with its licence, category, tags and preview, makes li
   - [ ] Try EXR, DDS, KTX, PKM, PVR and ASTC files in a real LÖVE (only their handlers were seen), and WebP and QOI against a real 11.5 and 12.0 project's `conf.lua` version.
     - Done for the first part 2026-11-13 (`scripts/love-asset-formats.py`, `docs/love-asset-types.md`): hand-built DDS (BC1, BC3, BC7), KTX (ETC2), PKM (ETC1), PVR (PVRTC) and ASTC files load on 11.5 and 12.0, and so do scanline EXRs; **a tiled EXR aborts LÖVE on both** (found because the `image` crate's output did), so the preview warns. WebP and QOI were already measured with real files (12.0 only). Still to do: whether a GPU can draw each format (needs a display), and a real-project `conf.lua` version check.
 - [ ] Smart Folders (saved searches); spritesheet frame detection; font samples; Lua library readme previews; waveform for FLAC, Ogg and MP3 (needs decoders).
-- [ ] **Asset Library panel** in the sidebar: browse, search, filter by licence, "Add to project" (copies into the project, records the use), hover preview in Monaco for library assets.
+- [x] **Asset Library panel** (2026-11-14: `src/components/AssetLibrary.tsx`, `src-tauri/src/assets.rs`, `asset_core::add::use_in_project`; 3 tests): browse and search with thumbnails, filter by kind, confirmed licence and can-be-sold, Use (copy a confirmed asset into the project and record the use), Confirm (a named person confirms a licence; unknown or custom needs a reason), and Import from this project (plan, licence guessed per file, choose and confirm, then apply; writes `.joyride/assets.toml`). **Not yet tried in a window.** Still to do: hover preview in Monaco for library assets, audio playback and waveform in the list, editing tags, Smart Folders, a sidebar placement (it is a toolbar panel like the others), keeping a BMFont's pages together on import.
+- [ ] Asset Library, from the panel: show the licence text, a Fonts view, using a font from the library in another project through Add Font.
 - [x] **Import from a project** (`asset-core/src/import.rs`, plan then apply; 6 integration tests): scan, guess licences from `LICENSE`/`README`/`CREDITS`, **confirm licences before anything is copied**, then import. Spec 3D, `asset-library.md` rule 2.
 - [x] **Automatic de-duplication on import** (`asset-core/src/dedup.rs` staged size → prefix → BLAKE3; import groups by content, stores once, records uses, flags licence conflicts): size → prefix → first+last → BLAKE3 pipeline from Crunchy; identical content becomes a new use of the existing record; conflicting licences ask; near-duplicates only suggested. Nothing deleted.
 - [x] **`.joyride/assets.toml`**, **`CREDITS.txt`** and the **export gate** (`asset-core/src/project.rs`): each project lists what it uses; credits collected once per asset; an export stops on unconfirmed, non-commercial (for a commercial game), share-alike or expired assets. Wired into builds by `joyride-core/src/pipeline.rs`.

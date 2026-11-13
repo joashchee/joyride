@@ -9,6 +9,7 @@ import Search from "./components/Search";
 import ExportPanel from "./components/ExportPanel";
 import Libraries from "./components/Libraries";
 import Games from "./components/Games";
+import AssetLibrary from "./components/AssetLibrary";
 import Docs from "./components/Docs";
 import AutoPort from "./components/AutoPort";
 import GitHub from "./components/GitHub";
@@ -44,6 +45,7 @@ export default function App() {
   const [docsKey, setDocsKey] = useState(0);
   const [libsOpen, setLibsOpen] = useState(false);
   const [gamesOpen, setGamesOpen] = useState(false);
+  const [assetsOpen, setAssetsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [fontOpen, setFontOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -367,6 +369,7 @@ export default function App() {
           <button onClick={() => setDocsOpen((x) => !x)} aria-expanded={docsOpen} title="LÖVE reference (Cmd+Shift+D)">Reference…</button>
           <button onClick={() => setLibsOpen((x) => !x)} disabled={!project} aria-expanded={libsOpen}>Libraries…</button>
           <button onClick={() => setGamesOpen((x) => !x)} aria-expanded={gamesOpen}>Games…</button>
+          <button onClick={() => setAssetsOpen((x) => !x)} aria-expanded={assetsOpen}>Assets…</button>
           <button onClick={() => setFontOpen((x) => !x)} disabled={!project} aria-expanded={fontOpen}>Add Font…</button>
           <button onClick={() => setGhOpen((x) => !x)} disabled={!project} aria-expanded={ghOpen}>GitHub…</button>
           <button onClick={() => setPortOpen((x) => !x)} disabled={!project} aria-expanded={portOpen}>Auto-Port…</button>
@@ -384,6 +387,16 @@ export default function App() {
               })
             }
           />}
+        {assetsOpen && (
+          <AssetLibrary
+            hasProject={!!project}
+            onClose={() => setAssetsOpen(false)}
+            onAdded={(path) => {
+              void projectListing().then(setProject).catch(fail);
+              setSelected(path);
+            }}
+          />
+        )}
         {gamesOpen && <Games onClose={() => setGamesOpen(false)} />}
         {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {ghOpen && project && <GitHub onClose={() => setGhOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} onOpen={(f, l) => void openAt(f, l)} />}

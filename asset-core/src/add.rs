@@ -135,6 +135,52 @@ pub fn add_to_project(cat: &mut Catalog, library_dir: &Path, project_name: &str,
     Ok(Added { id, dest: rel_s, already_in_library: existing.is_some() })
 }
 
+/// Puts an asset the library already holds into a project: the licence must
+/// already be confirmed (an unconfirmed asset is refused), the bytes come from
+/// the library's copy and are checked against the recorded hash, nothing is
+/// replaced and nothing leaves the project. Records the use and rewrites
+/// `.joyride/assets.toml`. Returns the project-relative path written.
+pub fn use_in_project(cat: &mut Catalog, library_dir: &Path, project_name: &str, root: &Path, id: i64, dest: &str) -> Result<String> {
+    let asset = cat.get(id)?.ok_or_else(|| Error::Other("no such asset in the library".into()))?;
+    if !asset.is_usable() {
+        return Err(Error::Other(format!("{}: confirm its licence before using it", asset.name)));
+    }
+    let root = root.canonicalize()?;
+    let rel = plain_rel(dest)?;
+    let target = root.join(&rel);
+    if target.symlink_metadata().is_ok() {
+        return Err(Error::Other(format!("`{dest}` already exists; choose another name")));
+    }
+    let mut near = target.parent().unwrap_or(&root);
+    while !near.exists() {
+        near = near.parent().ok_or_else(|| Error::Other("no such folder".into()))?;
+    }
+    if !near.canonicalize()?.starts_with(&root) {
+        return Err(Error::Other(format!("`{dest}` leaves the project")));
+    }
+    let src = library_dir.join(&asset.stored);
+    if !src.is_file() {
+        return Err(Error::Other(format!("the library's copy of {} is missing", asset.name)));
+    }
+    if dedup::hash_file(&src)? != asset.hash {
+        return Err(Error::Other(format!("the library's copy of {} no longer matches its record", asset.name)));
+    }
+    if let Some(parent) = target.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let tmp = target.with_extension("partial");
+    std::fs::copy(&src, &tmp)?;
+    if dedup::hash_file(&tmp)? != asset.hash {
+        let _ = std::fs::remove_file(&tmp);
+        return Err(Error::Other("the copy did not match; nothing was added".into()));
+    }
+    std::fs::rename(&tmp, &target)?;
+    let rel_s = rel.components().map(|c| c.as_os_str().to_string_lossy()).collect::<Vec<_>>().join("/");
+    cat.record_use(id, project_name, &rel_s)?;
+    project::write_assets_toml(cat, project_name, &root)?;
+    Ok(rel_s)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -221,5 +267,26 @@ mod tests {
         assert_eq!(e.cat.uses(a.id).unwrap().len(), 2);
         assert!(go(&mut e, "fonts/c.ttf", Licence::from_spdx("OFL-1.1"), "J", "").is_err());
         assert!(!e.root.join("fonts/c.ttf").exists());
+    }
+
+    #[test]
+    fn uses_a_confirmed_library_asset_and_refuses_an_unconfirmed_one() {
+        let mut e = env();
+        let a = go(&mut e, "fonts/a.ttf", mit(), "J", "").unwrap();
+        let w = use_in_project(&mut e.cat, &e.lib, "other", &e.root, a.id, "more/b.ttf").unwrap();
+        assert_eq!(w, "more/b.ttf");
+        assert_eq!(std::fs::read(e.root.join("more/b.ttf")).unwrap(), b"pretend font bytes");
+        assert_eq!(e.cat.uses(a.id).unwrap().len(), 2);
+        // Never replaces, never leaves the project.
+        assert!(use_in_project(&mut e.cat, &e.lib, "other", &e.root, a.id, "more/b.ttf").is_err());
+        assert!(use_in_project(&mut e.cat, &e.lib, "other", &e.root, a.id, "../x.ttf").is_err());
+        // A damaged library copy is refused.
+        let stored = e.lib.join(e.cat.get(a.id).unwrap().unwrap().stored);
+        std::fs::write(&stored, b"tampered").unwrap();
+        assert!(use_in_project(&mut e.cat, &e.lib, "other", &e.root, a.id, "more/c.ttf").is_err());
+        assert!(!e.root.join("more/c.ttf").exists());
+        // An unconfirmed asset is refused.
+        let (id, _) = e.cat.add_asset(&NewAsset { hash: "ab".repeat(32), size: 3, kind: crate::Kind::Image, name: "x.png".into(), ext: "png".into(), stored: "ab/x.png".into() }).unwrap();
+        assert!(use_in_project(&mut e.cat, &e.lib, "other", &e.root, id, "x.png").unwrap_err().to_string().contains("confirm its licence"));
     }
 }
