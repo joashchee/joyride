@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { gitCommit, gitInit, gitPull, gitPush, githubCreateRepo, githubOverview, githubReleaseWorkflow, type GithubOverview } from "../lib/backend";
+import { gitCommit, gitInit, gitPull, gitPush, githubCreateRepo, githubOverview, githubReleaseWorkflow, openGithubUrl, type GithubOverview } from "../lib/backend";
 
 /** Git and GitHub, through the gh and git command lines. Sign in once with `gh auth login` in a terminal: JoyrIDE never asks for or stores a token. */
 export default function GitHub(props: { onClose: () => void; onChanged: () => void; onOpen: (path: string, line: number) => void }) {
@@ -58,7 +58,10 @@ export default function GitHub(props: { onClose: () => void; onChanged: () => vo
             {g.upstream ? ` · ${g.upstream}` : " · no upstream yet"}
             {g.ahead > 0 && ` · ${g.ahead} to push`}
             {g.behind > 0 && ` · ${g.behind} to pull`}
-            {o?.repo && ` · ${o.repo.nameWithOwner} (${o.repo.visibility})`}
+            {o?.repo && ` · ${o.repo.nameWithOwner} (${o.repo.visibility})`}{" "}
+            {o?.repo && (
+              <button onClick={() => openGithubUrl(o.repo!.url).catch((e) => setErr(String(e)))}>Open on GitHub</button>
+            )}
           </p>
           <ul className="git-changes" aria-label="Changes">
             {g.changes.map((c) => (

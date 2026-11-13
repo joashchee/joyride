@@ -95,3 +95,28 @@ pub async fn github_release_workflow(project: State<'_, Project>) -> Result<Stri
         Ok(p.strip_prefix(&root).unwrap_or(&p).to_string_lossy().into_owned())
     })
 }
+
+/// Opens a GitHub repository page in the browser. Only `https://github.com/`
+/// URLs: the frontend cannot use this to open anything else.
+#[tauri::command]
+pub fn open_github_url(app: tauri::AppHandle, url: String) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+    let ok = url.starts_with("https://github.com/") && !url.chars().any(|c| c.is_whitespace() || c.is_control());
+    if !ok {
+        return Err("only github.com pages can be opened from here".into());
+    }
+    app.opener().open_url(url, None::<&str>).map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn only_github_urls_are_opened() {
+        // The check is the same expression as in `open_github_url`.
+        let ok = |u: &str| u.starts_with("https://github.com/") && !u.chars().any(|c| c.is_whitespace() || c.is_control());
+        assert!(ok("https://github.com/o/r"));
+        for bad in ["http://github.com/o/r", "https://github.com.evil.com/x", "file:///etc/passwd", "https://github.com/a b", "javascript:alert(1)"] {
+            assert!(!ok(bad), "{bad}");
+        }
+    }
+}

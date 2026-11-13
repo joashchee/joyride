@@ -169,6 +169,7 @@ export const gitPush = () => invoke<GithubOverview>("git_push");
 export const gitPull = () => invoke<GithubOverview>("git_pull");
 export const githubCreateRepo = (name: string, isPrivate: boolean) =>
   invoke<GithubOverview>("github_create_repo", { name, private: isPrivate });
+export const openGithubUrl = (url: string) => invoke<void>("open_github_url", { url });
 export const githubReleaseWorkflow = () => invoke<string>("github_release_workflow");
 
 export interface RunLine {

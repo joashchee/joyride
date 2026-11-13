@@ -69,6 +69,7 @@ pub fn run() {
             github::git_pull,
             github::github_create_repo,
             github::github_release_workflow,
+            github::open_github_url,
             docs::docs_search,
             docs::docs_get,
             libs::library_list,
