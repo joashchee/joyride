@@ -1,0 +1,17 @@
+JoyrIDE
+Copyright 2026 ansiapps
+
+Licensed under the MIT License (see LICENSE).
+
+JoyrIDE bundles or downloads the following, each under its own licence.
+An entry is added here when its binary is first bundled, and every
+third-party licence ships in the app (scripts/license-scan.py).
+
+- LÖVE (love2d.org), zlib licence.
+- lua-language-server, MIT.
+- love-api and LuaCATS definitions, MIT.
+- luacheck, MIT.
+- StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
+- love.js, and the LÖVE iOS and Android templates, as their repositories state.
+- PortMaster runtimes, as the PortMaster project states.
+- Monaco Editor, MIT.
