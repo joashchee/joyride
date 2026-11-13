@@ -52,6 +52,7 @@ pub fn run() {
             project::rename_project_path,
             project::delete_project_path,
             project::search_project,
+            project::format_lua,
             export::export_info,
             export::export_project,
             docs::docs_search,

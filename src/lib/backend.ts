@@ -43,6 +43,8 @@ export const createDir = (path: string) => invoke<Listing>("create_project_dir",
 export const renamePath = (from: string, to: string) => invoke<Listing>("rename_project_path", { from, to });
 export const deletePath = (path: string) => invoke<Listing>("delete_project_path", { path });
 
+export const formatLua = (text: string) => invoke<string>("format_lua", { text });
+
 export interface Hit {
   path: string;
   line: number;

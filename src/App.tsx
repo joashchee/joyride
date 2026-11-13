@@ -353,7 +353,7 @@ export default function App() {
             </div>
             <Suspense fallback={<p className="editor-loading" role="status">Loading the editor…</p>}>
               {gone && active !== null && active in texts && (
-                <Editor path={active} text={texts[active]} onDirty={onDirty} onSave={onSave} goto={goto} />
+                <Editor path={active} text={texts[active]} onDirty={onDirty} onSave={onSave} goto={goto} onNotice={setNotice} />
               )}
             </Suspense>
             <Console lines={lines} running={running} onClear={() => setLines([])} onOpen={openAt} />

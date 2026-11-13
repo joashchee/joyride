@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Format Document** (2026-11-13): the bundled StyLua through `joyride-core::format`;
+  ⇧⌥F or the context menu; a project's `stylua.toml` is honoured.
 - **LÖVE reference** (2026-11-13): searchable offline docs (⌘⇧D) built from the LÖVE types
   bundled with the language server (`Docs::from_luacats`).
 - **Library manager** (2026-11-13): add or remove curated libraries from a Libraries

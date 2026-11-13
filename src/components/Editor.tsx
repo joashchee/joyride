@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor/editor/editor.api.js";
 import "../monaco-setup";
+import { formatLua, inTauri } from "../lib/backend";
 import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 
@@ -38,6 +39,8 @@ export default function Editor(props: {
   onSave: (path: string, text: string) => Promise<void>;
   /** Moves the cursor to a line; `n` changes on each request, so the same line can be asked for twice. */
   goto?: { line: number; n: number };
+  /** Something to tell the person (a format error). */
+  onNotice?: (text: string | null) => void;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const ed = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -70,10 +73,27 @@ export default function Editor(props: {
       const path = m && [...docs].find(([, d]) => d.model === m)?.[0];
       if (path) cb.current.onDirty(path, m.getAlternativeVersionId() !== docs.get(path)!.saved);
     });
+    // Format Document (⇧⌥F) with the bundled StyLua; a syntax error is reported, the text left alone.
+    const formatter = inTauri
+      ? monaco.languages.registerDocumentFormattingEditProvider("lua", {
+          displayName: "StyLua",
+          async provideDocumentFormattingEdits(model) {
+            try {
+              const text = await formatLua(model.getValue());
+              cb.current.onNotice?.(null);
+              return text === model.getValue() ? [] : [{ range: model.getFullModelRange(), text }];
+            } catch (e) {
+              cb.current.onNotice?.(`Format: ${String(e)}`);
+              return [];
+            }
+          },
+        })
+      : null;
     const theme = () => monaco.editor.setTheme(dark.matches ? "vs-dark" : "vs");
     dark.addEventListener("change", theme);
     return () => {
       dark.removeEventListener("change", theme);
+      formatter?.dispose();
       sub.dispose();
       editor.dispose();
       ed.current = null;

@@ -107,3 +107,17 @@ pub async fn search_project(state: State<'_, Project>, query: String, case_sensi
         .await
         .map_err(|e| e.to_string())?
 }
+
+/// Formats Lua text with the bundled StyLua (off the UI thread). The project
+/// folder is the working directory, so its `stylua.toml` applies.
+#[tauri::command]
+pub async fn format_lua(app: AppHandle, state: State<'_, Project>, text: String) -> Result<String, String> {
+    let root = state.root()?;
+    let tc = crate::bundled_toolchains(&app);
+    tauri::async_runtime::spawn_blocking(move || {
+        let bin = joyride_core::format::find_stylua(tc.as_deref()).ok_or("StyLua was not found. Run scripts/fetch-toolchains.py.")?;
+        joyride_core::format::format_lua(&bin, &root, &text).map_err(msg)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
