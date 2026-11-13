@@ -99,6 +99,8 @@ fn data_url(mime: &str, bytes: &[u8]) -> String {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 enum Sniff {
     Image,
+    /// A GPU-texture container (KTX, PVR, PKM, ASTC): facts only.
+    Texture,
     Wav,
     Flac,
     Mp3,
@@ -106,14 +108,24 @@ enum Sniff {
     Font(&'static str),
     Zip,
     Mp4,
+    /// QuickTime/MP4-family audio (`M4A `).
+    M4a,
+    /// AVIF or HEIC: a picture this does not decode.
+    Heif,
     Webm,
+    /// Matroska that is not WebM.
+    Mkv,
+    /// Lua or LuaJIT bytecode.
+    Bytecode,
     Unknown,
 }
 
 fn sniff(head: &[u8], ext: &str) -> Sniff {
     let h = head;
-    if h.starts_with(b"\x89PNG") || h.starts_with(b"\xff\xd8\xff") || h.starts_with(b"GIF8") || h.starts_with(b"II*\0") || h.starts_with(b"MM\0*") || (h.len() >= 12 && h.starts_with(b"RIFF") && &h[8..12] == b"WEBP") || (h.starts_with(b"BM") && ext == "bmp") {
+    if h.starts_with(b"\x89PNG") || h.starts_with(b"#?RADIANCE") || h.starts_with(b"#?RGBE") || h.starts_with(b"\x76\x2f\x31\x01") || h.starts_with(b"qoif") || h.starts_with(b"DDS ") || (ext == "tga" && h.len() > 17) || h.starts_with(b"\xff\xd8\xff") || h.starts_with(b"GIF8") || h.starts_with(b"II*\0") || h.starts_with(b"MM\0*") || (h.len() >= 12 && h.starts_with(b"RIFF") && &h[8..12] == b"WEBP") || (h.starts_with(b"BM") && ext == "bmp") {
         Sniff::Image
+    } else if asset_core::texture::probe(h).is_some() {
+        Sniff::Texture
     } else if h.len() >= 12 && h.starts_with(b"RIFF") && &h[8..12] == b"WAVE" {
         Sniff::Wav
     } else if h.starts_with(b"fLaC") {
@@ -126,6 +138,10 @@ fn sniff(head: &[u8], ext: &str) -> Sniff {
         Sniff::Font("font/ttf")
     } else if h.starts_with(b"OTTO") {
         Sniff::Font("font/otf")
+    } else if h.starts_with(b"ttcf") {
+        Sniff::Font("font/collection")
+    } else if h.starts_with(b"\x1bLJ") || h.starts_with(b"\x1bLua") {
+        Sniff::Bytecode
     } else if h.starts_with(b"wOFF") {
         Sniff::Font("font/woff")
     } else if h.starts_with(b"wOF2") {
@@ -133,9 +149,13 @@ fn sniff(head: &[u8], ext: &str) -> Sniff {
     } else if h.starts_with(b"PK\x03\x04") || h.starts_with(b"PK\x05\x06") {
         Sniff::Zip
     } else if h.len() >= 12 && &h[4..8] == b"ftyp" {
-        Sniff::Mp4
+        match &h[8..12] {
+            b"M4A " | b"M4B " => Sniff::M4a,
+            b"avif" | b"avis" | b"heic" | b"heix" | b"hevc" | b"mif1" | b"msf1" => Sniff::Heif,
+            _ => Sniff::Mp4,
+        }
     } else if h.starts_with(b"\x1a\x45\xdf\xa3") {
-        Sniff::Webm
+        if h.iter().take(64).collect::<Vec<_>>().windows(4).any(|w| w.iter().map(|b| **b).eq(b"webm".iter().copied())) { Sniff::Webm } else { Sniff::Mkv }
     } else {
         Sniff::Unknown
     }
@@ -177,8 +197,37 @@ pub fn find_nttplay(tools: Option<&Path>) -> Option<PathBuf> {
     c.into_iter().find(|p| p.is_file())
 }
 
-/// Builds the preview of `rel` inside `root`.
+/// Builds the preview of `rel` inside `root`, with what LÖVE does with the file.
 pub fn build(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, String> {
+    let mut p = build_inner(root, rel, nttplay)?;
+    add_love_fact(&mut p);
+    Ok(p)
+}
+
+/// "In LÖVE: …", from `asset_core::kind::love_support`, for files LÖVE has an opinion about.
+fn add_love_fact(p: &mut Preview) {
+    use asset_core::kind::{self, LoveSupport, MODPLUG};
+    let path = Path::new(&p.path);
+    let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("").to_ascii_lowercase();
+    let line = if p.kind == "music" && !MODPLUG.contains(&ext.as_str()) {
+        // The preview reads many more music formats than LÖVE does.
+        Some("not by LÖVE: it cannot play this music format; convert it to OGG or WAV, or to a module format it reads".to_string())
+    } else if p.kind == "binary" && kind::classify(path) == asset_core::Kind::Other {
+        None
+    } else {
+        let s = kind::love_support(path);
+        if matches!(s, LoveSupport::NotNative(_)) && p.kind == "text" && kind::classify(path) == asset_core::Kind::Other {
+            None
+        } else {
+            Some(s.describe())
+        }
+    };
+    if let Some(l) = line {
+        p.facts.push(fact("In LÖVE", l));
+    }
+}
+
+fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, String> {
     let path = files::resolve(root, rel).map_err(|e| e.to_string())?;
     let real = path.canonicalize().map_err(|e| e.to_string())?;
     if !real.starts_with(root.canonicalize().map_err(|e| e.to_string())?) {
@@ -195,7 +244,8 @@ pub fn build(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, 
 
     let kind = sniff(&head, &ext);
     let shown = match kind {
-        Sniff::Image => image(&mut p, &real),
+        Sniff::Image => image(&mut p, &real) || texture(&mut p, &head),
+        Sniff::Texture => texture(&mut p, &head),
         Sniff::Wav | Sniff::Flac | Sniff::Mp3 => audio(&mut p, &real, kind, size),
         Sniff::Ogg => {
             if head.windows(7).any(|w| w == b"\x80theora") {
@@ -207,6 +257,20 @@ pub fn build(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, 
         Sniff::Font(mime) => font(&mut p, &real, mime, size),
         Sniff::Zip => members(&mut p, &real),
         Sniff::Mp4 | Sniff::Webm => web_video(&mut p, &real, kind, size),
+        Sniff::M4a => audio(&mut p, &real, kind, size),
+        Sniff::Mkv => {
+            p.kind = "video";
+            p.facts.push(fact("Video", "Matroska"));
+            p.note = Some("The system's player does not play Matroska, so here are its first bytes.".into());
+            false
+        }
+        Sniff::Heif => {
+            p.kind = "image";
+            p.facts.push(fact("Picture", "AVIF or HEIC"));
+            p.note = Some("AVIF and HEIC pictures are not decoded here, so here are their first bytes.".into());
+            false
+        }
+        Sniff::Bytecode => bytecode(&mut p, &head),
         Sniff::Unknown => false,
     };
     if shown {
@@ -226,7 +290,6 @@ pub fn build(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, 
 }
 
 fn hex(p: &mut Preview, head: &[u8]) {
-    p.kind = "binary";
     let mut s = String::new();
     for (i, row) in head[..head.len().min(HEX_BYTES)].chunks(16).enumerate() {
         s.push_str(&format!("{:08x}  ", i * 16));
@@ -247,6 +310,23 @@ fn hex(p: &mut Preview, head: &[u8]) {
         p.note = Some("No viewer for this kind of file, so here are its first bytes.".into());
     }
     p.body = Body::Hex { dump: s };
+}
+
+/// A GPU-texture container: its header facts, and the first bytes. No picture: no decoder for these.
+fn texture(p: &mut Preview, head: &[u8]) -> bool {
+    let Some(t) = asset_core::texture::probe(head) else { return false };
+    p.facts.push(fact("Texture", t.container));
+    p.facts.push(fact("Picture", if t.depth > 1 { format!("{} x {} x {}", t.width, t.height, t.depth) } else { format!("{} x {}", t.width, t.height) }));
+    p.facts.push(fact("Format", &t.format));
+    p.facts.push(fact("Mip levels", t.levels));
+    if t.faces > 1 {
+        p.facts.push(fact("Faces or layers", t.faces));
+    }
+    p.facts.push(fact("Compression", if t.compressed { "compressed for the GPU" } else { "not compressed" }));
+    p.note = Some(if t.love_unknown { "This picture is not drawn here, and LÖVE is not known to load this version of the container.".into() } else { "This is a texture for the GPU; it is not drawn here (there is no decoder for it yet), so here are its first bytes.".into() });
+    hex(p, head);
+    p.kind = "image";
+    true
 }
 
 fn image(p: &mut Preview, path: &Path) -> bool {
@@ -290,6 +370,7 @@ fn audio(p: &mut Preview, path: &Path, kind: Sniff, size: u64) -> bool {
         Sniff::Wav => "audio/wav",
         Sniff::Flac => "audio/flac",
         Sniff::Mp3 => "audio/mpeg",
+        Sniff::M4a => "audio/mp4",
         _ => "audio/ogg",
     };
     let data = if size <= MAX_PLAY {
@@ -299,6 +380,20 @@ fn audio(p: &mut Preview, path: &Path, kind: Sniff, size: u64) -> bool {
         None
     };
     p.body = Body::Audio { data_url: data, waveform, seconds };
+    true
+}
+
+/// Lua bytecode: which Lua made it, and whether LÖVE can load it (it runs LuaJIT).
+fn bytecode(p: &mut Preview, head: &[u8]) -> bool {
+    p.kind = "binary";
+    if head.starts_with(b"\x1bLJ") {
+        p.facts.push(fact("Bytecode", format!("LuaJIT, version {}", head.get(3).copied().unwrap_or(0))));
+        p.note = Some("LuaJIT bytecode: LÖVE loads it. Here are its first bytes.".into());
+    } else {
+        p.facts.push(fact("Bytecode", format!("Lua 5.{}", head.get(4).map(|b| b >> 4).unwrap_or(0))));
+        p.note = Some("This is bytecode from standard Lua. LÖVE runs LuaJIT and refuses it. Here are its first bytes.".into());
+    }
+    hex(p, head);
     true
 }
 
@@ -357,6 +452,13 @@ fn font(p: &mut Preview, path: &Path, mime: &str, size: u64) -> bool {
             }
         }
         None => p.facts.push(fact("Font", mime.trim_start_matches("font/").to_uppercase())),
+    }
+    if mime == "font/collection" {
+        // A browser cannot draw a collection, but LÖVE loads it: facts and bytes.
+        p.note = Some("A TrueType Collection holds several fonts. LÖVE loads it, but this preview cannot draw a sample of it.".into());
+        hex(p, &b[..b.len().min(HEX_BYTES)]);
+        p.kind = "font";
+        return true;
     }
     p.body = Body::Font { data_url: data_url(mime, &b) };
     true
@@ -741,6 +843,170 @@ mod tests {
         let p = build(d.path(), "bad.png", None).unwrap();
         assert_eq!(p.kind, "binary");
         assert!(p.note.unwrap().contains("could not be read"));
+    }
+
+    fn fact_of<'a>(p: &'a Preview, label: &str) -> Option<&'a str> {
+        p.facts.iter().find(|f| f.label == label).map(|f| f.value.as_str())
+    }
+
+    #[test]
+    fn the_pictures_love_decodes_that_the_library_did_not_track_now_show() {
+        use image::{ImageEncoder, Rgb};
+        let d = proj();
+        // Radiance HDR with values above 1.0, OpenEXR, and QOI.
+        let px: Vec<Rgb<f32>> = (0..16).map(|i| Rgb([i as f32 / 4.0, 0.5, 4.0])).collect();
+        let mut hdr = Vec::new();
+        image::codecs::hdr::HdrEncoder::new(&mut hdr).encode(&px, 4, 4).unwrap();
+        std::fs::write(d.path().join("sky.hdr"), &hdr).unwrap();
+        let f32img = image::Rgba32FImage::from_fn(4, 4, |x, _| image::Rgba([x as f32, 0.5, 2.0, 1.0]));
+        let mut exr = std::io::Cursor::new(Vec::new());
+        image::DynamicImage::ImageRgba32F(f32img).write_to(&mut exr, image::ImageFormat::OpenExr).unwrap();
+        std::fs::write(d.path().join("light.exr"), exr.into_inner()).unwrap();
+        let rgba = image::RgbaImage::from_fn(4, 4, |x, y| image::Rgba([x as u8 * 60, y as u8 * 60, 9, 255]));
+        let mut qoi = Vec::new();
+        image::codecs::qoi::QoiEncoder::new(&mut qoi).write_image(rgba.as_raw(), 4, 4, image::ExtendedColorType::Rgba8).unwrap();
+        std::fs::write(d.path().join("sprite.qoi"), &qoi).unwrap();
+        for (name, love) in [("sky.hdr", "yes, on LÖVE 11.5 and 12.0 (checked)"), ("light.exr", "yes, on LÖVE 11.5 and 12.0 (not tried"), ("sprite.qoi", "LÖVE 12.0 only (checked)")] {
+            let p = build(d.path(), name, None).unwrap();
+            assert_eq!(p.kind, "image", "{name}");
+            assert!(matches!(p.body, Body::Image { .. }), "{name}");
+            assert!(fact_of(&p, "Picture").unwrap().starts_with("4 x 4"), "{name}");
+            assert!(fact_of(&p, "In LÖVE").unwrap().starts_with(love), "{name}: {:?}", fact_of(&p, "In LÖVE"));
+        }
+    }
+
+    #[test]
+    fn a_gif_previews_but_says_love_refuses_it() {
+        let d = proj();
+        let img = image::RgbaImage::from_pixel(2, 2, image::Rgba([1, 2, 3, 255]));
+        img.save_with_format(d.path().join("anim.gif"), image::ImageFormat::Gif).unwrap();
+        let p = build(d.path(), "anim.gif", None).unwrap();
+        assert_eq!(p.kind, "image");
+        assert!(fact_of(&p, "In LÖVE").unwrap().starts_with("no: LÖVE refuses GIF"));
+    }
+
+    #[test]
+    fn gpu_texture_containers_show_their_header_facts_and_bytes() {
+        let d = proj();
+        let mut k = vec![0u8; 80];
+        k[..12].copy_from_slice(b"\xabKTX 11\xbb\r\n\x1a\n");
+        k[28..32].copy_from_slice(&0x93B7u32.to_le_bytes());
+        k[36..40].copy_from_slice(&512u32.to_le_bytes());
+        k[40..44].copy_from_slice(&256u32.to_le_bytes());
+        k[52..56].copy_from_slice(&1u32.to_le_bytes());
+        k[56..60].copy_from_slice(&10u32.to_le_bytes());
+        std::fs::write(d.path().join("rock.ktx"), &k).unwrap();
+        let mut a = vec![0x13u8, 0xab, 0xa1, 0x5c, 4, 4, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0];
+        a.extend([0u8; 32]);
+        std::fs::write(d.path().join("tile.astc"), &a).unwrap();
+        let p = build(d.path(), "rock.ktx", None).unwrap();
+        assert_eq!(p.kind, "image");
+        assert_eq!((fact_of(&p, "Picture"), fact_of(&p, "Format"), fact_of(&p, "Mip levels")), (Some("512 x 256"), Some("ASTC 8x8"), Some("10")));
+        assert!(fact_of(&p, "In LÖVE").unwrap().starts_with("yes"));
+        assert!(matches!(p.body, Body::Hex { .. }) && p.note.unwrap().contains("not drawn"));
+        let q = build(d.path(), "tile.astc", None).unwrap();
+        assert_eq!((fact_of(&q, "Picture"), fact_of(&q, "Format")), (Some("256 x 256"), Some("ASTC 4x4")));
+    }
+
+    /// A one-pattern, four-channel ProTracker module.
+    fn tiny_mod() -> Vec<u8> {
+        let mut m = vec![0u8; 20];
+        m[..4].copy_from_slice(b"tiny");
+        for i in 0..31 {
+            let mut s = vec![0u8; 30];
+            if i == 0 {
+                s[22..24].copy_from_slice(&2u16.to_be_bytes()); // length in words
+                s[25] = 64; // volume
+            }
+            m.extend(s);
+        }
+        m.push(1); // song length
+        m.push(127);
+        m.extend(vec![0u8; 128]); // order list: pattern 0
+        m.extend(b"M.K.");
+        let mut pat = vec![0u8; 1024];
+        pat[..4].copy_from_slice(&[0x01, 0xAC, 0x10, 0x00]); // period 428, sample 1
+        m.extend(pat);
+        m.extend(vec![10u8; 4]); // sample data
+        m
+    }
+
+    #[test]
+    fn a_tracker_module_plays_and_says_love_reads_it() {
+        let Some(np) = find_nttplay(None) else { return eprintln!("no nttplay: skipped") };
+        let d = proj();
+        std::fs::write(d.path().join("tune.mod"), tiny_mod()).unwrap();
+        let p = build(d.path(), "tune.mod", Some(&np)).unwrap();
+        assert_eq!(p.kind, "music", "{:?} {:?}", p.facts, p.note);
+        assert!(matches!(&p.body, Body::Audio { data_url: Some(_), .. }));
+        assert!(fact_of(&p, "In LÖVE").unwrap().starts_with("yes"));
+        // A format the preview reads and LÖVE does not (here an extension LÖVE's table lacks) says so.
+        std::fs::write(d.path().join("tune.ahx"), tiny_mod()).unwrap();
+        let q = build(d.path(), "tune.ahx", Some(&np)).unwrap();
+        if q.kind == "music" {
+            assert!(fact_of(&q, "In LÖVE").unwrap().starts_with("not by LÖVE"));
+        }
+    }
+
+    /// Previews every file of the r3i6nos corpus (real samples of 250 formats) and prints what each became.
+    /// `cargo test --manifest-path src-tauri/Cargo.toml corpus -- --ignored --nocapture`
+    #[test]
+    #[ignore]
+    fn corpus_previews() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../r3i6nos/corpus/files");
+        if !root.is_dir() {
+            return eprintln!("no corpus: skipped");
+        }
+        let np = find_nttplay(None);
+        let mut rows = vec![];
+        for e in walkdir::WalkDir::new(&root).sort_by_file_name().into_iter().flatten() {
+            if !e.file_type().is_file() || e.metadata().map(|m| m.len() > 40_000_000).unwrap_or(true) {
+                continue;
+            }
+            let rel = e.path().strip_prefix(&root).unwrap().to_string_lossy().to_string();
+            if rel.ends_with("MANIFEST.tsv") {
+                continue;
+            }
+            let r = build(&root, &rel, np.as_deref());
+            rows.push(match r {
+                Ok(p) => format!("{:42} {:8} {}", rel, p.kind, p.note.as_deref().unwrap_or("")),
+                Err(e) => format!("{rel:42} ERROR    {e}"),
+            });
+        }
+        println!("{}", rows.join("\n"));
+    }
+
+    #[test]
+    fn collections_bytecode_and_lookalike_containers_are_named_for_what_they_are() {
+        let d = proj();
+        // A TrueType Collection (made from a tiny font's directory), LuaJIT and Lua 5.4 bytecode, AVIF, M4A, Matroska.
+        let mut ttc = b"ttcf\0\x01\0\0\0\0\0\x01\0\0\0\x10".to_vec();
+        ttc.extend(vec![0u8; 64]);
+        std::fs::write(d.path().join("pack.ttc"), &ttc).unwrap();
+        std::fs::write(d.path().join("a.ljbc"), b"\x1bLJ\x02\x00\x00\x00\x00\x00\x00\x00").unwrap();
+        std::fs::write(d.path().join("a.luac"), b"\x1bLuaT\x00\x19\x93\r\n\x1a\n\x04\x08\x08").unwrap();
+        let ftyp = |brand: &[u8]| {
+            let mut v = vec![0, 0, 0, 24];
+            v.extend(b"ftyp");
+            v.extend(brand);
+            v.extend(vec![0u8; 16]);
+            v
+        };
+        std::fs::write(d.path().join("pic.avif"), ftyp(b"avif")).unwrap();
+        std::fs::write(d.path().join("song.m4a"), ftyp(b"M4A ")).unwrap();
+        std::fs::write(d.path().join("clip.mkv"), b"\x1a\x45\xdf\xa3\x9fB\x86\x81\x01B\xf7\x81\x01B\xf2\x81\x04B\xf3\x81\x08B\x82\x88matroska").unwrap();
+        let ttc = build(d.path(), "pack.ttc", None).unwrap();
+        assert_eq!(ttc.kind, "font", "{:?}", ttc.note);
+        assert_eq!(fact_of(&ttc, "In LÖVE").map(|s| s.starts_with("yes")), Some(true));
+        let lj = build(d.path(), "a.ljbc", None).unwrap();
+        assert!(fact_of(&lj, "Bytecode").unwrap().starts_with("LuaJIT") && lj.note.unwrap().contains("LÖVE loads it"));
+        let lua = build(d.path(), "a.luac", None).unwrap();
+        assert!(lua.note.unwrap().contains("LÖVE runs LuaJIT and refuses it"));
+        assert_eq!(build(d.path(), "pic.avif", None).unwrap().kind, "image");
+        assert_eq!(build(d.path(), "song.m4a", None).unwrap().kind, "audio");
+        let mkv = build(d.path(), "clip.mkv", None).unwrap();
+        assert_eq!(mkv.kind, "video");
+        assert!(matches!(mkv.body, Body::Hex { .. }));
     }
 
     #[test]

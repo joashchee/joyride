@@ -30,7 +30,27 @@ pub struct ImageFacts {
 const COLOUR_CAP: usize = 4096;
 
 fn open(path: &Path) -> Result<DynamicImage> {
-    image::ImageReader::open(path)?.with_guessed_format()?.decode().map_err(|e| Error::Other(format!("{}: {e}", path.display())))
+    let img = image::ImageReader::open(path)?.with_guessed_format()?.decode().map_err(|e| Error::Other(format!("{}: {e}", path.display())))?;
+    Ok(tone_map(img))
+}
+
+/// Floating-point pictures (Radiance `.hdr`, OpenEXR) squeezed into 8 bits for
+/// the screen: Reinhard's curve, then the sRGB-like 1/2.2 power. A preview,
+/// not a conversion: nothing is written back.
+fn tone_map(img: DynamicImage) -> DynamicImage {
+    let float = matches!(img, DynamicImage::ImageRgb32F(_) | DynamicImage::ImageRgba32F(_));
+    if !float {
+        return img;
+    }
+    let f = img.to_rgba32f();
+    let (w, h) = f.dimensions();
+    let mut out = image::RgbaImage::new(w, h);
+    let map = |v: f32| (((v.max(0.0) / (1.0 + v.max(0.0))).powf(1.0 / 2.2) * 255.0) + 0.5).clamp(0.0, 255.0) as u8;
+    for (o, p) in out.pixels_mut().zip(f.pixels()) {
+        // Reinhard maps 1.0 to 0.5, so brighten the pair to keep ordinary 0..1 pictures looking like themselves.
+        *o = image::Rgba([map(p[0] * 2.0), map(p[1] * 2.0), map(p[2] * 2.0), (p[3].clamp(0.0, 1.0) * 255.0 + 0.5) as u8]);
+    }
+    DynamicImage::ImageRgba8(out)
 }
 
 pub fn image_facts(path: &Path) -> Result<ImageFacts> {
