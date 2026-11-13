@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor/editor/editor.api.js";
 import "../monaco-setup";
+import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 
 // Monaco's own web worker, bundled: nothing is fetched from a CDN (CLAUDE.md
-// rule 1). Lua needs no language worker; `lua-language-server` arrives
-// through lsp_bridge later.
+// rule 1). Lua needs no language worker; `lua-language-server` is reached
+// through src/lib/lsp.ts.
 (self as unknown as { MonacoEnvironment: monaco.Environment }).MonacoEnvironment = {
   getWorker: () => new EditorWorker(),
 };
@@ -18,7 +19,9 @@ const docs = new Map<string, Doc>();
 
 /** Forgets a closed file's text and undo history. */
 export function closeDoc(path: string) {
-  docs.get(path)?.model.dispose();
+  const m = docs.get(path)?.model;
+  if (m) untrackModel(m);
+  m?.dispose();
   docs.delete(path);
 }
 
@@ -80,7 +83,10 @@ export default function Editor(props: {
   useEffect(() => {
     let d = docs.get(props.path);
     if (!d) {
-      const model = monaco.editor.createModel(props.text, languageOf(props.path));
+      const lang = languageOf(props.path);
+      const uri = uriFor(props.path) ?? undefined;
+      const model = monaco.editor.createModel(props.text, lang, uri);
+      if (lang === "lua" && uri) trackModel(model);
       d = { model, saved: model.getAlternativeVersionId() };
       docs.set(props.path, d);
     }

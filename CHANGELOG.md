@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **Language server** (2026-11-13): `joyride-core::lsp` (Content-Length framing,
+  finding the bundled `lua-language-server`, a child process with a message
+  callback), Tauri commands `lsp_start`/`lsp_send`/`lsp_stop`, and `src/lib/lsp.ts`,
+  a small client feeding Monaco diagnostics, completion, hover, signature help and
+  go-to-definition. Settings (LuaJIT, `love` global) are answered over the protocol,
+  so the project gets no `.luarc.json` of ours; logs and metadata go in the app-data
+  folder. Tested against the real bundled server.
 - **Bundled tools** (2026-11-13): `scripts/fetch-toolchains.py` pins LÖVE 11.5,
   lua-language-server and StyLua by SHA-256; Run uses the bundled LÖVE. PortMaster
   keeps using its own runtimes (rule recorded in CLAUDE.md); `docs/platform-parity.md`.

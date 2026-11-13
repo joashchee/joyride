@@ -9,6 +9,7 @@
 //!   manifest (spec 3A, 3B).
 //! - [`lua`]: a small Lua lexer; [`scan`] the auto-porter's static analysis
 //!   (spec 4B); [`lint`] version-calibrated LÖVE lints (spec 3B).
+//! - [`lsp`]: `lua-language-server` over stdio, framed for the editor.
 //! - [`trace`] and [`runner`]: running a game and linking its errors (3C).
 //! - [`shim`], [`overlay`]: target shims and the zero-mutation patch
 //!   overlay, merged into a staged copy at build time (spec 4A, 4C).
@@ -30,6 +31,7 @@ pub mod export;
 pub mod files;
 pub mod library;
 pub mod lint;
+pub mod lsp;
 pub mod lua;
 pub mod manifest;
 pub mod overlay;

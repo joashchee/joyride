@@ -4,6 +4,7 @@
 
 use serde::Serialize;
 
+mod lsp;
 mod project;
 mod run;
 
@@ -34,6 +35,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .manage(project::Project::default())
         .manage(run::Game::default())
+        .manage(lsp::Lsp::default())
         .plugin(tauri_plugin_log::Builder::new().level(log::LevelFilter::Info).build())
         .invoke_handler(tauri::generate_handler![
             core_info,
@@ -42,7 +44,12 @@ pub fn run() {
             project::read_project_file,
             project::write_project_file,
             run::run_project,
-            run::stop_project
+            run::stop_project,
+            lsp::lsp_start,
+            lsp::lsp_send,
+            lsp::lsp_stop,
+            lsp::lsp_settings,
+            lsp::lsp_root
         ])
         .run(tauri::generate_context!())
         .expect("error while running JoyrIDE");

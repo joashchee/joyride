@@ -6,6 +6,7 @@ import { chooseFolder, coreInfo, onRun, openProject, readFile, runProject, stopP
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
+const lsp = () => import("./lib/lsp");
 const closeDoc = (p: string) => import("./components/Editor").then((m) => m.closeDoc(p));
 
 // What the first screen needs, in order. Heavy things (Monaco, the language
@@ -26,6 +27,7 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [lines, setLines] = useState<RunLine[]>([]);
   const [running, setRunning] = useState(false);
+  const [lspState, setLspState] = useState<string>("off");
   const [goto, setGoto] = useState<{ line: number; n: number }>({ line: 1, n: 0 });
 
   useEffect(() => {
@@ -43,6 +45,17 @@ export default function App() {
       off();
     };
   }, []);
+
+  useEffect(() => {
+    let off = () => {};
+    let dead = false;
+    // Only once the splash is gone: the editor chunk loads after it.
+    if (gone) void lsp().then((L) => (dead ? undefined : (off = L.onLspStatus(setLspState))));
+    return () => {
+      dead = true;
+      off();
+    };
+  }, [gone]);
 
   useEffect(() => {
     let cancelled = false;
@@ -68,6 +81,10 @@ export default function App() {
       if (!dir) return;
       const l = await openProject(dir);
       tabs.forEach(closeDoc);
+      const L = await lsp();
+      L.stopLsp();
+      await L.setProjectRoot();
+      void L.startLsp().catch((e) => setNotice(String(e)));
       setProject(l);
       setTabs([]);
       setActive(null);
@@ -206,6 +223,7 @@ export default function App() {
         </div>
         <footer className="statusbar" role="status">
           {notice ?? `Core ${info?.version ?? "…"}`}
+          {project && ` · Language server: ${{ off: "off", starting: "starting…", ready: "ready", stopped: "stopped" }[lspState] ?? lspState}`}
         </footer>
       </main>
     </>
