@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **App icon** (2026-11-13): original joystick art drawn by `scripts/build-icons.ts`;
+  `.icns` and `.ico` made with `tauri icon`.
 - **Restore the last project and confirm on close** (2026-11-13): the last folder
   reopens after the splash; closing with unsaved files asks first.
 - **Find in files** (2026-11-13): `files::search` and a sidebar panel (⌘⇧F); plain
