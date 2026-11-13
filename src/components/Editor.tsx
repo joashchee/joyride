@@ -4,6 +4,8 @@ import "../monaco-setup";
 import { colorLiterals, colorText, formatLua, inTauri, lintLua } from "../lib/backend";
 import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
+import { defineThemes, TEXT_MODE_OPTIONS, themeId } from "../monaco-theme";
+import { currentAppearance, onAppearance } from "../lib/theme";
 
 // Monaco's own web worker, bundled: nothing is fetched from a CDN (CLAUDE.md
 // rule 1). Lua needs no language worker; `lua-language-server` is reached
@@ -79,16 +81,18 @@ export default function Editor(props: {
   cb.current = props;
 
   useEffect(() => {
-    const dark = window.matchMedia("(prefers-color-scheme: dark)");
+    defineThemes();
     const editor = monaco.editor.create(host.current!, {
+      ...TEXT_MODE_OPTIONS,
       model: null,
-      theme: dark.matches ? "vs-dark" : "vs",
+      theme: themeId(currentAppearance()),
       automaticLayout: true,
-      minimap: { enabled: false },
-      fontSize: 14,
       tabSize: 2,
       ariaLabel: "Code editor",
     });
+    // Monaco measures the font when it is created: if the VGA font was not in
+    // yet, measure again once it is, so the cells are exactly 8 by 16.
+    void document.fonts.load('16px "ansiapps VGA"').then(() => monaco.editor.remeasureFonts());
     ed.current = editor;
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, async () => {
       const m = editor.getModel();
@@ -107,7 +111,7 @@ export default function Editor(props: {
         scheduleLint(path, m);
       }
     });
-    // Format Document (⇧⌥F) with the bundled StyLua; a syntax error is reported, the text left alone.
+    // Format Document (Shift+Alt+F) with the bundled StyLua; a syntax error is reported, the text left alone.
     const formatter = inTauri
       ? monaco.languages.registerDocumentFormattingEditProvider("lua", {
           displayName: "StyLua",
@@ -144,10 +148,9 @@ export default function Editor(props: {
           },
         })
       : null;
-    const theme = () => monaco.editor.setTheme(dark.matches ? "vs-dark" : "vs");
-    dark.addEventListener("change", theme);
+    const offPalette = onAppearance((a) => monaco.editor.setTheme(themeId(a)));
     return () => {
-      dark.removeEventListener("change", theme);
+      offPalette();
       formatter?.dispose();
       colors?.dispose();
       sub.dispose();

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Panel from "./Panel";
 import { gitCommit, gitInit, gitPull, gitPush, githubCreateRepo, githubOverview, githubReleaseWorkflow, openGithubUrl, type GithubOverview } from "../lib/backend";
 
 /** Git and GitHub, through the gh and git command lines. Sign in once with `gh auth login` in a terminal: JoyrIDE never asks for or stores a token. */
@@ -35,14 +36,8 @@ export default function GitHub(props: { onClose: () => void; onChanged: () => vo
   const g = o?.git;
   const online = !!o?.auth.loggedIn;
   return (
-    <section className="github" aria-label="GitHub" onKeyDown={(e) => e.key === "Escape" && props.onClose()}>
-      <header>
-        <strong>GitHub</strong>
-        {o?.auth.user && online && <span className="lib-meta"> signed in as {o.auth.user}</span>}
-        <button onClick={() => void refresh()} disabled={busy !== null}>Check again</button>
-        <button onClick={props.onClose} aria-label="Close GitHub">×</button>
-      </header>
-      {err && <pre role="alert" className="export-error">{err}</pre>}
+    <Panel title={o?.auth.user && online ? `GitHub, signed in as ${o.auth.user}` : "GitHub"} kind="panel-github" onClose={props.onClose} actions={<button onClick={() => void refresh()} disabled={busy !== null}>Check again</button>}>
+      {err && <pre role="alert" className="panel-error">{err}</pre>}
       {note && <p role="status">{note}</p>}
       {o && !online && <pre className="hint gh-signin">{o.auth.message}</pre>}
       {g && !g.isRepo && (
@@ -72,16 +67,16 @@ export default function GitHub(props: { onClose: () => void; onChanged: () => vo
           </ul>
           {g.changes.length === 0 && <p className="hint">No changes.</p>}
           <form
-            className="export-buttons"
+            className="row-buttons"
             onSubmit={(e) => {
               e.preventDefault();
               void act("commit", () => gitCommit(msg), "Committed.").then(() => setMsg(""));
             }}
           >
-            <input aria-label="Commit message" placeholder="Commit message" value={msg} onChange={(e) => setMsg(e.target.value)} style={{ flex: 1 }} />
+            <input aria-label="Commit message" placeholder="Commit message" value={msg} onChange={(e) => setMsg(e.target.value)} />
             <button type="submit" disabled={busy !== null || g.changes.length === 0 || !msg.trim()}>Commit all</button>
           </form>
-          <div className="export-buttons">
+          <div className="row-buttons">
             <button disabled={busy !== null || !online || !g.upstream || g.behind === 0} onClick={() => void act("pull", gitPull, "Pulled.")}>Pull</button>
             <button disabled={busy !== null || !online || (!!g.upstream && g.ahead === 0) || (!g.upstream && !o?.repo)} onClick={() => void act("push", gitPush, "Pushed.")}>
               Push
@@ -105,13 +100,13 @@ export default function GitHub(props: { onClose: () => void; onChanged: () => vo
           </div>
           {online && !o?.repo && (
             <form
-              className="export-buttons"
+              className="row-buttons"
               onSubmit={(e) => {
                 e.preventDefault();
                 void act("create", () => githubCreateRepo(name, isPrivate), "Created the repository and linked it as origin. Commit, then Push.");
               }}
             >
-              <input aria-label="New repository name" value={name} onChange={(e) => setName(e.target.value)} style={{ flex: 1 }} spellCheck={false} />
+              <input aria-label="New repository name" value={name} onChange={(e) => setName(e.target.value)} spellCheck={false} />
               <label>
                 <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} /> Private
               </label>
@@ -120,6 +115,6 @@ export default function GitHub(props: { onClose: () => void; onChanged: () => vo
           )}
         </>
       )}
-    </section>
+    </Panel>
   );
 }

@@ -15,6 +15,10 @@ third-party licence ships in the app (scripts/license-scan.py).
 - love.js (Davidobot's, MIT), whose `love.js`/`love.wasm` carry LÖVE (zlib) and its libraries, and the `love` iOS Xcode project and `love-android` Gradle project (zlib / as their repositories state), when a build bundles them.
 - PortMaster runtimes, as the PortMaster project states.
 - Monaco Editor, MIT.
+- IBM VGA 8x16 (`WebPlus_IBM_VGA_8x16.woff`) from The Ultimate Oldschool PC Font Pack
+  v2.2 by VileR (int10h.org), CC BY-SA 4.0: shipped unmodified, byte for byte, as its own
+  file in `public/fonts/ansiapps/` with its licence beside it, and credited in Settings.
+  Never subset, convert or inline it.
 - Painter (`art-sprites`), Composer (`music-composer`) and Animator
   (`sprite-animator`), ansiapps' own engines, vendored in `src/vendor/` and
   relicensed MIT for JoyrIDE (decided 2026-11-13; the engines' own

@@ -61,6 +61,16 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
 9. **Accessible**: every control works by keyboard alone and is named for
    VoiceOver.
 10. **No first-run warning dialog.**
+13. **The UI is the ANSIapps text-mode look and nothing else** (decided
+    2026-11-13): no graphical theme and no switch for one. The only
+    appearance options are colours: the palette, True colour (default,
+    with theme swatches in `src/swatches.ts`) or 16-colour (DOS mode, fixed).
+    A new swatch must pass `node scripts/check-swatches.ts`. Build on the 8 by 16 grid: widths, paddings
+    and gaps in whole cells, no borders on anything holding text, 16px
+    VGA font only, no Mac key symbols (write `Cmd+S`), every text and
+    background pair from `docs/ansiapps-color-contrast.md`. Run
+    `checkGrid()` (dev console) on each panel after changing
+    `src/ansiapps-theme.css`. Details: `docs/text-mode-ui.md`.
 11. **Asset licences are confirmed before use** (`docs/asset-library.md`):
     nothing is imported, added to a project or exported with an unknown
     licence unless the user overrides and says why. Imports never copy
@@ -90,6 +100,9 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
   API search). Tests under LuaJIT with a mocked `love` (`tests/shim_lua.rs`);
   `tests/e2e_love.rs` needs a display and skips without one.
   `cargo test --offline --manifest-path joyride-core/Cargo.toml`.
+- `src/ansiapps-theme.css`, `src/lib/theme.ts` (the palette), `src/lib/grid.ts`,
+  `src/monaco-theme.ts` (the editor's two palettes), `components/Panel.tsx`
+  (a framed window): the text-mode UI, `docs/text-mode-ui.md`.
 - `src/vendor/`: Painter, Composer, Animator (MIT; `scripts/vendor-sync.sh`).
 
 ## love.js and its forks

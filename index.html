@@ -4,41 +4,68 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark light" />
+    <meta name="color-scheme" content="dark" />
     <title>JoyrIDE</title>
+    <link rel="preload" href="/fonts/ansiapps/WebPlus_IBM_VGA_8x16.woff" as="font" type="font/woff" crossorigin />
+    <!-- The appearance (src/lib/theme.ts, same keys and names): applied before the
+         first paint. True colour is the default; "dos16" is the stored option.
+         In true colour the stored swatch's colours are set as the same custom
+         properties the stylesheet reads (the splash below uses them too). -->
+    <script>
+      (function () {
+        var root = document.documentElement;
+        try {
+          var dos = localStorage.getItem("joyride.palette") === "dos16";
+          root.dataset.palette = dos ? "dos16" : "truecolor";
+          root.dataset.swatch = dos ? "dos16" : localStorage.getItem("joyride.swatch") || "classic";
+          var ui = dos ? null : JSON.parse(localStorage.getItem("joyride.ui") || "null");
+          if (ui) for (var k in ui) root.style.setProperty(/^(bg|text|muted|line)$/.test(k) ? "--" + k : "--r-" + k, ui[k]);
+        } catch (e) {
+          root.dataset.palette = "truecolor";
+        }
+      })();
+    </script>
     <!-- The splash lives here so it paints before any JS or bundled CSS loads
          (CLAUDE.md rule 7). components/Splash.tsx renders the same markup,
-         with progress and any load error, once React mounts. -->
+         with progress and any load error, once React mounts; the rules below
+         are the same as in src/ansiapps-theme.css (a text-mode screen in the
+         16 colours, whichever palette is chosen). -->
     <style>
-      html, body { margin: 0; height: 100%; background: #16181d; }
-      .splash {
-        position: fixed; inset: 0; z-index: 1000;
-        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-        background: #16181d; color: #e8eaf0;
-        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-        transition: opacity 0.2s ease;
-      }
-      .splash.leaving { opacity: 0; pointer-events: none; }
-      .splash-mark { width: 88px; height: 88px; }
-      .splash-name { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; }
-      .splash-accent { color: #ff6fa8; }
-      .splash-progress { width: 220px; height: 6px; }
-      .splash-label { min-height: 16px; font-size: 12px; color: #9aa1b0; font-family: ui-monospace, Menlo, monospace; }
-      .splash-error { max-width: 520px; padding: 0 16px; color: #ff8a8a; font-size: 13px; text-align: center; white-space: pre-wrap; }
-      @media (prefers-color-scheme: light) {
-        html, body, .splash { background: #f6f7fa; color: #1b1e25; }
-        .splash-label { color: #5b6270; }
-        .splash-error { color: #b3261e; }
-      }
+      @font-face { font-family: "ansiapps VGA"; font-style: normal; font-weight: 400; font-display: block; src: url("/fonts/ansiapps/WebPlus_IBM_VGA_8x16.woff") format("woff"); }
+      html, body { margin: 0; height: 100%; background: var(--bg, #0000aa); }
+      *, *::before, *::after { box-sizing: border-box; }
+      .splash { position: fixed; inset: 0; z-index: 1000; background: var(--bg, #0000aa); color: var(--text, #ffffff); font: 400 16px/16px "ansiapps VGA", ui-monospace, monospace; -webkit-font-smoothing: none; font-synthesis: none; }
+      .splash-box { position: absolute; width: 480px; left: calc((100vw - 480px) / 2); top: calc((100vh - 224px) / 2); }
+      @supports (width: round(down, 1px, 8px)) { .splash-box { left: round(down, calc((100vw - 480px) / 2), 8px); top: round(down, calc((100vh - 224px) / 2), 16px); } }
+      .splash-art { margin: 0 0 16px 192px; font: inherit; line-height: 16px; color: var(--muted, #aaaaaa); white-space: pre; }
+      .splash-art .r { color: #ff5555; } .splash-art .c { color: #00aaaa; } .splash-art .y { color: #ffff55; }
+      .splash-name, .splash-label { position: relative; left: 50%; width: max-content; transform: translateX(-50%); margin: 0; }
+      @supports (width: round(down, 1px, 8px)) { .splash-name, .splash-label { transform: translateX(round(down, -50%, 8px)); } }
+      .splash-accent { color: #ff55ff; }
+      .progress { position: relative; width: 256px; height: 16px; background: var(--r-console, #000000); overflow: hidden; }
+      .splash-progress { margin: 16px 0 16px 112px; }
+      .progress-fill { height: 16px; background: repeating-linear-gradient(90deg, var(--r-fill, #ffff55) 0 7px, var(--r-fill2, #aa5500) 7px 8px); }
+      .progress.indeterminate .progress-fill { width: 64px; animation: sweep 1.2s steps(12) infinite; }
+      @keyframes sweep { from { margin-left: 0; } to { margin-left: 192px; } }
+      @media (prefers-reduced-motion: reduce) { .progress.indeterminate .progress-fill { animation: none; width: 256px; } }
+      .splash-label { color: var(--muted, #aaaaaa); min-height: 16px; }
+      .splash-error { padding: 16px; background: var(--r-err, #aa0000); color: var(--r-onerr, #ffffff); white-space: pre-wrap; box-shadow: 16px 16px 0 var(--r-shadow, #000000); }
     </style>
   </head>
   <body>
     <div id="root">
       <div class="splash" role="status" aria-live="polite">
-        <img class="splash-mark" src="/favicon.svg" alt="" />
-        <div class="splash-name">JoyrIDE<span class="splash-accent">.</span></div>
-        <progress class="splash-progress" aria-label="Starting JoyrIDE"></progress>
-        <div class="splash-label">Starting…</div>
+        <div class="splash-box">
+          <pre class="splash-art" aria-hidden="true"><span class="r">    ▄██▄
+    ▀██▀
+</span>     ██
+ ▄▄▄▄██▄▄▄▄
+<span class="c"> ███</span><span class="y">█</span><span class="c">██</span><span class="y">█</span><span class="c">███ </span>
+ ▀▀▀▀▀▀▀▀▀▀ </pre>
+          <div class="splash-name">JoyrIDE<span class="splash-accent">.</span></div>
+          <div class="progress splash-progress indeterminate" role="progressbar" aria-label="Starting JoyrIDE"><div class="progress-fill"></div></div>
+          <div class="splash-label">Starting…</div>
+        </div>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>

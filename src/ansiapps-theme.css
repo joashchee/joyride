@@ -1,0 +1,476 @@
+/* JoyrIDE's UI: the ANSIapps text-mode look, and nothing else (no graphical
+   theme, no switch for one). Follows docs/text-mode-ui.md, which follows the
+   ANSIapps theme as built in Coupler: the 16 CGA/VGA text-mode colours, one
+   bitmap font (IBM VGA 8x16, 16px only), square corners, double-line frames
+   with the title set into the top edge, light-gray Turbo Vision menus, flat
+   one-row buttons, [X] checkboxes, hard black shadows and no easing.
+
+   THE GRID: every character sits in a cell of the 8 by 16 grid, counted from
+   the screen's top left. So, in this file:
+   - every width, padding, margin and gap is a multiple of 8px across and
+     16px down, and every line of text is 16px tall;
+   - nothing that holds text has a border (it would push the text a few
+     pixels off): a frame is drawn by ::before in a ring of padding one cell
+     wide and one row tall, so its line runs through the middle of its cells;
+   - text is never centred by the browser (left: 50% then back by half the
+     width rounded to a cell);
+   - the window's content is cut to whole cells (.shell), and scrolling comes
+     to rest on a whole row (lib/grid.ts);
+   - every character shown is one the font has, so none falls back to a font
+     of another width (it has no Mac key symbols or ▸ ▾: write Cmd+S, use ► ▼).
+
+   PALETTE (lib/theme.ts): html[data-palette] is "truecolor" (the default) or
+   "dos16". The chrome is the same 16 colours in both; the palette decides
+   what the editor and extras may use (src/monaco-theme.ts). Every text and
+   background pair is on the ranked list in docs/ansiapps-color-contrast.md.
+
+   Font: IBM VGA 8x16 from VileR's Ultimate Oldschool PC Font Pack
+   (int10h.org), CC BY-SA 4.0, shipped unmodified with its licence in
+   public/fonts/ansiapps/ and credited in Settings. */
+
+@font-face {
+  font-family: "ansiapps VGA";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/fonts/ansiapps/WebPlus_IBM_VGA_8x16.woff") format("woff");
+}
+
+:root {
+  color-scheme: dark;
+  /* CGA/VGA text-mode palette */
+  --dos-black: #000000;
+  --dos-blue: #0000aa;
+  --dos-green: #00aa00;
+  --dos-cyan: #00aaaa;
+  --dos-red: #aa0000;
+  --dos-magenta: #aa00aa;
+  --dos-brown: #aa5500;
+  --dos-lightgray: #aaaaaa;
+  --dos-darkgray: #555555;
+  --dos-lightblue: #5555ff;
+  --dos-lightgreen: #55ff55;
+  --dos-lightcyan: #55ffff;
+  --dos-lightred: #ff5555;
+  --dos-lightmagenta: #ff55ff;
+  --dos-yellow: #ffff55;
+  --dos-white: #ffffff;
+
+  --bg: var(--dos-blue);
+  --panel: var(--bg);
+  --line: var(--dos-lightcyan);
+  --text: var(--dos-white);
+  --muted: var(--dos-lightgray);
+  --accent: var(--dos-yellow);
+  /* Roles. A swatch (src/swatches.ts, chosen in Settings in the true colour
+     palette) re-points these; they default to the 16 colours, which is all
+     DOS mode ever uses. */
+  --r-win: var(--dos-lightgray);       /* windows, buttons, menu bar, status bar */
+  --r-ink: var(--dos-black);           /* text on them */
+  --r-winmuted: var(--dos-blue);       /* dim text on them */
+  --r-select: var(--dos-cyan);         /* selection bar, pressed button */
+  --r-menuhi: var(--dos-green);        /* the open menu item */
+  --r-hover: var(--dos-white);         /* a button under the pointer */
+  --r-rowhover: var(--dos-darkgray);   /* a list row under the pointer */
+  --r-field: var(--dos-black);         /* text fields */
+  --r-fieldtext: var(--dos-white);
+  --r-fieldhint: var(--dos-lightgray);
+  --r-disabled: var(--dos-darkgray);
+  --r-console: var(--dos-black);
+  --r-consoletext: var(--dos-lightgray);
+  --r-consoleerr: var(--dos-lightred);
+  --r-consolelink: var(--dos-lightcyan);
+  --r-err: var(--dos-red);             /* an error bar */
+  --r-onerr: var(--dos-white);
+  --r-bad: var(--dos-lightred);        /* a problem word on the desktop */
+  --r-code: var(--dos-yellow);
+  --r-strong: var(--dos-lightcyan);
+  --r-closebox: var(--dos-lightgreen);
+  --r-track: var(--dos-cyan);          /* scroll bar track */
+  --r-thumb: var(--dos-blue);
+  --r-shadow: var(--dos-black);
+  --r-focus: var(--dos-white);
+  --r-fill: var(--dos-yellow);         /* progress fill and its stripe */
+  --r-fill2: var(--dos-brown);
+  --font: "ansiapps VGA", ui-monospace, monospace;
+  --shadow: 16px 16px 0 var(--r-shadow);
+  --shadow-small: 8px 8px 0 var(--r-shadow);
+}
+
+html, body, #root { margin: 0; height: 100%; }
+html { background: var(--bg); }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 400 16px/16px var(--font);
+  overflow: hidden;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: auto;
+  font-synthesis: none;
+}
+*, *::before, *::after { box-sizing: border-box; }
+
+/* One size and weight: a bitmap font is only crisp at its native 16px and has
+   no bold (synthesized bold smears it). Monaco sets its own metrics (the same
+   16px, from src/monaco-theme.ts), so its subtree is left alone. */
+#root :not(.monaco-editor):not(.monaco-editor *) {
+  font-family: var(--font);
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  letter-spacing: 0 !important;
+  line-height: 16px !important;
+  border-radius: 0 !important;
+  text-shadow: none;
+}
+strong { color: var(--r-strong); }
+code { color: var(--r-code); }
+::selection { background: var(--r-select); color: var(--r-ink); }
+
+/* A button, field or picture in a line of text hangs from the line's top, so
+   its line does not grow past 16px for the letters' descenders. */
+button, input, textarea, svg, img { vertical-align: top; }
+
+:focus-visible,
+input:focus,
+button:focus-visible {
+  outline: 2px dashed var(--r-focus) !important;
+  outline-offset: 1px;
+}
+
+/* Monaco's hidden input takes focus for the whole editor: no ring around a 1px box. */
+.monaco-editor :focus-visible, .monaco-editor:focus-visible { outline: none !important; }
+
+/* Scrollbars: a cyan track and a solid thumb, like a Turbo Vision scroller */
+::-webkit-scrollbar { width: 16px; height: 16px; background: var(--r-track); }
+::-webkit-scrollbar-thumb { background: var(--r-thumb); border: 3px solid var(--r-track); }
+::-webkit-scrollbar-corner { background: var(--r-track); }
+
+/* The screen: the window's content is cut to whole cells. */
+.shell { width: 100vw; height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+@supports (width: round(down, 1px, 8px)) {
+  .shell { width: round(down, 100vw, 8px); height: round(down, 100vh, 16px); }
+}
+
+/* Buttons: flat light-gray bars that are just clickable. No shadow and no
+   press-in, so the whole face takes the click and nothing moves. Hover turns
+   it white, the mouse held down turns it cyan, disabled is dark gray. */
+button {
+  display: inline-block;
+  height: 16px;
+  margin: 0;
+  padding: 0 8px;
+  border: none;
+  background: var(--r-win);
+  color: var(--r-ink);
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none;
+  transform: none;
+  transition: none;
+}
+button:hover:not(:disabled) { background: var(--r-hover); }
+button:active:not(:disabled) { background: var(--r-select); }
+button:disabled { color: var(--r-disabled); cursor: default; }
+
+/* Text fields: black command-line strips, one row, a cell of padding each side. */
+input:not([type="checkbox"]):not([type="radio"]) {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 16px;
+  margin: 0;
+  padding: 0 8px;
+  border: none;
+  background: var(--r-field);
+  color: var(--r-fieldtext);
+  font: inherit;
+  caret-color: var(--r-fieldtext);
+}
+input::placeholder { color: var(--r-fieldhint); opacity: 1; }
+
+/* Checkboxes drawn as [X] and radio buttons as (•) */
+input[type="checkbox"], input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: auto;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background: none;
+}
+input[type="checkbox"]::before { content: "[ ]"; }
+input[type="checkbox"]:checked::before { content: "[X]"; }
+input[type="radio"]::before { content: "( )"; }
+input[type="radio"]:checked::before { content: "(\2022)"; }
+input:disabled { color: var(--r-disabled); }
+label { cursor: pointer; }
+
+/* ---- The menu bar: a light-gray Turbo Vision bar across the top ---- */
+.menubar {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 8px;
+  padding: 0 8px;
+  background: var(--r-win);
+  color: var(--r-ink);
+}
+.menubar button { padding: 0 8px; }
+.menubar button:hover:not(:disabled) { background: var(--r-hover); }
+.menubar button[aria-expanded="true"] { background: var(--r-menuhi); }
+.menubar :focus-visible, .menubar button:focus-visible { outline-color: var(--r-ink) !important; }
+.menubar .project-name { margin-left: auto; padding: 0 8px; color: var(--r-winmuted); }
+
+.workspace { flex: 1; min-height: 0; display: flex; }
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.empty { margin: 16px 8px; color: var(--muted); }
+.hint { margin: 0; color: var(--muted); }
+.lib-meta { color: var(--muted); }
+
+/* The sidebar is 38 cells; its last cell holds the double rule that divides it from the editor.
+   The rule is on a wrapper, so it stays put while the list scrolls. */
+.sidebar-wrap { position: relative; flex: none; width: 304px; display: flex; }
+.sidebar-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  border-left: 3px double var(--line);
+  margin-left: 2px;
+  pointer-events: none;
+}
+.sidebar { flex: 1; min-width: 0; padding: 0 8px 0 0; overflow-x: hidden; overflow-y: auto; }
+.sidebar section, .sidebar .tree-actions { padding: 0 8px 16px; }
+.sidebar > .empty { margin: 16px 8px; }
+
+.tree { list-style: none; margin: 0; padding: 0 0 16px; }
+.tree li { margin: 0; padding: 0; }
+.tree-item, .search-hits button, .docs-body li button, .port-findings button, .cline.link {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 16px;
+  padding: 0 8px;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+.tree-item { height: 16px; overflow: hidden; text-overflow: ellipsis; }
+.tree-item:hover:not(:disabled), .search-hits button:hover:not(:disabled), .docs-body li button:hover:not(:disabled), .port-findings button:hover:not(:disabled) {
+  background: var(--r-rowhover);
+  color: var(--text);
+}
+.tree-item:active:not(:disabled), .search-hits button:active:not(:disabled), .docs-body li button:active:not(:disabled), .port-findings button:active:not(:disabled) {
+  background: var(--r-select);
+  color: var(--r-ink);
+}
+/* The open file is a light-gray bar; the entry the buttons act on is the cyan selection bar. */
+.tree-item.active { background: var(--r-win); color: var(--r-ink); }
+.tree-item.selected, .docs-body li button.active { background: var(--r-select); color: var(--r-ink); }
+
+/* Tabs: wrap to another row rather than scroll. */
+.tabs { flex: none; display: flex; flex-wrap: wrap; gap: 0 8px; padding: 0 8px; min-height: 0; }
+.tab { display: flex; background: var(--r-win); color: var(--r-ink); }
+.tab button { background: none; }
+.tab button:hover:not(:disabled) { background: var(--r-hover); }
+.tab.active, .tab.active button:not(:hover) { background: var(--r-select); }
+.tab-close { padding: 0 8px; }
+.editor-host { flex: 1; min-height: 0; }
+.editor-loading { margin: 16px 8px; color: var(--muted); }
+
+.namebox { display: flex; flex-wrap: wrap; gap: 16px 8px; align-items: flex-start; }
+.namebox label { display: flex; flex-direction: column; width: 100%; }
+.namebox input { width: 100%; }
+.tree-actions { display: flex; flex-wrap: wrap; gap: 16px 8px; align-items: flex-start; }
+
+.search form { display: flex; flex-direction: column; gap: 16px; }
+.search input[type="text"], .search input:not([type]) { width: 100%; }
+.search-count { margin: 16px 0 0; color: var(--muted); }
+.search-hits { list-style: none; margin: 0; padding: 0; max-height: 224px; overflow: auto; }
+.search-hits button { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hit-where { color: var(--muted); }
+.search-hits button:hover .hit-where { color: var(--text); }
+.tree-item.active .hit-where, .tree-item.selected .hit-where { color: var(--r-ink); }
+
+/* ---- Panels: double-line frames with the title set into the top edge ---- */
+.panel {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  margin: 0;
+  background: var(--panel);
+}
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 6px 2px 7px;
+  border: 3px double var(--line);
+  pointer-events: none;
+}
+.panel-title {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: max-content;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0 8px;
+  background: var(--panel);
+  color: var(--text);
+  white-space: nowrap;
+}
+@supports (width: round(down, 1px, 8px)) {
+  .panel-title { transform: translateX(round(down, -50%, 8px)); }
+}
+/* The close box at the frame's top left, like a Turbo Vision window's [■]. */
+.panel-close { position: absolute; top: 0; left: 16px; z-index: 1; padding: 0; background: var(--panel); color: var(--r-closebox); }
+.panel-close:hover:not(:disabled) { background: var(--r-hover); color: var(--r-ink); }
+.panel-actions { position: absolute; top: 0; right: 16px; z-index: 1; display: flex; gap: 8px; padding: 0 8px; background: var(--panel); }
+.panel-body { flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+.panel-body > * { flex: none; }
+.panel-bar { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 8px; }
+.panel-bar input { flex: 1; min-width: 0; }
+.panel-bar button:last-child { margin-left: auto; }
+.row-buttons { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px 8px; }
+.row-buttons input:not([type="checkbox"]) { flex: 1; min-width: 0; }
+.panel p, .panel pre, .panel ul { margin: 0; }
+.panel pre { white-space: pre-wrap; font: inherit; }
+.panel fieldset { margin: 0; padding: 0; border: none; min-width: 0; display: flex; flex-direction: column; }
+.panel legend { padding: 0; color: var(--r-strong); }
+.panel label { display: block; }
+.panel-error { color: var(--r-onerr); background: var(--r-err); padding: 0 8px; box-shadow: var(--shadow-small); }
+
+/* Panel sizes in whole rows, never beyond what the window has. */
+.panel-docs, .panel-autoport, .panel-github { max-height: 304px; max-height: min(304px, round(down, 50vh, 16px)); }
+.panel-libraries { max-height: 272px; max-height: min(272px, round(down, 45vh, 16px)); }
+.panel-export { max-height: 304px; max-height: min(304px, round(down, 50vh, 16px)); }
+.panel-console { height: 192px; }
+.panel-console .panel-body { overflow: hidden; }
+
+/* Libraries: each entry's own button comes first, at the row's left edge. */
+.libraries-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.libraries-list li { display: flex; gap: 8px; align-items: flex-start; }
+.lib-main { flex: 1; min-width: 0; }
+.lib-broken { color: var(--r-bad); }
+.libraries-list li button { min-width: 80px; }
+
+/* Docs: the results at the left, the reading at the right. */
+.docs-body { display: flex; gap: 16px; min-height: 0; }
+.docs-body ul { list-style: none; padding: 0; width: 256px; flex: none; }
+.docs-body li button { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.docs-body article { flex: 1; min-width: 0; }
+.docs-text { white-space: pre-wrap; margin: 0 0 16px; }
+
+.variant-uses { gap: 0; }
+.use-unsupported code { color: var(--r-bad); }
+
+/* Auto-Port: a severity is a character on its own black cell (a mark that can
+   land on any row colour keeps its contrast there), never a coloured edge. */
+.autoport-tabs { display: flex; flex-wrap: wrap; gap: 0 8px; align-items: flex-start; flex: 1; }
+.autoport-tabs button.active { background: var(--r-select); }
+.port-findings { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.port-findings button { white-space: normal; }
+.mark { display: inline-block; width: 16px; background: var(--dos-black); text-align: center; margin-right: 8px; }
+.mark-blocker { color: var(--dos-lightred); }
+.mark-warning { color: var(--dos-yellow); }
+.mark-info { color: var(--dos-lightcyan); }
+.port-findings button:hover .mark, .port-findings button:active .mark { background: var(--dos-black); }
+
+.gh-signin { color: var(--muted); }
+.git-changes { list-style: none; padding: 0; max-height: 96px; overflow: auto; }
+
+/* Settings: radio buttons with a line on what each does. */
+.palette-choice { display: flex; flex-direction: column; gap: 16px; }
+.palette-choice label { display: block; }
+.palette-choice .lib-meta { display: block; padding-left: 32px; }
+.panel .swatch-row { display: flex; gap: 8px; align-items: flex-start; }
+.panel .swatch-row .lib-meta { display: inline; padding-left: 0; }
+/* A swatch's colours as six blocks of two cells, each a whole cell tall. */
+.swatch-chips { display: inline-flex; margin-left: auto; }
+.chip { display: inline-block; width: 16px; height: 16px; }
+.credit { color: var(--muted); }
+fieldset:disabled .swatch-row { color: var(--r-disabled); cursor: default; }
+
+/* ---- The console: a black DOS prompt ---- */
+.console-body { flex: 1; min-height: 0; overflow: auto; background: var(--r-console); color: var(--r-consoletext); outline-offset: 0; }
+.cline { margin: 0; padding: 0 8px; white-space: pre-wrap; }
+.cline.err { color: var(--r-consoleerr); }
+.cline.link { background: none; text-decoration: underline; color: var(--r-consolelink); }
+.cline.link.err { color: var(--r-consoleerr); }
+.cline.link:hover:not(:disabled) { background: var(--r-rowhover); color: var(--text); }
+
+/* ---- The status bar ---- */
+.statusbar {
+  flex: none;
+  height: 16px;
+  padding: 0 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: var(--r-win);
+  color: var(--r-ink);
+}
+
+/* ---- Progress: a black track with a solid block fill, stepping and never easing ---- */
+.progress { position: relative; width: 256px; height: 16px; background: var(--r-console); overflow: hidden; }
+.progress-fill {
+  height: 16px;
+  background: repeating-linear-gradient(90deg, var(--r-fill) 0 7px, var(--r-fill2) 7px 8px);
+}
+/* No value: a bar that sweeps in 12 whole steps (the one motion allowed: a stopped bar would look like a hang). */
+.progress.indeterminate .progress-fill { width: 64px; animation: sweep 1.2s steps(12) infinite; }
+@keyframes sweep { from { margin-left: 0; } to { margin-left: 192px; } }
+@media (prefers-reduced-motion: reduce) {
+  .progress.indeterminate .progress-fill { animation: none; width: 256px; }
+}
+
+/* ---- The startup screen: the static one in index.html and Splash.tsx share this ---- */
+.splash { position: fixed; inset: 0; z-index: 1000; background: var(--bg); color: var(--text); }
+.splash.leaving { display: none; }
+.splash-box { position: absolute; width: 480px; left: calc((100vw - 480px) / 2); top: calc((100vh - 224px) / 2); }
+@supports (width: round(down, 1px, 8px)) {
+  .splash-box { left: round(down, calc((100vw - 480px) / 2), 8px); top: round(down, calc((100vh - 224px) / 2), 16px); }
+}
+.splash-art { margin: 0 0 16px 192px; font: inherit; line-height: 16px; color: var(--muted); white-space: pre; }
+.splash-art .r { color: var(--dos-lightred); }
+.splash-art .c { color: var(--dos-cyan); }
+.splash-art .y { color: var(--dos-yellow); }
+.splash-name, .splash-label { position: relative; left: 50%; width: max-content; transform: translateX(-50%); margin: 0; }
+@supports (width: round(down, 1px, 8px)) {
+  .splash-name, .splash-label { transform: translateX(round(down, -50%, 8px)); }
+}
+.splash-accent { color: var(--dos-lightmagenta); }
+.splash-progress { margin: 16px 0 16px 112px; }
+.splash-label { color: var(--muted); min-height: 16px; }
+.splash-error { margin: 0 0 0 0; padding: 16px; background: var(--r-err); color: var(--r-onerr); white-space: pre-wrap; box-shadow: var(--shadow); }
+
+/* ---- Monaco's popups: Turbo Vision windows (its own text metrics come from monaco-theme.ts) ---- */
+.monaco-editor .suggest-widget,
+.monaco-editor .monaco-hover,
+.monaco-editor .find-widget,
+.monaco-editor .parameter-hints-widget,
+.monaco-editor .monaco-menu,
+.monaco-menu {
+  border-radius: 0 !important;
+  box-shadow: var(--shadow-small) !important;
+  font-family: var(--font) !important;
+}
+.monaco-editor, .monaco-editor .monaco-hover, .monaco-editor .suggest-widget, .monaco-editor .find-widget { font-family: var(--font); }
+.monaco-editor .scroll-decoration { box-shadow: none !important; }
+.monaco-editor .cursor { border-radius: 0 !important; }
+
+/* The dev grid check (window.checkGrid) outlines what is off the grid. */
+.grid-off { outline: 2px solid var(--dos-lightred) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0s !important; scroll-behavior: auto !important; }
+}

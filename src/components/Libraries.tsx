@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { libraryAdd, libraryList, libraryRemove, type LibraryView } from "../lib/backend";
+import Panel from "./Panel";
 
 /** The curated libraries: search, add at the pinned commit, remove. Adding needs git and the network, only when clicked. */
 export default function Libraries(props: { onClose: () => void; onChanged: () => void }) {
@@ -32,28 +33,26 @@ export default function Libraries(props: { onClose: () => void; onChanged: () =>
   };
 
   return (
-    <section className="libraries" aria-label="Libraries" onKeyDown={(e) => e.key === "Escape" && props.onClose()}>
-      <header>
-        <strong>Libraries</strong>
+    <Panel title="Libraries" kind="panel-libraries" onClose={props.onClose}>
+      <div className="panel-bar">
         <input aria-label="Search libraries" placeholder="Search" value={q} onChange={(e) => setQ(e.target.value)} spellCheck={false} autoFocus />
-        <button onClick={props.onClose} aria-label="Close libraries">×</button>
-      </header>
-      {err && <pre role="alert" className="export-error">{err}</pre>}
-      <ul>
+      </div>
+      {err && <pre role="alert" className="panel-error">{err}</pre>}
+      <ul className="libraries-list">
         {libs?.map((l) => (
           <li key={l.name}>
+            <button disabled={busy !== null || (l.broken && !l.installed)} onClick={() => void act(l)} aria-label={`${l.installed ? "Remove" : "Add"} ${l.name}`}>
+              {busy === l.name ? "…" : l.installed ? "Remove" : "Add"}
+            </button>
             <div className="lib-main">
               <strong>{l.name}</strong> <span className="lib-meta">{l.version} · {l.licence}</span>
               <div>{l.summary}</div>
               <div className={"lib-meta" + (l.broken ? " lib-broken" : "")}>{l.badge}</div>
             </div>
-            <button disabled={busy !== null || (l.broken && !l.installed)} onClick={() => void act(l)} aria-label={`${l.installed ? "Remove" : "Add"} ${l.name}`}>
-              {busy === l.name ? "…" : l.installed ? "Remove" : "Add"}
-            </button>
           </li>
         ))}
       </ul>
-      {libs?.length === 0 && <p className="empty">No library matches.</p>}
-    </section>
+      {libs?.length === 0 && <p className="hint">No library matches.</p>}
+    </Panel>
   );
 }

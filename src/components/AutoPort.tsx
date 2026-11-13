@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { autoportGenerate, autoportScan, type PortReport } from "../lib/backend";
+import Panel from "./Panel";
 
 const LEVEL = { blocker: "Will not work", warning: "Check", info: "Handled" } as const;
+/** A character on its own black cell, so the severity reads on any row colour. */
+const MARK = { blocker: "■", warning: "▲", info: "·" } as const;
 
 /** Auto-Port: what the scanner finds for each target, and the overlay under .joyride/patches/ (the project's own files are never changed). */
 export default function AutoPort(props: { onClose: () => void; onOpen: (path: string, line: number) => void; onChanged: () => void }) {
@@ -29,10 +32,9 @@ export default function AutoPort(props: { onClose: () => void; onOpen: (path: st
   };
 
   return (
-    <section className="autoport" aria-label="Auto-Port" onKeyDown={(e) => e.key === "Escape" && props.onClose()}>
-      <header>
-        <strong>Auto-Port</strong>
-        <div role="tablist" aria-label="Target">
+    <Panel title="Auto-Port" kind="panel-autoport" onClose={props.onClose}>
+      <div className="panel-bar">
+        <div className="autoport-tabs" role="tablist" aria-label="Target">
           {rep?.targets.map((x) => (
             <button key={x.name} role="tab" aria-selected={x.name === target} className={x.name === target ? "active" : ""} onClick={() => setTarget(x.name)}>
               {x.title}
@@ -40,9 +42,8 @@ export default function AutoPort(props: { onClose: () => void; onOpen: (path: st
             </button>
           ))}
         </div>
-        <button onClick={props.onClose} aria-label="Close Auto-Port">×</button>
-      </header>
-      {err && <pre role="alert" className="export-error">{err}</pre>}
+      </div>
+      {err && <pre role="alert" className="panel-error">{err}</pre>}
       {rep && (
         <p className="hint">
           {rep.files} Lua file{rep.files === 1 ? "" : "s"} · input:{" "}
@@ -57,13 +58,14 @@ export default function AutoPort(props: { onClose: () => void; onOpen: (path: st
             {t.findings.map((f, i) => (
               <li key={i} className={"port-" + f.level}>
                 <button onClick={() => props.onOpen(f.file, f.line)}>
+                  <span className={"mark mark-" + f.level} aria-hidden="true">{MARK[f.level]}</span>
                   <strong>{LEVEL[f.level]}</strong> {f.file}:{f.line} <span className="lib-meta">{f.rule}</span>
                   <div>{f.message}</div>
                 </button>
               </li>
             ))}
           </ul>
-          <div className="export-buttons">
+          <div className="row-buttons">
             <button disabled={busy} onClick={() => void generate()}>{t.overlayFiles.length ? "Refresh overlay" : "Generate overlay"}</button>
             {t.overlayFiles.map((f) => (
               <button key={f} onClick={() => props.onOpen(f, 1)} title={f}>{f.split("/").pop()}</button>
@@ -72,6 +74,6 @@ export default function AutoPort(props: { onClose: () => void; onOpen: (path: st
           <p className="hint">The overlay lives in .joyride/patches/{t.name}/ and is merged into a copy at build time. Your source is not changed.</p>
         </>
       )}
-    </section>
+    </Panel>
   );
 }

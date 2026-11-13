@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { exportInfo, exportProject, type ExportInfo } from "../lib/backend";
+import Panel from "./Panel";
 
 /** Export Center: builds into the project's build/ folder. Web, Android and iOS need downloaded templates and come later. */
 export default function ExportPanel(props: { onClose: () => void }) {
@@ -30,12 +31,7 @@ export default function ExportPanel(props: { onClose: () => void }) {
   };
 
   return (
-    <section className="export" aria-label="Export" onKeyDown={(e) => e.key === "Escape" && props.onClose()}>
-      <header>
-        <strong>Export</strong>
-        {info && <span> · LÖVE {info.loveVersion}</span>}
-        <button onClick={props.onClose} aria-label="Close export">×</button>
-      </header>
+    <Panel title={info ? `Export, LÖVE ${info.loveVersion}` : "Export"} kind="panel-export" onClose={props.onClose}>
       {info?.variantOffered && (
         <label>
           <input type="checkbox" checked={variant} onChange={(e) => setVariant(e.target.checked)} /> Build the LÖVE 11.5 variant
@@ -57,7 +53,7 @@ export default function ExportPanel(props: { onClose: () => void }) {
           <p className="hint">Tick an unsupported function to build anyway, when the game guards it.</p>
         </fieldset>
       )}
-      <div className="export-buttons">
+      <div className="row-buttons">
         <button disabled={busy !== null || (info?.variantOffered && variant)} onClick={() => void build("love")} title="A .love file for desktop LÖVE">
           {busy === "love" ? "Building…" : ".love file"}
         </button>
@@ -67,7 +63,7 @@ export default function ExportPanel(props: { onClose: () => void }) {
       </div>
       {info?.variantOffered && !variant && <p className="hint">PortMaster only has LÖVE 11.5: tick the variant to export this 12.0 project for it.</p>}
       {done && <p role="status">Built {done}</p>}
-      {err && <pre role="alert" className="export-error">{err}</pre>}
-    </section>
+      {err && <pre role="alert" className="panel-error">{err}</pre>}
+    </Panel>
   );
 }

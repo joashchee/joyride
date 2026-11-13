@@ -9,6 +9,7 @@ import Libraries from "./components/Libraries";
 import Docs from "./components/Docs";
 import AutoPort from "./components/AutoPort";
 import GitHub from "./components/GitHub";
+import Settings from "./components/Settings";
 import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
@@ -40,6 +41,7 @@ export default function App() {
   const [docsKey, setDocsKey] = useState(0);
   const [libsOpen, setLibsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [findKey, setFindKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [asking, setAsking] = useState<null | { kind: "file" | "dir" | "rename"; label: string; initial: string }>(null);
@@ -113,8 +115,9 @@ export default function App() {
         if (cancelled) return;
         setInfo(i);
         setStep(1);
+        // A text-mode screen just redraws: no fade, the splash is gone at once.
         setLeaving(true);
-        setTimeout(() => !cancelled && setGone(true), 220);
+        setGone(true);
       })
       .catch((e) => !cancelled && setError(`JoyrIDE could not start.\n${String(e)}`));
     return () => {
@@ -311,23 +314,26 @@ export default function App() {
         <Splash label={STEPS[step]} progress={step / (STEPS.length - 1)} error={error} leaving={leaving} />
       )}
       <main className="shell" aria-label="JoyrIDE">
-        <div className="toolbar">
+        <div className="menubar" role="toolbar" aria-label="Main">
           <button onClick={openFolder}>Open Folder…</button>
-          <button onClick={run} disabled={!project || running} title="Run (⌘R)">Run</button>
-          <button onClick={stop} disabled={!running} title="Stop (⌘.)">Stop</button>
-          <button onClick={() => setDocsOpen((x) => !x)} aria-expanded={docsOpen} title="LÖVE reference (⌘⇧D)">Reference…</button>
+          <button onClick={run} disabled={!project || running} title="Run (Cmd+R)">Run</button>
+          <button onClick={stop} disabled={!running} title="Stop (Cmd+.)">Stop</button>
+          <button onClick={() => setDocsOpen((x) => !x)} aria-expanded={docsOpen} title="LÖVE reference (Cmd+Shift+D)">Reference…</button>
           <button onClick={() => setLibsOpen((x) => !x)} disabled={!project} aria-expanded={libsOpen}>Libraries…</button>
           <button onClick={() => setGhOpen((x) => !x)} disabled={!project} aria-expanded={ghOpen}>GitHub…</button>
           <button onClick={() => setPortOpen((x) => !x)} disabled={!project} aria-expanded={portOpen}>Auto-Port…</button>
           <button onClick={() => setExporting((x) => !x)} disabled={!project} aria-expanded={exporting}>Export…</button>
+          <button onClick={() => setSettingsOpen((x) => !x)} aria-expanded={settingsOpen}>Settings…</button>
           <span className="project-name">{project?.name ?? "No project open"}</span>
         </div>
+        {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
         {docsOpen && <Docs onClose={() => setDocsOpen(false)} focusKey={docsKey} />}
         {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {ghOpen && project && <GitHub onClose={() => setGhOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} onOpen={(f, l) => void openAt(f, l)} />}
         {portOpen && project && <AutoPort onClose={() => setPortOpen(false)} onOpen={(f, l) => void openAt(f, l)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {exporting && project && <ExportPanel onClose={() => setExporting(false)} />}
         <div className="workspace">
+          <div className="sidebar-wrap">
           <nav className="sidebar" aria-label="Explorer">
             {project ? (
               <>
@@ -345,13 +351,14 @@ export default function App() {
               <p className="empty">Open a folder with a LÖVE project.</p>
             )}
           </nav>
+          </div>
           <section className="main" aria-label="Editor">
             <div className="tabs" role="tablist" aria-label="Open files">
               {tabs.map((t) => (
                 <span key={t} className={"tab" + (t === active ? " active" : "")}>
                   <button role="tab" aria-selected={t === active} onClick={() => setActive(t)}>
                     {t.split("/").pop()}
-                    {dirty.has(t) ? " ●" : ""}
+                    {dirty.has(t) ? " •" : ""}
                   </button>
                   <button aria-label={`Close ${t}`} className="tab-close" onClick={() => closeTab(t)}>
                     ×
@@ -365,7 +372,7 @@ export default function App() {
               )}
             </Suspense>
             <Console lines={lines} running={running} onClear={() => setLines([])} onOpen={openAt} />
-            {active === null && <p className="empty">Pick a file to edit. Save with ⌘S or Ctrl+S.</p>}
+            {active === null && <p className="empty">Pick a file to edit. Save with Cmd+S or Ctrl+S.</p>}
           </section>
         </div>
         <footer className="statusbar" role="status">

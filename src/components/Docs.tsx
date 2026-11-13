@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { docsGet, docsSearch, type DocFound } from "../lib/backend";
+import Panel from "./Panel";
 
 /** The offline LÖVE reference: search by name (fuzzy), read the signatures and description. */
 export default function Docs(props: { onClose: () => void; focusKey: number }) {
@@ -34,14 +35,11 @@ export default function Docs(props: { onClose: () => void; focusKey: number }) {
   }, [open]);
 
   return (
-    <section className="docs" aria-label="LÖVE reference" onKeyDown={(e) => e.key === "Escape" && props.onClose()}>
-      <header>
-        <strong>LÖVE reference</strong>
-        {version && <span className="lib-meta"> {version}</span>}
+    <Panel title={version ? `LÖVE reference ${version}` : "LÖVE reference"} kind="panel-docs" onClose={props.onClose}>
+      <div className="panel-bar">
         <input key={props.focusKey} aria-label="Search the LÖVE reference" placeholder="Search, e.g. draw or newImage" value={q} onChange={(e) => setQ(e.target.value)} spellCheck={false} autoFocus />
-        <button onClick={props.onClose} aria-label="Close reference">×</button>
-      </header>
-      {err && <pre role="alert" className="export-error">{err}</pre>}
+      </div>
+      {err && <pre role="alert" className="panel-error">{err}</pre>}
       <div className="docs-body">
         <ul aria-label="Results">
           {results.map((r) => (
@@ -64,7 +62,7 @@ export default function Docs(props: { onClose: () => void; focusKey: number }) {
           </article>
         )}
       </div>
-      {q.trim() && results.length === 0 && !err && <p className="empty">Nothing matches.</p>}
-    </section>
+      {q.trim() && results.length === 0 && !err && <p className="hint">Nothing matches.</p>}
+    </Panel>
   );
 }

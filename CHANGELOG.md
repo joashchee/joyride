@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **Text-mode UI only** (2026-11-13): the whole interface follows the ANSIapps theme
+  (IBM VGA 8x16 on an 8 by 16 grid, blue desktop, light-gray menu bar, double-line frames,
+  flat one-row buttons, a black DOS console); there is no graphical theme and no switch for
+  one. The appearance options are colours only, in Settings: the palette, **True colour** (default)
+  or **16-colour (DOS mode)**, and in True colour a **theme swatch**: Classic blue, Dark,
+  Light, Solarized dark and light, Amber and Green phosphor (each contrast-checked by
+  `scripts/check-swatches.ts`). The editor has the block cursor and the VGA font in all.
+  `docs/text-mode-ui.md`.
+
 - **GitHub via `gh`** (2026-11-13): a GitHub panel (status, commit, push, pull, create repo,
   release workflow) over the `gh` and `git` command lines; no token of ours.
 - **Auto-Port panel** (2026-11-13): findings per target, generate or refresh the overlay,
