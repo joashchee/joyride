@@ -4,7 +4,7 @@ Progress and next phases, in the order to do them. Update it in the same
 commit as the work. The design is `docs/JoyrIDE_LÖVE-Implementation-Spec.md`
 (section 6 is the milestone order); this file is the checklist.
 
-Last reviewed: 2026-11-13 (core logic built; shell scaffolded, Monaco next, see section 1).
+Last reviewed: 2026-11-13 (core logic built; shell and Monaco built, project folder next, see section 1).
 
 ## 0. Repository
 
@@ -15,13 +15,15 @@ Last reviewed: 2026-11-13 (core logic built; shell scaffolded, Monaco next, see 
 
 ## 1. Scaffold, toolchain manager, core editor (spec milestone 1)
 
-The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`); the shell now exists (npm is reachable when `registry.npmjs.org` is allowed for the command; use `--cache $TMPDIR/npm-cache`, since `~/.npm` has root-owned files). Next: Monaco, then wrap the crates in `src-tauri` commands.
+The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`); the shell and editor now exist (npm is reachable when `registry.npmjs.org` is allowed for the command; use `--cache $TMPDIR/npm-cache`, since `~/.npm` has root-owned files). Next: project folder and file tree, then wrap the crates in `src-tauri` commands.
 
 - [x] Tauri 2 + React + Vite scaffold with splash and fast start (CLAUDE.md rule 7), 2026-11-13: static splash in `index.html`, `components/Splash.tsx` (progress, error shown on it), `src-tauri` with a `core_info` command over the core crates; `npm run build` and `cargo build --offline` pass. **Not yet run as a window** (`npm run tauri dev`), icons are a placeholder PNG set (no `.icns`/`.ico`: run `tauri icon` on real art before the release build), no `lsp_bridge`, Monaco or menus yet. Spec 1.
 - [x] Toolchain core (`joyride-core/src/toolchain.rs`): LÖVE version rules (11.5, 12.0+), `.luarc.json` generation per version, **signed toolchain manifest** (Ed25519, refused if unsigned or altered) and download checking (size + BLAKE3).
 - [ ] Toolchain downloads and `tauri-plugin-updater`: fetching the manifest from GitHub, the pinned public key, installing into the app-data dir. Needs network and a signing key; the maintainer generates the key.
 - [ ] Bundle LÖVE 11.5 binaries, `lua-language-server`, `luacheck`, `stylua`, the 11.5 `love-api` and LuaCATS types in `src-tauri/resources` (NOTICE lists licences). Needs downloads.
-- [ ] Monaco editor and `lsp_bridge.rs` (spawn `lua-language-server`, JSON-RPC over the Tauri channel). Blocked on npm; `.luarc.json` side is done.
+- [x] **Monaco editor** (2026-11-13, `src/components/Editor.tsx`, `src/monaco-setup.ts`): `monaco-editor` 0.57 (MIT), bundled with its own worker (no CDN), Lua highlighting only (the CSS/HTML/JSON/TypeScript services and their 7 MB worker are left out), loaded after the splash so the first screen stays 224 kB. Follows the system light/dark theme. **Not run in a window yet.**
+- [ ] `lsp_bridge.rs`: spawn `lua-language-server`, JSON-RPC over the Tauri channel into Monaco (0.57 ships `monaco-lsp-client`, try it first). Needs the binary; the `.luarc.json` side is done.
+- [ ] Open a project folder: file tree, tabs, save (Tauri commands over `joyride-core`), then Run.
 - [ ] `docs/platform-parity.md` started.
 
 ## 2. Runner and console (milestone 2)

@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import Splash from "./components/Splash";
+import { STARTER } from "./starter.lua";
 import { coreInfo, type CoreInfo } from "./lib/backend";
+
+// Monaco loads after the splash has gone, so the first screen never waits on it.
+const Editor = lazy(() => import("./components/Editor"));
 
 // What the first screen needs, in order. Heavy things (Monaco, the language
 // server, toolchain checks) load after the editor is usable, not here.
@@ -40,8 +44,10 @@ export default function App() {
         />
       )}
       <main className="shell" aria-label="JoyrIDE">
-        <h1>JoyrIDE</h1>
-        <p>Core {info?.version ?? "…"}. The editor arrives next.</p>
+        <Suspense fallback={<p className="editor-loading" role="status">Loading the editor…</p>}>
+          {gone && <Editor value={STARTER} />}
+        </Suspense>
+        <footer className="statusbar">Core {info?.version ?? "…"}</footer>
       </main>
     </>
   );

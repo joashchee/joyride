@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Monaco editor** (2026-11-13): bundled `monaco-editor` 0.57, Lua only, own
+  worker, lazy-loaded after the splash. No network use.
 - **App shell scaffold** (2026-11-13): Tauri 2 + React 19 + Vite 8 + TypeScript.
   Static splash in `index.html` that paints first, a React `Splash` with
   progress and load errors, `src-tauri` over `joyride-core` and `asset-core`
