@@ -73,3 +73,13 @@ button:disabled { opacity: 0.5; }
 .libraries li { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; padding: 4px 0; border-top: 1px solid var(--line); }
 .lib-meta { color: var(--muted); font-size: 12px; }
 .lib-broken { color: #d33; }
+
+.docs { padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 13px; max-height: 45vh; display: flex; flex-direction: column; gap: 6px; }
+.docs header { display: flex; align-items: center; gap: 8px; }
+.docs header input { flex: 1; font: inherit; padding: 2px 4px; }
+.docs-body { display: flex; gap: 12px; min-height: 0; flex: 1; }
+.docs-body ul { list-style: none; margin: 0; padding: 0; width: 40%; overflow: auto; }
+.docs-body li button { display: block; width: 100%; text-align: left; background: none; border: 0; color: inherit; font: inherit; padding: 2px 4px; cursor: pointer; }
+.docs-body li button:hover, .docs-body li button.active { background: color-mix(in srgb, var(--fg) 10%, transparent); }
+.docs-body article { flex: 1; overflow: auto; }
+.docs-text { white-space: pre-wrap; font: inherit; margin: 0 0 8px; }

@@ -73,6 +73,14 @@ export const libraryList = (query: string) => invoke<LibraryView[]>("library_lis
 export const libraryAdd = (name: string, query: string) => invoke<LibraryView[]>("library_add", { name, query });
 export const libraryRemove = (name: string, query: string) => invoke<LibraryView[]>("library_remove", { name, query });
 
+export interface DocFound {
+  name: string;
+  kind: string;
+  summary: string;
+}
+export const docsSearch = (query: string) => invoke<{ version: string; results: DocFound[] }>("docs_search", { query });
+export const docsGet = (name: string) => invoke<{ text: string; snippet: string | null } | null>("docs_get", { name });
+
 export interface RunLine {
   stream: "out" | "err";
   text: string;

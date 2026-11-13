@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **LÖVE reference** (2026-11-13): searchable offline docs (⌘⇧D) built from the LÖVE types
+  bundled with the language server (`Docs::from_luacats`).
 - **Library manager** (2026-11-13): add or remove curated libraries from a Libraries
   panel; installs at the pinned commit and writes `love.toml` and `love.lock`.
 - **Export panel** (2026-11-13): `.love` and PortMaster zip (with the 11.5 variant of a

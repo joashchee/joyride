@@ -15,7 +15,7 @@ Last reviewed: 2026-11-13 (core logic built; shell, Monaco, project files and th
 
 ## 1. Scaffold, toolchain manager, core editor (spec milestone 1)
 
-The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`); the shell and editor now exist (npm is reachable when `registry.npmjs.org` is allowed for the command; use `--cache $TMPDIR/npm-cache`, since `~/.npm` has root-owned files). Next: Trash for delete, GitHub sign-in, the toolchain download and updater (needs your key), then wrap more of the crates in `src-tauri` commands.
+The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`); the shell and editor now exist (npm is reachable when `registry.npmjs.org` is allowed for the command; use `--cache $TMPDIR/npm-cache`, since `~/.npm` has root-owned files). Next: Trash for delete, the toolchain download and updater (needs your key), then wrap more of the crates in `src-tauri` commands.
 
 - [x] Tauri 2 + React + Vite scaffold with splash and fast start (CLAUDE.md rule 7), 2026-11-13: static splash in `index.html`, `components/Splash.tsx` (progress, error shown on it), `src-tauri` with a `core_info` command over the core crates; `npm run build` and `cargo build --offline` pass. **Run as a window by the maintainer (`npm run tauri dev`, 2026-11-13): runs well, nothing noticed broken**; icons are original art (2026-11-13: `scripts/build-icons.ts` draws a joystick with no dependencies, `tauri icon` makes the `.icns`, `.ico` and PNGs; replace with designed art if wanted), no `lsp_bridge`, Monaco or menus yet. Spec 1.
 - [x] Toolchain core (`joyride-core/src/toolchain.rs`): LÖVE version rules (11.5, 12.0+), `.luarc.json` generation per version, **signed toolchain manifest** (Ed25519, refused if unsigned or altered) and download checking (size + BLAKE3).
@@ -42,7 +42,7 @@ The Tauri-free logic is built and tested in `joyride-core/` (and `asset-core/`);
 - [x] Colour swatch data (`editor.rs`): `setColor`/`setBackgroundColor` literals with ranges, and writing a colour back.
 - [x] Asset hover data (`editor.rs`): image/audio path strings, safe resolution inside the project, PNG/GIF/JPEG sizes.
 - [x] Docs search, snippets and hover with version badges (`docs.rs`) over the `love-api` JSON schema.
-- [ ] Bundle `love-api-11.5.json` and sync 12.0+ (needs the download); `DocsDrawer` UI and Monaco providers (frontend).
+- [x] **Docs drawer** (2026-11-13): `Docs::from_luacats` builds the reference from the LuaCATS types bundled in the language server (functions with overloads, callbacks, types, methods, enums; 827+ entries, tested on the real files), so the docs and the completions share one source. `docs_search`/`docs_get` commands (built once, off the UI thread), a Reference panel (⌘⇧D) with fuzzy search, signatures, description and a snippet. **Not yet tried in a window.** **Licence to confirm (yours):** `love2d-community/love-api` has no `LICENSE` file and its README states none, so its JSON was not vendored; the LuaCATS copy ships inside the MIT language server, but `NOTICE` says "love-api and LuaCATS definitions, MIT" and that is not stated upstream. Still to do: 12.0 docs (no 12.0 source yet), "Added in"/"Deprecated in" badges (LuaCATS has no `since`; the lint tables have the 11.5/12.0 differences), inserting a snippet into the editor.
 - [ ] Run `luacheck` and `stylua` from the app (needs the binaries).
 
 ## 4. Package manager and GitHub (milestone 4)

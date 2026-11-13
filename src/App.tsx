@@ -6,6 +6,7 @@ import NameBox from "./components/NameBox";
 import Search from "./components/Search";
 import ExportPanel from "./components/ExportPanel";
 import Libraries from "./components/Libraries";
+import Docs from "./components/Docs";
 import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, runProject, stopProject, writeFile, type CoreInfo, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
@@ -31,6 +32,8 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [lines, setLines] = useState<RunLine[]>([]);
   const [running, setRunning] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
+  const [docsKey, setDocsKey] = useState(0);
   const [libsOpen, setLibsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [findKey, setFindKey] = useState(0);
@@ -261,7 +264,11 @@ export default function App() {
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
       if (!(e.metaKey || e.ctrlKey)) return;
-      if (e.shiftKey && e.key.toLowerCase() === "f" && project) {
+      if (e.shiftKey && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        setDocsOpen(true);
+        setDocsKey((k) => k + 1);
+      } else if (e.shiftKey && e.key.toLowerCase() === "f" && project) {
         e.preventDefault();
         setFindKey((k) => k + 1);
       } else if (e.key === "r") {
@@ -304,10 +311,12 @@ export default function App() {
           <button onClick={openFolder}>Open Folder…</button>
           <button onClick={run} disabled={!project || running} title="Run (⌘R)">Run</button>
           <button onClick={stop} disabled={!running} title="Stop (⌘.)">Stop</button>
+          <button onClick={() => setDocsOpen((x) => !x)} aria-expanded={docsOpen} title="LÖVE reference (⌘⇧D)">Reference…</button>
           <button onClick={() => setLibsOpen((x) => !x)} disabled={!project} aria-expanded={libsOpen}>Libraries…</button>
           <button onClick={() => setExporting((x) => !x)} disabled={!project} aria-expanded={exporting}>Export…</button>
           <span className="project-name">{project?.name ?? "No project open"}</span>
         </div>
+        {docsOpen && <Docs onClose={() => setDocsOpen(false)} focusKey={docsKey} />}
         {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {exporting && project && <ExportPanel onClose={() => setExporting(false)} />}
         <div className="workspace">
