@@ -1,4 +1,4 @@
-# Where `cargo run --example curate_games` looks for LÖVE games and apps.
+# Where `cargo run --manifest-path joyride-core/Cargo.toml --example curate_games` looks for LÖVE games and apps.
 # Each seed is a GitHub repository (read through `gh api`, no credentials of
 # ours). `kind` is "game" or "app". Not verified until the tool has run with
 # network access; the tool records what GitHub says, never what is written here.
