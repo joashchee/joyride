@@ -7,6 +7,7 @@ use serde::Serialize;
 mod autoport;
 mod docs;
 mod export;
+mod games;
 mod github;
 mod libs;
 mod lsp;
@@ -76,6 +77,8 @@ pub fn run() {
             github::open_github_url,
             docs::docs_search,
             docs::docs_get,
+            games::games_search,
+            games::games_open_url,
             libs::library_list,
             libs::library_add,
             libs::library_remove,

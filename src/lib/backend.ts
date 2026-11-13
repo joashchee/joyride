@@ -282,3 +282,41 @@ export interface FontAddRequest {
   attribution: string;
 }
 export const fontAdd = (request: FontAddRequest) => invoke<{ dest: string; alreadyInLibrary: boolean }>("font_add", { request });
+
+export interface GameLink {
+  kind: string;
+  url: string;
+}
+export interface GameDownload {
+  url: string;
+  platform: string;
+  version: string | null;
+  date: string | null;
+  size: number | null;
+}
+export interface GameView {
+  id: string;
+  name: string;
+  kind: "game" | "app";
+  summary: string;
+  authors: string[];
+  tags: string[];
+  licence: string;
+  licenceFrom: string | null;
+  licenceConfirmed: boolean;
+  openSource: boolean;
+  latest: string | null;
+  loveVersion: string | null;
+  archived: boolean;
+  checked: string | null;
+  sources: GameLink[];
+  downloads: GameDownload[];
+}
+export interface GamesResult {
+  games: GameView[];
+  total: number;
+  generated: string;
+}
+export const gamesSearch = (query: string, kind: string, platform: string, openSource: boolean, includeArchived: boolean) =>
+  invoke<GamesResult>("games_search", { query, kind, platform, openSource, includeArchived });
+export const gamesOpenUrl = (url: string) => invoke<void>("games_open_url", { url });
