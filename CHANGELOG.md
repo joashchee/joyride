@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **LÖVE games and apps catalogue, first part** (2026-11-14): a second library for what has been made with LÖVE: where to download, licence, latest version. Entries from several places are de-duplicated and the newest version kept; same-name games by different authors stay apart. The data model, search and GitHub reader are written and tested; the catalogue is empty until the fetcher is run with network access, and there is no panel yet. `docs/love-games-library.md`.
 - **Insert from the Reference** (2026-11-14): the LÖVE reference panel has an Insert button that puts a function's snippet at the cursor, with Tab moving between the placeholders.
 - **Compressed textures and EXR checked on the real LÖVE** (2026-11-13): DDS, KTX, PKM, PVR, ASTC and scanline EXR files load on LÖVE 11.5 and 12.0; a tiled EXR crashes both, so the preview warns about it.
 - **Bitmap fonts are drawn** (2026-11-13): BDF, PSF and BMFont (`.fnt` with its page pictures) show a sample in the preview, with the font's name, glyph count and cell size; PCF and Type 1 are named.

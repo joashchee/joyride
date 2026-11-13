@@ -1,0 +1,14 @@
+# Where `cargo run --example curate_games` looks for LÖVE games and apps.
+# Each seed is a GitHub repository (read through `gh api`, no credentials of
+# ours). `kind` is "game" or "app". Not verified until the tool has run with
+# network access; the tool records what GitHub says, never what is written here.
+# More sources (itch.io, the LÖVE forums, PortMaster-New's LÖVE ports) come later:
+# see docs/love-games-library.md.
+
+[[seed]]
+repo = "Stabyourself/mari0"
+kind = "game"
+
+[[seed]]
+repo = "SimonLarsen/mrrescue"
+kind = "game"

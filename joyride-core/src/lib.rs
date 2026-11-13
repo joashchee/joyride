@@ -33,6 +33,7 @@ pub mod export;
 pub mod files;
 pub mod format;
 pub mod github;
+pub mod games;
 pub mod library;
 pub mod lint;
 pub mod lsp;

@@ -131,3 +131,14 @@ Tracks every usable asset with its licence, category, tags and preview, makes li
 
 - [ ] First signed, notarized universal build with `scripts/build-release.sh`.
 - [x] Third-party licence file (`scripts/third-party-licenses.py` → `docs/third-party-licenses.txt`, 229 distinct texts for every crate, the vendored engines' notices and `NOTICE`) and the licence scan (`scripts/license-scan.py`: no copyleft-only dependency) run in CI; `--check` fails when the committed file is stale. Ship it in the app (About) with the shell; `build-release.sh` should run it before a release build.
+
+## 9. LÖVE games and apps library (`docs/love-games-library.md`)
+
+A catalogue of LÖVE games and apps: where to download, licence, latest version, de-duplicated across sources.
+
+- [x] **Data model and rules** (2026-11-14, `joyride-core/src/games.rs`, 9 tests): entries with sources, downloads, licence, latest; de-duplication by shared page, shared download (URL or BLAKE3) or same name and author, same-name look-alikes kept apart; newest version kept; search with kind, platform and licence filters; `from_github` over GitHub's JSON. TOML round trip.
+- [ ] **Run `cargo run --example curate_games`** (`examples/curate_games.rs`, builds; reads `data/game-seeds.toml` through `gh api`): not run, the sandbox cannot reach GitHub with `gh`. Then check the licences it found and the seeds (2 so far, from memory).
+- [ ] More sources: GitHub topic `love2d`, PortMaster-New's LÖVE ports, itch.io (needs the person's API key), the forums showcase and awesome-love2d. Each goes through `Catalogue::add`.
+- [ ] Panel in the app (a Games library next to Libraries: search, filters, licence badge, Download opens the page or file in the browser, "Open source" filter), and Tauri commands over `Catalogue`. Also a refresh button that runs the fetcher on request.
+- [ ] Hash the downloads on request (BLAKE3 once fetched) so mirrors dedupe by content; a person confirming a licence.
+
