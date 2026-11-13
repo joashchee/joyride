@@ -72,13 +72,23 @@ export interface Hit {
 export const searchProject = (query: string, caseSensitive: boolean) =>
   invoke<{ hits: Hit[]; truncated: boolean }>("search_project", { query, caseSensitive });
 
+export interface UseRow {
+  api: string;
+  support: "exact" | "reduced" | "unsupported";
+  note: string;
+  file: string;
+  line: number;
+  count: number;
+}
 export interface ExportInfo {
   loveVersion: string;
   variantOffered: boolean;
+  uses: UseRow[];
+  accepted: string[];
 }
 export const exportInfo = () => invoke<ExportInfo>("export_info");
-export const exportProject = (kind: "love" | "portmaster", variant: boolean) =>
-  invoke<string>("export_project", { kind, variant });
+export const exportProject = (kind: "love" | "portmaster", variant: boolean, accept: string[]) =>
+  invoke<string>("export_project", { kind, variant, accept });
 
 export interface LibraryView {
   name: string;

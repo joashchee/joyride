@@ -83,3 +83,7 @@ button:disabled { opacity: 0.5; }
 .docs-body li button:hover, .docs-body li button.active { background: color-mix(in srgb, var(--fg) 10%, transparent); }
 .docs-body article { flex: 1; overflow: auto; }
 .docs-text { white-space: pre-wrap; font: inherit; margin: 0 0 8px; }
+
+.variant-uses { display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--line); padding: 6px 8px; max-height: 22vh; overflow: auto; }
+.variant-uses label { display: block; }
+.use-unsupported code { color: #d33; }

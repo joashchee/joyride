@@ -5,12 +5,15 @@ import { exportInfo, exportProject, type ExportInfo } from "../lib/backend";
 export default function ExportPanel(props: { onClose: () => void }) {
   const [info, setInfo] = useState<ExportInfo | null>(null);
   const [variant, setVariant] = useState(false);
+  const [accept, setAccept] = useState<string[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    exportInfo().then(setInfo).catch((e) => setErr(String(e)));
+    exportInfo()
+      .then((i) => (setInfo(i), setAccept(i.accepted)))
+      .catch((e) => setErr(String(e)));
   }, []);
 
   const build = async (kind: "love" | "portmaster") => {
@@ -18,7 +21,7 @@ export default function ExportPanel(props: { onClose: () => void }) {
     setDone(null);
     setErr(null);
     try {
-      setDone(await exportProject(kind, variant));
+      setDone(await exportProject(kind, variant, accept));
     } catch (e) {
       setErr(String(e));
     } finally {
@@ -37,6 +40,22 @@ export default function ExportPanel(props: { onClose: () => void }) {
         <label>
           <input type="checkbox" checked={variant} onChange={(e) => setVariant(e.target.checked)} /> Build the LÖVE 11.5 variant
         </label>
+      )}
+      {info?.variantOffered && variant && info.uses.length > 0 && (
+        <fieldset className="variant-uses">
+          <legend>12.0 functions this game uses</legend>
+          {info.uses.map((u) => (
+            <label key={u.api} className={"use-" + u.support}>
+              {u.support === "unsupported" ? (
+                <input type="checkbox" checked={accept.includes(u.api)} onChange={(e) => setAccept((a) => (e.target.checked ? [...a, u.api] : a.filter((x) => x !== u.api)))} aria-label={`Accept ${u.api} without an 11.5 equivalent`} />
+              ) : (
+                <span aria-hidden="true">✓</span>
+              )}{" "}
+              <code>{u.api}</code> <span className="lib-meta">{u.support}: {u.note} · {u.file}:{u.line}{u.count > 1 ? ` (+${u.count - 1})` : ""}</span>
+            </label>
+          ))}
+          <p className="hint">Tick an unsupported function to build anyway, when the game guards it.</p>
+        </fieldset>
       )}
       <div className="export-buttons">
         <button disabled={busy !== null || (info?.variantOffered && variant)} onClick={() => void build("love")} title="A .love file for desktop LÖVE">
