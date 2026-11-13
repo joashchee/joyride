@@ -203,6 +203,14 @@ pub fn find_nttplay(tools: Option<&Path>) -> Option<PathBuf> {
 pub fn build(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, String> {
     let mut p = build_inner(root, rel, nttplay)?;
     add_love_fact(&mut p);
+    // Measured on the real LÖVE 11.5 and 12.0: a tiled OpenEXR aborts the whole game (no error to catch).
+    if rel.to_ascii_lowercase().ends_with(".exr") {
+        if let Ok(h) = files::resolve(root, rel).and_then(|f| read_head(&f, 8).map_err(Into::into)) {
+            if h.starts_with(b"v/1\x01") && h.get(5).is_some_and(|b| b & 0x02 != 0) {
+                p.facts.push(fact("Warning", "this EXR is tiled, and LÖVE 11.5 and 12.0 crash on a tiled EXR; save it as scanlines (not tiled)"));
+            }
+        }
+    }
     Ok(p)
 }
 
@@ -955,13 +963,15 @@ mod tests {
         let mut qoi = Vec::new();
         image::codecs::qoi::QoiEncoder::new(&mut qoi).write_image(rgba.as_raw(), 4, 4, image::ExtendedColorType::Rgba8).unwrap();
         std::fs::write(d.path().join("sprite.qoi"), &qoi).unwrap();
-        for (name, love) in [("sky.hdr", "yes, on LÖVE 11.5 and 12.0 (checked)"), ("light.exr", "yes, on LÖVE 11.5 and 12.0 (not tried"), ("sprite.qoi", "LÖVE 12.0 only (checked)")] {
+        for (name, love) in [("sky.hdr", "yes, on LÖVE 11.5 and 12.0 (checked)"), ("light.exr", "yes, on LÖVE 11.5 and 12.0 (checked)"), ("sprite.qoi", "LÖVE 12.0 only (checked)")] {
             let p = build(d.path(), name, None).unwrap();
             assert_eq!(p.kind, "image", "{name}");
             assert!(matches!(p.body, Body::Image { .. }), "{name}");
             assert!(fact_of(&p, "Picture").unwrap().starts_with("4 x 4"), "{name}");
             assert!(fact_of(&p, "In LÖVE").unwrap().starts_with(love), "{name}: {:?}", fact_of(&p, "In LÖVE"));
         }
+        // The `image` crate writes a tiled EXR, which aborts the real LÖVE.
+        assert!(fact_of(&build(d.path(), "light.exr", None).unwrap(), "Warning").unwrap().contains("tiled"));
     }
 
     #[test]

@@ -37,7 +37,9 @@ are refused** (they were "not measured").
 | TGA, HDR | loads | loads | measured |
 | QOI | refused | **loads** | measured, real file |
 | WebP | refused | **loads** | measured, real file |
-| EXR, DDS, KTX, PKM, PVR, ASTC | handler in the binary | handler in the binary | not tried with a file (`love.image.newCompressedData`) |
+| DDS (BC1, BC3, BC7), KTX 1 (ETC2), PKM (ETC1), PVR 3 (PVRTC), ASTC 4x4 | loads | loads | measured 2026-11-13 with hand-built one-block files through `love.image.newCompressedData` (headers only; no GPU, so whether a device can *draw* the format is not tested) |
+| EXR, scanline (half or float, raw or RLE) | loads | loads | measured with hand-built files |
+| EXR, **tiled** | **aborts the game** | **aborts the game** | measured: `newImageData` on a tiled file (the Rust `image` crate writes these) kills LÖVE with SIGABRT, uncatchable by `pcall`; the preview warns |
 | GIF, PSD, PCX, ICO, TIFF, PPM, PGM | refused | refused | measured |
 | WAV, FLAC, MP3, Ogg Vorbis | loads | loads | measured |
 | Opus, AIFF, WMA, WavPack | refused | refused | measured |

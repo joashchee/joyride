@@ -126,7 +126,9 @@ pub fn love_support(path: &Path) -> LoveSupport {
         "png" | "jpg" | "jpeg" | "bmp" => Loads { measured: false },
         "tga" | "hdr" => Loads { measured: true },
         "qoi" | "webp" => Only12 { measured: true },
-        "exr" | "dds" | "ktx" | "pkm" | "pvr" | "astc" => Loads { measured: false },
+        // Measured with hand-made files (scripts/love-asset-formats.py): BC1, BC3, BC7, ETC1, ETC2, PVRTC and ASTC 4x4 containers
+        // load, and an untiled EXR (half or float, raw or RLE). A tiled EXR aborts LÖVE.
+        "exr" | "dds" | "ktx" | "pkm" | "pvr" | "astc" => Loads { measured: true },
         "gif" => Refused("LÖVE refuses GIF; convert it to PNG, or to a sprite sheet"),
         "psd" | "ppm" | "pgm" | "pbm" | "pnm" | "pcx" | "ico" | "tif" | "tiff" => Refused("LÖVE does not decode this picture format; convert it to PNG"),
         "wav" | "ogg" | "oga" | "mp3" | "flac" => Loads { measured: ext != "oga" },

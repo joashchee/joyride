@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Compressed textures and EXR checked on the real LÖVE** (2026-11-13): DDS, KTX, PKM, PVR, ASTC and scanline EXR files load on LÖVE 11.5 and 12.0; a tiled EXR crashes both, so the preview warns about it.
 - **Bitmap fonts are drawn** (2026-11-13): BDF, PSF and BMFont (`.fnt` with its page pictures) show a sample in the preview, with the font's name, glyph count and cell size; PCF and Type 1 are named.
 - **Music written as text plays** (2026-11-13): clicking an ABC, MusicXML, RTTTL, Alda, kern or similar file plays it in the preview, with an Edit button to open it in the editor.
 - **Warnings for files LÖVE cannot use** (2026-11-13): a file the project's LÖVE version refuses (a GIF, MP4, WebM, WOFF2, BDF; a QOI or WebP on 11.5) is marked `!` in the file tree, printed as a warning in the Console when you Run, and listed in the Export panel. Nothing is blocked.
