@@ -287,7 +287,7 @@ function OgvPlayer(props: { path: string; width: number; height: number; poster:
   );
 }
 
-function FontSample(props: { url: string }) {
+export function FontSample(props: { url: string }) {
   const [family, setFamily] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   useEffect(() => {

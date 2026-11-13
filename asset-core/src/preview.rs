@@ -121,7 +121,7 @@ pub fn jpeg_from_rgba(width: u32, height: u32, rgba: &[u8], quality: u8) -> Resu
     if rgba.len() != width as usize * height as usize * 4 {
         return Err(Error::Other("the pixels do not match the size".into()));
     }
-    let rgb: Vec<u8> = rgba.chunks_exact(4).flat_map(|p| [p[0], p[1], p[2]]).collect();
+    let rgb: Vec<u8> = rgba.as_chunks::<4>().0.iter().flat_map(|p| [p[0], p[1], p[2]]).collect();
     let mut out = Vec::new();
     image::codecs::jpeg::JpegEncoder::new_with_quality(&mut out, quality).encode(&rgb, width, height, image::ExtendedColorType::Rgb8).map_err(|e| Error::Other(e.to_string()))?;
     Ok(out)

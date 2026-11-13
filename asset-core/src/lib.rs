@@ -10,9 +10,11 @@
 //! "usable", until its licence is confirmed; imports never touch or delete
 //! the originals; identical content is stored once.
 
+pub mod add;
 pub mod audio;
 pub mod catalog;
 pub mod dedup;
+pub mod font;
 pub mod generated;
 pub mod import;
 pub mod kind;

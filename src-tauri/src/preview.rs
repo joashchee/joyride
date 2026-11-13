@@ -349,7 +349,15 @@ fn font(p: &mut Preview, path: &Path, mime: &str, size: u64) -> bool {
     }
     let Ok(b) = std::fs::read(path) else { return false };
     p.kind = "font";
-    p.facts.push(fact("Font", mime.trim_start_matches("font/").to_uppercase()));
+    match asset_core::font::probe(&b) {
+        Some(f) => {
+            p.facts.extend(crate::fonts::facts_of(&f));
+            if let Some(g) = f.licence_guess() {
+                p.facts.push(fact("Licence note", g));
+            }
+        }
+        None => p.facts.push(fact("Font", mime.trim_start_matches("font/").to_uppercase())),
+    }
     p.body = Body::Font { data_url: data_url(mime, &b) };
     true
 }

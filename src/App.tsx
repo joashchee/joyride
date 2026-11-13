@@ -3,6 +3,7 @@ import Splash from "./components/Splash";
 import FileTree from "./components/FileTree";
 import Console from "./components/Console";
 import PreviewPane from "./components/Preview";
+import AddFont from "./components/AddFont";
 import NameBox from "./components/NameBox";
 import Search from "./components/Search";
 import ExportPanel from "./components/ExportPanel";
@@ -42,6 +43,7 @@ export default function App() {
   const [docsKey, setDocsKey] = useState(0);
   const [libsOpen, setLibsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [fontOpen, setFontOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [findKey, setFindKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -350,6 +352,7 @@ export default function App() {
           </button>
           <button onClick={() => setDocsOpen((x) => !x)} aria-expanded={docsOpen} title="LÖVE reference (Cmd+Shift+D)">Reference…</button>
           <button onClick={() => setLibsOpen((x) => !x)} disabled={!project} aria-expanded={libsOpen}>Libraries…</button>
+          <button onClick={() => setFontOpen((x) => !x)} disabled={!project} aria-expanded={fontOpen}>Add Font…</button>
           <button onClick={() => setGhOpen((x) => !x)} disabled={!project} aria-expanded={ghOpen}>GitHub…</button>
           <button onClick={() => setPortOpen((x) => !x)} disabled={!project} aria-expanded={portOpen}>Auto-Port…</button>
           <button onClick={() => setExporting((x) => !x)} disabled={!project} aria-expanded={exporting}>Export…</button>
@@ -362,6 +365,17 @@ export default function App() {
         {ghOpen && project && <GitHub onClose={() => setGhOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} onOpen={(f, l) => void openAt(f, l)} />}
         {portOpen && project && <AutoPort onClose={() => setPortOpen(false)} onOpen={(f, l) => void openAt(f, l)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {exporting && project && <ExportPanel onClose={() => setExporting(false)} />}
+        {fontOpen && project && (
+          <AddFont
+            onClose={() => setFontOpen(false)}
+            onAdded={(path) => {
+              setFontOpen(false);
+              void projectListing().then(setProject).catch(fail);
+              setSelected(path);
+              void pickFile(path);
+            }}
+          />
+        )}
         <div className="workspace">
           <div className="sidebar-wrap">
           <nav className="sidebar" aria-label="Explorer">

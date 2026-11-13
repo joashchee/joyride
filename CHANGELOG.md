@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Add Font** (2026-11-13): a toolbar panel that adds a font to the project after you confirm its licence by name. It shows the font's own details and a sample, guesses the licence from the font's note or a licence file beside it, never replaces a file, and records the font and its licence for the project's credits. Font previews show the same details. `docs/love-asset-types.md` lists, from measurements on the real LÖVE, what LÖVE loads that the library does not yet track.
 - **File preview** (2026-11-13): clicking a file that is not text shows it instead of an error: pictures (now also WebP and TIFF), sound, MIDI and tracker music, Theora video, MP4 and WebM, fonts, `.love` and zip members, and a hex dump with the facts for anything else. Chosen by the file's bytes, never edited or written.
 - **`ogv` crate** (2026-11-13): probes and decodes Ogg Theora video to RGBA frames over the vendored libogg and libtheora, for the video preview.
 - **libogg and libtheora vendored** (2026-11-13): `vendor/xiph/`, BSD-3-Clause, the portable C decoder only, pinned by SHA-256, for previewing Ogg Theora video (`.ogv`).

@@ -240,3 +240,36 @@ export async function onRun(
     b();
   };
 }
+
+/** Asks for a font file; null when cancelled (or in a plain browser). */
+export async function chooseFontFile(): Promise<string | null> {
+  if (!inTauri) return null;
+  const { open } = await import("@tauri-apps/plugin-dialog");
+  const r = await open({ multiple: false, title: "Add a font", filters: [{ name: "Fonts", extensions: ["ttf", "otf", "ttc", "woff", "woff2"] }] });
+  return typeof r === "string" ? r : null;
+}
+export interface FontPlan {
+  source: string;
+  fileName: string;
+  facts: PreviewFact[];
+  dataUrl: string | null;
+  guess: { spdx: string; from: string } | null;
+  licenceText: string;
+  licenceUrl: string;
+  designer: string;
+  suggestedDest: string;
+  warnings: string[];
+  alreadyInProject: string | null;
+}
+export const fontInspect = (source: string) => invoke<FontPlan>("font_inspect", { source });
+export interface FontAddRequest {
+  source: string;
+  dest: string;
+  licence: string;
+  confirmedBy: string;
+  note: string;
+  author: string;
+  sourceUrl: string;
+  attribution: string;
+}
+export const fontAdd = (request: FontAddRequest) => invoke<{ dest: string; alreadyInLibrary: boolean }>("font_add", { request });

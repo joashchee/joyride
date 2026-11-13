@@ -371,7 +371,7 @@ label { cursor: pointer; }
 .panel-error { color: var(--r-onerr); background: var(--r-err); padding: 0 8px; box-shadow: var(--shadow-small); }
 
 /* Panel sizes in whole rows, never beyond what the window has. */
-.panel-docs, .panel-autoport, .panel-github { max-height: 304px; max-height: min(304px, round(down, 50vh, 16px)); }
+.panel-docs, .panel-autoport, .panel-github, .panel-font { max-height: 304px; max-height: min(304px, round(down, 50vh, 16px)); }
 .panel-libraries { max-height: 272px; max-height: min(272px, round(down, 45vh, 16px)); }
 .panel-export { max-height: 304px; max-height: min(304px, round(down, 50vh, 16px)); }
 .panel-console { height: 192px; }
@@ -527,3 +527,9 @@ fieldset:disabled .swatch-row { color: var(--r-disabled); cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0s !important; scroll-behavior: auto !important; }
 }
+
+/* Add font: the licence choices stack as rows of buttons. */
+.licence-choices { display: flex; flex-direction: column; }
+.licence-choices button { text-align: left; }
+.licence-choices button.selected { background: var(--r-select); color: var(--r-ink); }
+.panel-font label { margin-top: 16px; }

@@ -11,6 +11,7 @@ mod github;
 mod libs;
 mod lsp;
 mod project;
+mod fonts;
 mod preview;
 mod run;
 
@@ -77,6 +78,8 @@ pub fn run() {
             libs::library_list,
             libs::library_add,
             libs::library_remove,
+            fonts::font_inspect,
+            fonts::font_add,
             preview::preview_file,
             preview::preview_video_frames,
             run::run_project,
