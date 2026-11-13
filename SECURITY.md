@@ -6,8 +6,9 @@ tab.
 
 Things that count as security problems in JoyrIDE include:
 
-- a GitHub token or keystore password shown, logged or written to a file
-  (they belong in the OS keychain);
+- a GitHub token (JoyrIDE should never hold one: `gh` does) or a keystore
+  password shown, logged or written to a file (passwords belong in the OS
+  keychain);
 - the toolchain updater installing anything that fails its signature check;
 - a crafted project, `love.toml` or dependency that makes JoyrIDE read or
   write outside the project and its own app-data folder, or run code

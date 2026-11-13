@@ -25,7 +25,7 @@ joyride/
 │   │   ├── lsp_bridge.rs       # Spawns lua-language-server, dynamically binds active LÖVE version types
 │   │   ├── runner.rs           # Launches active `love` binary for <project_dir>, streams stdout/stderr
 │   │   ├── pkg_manager.rs      # Parses love.toml, clones/downloads libs to libs/
-│   │   ├── git_service.rs      # Git CLI / git2 wrapper + GitHub API device-flow OAuth
+│   │   ├── git_service.rs      # gh + git CLI wrapper (no tokens of ours)
 │   │   ├── auto_porter.rs      # AST/static analyzer + non-destructive overlay patch generator
 │   │   └── exporters/
 │   │       ├── love_archive.rs # Zips project + target overlay patches -> game.love
@@ -91,7 +91,7 @@ joyride/
 - **Resolution (`pkg_manager.rs`):** Fetches repositories into `./libs/<pkg_name>/` and writes `love.lock`. UI filters/badges curated libraries by compatible LÖVE version (`11.5`, `12.0`, or both) + supports custom Git URL installs.
 
 ### E. GitHub Integration
-- Authenticate via GitHub Device Flow OAuth (store token in OS keychain via `keyring` crate).
+- Authenticate through the `gh` CLI (decided 2026-11-13, replacing Device Flow OAuth + `keyring`): the person runs `gh auth login`; JoyrIDE runs `gh` and `git` and never handles a token. `git` gets credentials from `gh auth git-credential`.
 - Scaffold `.gitignore` (ignoring `build/`, `*.love`, `.DS_Store`), stage/commit/push/pull, and optionally generate `.github/workflows/release.yml` parameterized with the project's configured `love_version` for automated multi-platform builds.
 
 ---

@@ -98,3 +98,9 @@ button:disabled { opacity: 0.5; }
 .port-blocker button { border-left-color: #d33; }
 .port-warning button { border-left-color: #e0a020; }
 .port-info button { border-left-color: var(--line); }
+
+.github { padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 13px; max-height: 45vh; overflow: auto; display: flex; flex-direction: column; gap: 6px; }
+.github header { display: flex; align-items: center; gap: 8px; }
+.github header button:last-child { margin-left: auto; }
+.gh-signin { white-space: pre-wrap; margin: 0; font: inherit; }
+.git-changes { list-style: none; margin: 0; padding: 0; max-height: 14vh; overflow: auto; }

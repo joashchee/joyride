@@ -7,6 +7,7 @@ use serde::Serialize;
 mod autoport;
 mod docs;
 mod export;
+mod github;
 mod libs;
 mod lsp;
 mod project;
@@ -61,6 +62,13 @@ pub fn run() {
             export::export_project,
             autoport::autoport_scan,
             autoport::autoport_generate,
+            github::github_overview,
+            github::git_commit,
+            github::git_init,
+            github::git_push,
+            github::git_pull,
+            github::github_create_repo,
+            github::github_release_workflow,
             docs::docs_search,
             docs::docs_get,
             libs::library_list,

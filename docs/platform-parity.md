@@ -10,3 +10,4 @@ Mac, and what the Linux and Windows builds do instead.
 | Nested binaries and signing | Every bundled executable is signed with the Developer ID and the hardened runtime by `scripts/build-release.sh`, or notarization fails (**check at the first release build**) | none | none (Authenticode later) |
 | PortMaster export | Not LÖVE-related: the zip never carries a LÖVE binary, it sources PortMaster's own `love_<ver>` runtime (see CLAUDE.md rule 12) | same | same |
 | Folder picker | Native `NSOpenPanel` through `tauri-plugin-dialog` | GTK portal | Windows dialog |
+| Finding `gh` | `PATH`, then `/opt/homebrew/bin`, `/usr/local/bin` (a Dock-launched app has a short `PATH`); login is `gh`'s own keychain entry | `PATH`, `/usr/bin` | `PATH`, `gh.exe` |

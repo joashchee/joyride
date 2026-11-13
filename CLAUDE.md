@@ -44,8 +44,12 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
 4. **The user's source is never mutated.** Target adaptations live in
    `.joyride/patches/<target>/` and are merged into a staged copy at
    build time (spec section 4).
-5. **Credentials in the OS keychain** (`keyring`): the GitHub token and
-   Android keystore passwords, never a file, setting or log.
+5. **No GitHub credentials of ours.** GitHub goes through the `gh` command
+   line, as in Claude Code: the person runs `gh auth login` once, JoyrIDE
+   only runs `gh` and `git` (git gets credentials from `gh auth
+   git-credential`), and never sees, stores or logs a token
+   (`joyride-core/src/github.rs`). Android keystore passwords stay in the
+   OS keychain (`keyring`), never a file, setting or log.
 6. **The toolchain manifest is signed**; unsigned or mismatched downloads
    are refused. User data and toolchains live under Tauri's app-data
    dir, never a hardcoded path (the spec's `~/.joyride/toolchains/` is

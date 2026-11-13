@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **GitHub via `gh`** (2026-11-13): a GitHub panel (status, commit, push, pull, create repo,
+  release workflow) over the `gh` and `git` command lines; no token of ours.
 - **Auto-Port panel** (2026-11-13): findings per target, generate or refresh the overlay,
   open its `patch.toml`, `.gptk` and shim.
 - **11.5 variant list** (2026-11-13): the Export panel shows each 12.0-only function a

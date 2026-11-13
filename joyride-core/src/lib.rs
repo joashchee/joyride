@@ -9,6 +9,7 @@
 //!   manifest (spec 3A, 3B).
 //! - [`lua`]: a small Lua lexer; [`scan`] the auto-porter's static analysis
 //!   (spec 4B); [`lint`] version-calibrated LÖVE lints (spec 3B).
+//! - [`github`]: GitHub through `gh` and `git`, never a token of ours.
 //! - [`format`]: formatting Lua with StyLua.
 //! - [`lsp`]: `lua-language-server` over stdio, framed for the editor.
 //! - [`trace`] and [`runner`]: running a game and linking its errors (3C).
@@ -31,6 +32,7 @@ pub mod editor;
 pub mod export;
 pub mod files;
 pub mod format;
+pub mod github;
 pub mod library;
 pub mod lint;
 pub mod lsp;

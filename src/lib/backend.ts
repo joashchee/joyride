@@ -138,6 +138,39 @@ export interface PortReport {
 export const autoportScan = () => invoke<PortReport>("autoport_scan");
 export const autoportGenerate = (target: string) => invoke<PortReport>("autoport_generate", { target });
 
+export interface GhAuth {
+  installed: boolean;
+  loggedIn: boolean;
+  user: string | null;
+  message: string;
+}
+export interface GitChange {
+  status: string;
+  path: string;
+}
+export interface GitStatus {
+  isRepo: boolean;
+  branch: string;
+  upstream: string | null;
+  ahead: number;
+  behind: number;
+  changes: GitChange[];
+}
+export interface GithubOverview {
+  auth: GhAuth;
+  repo: { nameWithOwner: string; url: string; visibility: string } | null;
+  git: GitStatus;
+  suggestedName: string;
+}
+export const githubOverview = () => invoke<GithubOverview>("github_overview");
+export const gitInit = () => invoke<GithubOverview>("git_init");
+export const gitCommit = (message: string) => invoke<GithubOverview>("git_commit", { message });
+export const gitPush = () => invoke<GithubOverview>("git_push");
+export const gitPull = () => invoke<GithubOverview>("git_pull");
+export const githubCreateRepo = (name: string, isPrivate: boolean) =>
+  invoke<GithubOverview>("github_create_repo", { name, private: isPrivate });
+export const githubReleaseWorkflow = () => invoke<string>("github_release_workflow");
+
 export interface RunLine {
   stream: "out" | "err";
   text: string;
