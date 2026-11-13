@@ -362,9 +362,11 @@ pub struct Filter {
     pub include_archived: bool,
 }
 
-/// An SPDX id that is not `proprietary` or unknown (a free-to-play game with all rights reserved is not open source).
+/// An SPDX id that is not `proprietary` or unknown (a free-to-play game with all rights reserved is not open source),
+/// and not a non-commercial or no-derivatives one (`CC-BY-NC-SA-3.0`, `CC-BY-ND-4.0`: free to read, not open source).
 pub fn is_open(l: &Licence) -> bool {
-    !l.is_unknown() && !l.id.eq_ignore_ascii_case("proprietary") && !l.id.eq_ignore_ascii_case("noassertion") && !l.id.eq_ignore_ascii_case("other")
+    let id = l.id.to_ascii_uppercase();
+    !l.is_unknown() && !id.contains("-NC") && !id.contains("-ND") && !l.id.eq_ignore_ascii_case("proprietary") && !l.id.eq_ignore_ascii_case("noassertion") && !l.id.eq_ignore_ascii_case("other")
 }
 
 fn merge(into: &mut Entry, from: Entry) {
@@ -407,6 +409,8 @@ fn merge(into: &mut Entry, from: Entry) {
     }
     if (into.licence.is_unknown() && !from.licence.is_unknown()) || (!into.licence.confirmed && from.licence.confirmed) {
         into.licence = from.licence;
+    } else if into.licence.is_unknown() && from.licence.is_unknown() && into.licence.from.is_none() {
+        into.licence.from = from.licence.from;
     }
     into.archived = into.archived && from.archived;
     into.checked = into.checked.clone().max(from.checked);
@@ -418,6 +422,27 @@ fn merge(into: &mut Entry, from: Entry) {
         };
         by_version.then_with(|| b.date.cmp(&a.date))
     });
+}
+
+/// Reads a licence from the text of the repository's licence file and, when the text matches a licence we know, sets it on
+/// `e` (unconfirmed). Only an unknown licence is replaced: one a person confirmed, or that GitHub named, stays. When the
+/// text matches nothing the licence stays unknown but says a licence file was read, so a person knows to read it.
+/// `path` is where the text came from (for the entry's `from`). Returns the guessed id.
+pub fn read_licence_text(e: &mut Entry, text: &str, path: &str) -> Option<String> {
+    if !e.licence.is_unknown() {
+        return None;
+    }
+    let from = e.sources.first().map(|s| format!("{}: {path}", s.url)).unwrap_or_else(|| path.to_string());
+    match asset_core::licence::guess_from_text(&text.chars().take(16384).collect::<String>()) {
+        Some(id) => {
+            e.licence = Licence { id: id.clone(), from: Some(format!("{from} (text match, not confirmed)")), confirmed: false };
+            Some(id)
+        }
+        None => {
+            e.licence = Licence { id: "unknown".into(), from: Some(format!("{from} (a licence file exists but matched no known licence: read it)")), confirmed: false };
+            None
+        }
+    }
 }
 
 // ---- GitHub -------------------------------------------------------------------------------------
@@ -617,6 +642,24 @@ mod tests {
         // A draft release is not a release.
         let draft = json!({"tag_name":"v9","draft":true,"assets":[]});
         assert!(from_github(&repo, Some(&draft), Kind::Game, "d").unwrap().latest.is_none());
+    }
+
+    #[test]
+    fn a_licence_file_is_read_and_guessed_but_never_overwrites() {
+        let mut e = game("G", "https://github.com/a/g", None);
+        let id = read_licence_text(&mut e, "Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 3.0\nhttp://creativecommons.org/licenses/by-nc-sa/3.0/", "LICENSE");
+        assert_eq!(id.as_deref(), Some("CC-BY-NC-SA-3.0"));
+        assert!(!e.licence.confirmed && e.licence.from.as_ref().unwrap().contains("LICENSE (text match"));
+        assert!(!is_open(&e.licence), "non-commercial is not open source");
+        // A known licence is left alone.
+        assert_eq!(read_licence_text(&mut e, "MIT: permission is hereby granted, free of charge", "LICENSE"), None);
+        assert_eq!(e.licence.id, "CC-BY-NC-SA-3.0");
+        // Text that matches nothing stays unknown and says to read it.
+        let mut u = game("U", "https://github.com/a/u", None);
+        assert_eq!(read_licence_text(&mut u, "You may play this game. All else reserved.", "COPYING"), None);
+        assert!(u.licence.is_unknown() && u.licence.from.unwrap().contains("read it"));
+        let mit = Licence { id: "MIT".into(), from: None, confirmed: false };
+        assert!(is_open(&mit) && !is_open(&Licence { id: "CC-BY-ND-4.0".into(), ..mit.clone() }));
     }
 
     #[test]

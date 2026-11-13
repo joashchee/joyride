@@ -9,7 +9,7 @@
 //!
 //! Nothing is downloaded or run: only GitHub's JSON is read.
 
-use joyride_core::games::{from_github, Added, Catalogue, Kind};
+use joyride_core::games::{self, from_github, Added, Catalogue, Kind};
 use serde::Deserialize;
 use std::process::{Command, Stdio};
 
@@ -31,6 +31,15 @@ fn gh(path: &str) -> Option<serde_json::Value> {
     o.status.success().then(|| serde_json::from_slice(&o.stdout).ok()).flatten()
 }
 
+/// The text of the repository's licence file (`gh api repos/O/R/license`, raw), and its path.
+fn licence_text(repo: &str) -> Option<(String, String)> {
+    let gh = joyride_core::github::find_gh()?;
+    let run = |args: &[&str]| Command::new(&gh).args(args).env("GH_PROMPT_DISABLED", "1").stdin(Stdio::null()).output().ok().filter(|o| o.status.success());
+    let path = run(&["api", &format!("repos/{repo}/license"), "--jq", ".path"]).map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())?;
+    let raw = run(&["api", &format!("repos/{repo}/license"), "-H", "Accept: application/vnd.github.raw+json"])?;
+    Some((String::from_utf8_lossy(&raw.stdout).into_owned(), path))
+}
+
 fn main() {
     let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("data");
     let seeds: Seeds = toml::from_str(&std::fs::read_to_string(dir.join("game-seeds.toml")).unwrap()).unwrap();
@@ -43,6 +52,18 @@ fn main() {
         };
         let release = gh(&format!("repos/{}/releases/latest", s.repo));
         let Some(entry) = from_github(&repo, release.as_ref(), s.kind.unwrap_or_default(), &today) else { continue };
+        let mut entry = entry;
+        if entry.licence.is_unknown() {
+            // GitHub could not name it: read the licence file ourselves.
+            if let Some((text, path)) = licence_text(&s.repo) {
+                match games::read_licence_text(&mut entry, &text, &path) {
+                    Some(id) => println!("{}: licence file says {id} (unconfirmed)", s.repo),
+                    None => println!("{}: has a licence file that matches no known licence: read it", s.repo),
+                }
+            } else {
+                println!("{}: no licence file found", s.repo);
+            }
+        }
         let name = entry.name.clone();
         match cat.add(entry) {
             Added::New(id) => println!("{name}: added as {id}"),
