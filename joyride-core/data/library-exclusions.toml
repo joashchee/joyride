@@ -8,4 +8,4 @@ git = "https://github.com/a327ex/windfield"
 decided = "2026-11-14"
 by = "the maintainer"
 # The facts as read, so the decision can be understood later (not the reason it was made).
-facts = "A Box2D wrapper by SSYGEN. MIT, but only as a header in windfield/init.lua (no LICENSE file; the README says \"you can do whatever you want with this\"). No commit since 2018-04-06."
+facts = "A Box2D wrapper by SSYGEN, last commit 2018-04-06 (830c6f9). Its own code is MIT, but only as a header in windfield/init.lua (no LICENSE file). It bundles windfield/mlib, whose mlib.lua header and README say GPL-2.0-or-later while mlib/LICENSE.md says zlib. windfield's mlib.lua is identical (header aside) to davisdude/mlib at 2015-08-17; the author relicensed upstream from GPL to zlib on 2015-10-10 (986d5f9, 'Changed to zlib license'), so windfield pairs the older GPL-headed file with the later zlib LICENSE.md. Re-checked 2026-11-14 when the maintainer asked to include it and, shown this, chose to keep it excluded (CLAUDE.md rule 2: no GPL dependencies)."
