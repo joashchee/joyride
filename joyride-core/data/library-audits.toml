@@ -405,3 +405,39 @@ scanner = "audit-libraries.py v1"
 high = 4
 med = 5
 reviewed = "read the scan and the flagged files at the pinned commits (cpml's pcall-guarded FFI and LICENSE.md parts; luaunit's os.execute only in its own test runner; bitser's FFI and demo loadstring; talkies' CC-BY example font): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "Concord"
+rev = "7b8f7b2f0a1090a4b7deb6eeddec9cfbf67544c7"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the scan and the flagged spots at the pinned commits (i18n's loadfile in loadFile; cargo's lf.load(path)() of Lua files in the asset folder; Concord checked to have only README changes after v4.0): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "cron"
+rev = "c8899a15fb8547492f4df90d9640711abce29ed0"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the scan and the flagged spots at the pinned commits (i18n's loadfile in loadFile; cargo's lf.load(path)() of Lua files in the asset folder; Concord checked to have only README changes after v4.0): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "i18n"
+rev = "be5a470da5fe8a8eb979761a4c410a392b360779"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "read the scan and the flagged spots at the pinned commits (i18n's loadfile in loadFile; cargo's lf.load(path)() of Lua files in the asset folder; Concord checked to have only README changes after v4.0): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "cargo"
+rev = "8014bc0ad7d4639c112e5d00fac6c9ac68b0d696"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the scan and the flagged spots at the pinned commits (i18n's loadfile in loadFile; cargo's lf.load(path)() of Lua files in the asset folder; Concord checked to have only README changes after v4.0): cautions recorded, nothing else of concern"

@@ -4,6 +4,10 @@ bundle_id = "dev.joyride.benchmarklibraries"
 version = "1.0.0"
 love_version = "11.5"
 
+[dependencies.Concord]
+git = "https://github.com/Concord-Studio/Concord"
+rev = "7b8f7b2f0a1090a4b7deb6eeddec9cfbf67544c7"
+
 [dependencies.HC]
 git = "https://github.com/vrld/HC"
 rev = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
@@ -36,6 +40,10 @@ rev = "454539159112129a92c1970f662249301d61df4e"
 git = "https://github.com/kikito/bump.lua"
 rev = "72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
 
+[dependencies.cargo]
+git = "https://github.com/bjornbytes/cargo"
+rev = "8014bc0ad7d4639c112e5d00fac6c9ac68b0d696"
+
 [dependencies.cimgui-love]
 git = "https://codeberg.org/apicici/cimgui-love"
 rev = "59eaeb44433fdd0749cff633be5bb68ef37a46a8"
@@ -47,6 +55,10 @@ rev = "e5610756c98ac2f8facd7ab90c94e1a097ecd2c6"
 [dependencies.cpml]
 git = "https://github.com/excessive/cpml"
 rev = "ddb80f48e6a3f7d9b98aa45b6feeb461db3d0c6a"
+
+[dependencies.cron]
+git = "https://github.com/kikito/cron.lua"
+rev = "c8899a15fb8547492f4df90d9640711abce29ed0"
 
 [dependencies.flux]
 git = "https://github.com/rxi/flux"
@@ -63,6 +75,10 @@ rev = "1e5f1b37377145d5d1106db6aed42663ddd0d36d"
 [dependencies.hump]
 git = "https://github.com/vrld/hump"
 rev = "08937cc0ecf72d1a964a8de6cd552c5e136bf0d4"
+
+[dependencies.i18n]
+git = "https://github.com/kikito/i18n.lua"
+rev = "be5a470da5fe8a8eb979761a4c410a392b360779"
 
 [dependencies.inspect]
 git = "https://github.com/kikito/inspect.lua"

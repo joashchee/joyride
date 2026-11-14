@@ -55,6 +55,42 @@ S.list = {
       talkies.clearMessages()
       return open == true and talkies.isOpen() == false, "two lines queued, advanced past, and the box closed; nothing was drawn (needs a screen to look at)"
     end },
+  { lib = "Concord", job = "entities, components, systems",
+    run = function(Concord)
+      local moved = 0
+      Concord.component("position", function(c, x) c.x = x end)
+      Concord.component("velocity", function(c, v) c.v = v end)
+      local Move = Concord.system({ pool = { "position", "velocity" } })
+      function Move:update(dt) for _, e in ipairs(self.pool) do e.position.x = e.position.x + e.velocity.v * dt; moved = moved + 1 end end
+      local world = Concord.world()
+      world:addSystem(Move)
+      local a = Concord.entity(world):give("position", 0):give("velocity", 10)
+      local b = Concord.entity(world):give("position", 5)   -- no velocity: the pool leaves it alone
+      world:emit("update", 0.5)
+      return a.position.x == 5 and b.position.x == 5 and moved == 1, "one of two entities was in the pool; systems are called by emitting an event"
+    end },
+  { lib = "i18n", job = "translations, plurals, fallbacks",
+    run = function(i18n)
+      i18n.load({ en = { hi = "Hello %{name}", items = { one = "one item", other = "%{count} items" }, only_en = "english only" }, fr = { hi = "Bonjour %{name}" } })
+      i18n.setFallbackLocale("en")
+      i18n.setLocale("en")
+      local en = i18n("hi", { name = "Ada" }) == "Hello Ada" and i18n("items", { count = 1 }) == "one item" and i18n("items", { count = 3 }) == "3 items"
+      i18n.setLocale("fr")
+      local fr = i18n("hi", { name = "Ada" }) == "Bonjour Ada" and i18n("only_en") == "english only"
+      i18n.setLocale("en")
+      return en and fr, "interpolation, one and other plurals, and a missing French line falling back to English"
+    end },
+  { lib = "cargo", job = "assets by name from a folder",
+    run = function(cargo)
+      if not (love and love.filesystem) then return "skip", "needs LÖVE's filesystem module" end
+      local dir = "cargo-benchmark"
+      love.filesystem.createDirectory(dir)
+      love.filesystem.write(dir .. "/hello.txt", "hi")
+      local ok, got = pcall(function() return cargo.init(dir).hello end)
+      love.filesystem.remove(dir .. "/hello.txt"); love.filesystem.remove(dir)
+      if not ok then return false, "indexing the folder raised: " .. tostring(got):sub(1, 90) end
+      return got == "hi", "a .txt file read by indexing its name"
+    end },
   { lib = "ripple", job = "sound tags, volume, fades",
     run = function(ripple)
       if not (love and love.audio and love.sound) then return "skip", "needs LÖVE's audio and sound modules" end

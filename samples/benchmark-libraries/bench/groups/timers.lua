@@ -7,6 +7,7 @@ return {
   members = {
     { id = "hump.timer", short = "hump", lib = "hump", get = function(_, req) return req("hump.timer") end },
     { id = "batteries.timer", short = "batt", lib = "batteries", get = function(m) return m.timer end },
+    { id = "cron", short = "cron", lib = "cron" },
   },
   rows = {
     { id = "after", label = "After a delay", kind = "feature", about = "Call a function once, 0.5 s from now: not before, and once only (0.1 s frames).",
@@ -27,6 +28,14 @@ return {
           for _ = 1, 10 do t:update(0.1) end
           return early == 0 and n == 1
         end,
+        cron = function(cron)
+          local n = 0
+          local c = cron.after(0.5, function() n = n + 1 end)
+          for _ = 1, 4 do c:update(0.1) end
+          local early = n
+          for _ = 1, 10 do c:update(0.1) end
+          return early == 0 and n == 1
+        end,
       } },
     { id = "every", label = "Repeat", kind = "feature", about = "Call a function every 0.5 s: five calls in 2.6 s.",
       impl = {
@@ -42,6 +51,12 @@ return {
           for _ = 1, 26 do t:update(0.1) end
           return n == 5, "by resetting the timer in its own finish callback"
         end,
+        cron = function(cron)
+          local n = 0
+          local c = cron.every(0.5, function() n = n + 1 end)
+          for _ = 1, 26 do c:update(0.1) end
+          return n == 5
+        end,
       } },
     { id = "count", label = "Repeat N times", kind = "feature", about = "Every 0.2 s, but only three times.",
       impl = {
@@ -52,6 +67,7 @@ return {
           return n == 3
         end,
         ["batteries.timer"] = false,
+        cron = false,
       } },
     { id = "during", label = "Progress", kind = "feature", about = "Be told how far along a 1 s span is on each update, ending at exactly 1.",
       impl = {
@@ -67,6 +83,7 @@ return {
           for _ = 1, 12 do t:update(0.1) end
           return last == 1 and t:expired()
         end,
+        cron = false,   -- a clock only calls back when it is done
       } },
     { id = "cancel", label = "Cancel", kind = "feature", about = "Stop a timer that has not fired: it never does.",
       impl = {
@@ -77,6 +94,7 @@ return {
           return n == 0
         end,
         ["batteries.timer"] = false,
+        cron = false,   -- no cancel: stop calling update on the clock
       } },
     { id = "script", label = "Wait in a script", kind = "feature", about = "Write 'do a, wait 0.5, do b' as one function that pauses.",
       impl = {
@@ -88,6 +106,7 @@ return {
           return early == 1 and #log == 2
         end,
         ["batteries.timer"] = false,
+        cron = false,
       } },
     { id = "speed", label = "1000 timers", kind = "speed", unit = "timers/s", units = 1000, about = "Create 1000 timers, run them for ten 0.1 s frames, and count how many finished.",
       expect = function(n) return n == 1000, n end,
@@ -102,6 +121,12 @@ return {
           local n, ts = 0, {}
           for i = 1, 1000 do ts[i] = timer(0.5 + (i % 5) * 0.1, nil, function() n = n + 1 end) end
           for _ = 1, 10 do for i = 1, 1000 do ts[i]:update(0.1) end end
+          return n
+        end end,
+        cron = function(cron) return function()
+          local n, cs = 0, {}
+          for i = 1, 1000 do cs[i] = cron.after(0.5 + (i % 5) * 0.1, function() n = n + 1 end) end
+          for _ = 1, 10 do for i = 1, 1000 do cs[i]:update(0.1) end end
           return n
         end end,
       } },

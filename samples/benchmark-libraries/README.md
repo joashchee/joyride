@@ -6,13 +6,13 @@ It is the library counterpart of the IO Checker: the same 48 by 25 text-mode scr
 
 ## What it compares
 
-All 45 curated libraries are in `libs/`, each at its pinned commit (`love.toml`, `love.lock`; `tools/vendor-libs.py` rebuilds them from `joyride-core/data/libraries.toml` and drops docs, pictures, tests and compiled files). The ones that overlap are compared with the same task, written the way each library wants:
+All 49 curated libraries are in `libs/`, each at its pinned commit (`love.toml`, `love.lock`; `tools/vendor-libs.py` rebuilds them from `joyride-core/data/libraries.toml` and drops docs, pictures, tests and compiled files). The ones that overlap are compared with the same task, written the way each library wants:
 
 | Comparison | Libraries | What is rated (features, then speed or size) |
 |---|---|---|
 | Classes (OOP) | middleclass, classic, hump.class, batteries.class | Define + new; Inherit + super; Type test (is-a); Mixins; __tostring etc.; Create objects; Method calls |
 | Tweening | tween, flux, hump.timer | Tween a number; Named easing; Nested fields; Completion; Delay and chain; Stop a tween; Run 100 tweens |
-| Timers | hump.timer, batteries.timer | After a delay; Repeat; Repeat N times; Progress; Cancel; Wait in a script; 1000 timers |
+| Timers | hump.timer, batteries.timer, cron | After a delay; Repeat; Repeat N times; Progress; Cancel; Wait in a script; 1000 timers |
 | Events and messages | hump.signal, batteries.pubsub | Send + arguments; Remove a listener; Listen once; Wildcards; Change mid-send; 10000 sends |
 | Game states | hump.gamestate, batteries.state_machine, roomy | Enter / leave; Pass arguments; Update current; Push and pop; Self-transition; Ask where we are; 20000 switches |
 | 2D vectors | hump.vector, vector-light, batteries.vec2, cpml.vec2 | Add, scale; Length, distance; Normalise; Rotate; Dot, project; Interpolate; 1000 steps; Garbage made |

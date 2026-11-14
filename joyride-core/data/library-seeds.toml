@@ -313,3 +313,29 @@ name = "roomy"
 git = "https://github.com/tesselode/roomy"
 module = "roomy"
 summary = "Scene (room) manager: push, pop and switch scenes that receive LÖVE's callbacks."
+
+[[library]]
+name = "Concord"
+git = "https://github.com/Concord-Studio/Concord"
+module = "Concord"
+summary = "Entity component system: entities, components, systems, worlds and assemblages, with events between systems."
+
+[[library]]
+name = "cron"
+git = "https://github.com/kikito/cron.lua"
+module = "cron"
+summary = "Time-related callbacks: after a delay, or every so often, as small clocks you update yourself."
+
+[[library]]
+name = "i18n"
+git = "https://github.com/kikito/i18n.lua"
+module = "i18n"
+caution = "`i18n.loadFile` uses plain `loadfile` on an operating-system path, so it cannot read a file inside a packaged .love; load the file yourself with `love.filesystem.load` and pass the table to `i18n.load`."
+summary = "Internationalisation: translations with interpolation, pluralisation, locale fallbacks and loading from tables or files."
+
+[[library]]
+name = "cargo"
+git = "https://github.com/bjornbytes/cargo"
+module = "cargo"
+caution = "Does not work on LÖVE 12.0: it calls `love.filesystem.isDirectory` and `exists`, which 12.0 removed (measured: indexing a folder raises \"attempt to call field 'isDirectory'\"). On 11.5 its loaders for images, sound and fonts need LÖVE's graphics and audio. It runs every .lua file in the folder you point it at (`love.filesystem.load(path)()`): point it only at folders of your own assets. Unmaintained since 2020."
+summary = "Assets as tables: a folder of images, sounds, fonts and Lua files you index by name and that load on first use."
