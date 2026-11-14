@@ -259,6 +259,12 @@ spec = "rev=42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
 commit = "42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
 
 [[package]]
+name = "serpent"
+git = "https://github.com/pkulchenko/serpent"
+spec = "rev=d78683597606c6e13a1fed039bc91d86eb8f600f"
+commit = "d78683597606c6e13a1fed039bc91d86eb8f600f"
+
+[[package]]
 name = "sock"
 git = "https://github.com/camchenry/sock.lua"
 spec = "rev=7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"

@@ -20,6 +20,7 @@ use std::path::Path;
 const WRONG_REQUIRE: &[(&str, &[&str], &str, &str)] = &[
     ("g3d", &["g3d"], "libs.g3d.g3d", "g3d finds its shader from the name it was required by, so `require \"g3d\"` cannot find it"),
     ("neumetik-midi", &["neumetik_midi", "neumetik-midi"], "libs.neumetik-midi.bindings.love.neumetik_midi", "its Lua binding is under bindings/love"),
+    ("serpent", &["serpent"], "libs.serpent.src.serpent", "its only file is src/serpent.lua"),
     ("cimgui-love", &["cimgui", "cimgui-love"], "libs.cimgui-love.src", "the Lua side of cimgui-love is its src folder"),
 ];
 

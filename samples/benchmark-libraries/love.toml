@@ -176,6 +176,10 @@ rev = "2574a9cc11d42da4863e58f24c9f984cc2087e33"
 git = "https://github.com/kikito/semver.lua"
 rev = "42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
 
+[dependencies.serpent]
+git = "https://github.com/pkulchenko/serpent"
+rev = "d78683597606c6e13a1fed039bc91d86eb8f600f"
+
 [dependencies.sock]
 git = "https://github.com/camchenry/sock.lua"
 rev = "7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"

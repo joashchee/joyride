@@ -441,3 +441,12 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 0
 reviewed = "read the scan and the flagged spots at the pinned commits (i18n's loadfile in loadFile; cargo's lf.load(path)() of Lua files in the asset folder; Concord checked to have only README changes after v4.0): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "serpent"
+rev = "d78683597606c6e13a1fed039bc91d86eb8f600f"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 35
+reviewed = "read the scan and serpent's own code: the 35 dynamic findings are its test file plus deserialize (load with an empty no-call environment unless safe=false) and the emitted loadstring wrapper; only src/serpent.lua is the library; cautions recorded"

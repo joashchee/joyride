@@ -1,4 +1,4 @@
--- Turning tables into text or bytes and back, for saves and messages. json is the portable text format; lume.serialize writes Lua
+-- Turning tables into text or bytes and back, for saves and messages. json is the portable text format; lume.serialize and serpent write Lua
 -- source; binser and bitser are compact binary formats that keep more types.
 
 local U = require("bench.util")
@@ -6,12 +6,14 @@ local U = require("bench.util")
 local function enc(m, v)
   if m.id == "json" then return m.lib.encode(v)
   elseif m.id == "bitser" then return m.lib.dumps(v)
+  elseif m.id == "serpent" then return m.lib.dump(v)
   else return m.lib.serialize(v) end
 end
 
 local function dec(m, s)
   if m.id == "json" then return m.lib.decode(s)
   elseif m.id == "bitser" then return m.lib.loads(s)
+  elseif m.id == "serpent" then return select(2, m.lib.load(s))   -- load returns ok, value
   elseif m.id == "lume" then return m.lib.deserialize(s)
   else return (m.lib.deserialize(s))[1] end   -- binser returns a list of the values, and how many
 end
@@ -19,7 +21,7 @@ end
 local function rowFor(fn)
   -- impl table where each member runs fn(roundtrip, encode)
   local out = {}
-  for _, name in ipairs({ "binser", "bitser", "lume", "json" }) do
+  for _, name in ipairs({ "binser", "bitser", "serpent", "lume", "json" }) do
     out[name] = function(lib)
       local m = { id = name, lib = lib }
       return fn(function(v) return dec(m, enc(m, v)) end, function(v) return enc(m, v) end, name)
@@ -30,7 +32,7 @@ end
 
 local function speedImpl(which)
   local out = {}
-  for _, name in ipairs({ "binser", "bitser", "lume", "json" }) do
+  for _, name in ipairs({ "binser", "bitser", "serpent", "lume", "json" }) do
     out[name] = function(lib)
       local m = { id = name, lib = lib }
       local data = U.crowd()
@@ -48,6 +50,7 @@ return {
   members = {
     { id = "binser", short = "binser", lib = "binser" },
     { id = "bitser", short = "bitser", lib = "bitser" },
+    { id = "serpent", short = "serp", lib = "serpent" },
     { id = "lume", short = "lume", lib = "lume" },
     { id = "json", short = "json", lib = "json" },
   },
@@ -85,7 +88,7 @@ return {
     { id = "size", label = "Output size", kind = "value", lower = true, unit = "bytes", floor = 1, about = "Bytes the 200-unit crowd takes once saved.",
       impl = (function()
         local out = {}
-        for _, name in ipairs({ "binser", "bitser", "lume", "json" }) do
+        for _, name in ipairs({ "binser", "bitser", "serpent", "lume", "json" }) do
           out[name] = function(lib)
             local m = { id = name, lib = lib }
             local data = U.crowd()

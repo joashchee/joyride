@@ -77,7 +77,7 @@ function T.run(core)
     check(s.page == "group" and s.group == g.id, g.id .. ": opens its page")
     t = screenText()
     check(contains(t, g.title), g.id .. ": shows its title")
-    for _, m in ipairs(g.members) do check(contains(t, m.short), g.id .. ": names " .. m.id) end
+    for i, m in ipairs(g.members) do if i <= 4 then check(contains(t, m.short), g.id .. ": names " .. m.id) end end   -- four show at a time
     check(contains(t, "Overall"), g.id .. ": shows the overall row")
     check(contains(t, g.rows[1].label), g.id .. ": shows its first row")
     -- walk every row and every column, with the detail line readable
@@ -89,6 +89,7 @@ function T.run(core)
         t = screenText()
         check(contains(t, rows[r].label), g.id .. " row " .. r .. ": detail names the row")
         check(contains(t, g.members[c].id), g.id .. " row " .. r .. " col " .. c .. ": detail names the library")
+        check(contains(t, g.members[c].short), g.id .. " row " .. r .. " col " .. c .. ": the selected column is on screen")
       end
     end
     check(s.page == "group", g.id .. ": stayed on its page")
@@ -120,7 +121,7 @@ function T.run(core)
   s.sel.home = #core.suite.groups + 2; press("return")
   check(s.page == "libraries", "the libraries page")
   t = screenText()
-  check(contains(t, "49 libraries"), "counts the libraries")
+  check(contains(t, "50 libraries"), "counts the libraries")
   for i = 1, #core.libload.entries do
     s.sel.libraries = i
     t = screenText()

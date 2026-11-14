@@ -142,7 +142,7 @@ do
     names[e.name] = true
     check(e.module and e.rev and #e.rev == 40, e.name .. " has a module and a pinned commit")
   end
-  eq(#libload.entries, 49, "all 49 curated libraries are in the catalogue")
+  eq(#libload.entries, 50, "all 50 curated libraries are in the catalogue")
   local lock = io.open("love.lock"):read("*a")
   for _, e in ipairs(libload.entries) do
     check(lock:find('commit = "' .. e.rev .. '"', 1, true), e.name .. " is locked at its pinned commit in love.lock")
@@ -167,7 +167,7 @@ do
       check(m.short and #m.short <= 6, g.id .. "/" .. m.id .. ": a short name of at most 6 letters")
       check(not ids[m.id], g.id .. "/" .. m.id .. ": unique"); ids[m.id] = true
     end
-    check(#g.members <= 4, g.id .. ": at most four members (the table has room for four)")
+    check(#g.members <= 8, g.id .. ": at most eight members (the table shows four at a time and scrolls sideways)")
     local rids = {}
     for _, row in ipairs(g.rows) do
       check(KINDS[row.kind], g.id .. "/" .. row.id .. ": a known kind")

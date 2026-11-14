@@ -11,6 +11,16 @@ P.foot = function(app, s) return "< > library  ^ v row  X/Y rate  0 clear  A re-
 P.soft = { { "Rate+", function(a) a.act("x") end }, { "Rate-", function(a) a.act("y") end }, { "Clear", function(a) a.act("clear") end }, { "Rerun", function(a) a.act("accept") end } }
 
 local LABEL_W, CELL_W, PER = 18, 7, 9
+local VIS = 4   -- members shown at a time: the table is 48 columns wide; a comparison with more scrolls sideways
+
+--- The first member shown, so that the selected column is always on screen.
+local function firstShown(at, n)
+  local first = at.first or 1
+  if at.col < first then first = at.col elseif at.col > first + VIS - 1 then first = at.col - VIS + 1 end
+  first = math.max(1, math.min(first, math.max(1, n - VIS + 1)))
+  at.first = first
+  return first
+end
 
 local function group(app, s) return app.core.suite.byId[s.group or "classes"] end
 
@@ -45,13 +55,15 @@ function P.draw(app, scr, s)
   local at = cur(s, g)
   at.row = math.max(1, math.min(at.row, #rows)); at.col = math.max(1, math.min(at.col, #g.members))
 
+  local first = firstShown(at, #g.members)
+  local last = math.min(#g.members, first + VIS - 1)
   local pages = math.max(1, math.ceil(#rows / PER))
   local page = math.floor((at.row - 1) / PER)
   scr:box(0, 1, screen.COLS, 14, g.title, ST.frame, true)
   -- header
   local x0 = 1 + LABEL_W
   scr:text(2, 2, screen.pad("Feature", LABEL_W - 1), ST.hint)
-  for i, m in ipairs(g.members) do scr:text(x0 + (i - 1) * CELL_W, 2, screen.pad(" " .. m.short, CELL_W), ST.hint) end
+  for i = first, last do scr:text(x0 + (i - first) * CELL_W, 2, screen.pad(" " .. g.members[i].short, CELL_W), ST.hint) end
   for k = 1, PER do
     local idx = page * PER + k
     local row = rows[idx]
@@ -59,22 +71,25 @@ function P.draw(app, scr, s)
     local y = 2 + k
     local sel = idx == at.row
     scr:text(2, y, screen.pad(screen.fit(row.label, LABEL_W - 1), LABEL_W - 1), sel and ST.sel or (row.kind == "cost" and ST.dim or ST.body))
-    for i, m in ipairs(g.members) do
+    for i = first, last do
+      local m = g.members[i]
       local inf = info[row.id][m.id]
       local text = tables.short(inf)
       local pad = math.floor((CELL_W - #text) / 2)
       local st = (sel and at.col == i) and ST.sel or cellStyle(inf)
-      scr:text(x0 + (i - 1) * CELL_W, y, string.rep(" ", pad) .. text .. string.rep(" ", CELL_W - pad - #text), st)
+      scr:text(x0 + (i - first) * CELL_W, y, string.rep(" ", pad) .. text .. string.rep(" ", CELL_W - pad - #text), st)
     end
   end
   -- overall
   scr:text(2, 13, screen.pad("Overall (of 5)", LABEL_W - 1), ST.strong)
-  for i, sc in ipairs(scores) do
+  for i = first, last do
+    local sc = scores[i]
     local text = sc.score and string.format("%.1f", sc.score) or "~"
     if sc.best then text = text .. "*" end
     local pad = math.floor((CELL_W - #text) / 2)
-    scr:text(x0 + (i - 1) * CELL_W, 13, string.rep(" ", pad) .. text .. string.rep(" ", CELL_W - pad - #text), sc.best and ST.keydown or ST.strong)
+    scr:text(x0 + (i - first) * CELL_W, 13, string.rep(" ", pad) .. text .. string.rep(" ", CELL_W - pad - #text), sc.best and ST.keydown or ST.strong)
   end
+  if #g.members > VIS then scr:text(2, 14, (" Libraries %d-%d of %d "):format(first, last, #g.members), ST.dim) end
   if pages > 1 then scr:text(screen.COLS - 14, 14, (" Page %d/%d "):format(page + 1, pages), ST.dim) end
 
   -- detail
@@ -144,8 +159,8 @@ function P.tap(app, s, col, row)
     local idx = page * PER + (row - 2)
     if rows[idx] then
       at.row = idx
-      local c = math.floor((col - (1 + LABEL_W)) / CELL_W) + 1
-      if c >= 1 and c <= #g.members then at.col = c end
+      local c = (at.first or 1) + math.floor((col - (1 + LABEL_W)) / CELL_W)
+      if c >= (at.first or 1) and c <= #g.members and c < (at.first or 1) + VIS then at.col = c end
       return true
     end
   end

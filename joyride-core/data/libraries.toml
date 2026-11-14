@@ -551,3 +551,15 @@ caution = "Does not work on LÖVE 12.0: it calls `love.filesystem.isDirectory` a
 summary = "Assets as tables: a folder of images, sounds, fonts and Lua files you index by name and that load on first use."
 loads_11_5 = "loads"
 loads_12_0 = "loads"
+
+[[library]]
+name = "serpent"
+git = "https://github.com/pkulchenko/serpent"
+rev = "d78683597606c6e13a1fed039bc91d86eb8f600f"
+tag = "0.30"
+licence = "MIT"
+module = "src.serpent"
+caution = "Require it as `libs.serpent.src.serpent`: its only file is src/serpent.lua. Writing is slow: the benchmark saved a 200-unit crowd 30 to 90 times a second, against thousands for bitser and binser (loading is fast). `serpent.load` runs the saved text as Lua but with no globals and no function calls unless you pass `safe = false`: never do that for a file you did not write, and treat even the safe mode as a convenience, not a security boundary."
+summary = "Lua serializer and pretty printer: dump a table as Lua source (with comments, sorting, cycles), and read it back."
+loads_11_5 = "loads"
+loads_12_0 = "loads"
