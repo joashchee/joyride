@@ -6,7 +6,7 @@ Collider.new is deprecated and may be removed in a later version. use world:newC
 LOVE - Warning: libs/breezefield/world.lua:305: Using deprecated function variant in love.physics.newCircleShape (replaced by variant with Body parameter)
 LOVE - Warning: libs/breezefield/world.lua:318: Using deprecated function love.physics.newFixture (replaced by love.physics.newCircle/Rectangle/Polygon/Edge/ChainShape)
 # Benchmark Libraries report
-# made: 2026-11-14 23:45:42
+# made: 2026-11-14 23:55:40
 # how: love . --report (no window: comparisons that need one are SKIP)
 # platform: macOS (detected, certain)
 # runtime: LÖVE 12.0.0
@@ -28,102 +28,103 @@ INFO LÖVE: 12.0.0 (Bestest Friend)
 INFO OS reported: OS X
 INFO LuaJIT: LuaJIT 2.1.1781602682, OSX/arm64, JIT off
 INFO Processors: 8
-INFO Lua memory: 5.2 MB
-INFO Power: charging, 100% (a laptop on battery runs slower)
+INFO Lua memory: 5.6 MB
+INFO Power: charged, 100% (a laptop on battery runs slower)
 INFO Identity: joyride-benchmark-libraries
 INFO Fused: no
 INFO Source: /Users/joash/Coding/joyride/samples/benchmark-libraries
 INFO Save folder: /Users/joash/Library/Application Support/LOVE/joyride-benchmark-libraries
 
 == libraries ==
-PASS 30log: lua; 312 lines; 0.32 ms, 12.1 KB kept
+PASS 30log: lua; 312 lines; 0.35 ms, 12.1 KB kept
 PASS AppleCake: lua, 2.1; 637 lines; 0.58 ms, 16.9 KB kept
-PASS Brady: lua; 178 lines; 0.58 ms, 11.5 KB kept
-PASS Bresenham: lua; 94 lines; 0.43 ms, 0.6 KB kept
-PASS Concord: lua, v4.0; 1725 lines; 2.71 ms, 54.6 KB kept
-PASS GamepadGuesser: lua, v0.1; 171 lines; 0.33 ms, 5.7 KB kept
-PASS HC: lua; 1760 lines; 1.96 ms, 68.1 KB kept
-PASS HSLUV: lua; 1124 lines; 0.52 ms, 15.2 KB kept
-PASS Lily: lua; 2019 lines; 0.64 ms, 18.1 KB kept
+PASS Brady: lua; 178 lines; 0.32 ms, 11.5 KB kept
+PASS Bresenham: lua; 94 lines; 0.20 ms, 0.6 KB kept
+PASS Concord: lua, v4.0; 1725 lines; 2.69 ms, 54.6 KB kept
+PASS GamepadGuesser: lua, v0.1; 171 lines; 0.36 ms, 5.7 KB kept
+PASS HC: lua; 1760 lines; 1.74 ms, 69.1 KB kept
+PASS HSLUV: lua; 1124 lines; 0.59 ms, 15.2 KB kept
+PASS Lily: lua; 2019 lines; 0.71 ms, 18.1 KB kept
 PASS Lua-star: lua; 209 lines; 0.26 ms, 6.2 KB kept
-PASS Luafinding: lua; 678 lines; 0.63 ms, 13.0 KB kept
-PASS Luvent: lua, v1.2.0; 617 lines; 0.37 ms, 11.3 KB kept
-PASS Maid64: lua; 185 lines; 0.27 ms, 4.5 KB kept
-PASS Patchy: lua; 565 lines; 0.52 ms, 17.2 KB kept
-PASS Ser: lua; 208 lines; 0.25 ms, 5.5 KB kept
-PASS Shove: lua, 1.0.6; 2915 lines; 1.79 ms, 56.7 KB kept; printed 2 line(s) to the console when required
-PASS Slab: lua; 18219 lines; 9.47 ms, 412.0 KB kept
-PASS Smallfolk: lua; 214 lines; 0.38 ms, 12.7 KB kept
-PASS Vivid: lua; 504 lines; 0.45 ms, 16.6 KB kept
-PASS Vornmath: lua, v0.4; 6072 lines; 3.26 ms, 580.2 KB kept
-PASS anim8: lua, v2.3.1; 303 lines; 0.41 ms, 12.7 KB kept
-PASS baton: lua, v1.0.2; 375 lines; 0.25 ms, 12.7 KB kept
-PASS batteries: lua; 6230 lines; 5.53 ms, 224.0 KB kept
-PASS beehive: lua; 189 lines; 0.23 ms, 0.3 KB kept
-PASS binser: lua, 0.0; 627 lines; 0.64 ms, 23.0 KB kept
-PASS bitser: lua, v1.2; 577 lines; 0.42 ms, 21.9 KB kept
-PASS breezefield: lua; 471 lines; 1.08 ms, 16.7 KB kept
-PASS bump: lua, v3.1.7; 776 lines; 0.67 ms, 24.0 KB kept
-PASS cargo: lua, v0.1.1; 83 lines; 0.35 ms, 2.9 KB kept
-PASS cartographer: lua, v2.2; 935 lines; 0.57 ms, 28.9 KB kept
+PASS Luafinding: lua; 678 lines; 0.73 ms, 13.0 KB kept
+PASS Luvent: lua, v1.2.0; 617 lines; 0.36 ms, 11.3 KB kept
+PASS Maid64: lua; 185 lines; 0.35 ms, 4.5 KB kept
+PASS Patchy: lua; 565 lines; 0.43 ms, 17.2 KB kept
+PASS Ser: lua; 208 lines; 0.27 ms, 5.5 KB kept
+PASS Shove: lua, 1.0.6; 2915 lines; 1.83 ms, 56.7 KB kept; printed 2 line(s) to the console when required
+PASS Slab: lua; 18219 lines; 9.81 ms, 412.0 KB kept
+PASS Smallfolk: lua; 214 lines; 0.39 ms, 12.7 KB kept
+PASS Vivid: lua; 504 lines; 0.49 ms, 16.6 KB kept
+PASS Vornmath: lua, v0.4; 6072 lines; 3.10 ms, 580.2 KB kept
+PASS anim8: lua, v2.3.1; 303 lines; 0.34 ms, 12.7 KB kept
+PASS baton: lua, v1.0.2; 375 lines; 0.39 ms, 12.7 KB kept
+PASS batteries: lua; 6230 lines; 5.17 ms, 224.0 KB kept
+PASS beehive: lua; 189 lines; 0.29 ms, 0.3 KB kept
+PASS binser: lua, 0.0; 627 lines; 0.57 ms, 23.0 KB kept
+PASS bitser: lua, v1.2; 577 lines; 0.39 ms, 21.9 KB kept
+PASS breezefield: lua; 471 lines; 0.93 ms, 16.7 KB kept
+PASS bump: lua, v3.1.7; 776 lines; 0.70 ms, 24.0 KB kept
+PASS cargo: lua, v0.1.1; 83 lines; 0.23 ms, 2.9 KB kept
+PASS cartographer: lua, v2.2; 935 lines; 0.49 ms, 28.9 KB kept
 SKIP cimgui-love: ffi, 1.92-0-1; 7700 lines; needs a window (libs/cimgui-love/src/love.lua:202: Cannot create system curs)
-PASS classic: lua; 69 lines; 0.17 ms, 1.6 KB kept
-PASS cpml: lua, v1.0.0; 5532 lines; 4.34 ms, 156.5 KB kept
-PASS cron: lua, v2.0.0; 107 lines; 0.41 ms, 4.8 KB kept
-PASS flux: lua; 225 lines; 0.33 ms, 20.1 KB kept
+PASS classic: lua; 69 lines; 0.19 ms, 1.6 KB kept
+PASS cpml: lua, v1.0.0; 5532 lines; 4.18 ms, 156.5 KB kept
+PASS cron: lua, v2.0.0; 107 lines; 0.36 ms, 4.8 KB kept
+PASS flux: lua; 225 lines; 1.49 ms, 20.1 KB kept
 SKIP g3d: lua, 1.6; 1242 lines; needs a window (libs/g3d/g3d/init.lua:48: attempt to index field 'graphics' )
-PASS gamera: lua, v1.0.1; 209 lines; 0.40 ms, 9.7 KB kept
-PASS hump: lua; 1155 lines; 0.18 ms, 3.0 KB kept
-PASS i18n: lua, v0.9.2; 583 lines; 1.12 ms, 37.0 KB kept
-PASS input: lua; 374 lines; 0.35 ms, 16.9 KB kept
-PASS inspect: lua, v3.1.3; 451 lines; 0.62 ms, 16.2 KB kept
-PASS jprof: lua; 1868 lines; 1.19 ms, 0.2 KB kept
-PASS json: lua, v0.1.2; 611 lines; 0.33 ms, 13.2 KB kept
-PASS jumper: lua; 2183 lines; 2.99 ms, 56.1 KB kept
-PASS knife: lua; 922 lines; 0.30 ms, 0.7 KB kept
+PASS gamera: lua, v1.0.1; 209 lines; 0.41 ms, 9.7 KB kept
+PASS hump: lua; 1155 lines; 0.19 ms, 3.0 KB kept
+PASS i18n: lua, v0.9.2; 583 lines; 1.10 ms, 37.0 KB kept
+PASS input: lua; 374 lines; 0.33 ms, 16.9 KB kept
+PASS inspect: lua, v3.1.3; 451 lines; 0.61 ms, 16.2 KB kept
+PASS jprof: lua; 1868 lines; 0.91 ms, 0.2 KB kept
+PASS json: lua, v0.1.2; 611 lines; 0.72 ms, 13.2 KB kept
+PASS jumper: lua; 2183 lines; 2.95 ms, 56.1 KB kept
+PASS knife: lua; 922 lines; 0.22 ms, 0.7 KB kept
 SKIP lighter: lua; 845 lines; needs a window (libs/lighter/init.lua:31: attempt to index field 'graphics' )
-PASS log: lua; 91 lines; 0.21 ms, 4.6 KB kept
-PASS love-loader: lua, v2.0.2; 211 lines; 0.29 ms, 9.9 KB kept
-PASS love-nuklear: native, v2.7.1; 0 lines; 0.60 ms, 18.1 KB kept
-PASS lovebird: lua; 738 lines; 0.42 ms, 40.3 KB kept
-PASS lovebpm: lua; 336 lines; 0.39 ms, 9.0 KB kept
-PASS lua-discordRPC: ffi; 255 lines; 0.71 ms, 11.1 KB kept
-PASS lua-ljsqlite3: ffi; 641 lines; 1.20 ms, 42.8 KB kept
-PASS lua-state-machine: lua, 2.0.0; 157 lines; 0.34 ms, 5.8 KB kept
-PASS luajit-request: ffi, v2.4.0; 1380 lines; 2.06 ms, 44.3 KB kept
+PASS log: lua; 91 lines; 0.36 ms, 4.6 KB kept
+PASS love-loader: lua, v2.0.2; 211 lines; 0.25 ms, 9.9 KB kept
+PASS love-nuklear: native, v2.7.1; 0 lines; 0.89 ms, 18.1 KB kept
+PASS lovebird: lua; 738 lines; 0.41 ms, 40.2 KB kept
+PASS lovebpm: lua; 336 lines; 0.40 ms, 9.0 KB kept
+PASS lua-discordRPC: ffi; 255 lines; 0.45 ms, 11.1 KB kept
+PASS lua-ljsqlite3: ffi; 641 lines; 1.34 ms, 42.8 KB kept
+PASS lua-state-machine: lua, 2.0.0; 157 lines; 0.40 ms, 5.8 KB kept
+PASS luajit-request: ffi, v2.4.0; 1380 lines; 2.07 ms, 44.3 KB kept
 SKIP luasteam: native, v6.0.0; 0 lines; needs Valve's Steamworks SDK, which cannot be redistributed or built here: Needs its compiled module (luasteam.so or .dll, from the repository's releases) and Valve's Steamworks library (libsteam_api, steam_api64.dll) from the Steamworks SDK, next to the game; Steam must be running.
-PASS luaunit: lua, LUAUNIT_V3_5; 4632 lines; 1.41 ms, 126.0 KB kept
-PASS lume: lua, v2.3.0; 773 lines; 0.68 ms, 39.8 KB kept
+PASS luaunit: lua, LUAUNIT_V3_5; 4632 lines; 1.44 ms, 126.0 KB kept
+PASS lume: lua, v2.3.0; 773 lines; 0.75 ms, 40.0 KB kept
 INFO lurker: lua, v1.0.1; 222 lines; known on this LÖVE: calls love.filesystem.isDirectory when it loads, which LÖVE 12.0 removed; did not load: libs/lurker/lurker.lua:55: attempt to call upvalue 'isdir' (a nil value)
-PASS lust: lua, v0.2.0; 241 lines; 0.43 ms, 12.3 KB kept
-PASS middleclass: lua, v4.1.1; 242 lines; 0.23 ms, 10.7 KB kept
-PASS moonblob: lua; 1022 lines; 0.65 ms, 22.2 KB kept
-PASS moonshine: lua; 1524 lines; 0.27 ms, 6.3 KB kept
-PASS nata: lua, v0.3.3; 547 lines; 0.31 ms, 12.8 KB kept
-PASS nativefs: ffi; 496 lines; 0.64 ms, 26.0 KB kept
-PASS neumetik-midi: ffi; 259 lines; 0.91 ms, 15.5 KB kept
-PASS peachy: lua; 957 lines; 0.72 ms, 29.1 KB kept
-PASS profile: lua; 227 lines; 0.48 ms, 6.9 KB kept
+PASS lust: lua, v0.2.0; 241 lines; 0.47 ms, 12.3 KB kept
+PASS middleclass: lua, v4.1.1; 242 lines; 0.24 ms, 10.7 KB kept
+PASS moonblob: lua; 1022 lines; 0.39 ms, 22.2 KB kept
+PASS moonshine: lua; 1524 lines; 0.28 ms, 6.3 KB kept
+PASS nata: lua, v0.3.3; 547 lines; 0.41 ms, 12.8 KB kept
+PASS nativefs: ffi; 496 lines; 0.52 ms, 26.0 KB kept
+PASS neumetik-midi: ffi; 259 lines; 0.96 ms, 15.5 KB kept
+PASS peachy: lua; 957 lines; 0.76 ms, 29.1 KB kept
+PASS profile: lua; 227 lines; 0.41 ms, 6.9 KB kept
 SKIP push: lua; 282 lines; needs a window (libs/push/push.lua:9: attempt to index field 'window' (a nil)
 PASS resolution_solution: lua, v3004; 9304 lines; 0.51 ms, 12.8 KB kept
-PASS ripple: lua; 519 lines; 0.39 ms, 17.1 KB kept
-PASS roomy: lua; 130 lines; 0.27 ms, 4.9 KB kept
-PASS semver: lua, v1.2.1; 210 lines; 0.37 ms, 10.8 KB kept
-PASS serpent: lua, 0.30; 141 lines; 0.45 ms, 24.2 KB kept
-PASS shash: lua; 197 lines; 0.30 ms, 5.9 KB kept
-PASS smiti18n: lua, 0.9.4; 21857 lines; 1.57 ms, 48.4 KB kept
-PASS sock: lua, 0.3.0; 1403 lines; 1.25 ms, 49.2 KB kept
+PASS ripple: lua; 519 lines; 0.44 ms, 17.1 KB kept
+PASS roomy: lua; 130 lines; 0.20 ms, 4.9 KB kept
+PASS semver: lua, v1.2.1; 210 lines; 0.41 ms, 10.8 KB kept
+PASS serpent: lua, 0.30; 141 lines; 0.64 ms, 24.2 KB kept
+PASS shash: lua; 197 lines; 0.27 ms, 5.9 KB kept
+PASS slick: lua, slick-v4.0.8; 11614 lines; 12.94 ms, 375.1 KB kept
+PASS smiti18n: lua, 0.9.4; 21857 lines; 1.51 ms, 48.4 KB kept
+PASS sock: lua, 0.3.0; 1403 lines; 0.64 ms, 43.2 KB kept
 PASS sqlua: ffi, v0.1-3; 268 lines; 0.43 ms, 10.4 KB kept
-PASS sti: lua, v1.2.3.0; 2436 lines; 1.02 ms, 53.2 KB kept
-PASS suit: lua; 1114 lines; 2.11 ms, 56.5 KB kept
-PASS tactile: lua, v2.0.1; 160 lines; 0.37 ms, 8.1 KB kept
+PASS sti: lua, v1.2.3.0; 2436 lines; 1.10 ms, 53.2 KB kept
+PASS suit: lua; 1114 lines; 2.24 ms, 56.5 KB kept
+PASS tactile: lua, v2.0.1; 160 lines; 0.23 ms, 8.1 KB kept
 SKIP talkies: lua; 440 lines; needs a window (libs/talkies/talkies.lua:139: attempt to index field 'graphi)
-PASS tick: lua; 167 lines; 0.25 ms, 6.1 KB kept
-PASS tiny-ecs: lua, 1.3-3; 868 lines; 0.44 ms, 18.8 KB kept
-PASS trickle: lua; 219 lines; 0.30 ms, 8.3 KB kept
-PASS tween: lua, v2.1.1; 368 lines; 0.51 ms, 23.3 KB kept
-PASS xsys: lua; 341 lines; 0.66 ms, 12.8 KB kept
-INFO libraries loaded: 80 of 87 loaded, 6 not tried here, 0 failed
+PASS tick: lua; 167 lines; 0.26 ms, 6.1 KB kept
+PASS tiny-ecs: lua, 1.3-3; 868 lines; 0.47 ms, 18.8 KB kept
+PASS trickle: lua; 219 lines; 0.26 ms, 8.3 KB kept
+PASS tween: lua, v2.1.1; 368 lines; 0.55 ms, 23.3 KB kept
+PASS xsys: lua; 341 lines; 0.59 ms, 12.8 KB kept
+INFO libraries loaded: 81 of 88 loaded, 6 not tried here, 0 failed
 
 == compare classes ==
 PASS classes/define middleclass: works: rating 5
@@ -146,18 +147,18 @@ PASS classes/tostring middleclass: works: rating 5
 PASS classes/tostring classic: works: rating 5
 PASS classes/tostring hump.class: works: rating 5
 PASS classes/tostring batteries.class: works: rating 5
-PASS classes/new-speed middleclass: 11.3M objects/s: rating 4
+PASS classes/new-speed middleclass: 10.9M objects/s: rating 4
 PASS classes/new-speed classic: 14.5M objects/s: rating 5, best in this row
 PASS classes/new-speed hump.class: 14.6M objects/s: rating 5, best in this row
-PASS classes/new-speed batteries.class: 14.5M objects/s: rating 5, best in this row
-PASS classes/call-speed middleclass: 2.3G calls/s: rating 5
-PASS classes/call-speed classic: 2.2G calls/s: rating 5
-PASS classes/call-speed hump.class: 2.2G calls/s: rating 5
-PASS classes/call-speed batteries.class: 2.3G calls/s: rating 5
-PASS classes/cost-time middleclass: 0.23 ms: whole library: rating 4
-PASS classes/cost-time classic: 0.17 ms: whole library: rating 5, best in this row
-PASS classes/cost-time hump.class: 0.18 ms: whole library: rating 5, best in this row
-PASS classes/cost-time batteries.class: 5.53 ms: whole library: rating 1
+PASS classes/new-speed batteries.class: 14.4M objects/s: rating 5, best in this row
+PASS classes/call-speed middleclass: 2.3G calls/s: rating 5, best in this row
+PASS classes/call-speed classic: 2.3G calls/s: rating 5, best in this row
+PASS classes/call-speed hump.class: 2.3G calls/s: rating 5, best in this row
+PASS classes/call-speed batteries.class: 2.1G calls/s: rating 4
+PASS classes/cost-time middleclass: 0.24 ms: whole library: rating 4
+PASS classes/cost-time classic: 0.19 ms: whole library: rating 5, best in this row
+PASS classes/cost-time hump.class: 0.19 ms: whole library: rating 5, best in this row
+PASS classes/cost-time batteries.class: 5.17 ms: whole library: rating 1
 PASS classes/cost-mem middleclass: 10.7 KB: whole library: rating 2
 PASS classes/cost-mem classic: 1.56 KB: whole library: rating 5, best in this row
 PASS classes/cost-mem hump.class: 2.98 KB: whole library: rating 4
@@ -169,7 +170,7 @@ PASS classes/cost-size batteries.class: 6.2k lines: whole library: rating 1
 INFO classes overall middleclass: 4.62 out of 5; library middleclass; of 4
 INFO classes overall classic: 5.00 out of 5 (best); library classic; of 4
 INFO classes overall hump.class: 4.21 out of 5; library hump; of 4
-INFO classes overall batteries.class: 4.49 out of 5; library batteries; of 4
+INFO classes overall batteries.class: 4.37 out of 5; library batteries; of 4
 
 == compare tweens ==
 PASS tweens/linear tween: works: rating 5
@@ -190,21 +191,21 @@ PASS tweens/chain hump.timer: works: rating 5, best in this row
 INFO tweens/stop tween: no such feature: rating 0
 PASS tweens/stop flux: works: rating 5, best in this row
 PASS tweens/stop hump.timer: works: rating 5, best in this row
-PASS tweens/many tween: 775k tweens/s: rating 4
-PASS tweens/many flux: 882k tweens/s: rating 5, best in this row
-PASS tweens/many hump.timer: 435k tweens/s: rating 3
-PASS tweens/cost-time tween: 0.51 ms: whole library: rating 3
-PASS tweens/cost-time flux: 0.33 ms: whole library: rating 4
-PASS tweens/cost-time hump.timer: 0.18 ms: whole library: rating 5, best in this row
+PASS tweens/many tween: 745k tweens/s: rating 5, best in this row
+PASS tweens/many flux: 802k tweens/s: rating 5, best in this row
+PASS tweens/many hump.timer: 406k tweens/s: rating 4
+PASS tweens/cost-time tween: 0.55 ms: whole library: rating 3
+PASS tweens/cost-time flux: 1.49 ms: whole library: rating 2
+PASS tweens/cost-time hump.timer: 0.19 ms: whole library: rating 5, best in this row
 PASS tweens/cost-mem tween: 23.3 KB: whole library: rating 2
 PASS tweens/cost-mem flux: 20.1 KB: whole library: rating 2
 PASS tweens/cost-mem hump.timer: 2.98 KB: whole library: rating 5, best in this row
 PASS tweens/cost-size tween: 368 lines: whole library: rating 4
 PASS tweens/cost-size flux: 225 lines: whole library: rating 5, best in this row
 PASS tweens/cost-size hump.timer: 1.2k lines: whole library: rating 2
-INFO tweens overall tween: 2.88 out of 5; library tween; of 3
-INFO tweens overall flux: 4.21 out of 5; library flux; of 3
-INFO tweens overall hump.timer: 4.62 out of 5 (best); library hump; of 3
+INFO tweens overall tween: 3.00 out of 5; library tween; of 3
+INFO tweens overall flux: 4.12 out of 5; library flux; of 3
+INFO tweens overall hump.timer: 4.75 out of 5 (best); library hump; of 3
 
 == compare timers ==
 PASS timers/after hump.timer: works: rating 5
@@ -232,13 +233,13 @@ INFO timers/script batteries.timer: no such feature: rating 0
 INFO timers/script cron: no such feature: rating 0
 INFO timers/script tick: no such feature: rating 0
 PASS timers/speed hump.timer: 1.4M timers/s: rating 3
-PASS timers/speed batteries.timer: 3.0M timers/s: rating 5, best in this row
-PASS timers/speed cron: 3.3M timers/s: rating 5, best in this row
+PASS timers/speed batteries.timer: 2.2M timers/s: rating 4
+PASS timers/speed cron: 3.4M timers/s: rating 5, best in this row
 PASS timers/speed tick: 2.4M timers/s: rating 4
-PASS timers/cost-time hump.timer: 0.18 ms: whole library: rating 5, best in this row
-PASS timers/cost-time batteries.timer: 5.53 ms: whole library: rating 1
-PASS timers/cost-time cron: 0.41 ms: whole library: rating 3
-PASS timers/cost-time tick: 0.25 ms: whole library: rating 4
+PASS timers/cost-time hump.timer: 0.19 ms: whole library: rating 5, best in this row
+PASS timers/cost-time batteries.timer: 5.17 ms: whole library: rating 1
+PASS timers/cost-time cron: 0.36 ms: whole library: rating 4
+PASS timers/cost-time tick: 0.26 ms: whole library: rating 4
 PASS timers/cost-mem hump.timer: 2.98 KB: whole library: rating 5, best in this row
 PASS timers/cost-mem batteries.timer: 224 KB: whole library: rating 1
 PASS timers/cost-mem cron: 4.84 KB: whole library: rating 4
@@ -248,8 +249,8 @@ PASS timers/cost-size batteries.timer: 6.2k lines: whole library: rating 1
 PASS timers/cost-size cron: 107 lines: whole library: rating 5, best in this row
 PASS timers/cost-size tick: 167 lines: whole library: rating 4
 INFO timers overall hump.timer: 4.62 out of 5 (best); library hump; of 4
-INFO timers overall batteries.timer: 2.62 out of 5; library batteries; of 4
-INFO timers overall cron: 2.38 out of 5; library cron; of 4
+INFO timers overall batteries.timer: 2.50 out of 5; library batteries; of 4
+INFO timers overall cron: 2.42 out of 5; library cron; of 4
 INFO timers overall tick: 2.84 out of 5; library tick; of 4
 
 == compare events ==
@@ -263,10 +264,10 @@ PASS events/wild hump.signal: works: by pattern at send time (it finds the match
 PASS events/wild batteries.pubsub: works: one catch-all ("everything"), no partial patterns: rating 5
 PASS events/reenter hump.signal: works: rating 5
 PASS events/reenter batteries.pubsub: works: the late listener waits until the send is over: rating 5
-PASS events/speed hump.signal: 5.9M sends/s: rating 5, best in this row
+PASS events/speed hump.signal: 6.1M sends/s: rating 5, best in this row
 PASS events/speed batteries.pubsub: 2.3M sends/s: rating 3
-PASS events/cost-time hump.signal: 0.18 ms: whole library: rating 5, best in this row
-PASS events/cost-time batteries.pubsub: 5.53 ms: whole library: rating 1
+PASS events/cost-time hump.signal: 0.19 ms: whole library: rating 5, best in this row
+PASS events/cost-time batteries.pubsub: 5.17 ms: whole library: rating 1
 PASS events/cost-mem hump.signal: 2.98 KB: whole library: rating 5, best in this row
 PASS events/cost-mem batteries.pubsub: 224 KB: whole library: rating 1
 PASS events/cost-size hump.signal: 1.2k lines: whole library: rating 5, best in this row
@@ -293,21 +294,21 @@ PASS states/self roomy: works: by calling enter from inside update: rating 5
 PASS states/query hump.gamestate: works: rating 5, best in this row
 PASS states/query batteries.state_machine: works: rating 5, best in this row
 INFO states/query roomy: no such feature: rating 0
-PASS states/speed hump.gamestate: 112.1M switches/s: rating 5, best in this row
-PASS states/speed batteries.state_machine: 72.6M switches/s: rating 4
-PASS states/speed roomy: 88.8M switches/s: rating 4
-PASS states/cost-time hump.gamestate: 0.18 ms: whole library: rating 5, best in this row
-PASS states/cost-time batteries.state_machine: 5.53 ms: whole library: rating 1
-PASS states/cost-time roomy: 0.27 ms: whole library: rating 4
+PASS states/speed hump.gamestate: 112.4M switches/s: rating 2
+PASS states/speed batteries.state_machine: 829.9M switches/s: rating 5, best in this row
+PASS states/speed roomy: 95.7M switches/s: rating 2
+PASS states/cost-time hump.gamestate: 0.19 ms: whole library: rating 5, best in this row
+PASS states/cost-time batteries.state_machine: 5.17 ms: whole library: rating 1
+PASS states/cost-time roomy: 0.20 ms: whole library: rating 5, best in this row
 PASS states/cost-mem hump.gamestate: 2.98 KB: whole library: rating 5, best in this row
 PASS states/cost-mem batteries.state_machine: 224 KB: whole library: rating 1
 PASS states/cost-mem roomy: 4.94 KB: whole library: rating 4
 PASS states/cost-size hump.gamestate: 1.2k lines: whole library: rating 2
 PASS states/cost-size batteries.state_machine: 6.2k lines: whole library: rating 1
 PASS states/cost-size roomy: 130 lines: whole library: rating 5, best in this row
-INFO states overall hump.gamestate: 4.87 out of 5 (best); library hump; of 3
-INFO states overall batteries.state_machine: 3.12 out of 5; library batteries; of 3
-INFO states overall roomy: 4.17 out of 5; library roomy; of 3
+INFO states overall hump.gamestate: 4.50 out of 5 (best); library hump; of 3
+INFO states overall batteries.state_machine: 3.24 out of 5; library batteries; of 3
+INFO states overall roomy: 3.96 out of 5; library roomy; of 3
 
 == compare vectors ==
 PASS vectors/add hump.vector: works: rating 5
@@ -334,18 +335,18 @@ INFO vectors/lerp hump.vector: no such feature: rating 0
 INFO vectors/lerp vector-light: no such feature: rating 0
 PASS vectors/lerp batteries.vec2: works: rating 5, best in this row
 PASS vectors/lerp cpml.vec2: works: rating 5, best in this row
-PASS vectors/speed hump.vector: 77.6M steps/s: rating 5
-PASS vectors/speed vector-light: 79.5M steps/s: rating 5
-PASS vectors/speed batteries.vec2: 78.0M steps/s: rating 5
-PASS vectors/speed cpml.vec2: 75.2M steps/s: rating 5
-PASS vectors/garbage hump.vector: 0.77 KB: rating 5
-PASS vectors/garbage vector-light: 0.00 KB: rating 5
-PASS vectors/garbage batteries.vec2: 0.22 KB: rating 5
-PASS vectors/garbage cpml.vec2: 0.09 KB: rating 5
-PASS vectors/cost-time hump.vector: 0.18 ms: whole library: rating 5, best in this row
-PASS vectors/cost-time vector-light: 0.18 ms: whole library: rating 5, best in this row
-PASS vectors/cost-time batteries.vec2: 5.53 ms: whole library: rating 1
-PASS vectors/cost-time cpml.vec2: 4.34 ms: whole library: rating 1
+PASS vectors/speed hump.vector: 78.3M steps/s: rating 5
+PASS vectors/speed vector-light: 79.6M steps/s: rating 5
+PASS vectors/speed batteries.vec2: 76.4M steps/s: rating 5
+PASS vectors/speed cpml.vec2: 73.7M steps/s: rating 5
+PASS vectors/garbage hump.vector: 0.77 KB: rating 5, best in this row
+PASS vectors/garbage vector-light: 0.00 KB: rating 5, best in this row
+PASS vectors/garbage batteries.vec2: 2.01 KB: rating 3
+PASS vectors/garbage cpml.vec2: 0.09 KB: rating 5, best in this row
+PASS vectors/cost-time hump.vector: 0.19 ms: whole library: rating 5, best in this row
+PASS vectors/cost-time vector-light: 0.19 ms: whole library: rating 5, best in this row
+PASS vectors/cost-time batteries.vec2: 5.17 ms: whole library: rating 1
+PASS vectors/cost-time cpml.vec2: 4.18 ms: whole library: rating 1
 PASS vectors/cost-mem hump.vector: 2.98 KB: whole library: rating 5, best in this row
 PASS vectors/cost-mem vector-light: 2.98 KB: whole library: rating 5, best in this row
 PASS vectors/cost-mem batteries.vec2: 224 KB: whole library: rating 1
@@ -354,9 +355,9 @@ PASS vectors/cost-size hump.vector: 1.2k lines: whole library: rating 5, best in
 PASS vectors/cost-size vector-light: 1.2k lines: whole library: rating 5, best in this row
 PASS vectors/cost-size batteries.vec2: 6.2k lines: whole library: rating 2
 PASS vectors/cost-size cpml.vec2: 5.5k lines: whole library: rating 3
-INFO vectors overall hump.vector: 4.45 out of 5; library hump; of 4
-INFO vectors overall vector-light: 4.45 out of 5; library hump; of 4
-INFO vectors overall batteries.vec2: 4.59 out of 5 (best); library batteries; of 4
+INFO vectors overall hump.vector: 4.45 out of 5 (best); library hump; of 4
+INFO vectors overall vector-light: 4.45 out of 5 (best); library hump; of 4
+INFO vectors overall batteries.vec2: 4.36 out of 5; library batteries; of 4
 INFO vectors overall cpml.vec2: 4.07 out of 5; library cpml; of 4
 
 == compare collections ==
@@ -388,13 +389,13 @@ PASS collections/merge lume: works: rating 5
 PASS collections/merge batteries: works: rating 5
 PASS collections/keys lume: works: rating 5
 PASS collections/keys batteries: works: rating 5
-PASS collections/pipeline lume: 58.1M elements/s: rating 5, best in this row
-PASS collections/pipeline batteries: 46.9M elements/s: rating 4
-PASS collections/copy-speed lume: 215.1M elements/s: rating 5, best in this row
-PASS collections/copy-speed batteries: 140.5M elements/s: rating 4
-PASS collections/cost-time lume: 0.68 ms: whole library: rating 5, best in this row
-PASS collections/cost-time batteries: 5.53 ms: whole library: rating 2
-PASS collections/cost-mem lume: 39.8 KB: whole library: rating 5, best in this row
+PASS collections/pipeline lume: 56.5M elements/s: rating 5, best in this row
+PASS collections/pipeline batteries: 50.0M elements/s: rating 4
+PASS collections/copy-speed lume: 214.9M elements/s: rating 5, best in this row
+PASS collections/copy-speed batteries: 129.4M elements/s: rating 4
+PASS collections/cost-time lume: 0.75 ms: whole library: rating 5, best in this row
+PASS collections/cost-time batteries: 5.17 ms: whole library: rating 2
+PASS collections/cost-mem lume: 40.0 KB: whole library: rating 5, best in this row
 PASS collections/cost-mem batteries: 224 KB: whole library: rating 2
 PASS collections/cost-size lume: 773 lines: whole library: rating 5, best in this row
 PASS collections/cost-size batteries: 6.2k lines: whole library: rating 2
@@ -420,11 +421,11 @@ PASS maths/distance lume: works: rating 5
 PASS maths/distance mathx: works: rating 5
 PASS maths/sign lume: works: rating 5
 PASS maths/sign mathx: works: rating 5
-PASS maths/speed lume: 340.7M ops/s: rating 3
-PASS maths/speed mathx: 922.2M ops/s: rating 5, best in this row
-PASS maths/cost-time lume: 0.68 ms: whole library: rating 5, best in this row
-PASS maths/cost-time mathx: 5.53 ms: whole library: rating 2
-PASS maths/cost-mem lume: 39.8 KB: whole library: rating 5, best in this row
+PASS maths/speed lume: 327.0M ops/s: rating 3
+PASS maths/speed mathx: 884.9M ops/s: rating 5, best in this row
+PASS maths/cost-time lume: 0.75 ms: whole library: rating 5, best in this row
+PASS maths/cost-time mathx: 5.17 ms: whole library: rating 2
+PASS maths/cost-mem lume: 40.0 KB: whole library: rating 5, best in this row
 PASS maths/cost-mem mathx: 224 KB: whole library: rating 2
 PASS maths/cost-size lume: 773 lines: whole library: rating 5, best in this row
 PASS maths/cost-size mathx: 6.2k lines: whole library: rating 2
@@ -446,11 +447,11 @@ INFO strings/title lume: no such feature: rating 0
 PASS strings/title stringx: works: rating 5, best in this row
 INFO strings/contains lume: no such feature: rating 0
 PASS strings/contains stringx: works: rating 5, best in this row
-PASS strings/speed lume: 9.0M fields/s: rating 3
-PASS strings/speed stringx: 27.5M fields/s: rating 5, best in this row
-PASS strings/cost-time lume: 0.68 ms: whole library: rating 5, best in this row
-PASS strings/cost-time stringx: 5.53 ms: whole library: rating 2
-PASS strings/cost-mem lume: 39.8 KB: whole library: rating 5, best in this row
+PASS strings/speed lume: 8.0M fields/s: rating 3
+PASS strings/speed stringx: 27.1M fields/s: rating 5, best in this row
+PASS strings/cost-time lume: 0.75 ms: whole library: rating 5, best in this row
+PASS strings/cost-time stringx: 5.17 ms: whole library: rating 2
+PASS strings/cost-mem lume: 40.0 KB: whole library: rating 5, best in this row
 PASS strings/cost-mem stringx: 224 KB: whole library: rating 2
 PASS strings/cost-size lume: 773 lines: whole library: rating 5, best in this row
 PASS strings/cost-size stringx: 6.2k lines: whole library: rating 2
@@ -489,7 +490,7 @@ PASS serialise/inf smallfolk: works: rating 5, best in this row
 PASS serialise/inf ser: works: rating 5, best in this row
 PASS serialise/inf moonblob: works: rating 5, best in this row
 PASS serialise/inf lume: works: rating 5, best in this row
-INFO serialise/inf json: FAIL: libs/json/json.lua:109: unexpected number value 'inf': rating 1
+INFO serialise/inf json: FAIL: libs/json/json.lua:109: unexpected number value '-inf': rating 1
 PASS serialise/cycle binser: works: rating 5, best in this row
 PASS serialise/cycle bitser: works: rating 5, best in this row
 PASS serialise/cycle serpent: works: rating 5, best in this row
@@ -514,37 +515,37 @@ PASS serialise/size ser: 18k bytes: rating 3
 PASS serialise/size moonblob: 13k bytes: rating 4
 PASS serialise/size lume: 20k bytes: rating 3
 PASS serialise/size json: 15k bytes: rating 3
-PASS serialise/encode binser: 4.8k saves/s: rating 3
+PASS serialise/encode binser: 5.4k saves/s: rating 3
 PASS serialise/encode bitser: 13k saves/s: rating 5, best in this row
-PASS serialise/encode serpent: 28.4 saves/s: rating 1
-PASS serialise/encode smallfolk: 3.1k saves/s: rating 3
+PASS serialise/encode serpent: 28.7 saves/s: rating 1
+PASS serialise/encode smallfolk: 3.0k saves/s: rating 3
 PASS serialise/encode ser: 2.5k saves/s: rating 2
-PASS serialise/encode moonblob: 10k saves/s: rating 4
-PASS serialise/encode lume: 4.5k saves/s: rating 3
-PASS serialise/encode json: 2.7k saves/s: rating 3
-PASS serialise/decode binser: 12k loads/s: rating 5, best in this row
-PASS serialise/decode bitser: 11k loads/s: rating 5, best in this row
-PASS serialise/decode serpent: 3.8k loads/s: rating 3
-PASS serialise/decode smallfolk: 2.9k loads/s: rating 3
-PASS serialise/decode ser: 3.4k loads/s: rating 3
-PASS serialise/decode moonblob: 8.2k loads/s: rating 4
+PASS serialise/encode moonblob: 8.9k saves/s: rating 4
+PASS serialise/encode lume: 4.7k saves/s: rating 3
+PASS serialise/encode json: 2.9k saves/s: rating 3
+PASS serialise/decode binser: 13k loads/s: rating 5, best in this row
+PASS serialise/decode bitser: 12k loads/s: rating 5, best in this row
+PASS serialise/decode serpent: 4.0k loads/s: rating 3
+PASS serialise/decode smallfolk: 3.2k loads/s: rating 3
+PASS serialise/decode ser: 3.5k loads/s: rating 3
+PASS serialise/decode moonblob: 8.1k loads/s: rating 4
 PASS serialise/decode lume: 3.8k loads/s: rating 3
-PASS serialise/decode json: 2.4k loads/s: rating 3
-PASS serialise/cost-time binser: 0.64 ms: whole library: rating 3
-PASS serialise/cost-time bitser: 0.42 ms: whole library: rating 4
-PASS serialise/cost-time serpent: 0.45 ms: whole library: rating 4
-PASS serialise/cost-time smallfolk: 0.38 ms: whole library: rating 4
-PASS serialise/cost-time ser: 0.25 ms: whole library: rating 5, best in this row
-PASS serialise/cost-time moonblob: 0.65 ms: whole library: rating 3
-PASS serialise/cost-time lume: 0.68 ms: whole library: rating 3
-PASS serialise/cost-time json: 0.33 ms: whole library: rating 4
+PASS serialise/decode json: 2.7k loads/s: rating 3
+PASS serialise/cost-time binser: 0.57 ms: whole library: rating 3
+PASS serialise/cost-time bitser: 0.39 ms: whole library: rating 4
+PASS serialise/cost-time serpent: 0.64 ms: whole library: rating 3
+PASS serialise/cost-time smallfolk: 0.39 ms: whole library: rating 4
+PASS serialise/cost-time ser: 0.27 ms: whole library: rating 5, best in this row
+PASS serialise/cost-time moonblob: 0.39 ms: whole library: rating 4
+PASS serialise/cost-time lume: 0.75 ms: whole library: rating 3
+PASS serialise/cost-time json: 0.72 ms: whole library: rating 3
 PASS serialise/cost-mem binser: 23.0 KB: whole library: rating 3
 PASS serialise/cost-mem bitser: 21.9 KB: whole library: rating 3
 PASS serialise/cost-mem serpent: 24.2 KB: whole library: rating 3
 PASS serialise/cost-mem smallfolk: 12.7 KB: whole library: rating 3
 PASS serialise/cost-mem ser: 5.55 KB: whole library: rating 5, best in this row
 PASS serialise/cost-mem moonblob: 22.2 KB: whole library: rating 3
-PASS serialise/cost-mem lume: 39.8 KB: whole library: rating 2
+PASS serialise/cost-mem lume: 40.0 KB: whole library: rating 2
 PASS serialise/cost-mem json: 13.2 KB: whole library: rating 3
 PASS serialise/cost-size binser: 627 lines: whole library: rating 3
 PASS serialise/cost-size bitser: 577 lines: whole library: rating 3
@@ -556,12 +557,12 @@ PASS serialise/cost-size lume: 773 lines: whole library: rating 2
 PASS serialise/cost-size json: 611 lines: whole library: rating 3
 INFO serialise overall binser: 4.50 out of 5; library binser; of 8
 INFO serialise overall bitser: 4.83 out of 5 (best); library bitser; of 8
-INFO serialise overall serpent: 4.20 out of 5; library serpent; of 8
+INFO serialise overall serpent: 4.17 out of 5; library serpent; of 8
 INFO serialise overall smallfolk: 4.27 out of 5; library Smallfolk; of 8
 INFO serialise overall ser: 4.27 out of 5; library Ser; of 8
-INFO serialise overall moonblob: 4.06 out of 5; library moonblob; of 8
+INFO serialise overall moonblob: 4.10 out of 5; library moonblob; of 8
 INFO serialise overall lume: 3.33 out of 5; library lume; of 8
-INFO serialise overall json: 2.63 out of 5; library json; of 8
+INFO serialise overall json: 2.60 out of 5; library json; of 8
 
 == compare printing ==
 PASS printing/nested inspect: works: rating 5
@@ -575,9 +576,9 @@ INFO printing/meta batteries.pretty: FAIL: it does not print the metatable: rati
 PASS printing/depth inspect: works: rating 5, best in this row
 INFO printing/depth batteries.pretty: no such feature: rating 0
 PASS printing/speed inspect: 1.7k prints/s: rating 5, best in this row
-PASS printing/speed batteries.pretty: 715 prints/s: rating 3
-PASS printing/cost-time inspect: 0.62 ms: whole library: rating 5, best in this row
-PASS printing/cost-time batteries.pretty: 5.53 ms: whole library: rating 2
+PASS printing/speed batteries.pretty: 723 prints/s: rating 3
+PASS printing/cost-time inspect: 0.61 ms: whole library: rating 5, best in this row
+PASS printing/cost-time batteries.pretty: 5.17 ms: whole library: rating 2
 PASS printing/cost-mem inspect: 16.2 KB: whole library: rating 5, best in this row
 PASS printing/cost-mem batteries.pretty: 224 KB: whole library: rating 2
 PASS printing/cost-size inspect: 451 lines: whole library: rating 5, best in this row
@@ -607,14 +608,14 @@ INFO collision/sweep intersect: no such feature: rating 0
 PASS collision/ray bump: works: rating 5, best in this row
 INFO collision/ray HC: FAIL: raycast finds the box only for rays heading left or up (its search box is built the wrong way round for the others): rating 1
 INFO collision/ray intersect: no such feature: rating 0
-PASS collision/crowd bump: 717k boxes/s: rating 5, best in this row
-PASS collision/crowd HC: 220k boxes/s: rating 3
-PASS collision/crowd intersect: 175k boxes/s: rating 3
-PASS collision/cost-time bump: 0.67 ms: whole library: rating 5, best in this row
-PASS collision/cost-time HC: 1.96 ms: whole library: rating 3
-PASS collision/cost-time intersect: 5.53 ms: whole library: rating 2
+PASS collision/crowd bump: 725k boxes/s: rating 5, best in this row
+PASS collision/crowd HC: 188k boxes/s: rating 3
+PASS collision/crowd intersect: 176k boxes/s: rating 3
+PASS collision/cost-time bump: 0.70 ms: whole library: rating 5, best in this row
+PASS collision/cost-time HC: 1.74 ms: whole library: rating 3
+PASS collision/cost-time intersect: 5.17 ms: whole library: rating 2
 PASS collision/cost-mem bump: 24.0 KB: whole library: rating 5, best in this row
-PASS collision/cost-mem HC: 68.1 KB: whole library: rating 3
+PASS collision/cost-mem HC: 69.1 KB: whole library: rating 3
 PASS collision/cost-mem intersect: 224 KB: whole library: rating 2
 PASS collision/cost-size bump: 776 lines: whole library: rating 5, best in this row
 PASS collision/cost-size HC: 1.8k lines: whole library: rating 3
@@ -644,14 +645,14 @@ PASS pathfinding/jps jumper: works: rating 5, best in this row
 INFO pathfinding/jps batteries.pathfind: no such feature: rating 0
 INFO pathfinding/jps lua-star: no such feature: rating 0
 INFO pathfinding/jps luafinding: no such feature: rating 0
-PASS pathfinding/maze jumper: 1.1k paths/s: rating 2
-PASS pathfinding/maze batteries.pathfind: 582 paths/s: rating 2
-PASS pathfinding/maze lua-star: 107 paths/s: rating 1
-PASS pathfinding/maze luafinding: 9.5k paths/s: rating 5, best in this row
-PASS pathfinding/cost-time jumper: 2.99 ms: whole library: rating 2
-PASS pathfinding/cost-time batteries.pathfind: 5.53 ms: whole library: rating 1
+PASS pathfinding/maze jumper: 1.2k paths/s: rating 2
+PASS pathfinding/maze batteries.pathfind: 498 paths/s: rating 2
+PASS pathfinding/maze lua-star: 101 paths/s: rating 1
+PASS pathfinding/maze luafinding: 9.7k paths/s: rating 5, best in this row
+PASS pathfinding/cost-time jumper: 2.95 ms: whole library: rating 2
+PASS pathfinding/cost-time batteries.pathfind: 5.17 ms: whole library: rating 1
 PASS pathfinding/cost-time lua-star: 0.26 ms: whole library: rating 5, best in this row
-PASS pathfinding/cost-time luafinding: 0.63 ms: whole library: rating 3
+PASS pathfinding/cost-time luafinding: 0.73 ms: whole library: rating 3
 PASS pathfinding/cost-mem jumper: 56.1 KB: whole library: rating 2
 PASS pathfinding/cost-mem batteries.pathfind: 224 KB: whole library: rating 1
 PASS pathfinding/cost-mem lua-star: 6.18 KB: whole library: rating 5, best in this row
@@ -678,10 +679,10 @@ PASS cameras/bounds gamera: works: works; measured with a pretend 800x600 window
 INFO cameras/bounds hump.camera: no such feature: rating 0
 INFO cameras/follow gamera: no such feature: rating 0
 PASS cameras/follow hump.camera: works: works; measured with a pretend 800x600 window: rating 5, best in this row
-PASS cameras/speed gamera: 352.1M points/s: measured; measured with a pretend 800x600 window: rating 5
-PASS cameras/speed hump.camera: 361.2M points/s: measured; measured with a pretend 800x600 window: rating 5
-PASS cameras/cost-time gamera: 0.40 ms: whole library: rating 3
-PASS cameras/cost-time hump.camera: 0.18 ms: whole library: rating 5, best in this row
+PASS cameras/speed gamera: 352.4M points/s: measured; measured with a pretend 800x600 window: rating 5
+PASS cameras/speed hump.camera: 361.0M points/s: measured; measured with a pretend 800x600 window: rating 5
+PASS cameras/cost-time gamera: 0.41 ms: whole library: rating 3
+PASS cameras/cost-time hump.camera: 0.19 ms: whole library: rating 5, best in this row
 PASS cameras/cost-mem gamera: 9.73 KB: whole library: rating 3
 PASS cameras/cost-mem hump.camera: 2.98 KB: whole library: rating 5, best in this row
 PASS cameras/cost-size gamera: 209 lines: whole library: rating 5, best in this row
@@ -710,10 +711,10 @@ INFO testing/hooks batteries.assert: no such feature: rating 0
 PASS testing/hooks luaunit: works: rating 5, best in this row
 PASS testing/speed lust: 1.2M checks/s: rating 1
 PASS testing/speed batteries.assert: 3.1G checks/s: rating 5, best in this row
-PASS testing/speed luaunit: 3.1G checks/s: rating 5, best in this row
-PASS testing/cost-time lust: 0.43 ms: whole library: rating 5, best in this row
-PASS testing/cost-time batteries.assert: 5.53 ms: whole library: rating 2
-PASS testing/cost-time luaunit: 1.41 ms: whole library: rating 3
+PASS testing/speed luaunit: 3.0G checks/s: rating 5, best in this row
+PASS testing/cost-time lust: 0.47 ms: whole library: rating 5, best in this row
+PASS testing/cost-time batteries.assert: 5.17 ms: whole library: rating 2
+PASS testing/cost-time luaunit: 1.44 ms: whole library: rating 3
 PASS testing/cost-mem lust: 12.3 KB: whole library: rating 5, best in this row
 PASS testing/cost-mem batteries.assert: 224 KB: whole library: rating 2
 PASS testing/cost-mem luaunit: 126 KB: whole library: rating 2
@@ -733,10 +734,10 @@ INFO profiling/memory profile: no such feature: rating 0
 PASS profiling/memory batteries.measure: works: rating 5, best in this row
 INFO profiling/stats profile: no such feature: rating 0
 PASS profiling/stats batteries.measure: works: rating 5, best in this row
-PASS profiling/overhead profile: 692 runs/s: rating 2
-PASS profiling/overhead batteries.measure: 8.2k runs/s: rating 5, best in this row
-PASS profiling/cost-time profile: 0.48 ms: whole library: rating 5, best in this row
-PASS profiling/cost-time batteries.measure: 5.53 ms: whole library: rating 2
+PASS profiling/overhead profile: 687 runs/s: rating 2
+PASS profiling/overhead batteries.measure: 8.1k runs/s: rating 5, best in this row
+PASS profiling/cost-time profile: 0.41 ms: whole library: rating 5, best in this row
+PASS profiling/cost-time batteries.measure: 5.17 ms: whole library: rating 2
 PASS profiling/cost-mem profile: 6.92 KB: whole library: rating 5, best in this row
 PASS profiling/cost-mem batteries.measure: 224 KB: whole library: rating 1
 PASS profiling/cost-size profile: 227 lines: whole library: rating 5, best in this row
@@ -761,9 +762,9 @@ SKIP gui/speed suit: not tried: needs a window: run this on a screen: no rating
 SKIP gui/speed Slab: not tried: needs a window: run this on a screen: no rating
 SKIP gui/speed nuklear: not tried: needs a window: run this on a screen: no rating
 SKIP gui/speed cimgui: not tried: needs a window (libs/cimgui-love/src/love.lua:202: Cannot create system curs): no rating
-PASS gui/cost-time suit: 2.11 ms: whole library: rating 3
-PASS gui/cost-time Slab: 9.47 ms: whole library: rating 2
-PASS gui/cost-time nuklear: 0.60 ms: whole library: rating 5, best in this row
+PASS gui/cost-time suit: 2.24 ms: whole library: rating 3
+PASS gui/cost-time Slab: 9.81 ms: whole library: rating 2
+PASS gui/cost-time nuklear: 0.89 ms: whole library: rating 5, best in this row
 SKIP gui/cost-time cimgui: not tried: needs a window (libs/cimgui-love/src/love.lua:202: Cannot create system curs): no rating
 PASS gui/cost-mem suit: 56.5 KB: whole library: rating 3
 PASS gui/cost-mem Slab: 412 KB: whole library: rating 1
@@ -789,15 +790,15 @@ PASS Concord: entities, components, systems: one of two entities was in the pool
 PASS i18n: translations, plurals, fallbacks: interpolation, one and other plurals, and a missing French line falling back to English, 0.0 ms
 INFO cargo: assets by name from a folder: indexing the folder raised: libs/cargo/cargo.lua:53: attempt to call field 'isDirectory' (a nil value), 0.1 ms
 PASS sqlua: SQLite databases: positional and named parameters, rows as tables, a row count; integers come back as 64-bit cdata (equal to 10, not a table key), 0.4 ms
-PASS lua-ljsqlite3: SQLite databases: prepared statements, results by column, a text-with-NUL round trip, a Lua function called from SQL; integers come back as 64-bit cdata (equal to 10, not a table key), 0.7 ms
+PASS lua-ljsqlite3: SQLite databases: prepared statements, results by column, a text-with-NUL round trip, a Lua function called from SQL; integers come back as 64-bit cdata (equal to 10, not a table key), 0.3 ms
 PASS xsys: string and table helpers (needed by lua-ljsqlite3): split, trim and union work, and the global string and table are left alone (it extends copies), 0.0 ms
 PASS tactile: input mapping (keys, pads, mouse): button pairs as an axis (-1, 0, 1), pressed once then held, both ends cancel; keys and pads were not touched, 0.0 ms
-PASS input: input state (keys, mouse, pads) with pressed, released and held: pressed once then held, released, a two-key sequence; a frame only advances when push_state runs (bind_callbacks arranges that), 0.1 ms
-SKIP jprof: profiling zones and saving a profile: the save folder cannot be written in this run (LÖVE 12.0's, in a sandbox): the write was not tried, 1.3 ms
+PASS input: input state (keys, mouse, pads) with pressed, released and held: pressed once then held, released, a two-key sequence; a frame only advances when push_state runs (bind_callbacks arranges that), 0.0 ms
+SKIP jprof: profiling zones and saving a profile: the save folder cannot be written in this run (LÖVE 12.0's, in a sandbox): the write was not tried, 1.0 ms
 PASS shash: a spatial hash: an object found in a box, then not after it moved away, 0.0 ms
 PASS beehive: behaviour trees: sequence and selector over success, failure and running, 0.2 ms
 PASS breezefield: a love.physics wrapper: a ball dropped under gravity moved down in half a second, 0.1 ms
-PASS Lily: loading assets on background threads: a file read on a background thread and delivered through LÖVE's event queue, 3.7 ms
+PASS Lily: loading assets on background threads: a file read on a background thread and delivered through LÖVE's event queue, 1.0 ms
 PASS lovebpm: beat events for a music track: a track object with BPM, events, play and update; no audio file is shipped, so none was played, 0.0 ms
 SKIP cartographer: Tiled maps: needs a window: run this on a screen
 PASS 30log: classes and inheritance: a class, a subclass, an instance and the instance and subclass checks, 0.0 ms
@@ -817,19 +818,20 @@ SKIP resolution_solution: resolution scaling: needs a window: run this on a scre
 SKIP Maid64: a low-resolution scaler: needs a window: run this on a screen
 SKIP Brady: a camera with parallax layers: needs a window: run this on a screen
 PASS GamepadGuesser: button prompts for the right controller: the API is there; the prompt images need a window and a pad, 0.0 ms
+PASS slick: swept polygon collision: a box moved far past a wall stops against it with one collision (swept: no tunnelling); a free move works, 0.4 ms
 SKIP lighter: 2D lights and shadows: needs a window (libs/lighter/init.lua:31: attempt to index field 'graphics' )
 PASS Patchy: 9-patch images: the API is there; no .9.png is shipped with this sample, so none was loaded or drawn, 0.0 ms
-PASS ripple: sound tags, volume, fades: a generated one-hundredth of a second of silence played and stopped, 0.1 ms
+PASS ripple: sound tags, volume, fades: a generated one-hundredth of a second of silence played and stopped, 0.0 ms
 SKIP moonshine: post-processing shader effects: needs a window: run this on a screen
 SKIP g3d: 3D models and a camera: needs a window (libs/g3d/g3d/init.lua:48: attempt to index field 'graphics' )
 SKIP push: a virtual resolution scaled to the window: needs a window (libs/push/push.lua:9: attempt to index field 'window' (a nil)
-INFO love-loader: loading assets on a thread: it reads its own source as `love-loader.lua` from the game's root folder, so it only works copied there, not from libs/, 0.2 ms
+INFO love-loader: loading assets on a thread: it reads its own source as `love-loader.lua` from the game's root folder, so it only works copied there, not from libs/, 0.1 ms
 INFO lurker: hot reloading of changed files: did not load: libs/lurker/lurker.lua:55: attempt to call upvalue 'isdir' (a nil value)
 PASS lovebird: a web console for a running game: the API is there; it opens a network port, so it was not started, 0.0 ms
 PASS sock: networking (ENet): the API and ENet are there; no connection was opened, 0.0 ms
 PASS luajit-request: HTTP through libcurl: libcurl loaded and the API is there; nothing was sent, 0.0 ms
 SKIP nativefs: files anywhere on the computer: no writable folder here, 0.1 ms
-PASS neumetik-midi: MIDI music with no SoundFont: a one-note song was synthesized, peak 0.07, with no bank; a non-bank was refused. Loading a real SoundFont was tried by hand (GeneralUser GS, 30 MB, 13 ms), none is shipped here, 5.3 ms
+PASS neumetik-midi: MIDI music with no SoundFont: a one-note song was synthesized, peak 0.07, with no bank; a non-bank was refused. Loading a real SoundFont was tried by hand (GeneralUser GS, 30 MB, 13 ms), none is shipped here, 5.2 ms
 PASS semver: version numbers: 1.2.3 is below 1.10.0; the next minor of 1.2.3 is 1.3.0, 0.0 ms
 PASS log: levelled console logging: levels set; messages go to the console (and a file when asked), 0.0 ms
 PASS lua-discordRPC: Discord Rich Presence: discord-rpc, built from source, started and stopped; no presence was sent (Discord itself need not be running), 0.1 ms
@@ -841,4 +843,4 @@ SKIP cimgui-love: Dear ImGui (FFI): needs a window (libs/cimgui-love/src/love.lu
 INFO comparison cells: 545 tried, 20 not tried here; 62 findings (a feature missing or a check that came out wrong: these are the results)
 INFO your ratings: none given
 
-# PASS 599  FAIL 0  INFO 142  SKIP 44
+# PASS 601  FAIL 0  INFO 142  SKIP 44

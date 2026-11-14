@@ -612,3 +612,11 @@ git = "https://github.com/idbrii/love-gamepadguesser"
 module = "gamepadguesser"
 caution = "Ships about 60 button-prompt images (Xelu's prompts, CC0 per its readme); needs love.joystick and a window to draw the icons."
 summary = "Guesses which gamepad is plugged in to show the right button icons (Xbox, PlayStation, Nintendo)."
+
+[[library]]
+name = "slick"
+git = "https://github.com/erinmaus/slick"
+module = "slick"
+tag = "slick-v4.0.8"   # its tags are spelled slick-vX.Y.Z, which the version sorter does not read
+caution = "MPL-2.0: a copyleft that applies file by file. Using slick unchanged in a closed game is fine (ship its licence text); if you change one of slick's own files, you share that file's changes under the MPL, and your own files stay yours. It loads itself inside a coroutine with a private global environment (setfenv) so its requires resolve from its own folder: your globals are untouched. The repository also holds a demo and animated GIFs: delete them before shipping."
+summary = "Swept 2D collision with polygons and circles: no tunnelling, shape meshes, queries, triangulation, polygon clipping and navigation meshes."

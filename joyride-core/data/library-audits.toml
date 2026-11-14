@@ -783,3 +783,12 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 0
 reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "slick"
+rev = "6ed541521fa684c26ad43c95f7649ebc9ed8dcce"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 11
+reviewed = "scan clean; read slick/init.lua: it loads its modules inside a coroutine with a private global environment (setfenv(0) on that coroutine only) so its requires resolve from its own folder, no change to the game's globals; no ffi, process, network or file writes in the library (the shell scripts and demo are not run); MPL-2.0 text in LICENSE and embedded in slick/meta/init.lua (its Secondary License definition names the GNU licences: not a GPL licence); demo/LICENSE is MIT for the demo only; caution recorded; nothing run before this stamp"

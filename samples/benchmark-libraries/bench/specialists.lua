@@ -333,6 +333,18 @@ S.list = {
     run = function(camera) return type(camera.new) == "function", "the constructor is there; no camera was created (needs a window)" end },
   { lib = "GamepadGuesser", job = "button prompts for the right controller",
     run = function(gg) return type(gg.joystickNameToConsole) == "function" and type(gg.loadMappings) == "function", "the API is there; the prompt images need a window and a pad" end },
+  { lib = "slick", job = "swept polygon collision",
+    run = function(slick)
+      local w, h = 800, 600
+      local world = slick.newWorld(w, h)
+      local player, level = { name = "player" }, { name = "level" }
+      world:add(player, w / 2, h / 2, slick.newRectangleShape(0, 0, 32, 32))
+      world:add(level, 0, 0, slick.newShapeGroup(slick.newRectangleShape(0, 0, w, 8), slick.newRectangleShape(0, 0, 8, h), slick.newRectangleShape(w - 8, 0, 8, h), slick.newRectangleShape(0, h - 8, w, 8)))
+      local x, y, cols, n = world:move(player, w / 2, -1000)          -- a long move up: it must stop at the top wall, not pass through
+      local stopped = n == 1 and cols[1].other == level and math.abs(y - 8) < 1e-6
+      local free = world:move(player, w / 2, 200)
+      return stopped and free ~= nil, "a box moved far past a wall stops against it with one collision (swept: no tunnelling); a free move works"
+    end },
   { lib = "lighter", job = "2D lights and shadows", needs = "window",
     run = function(Lighter)
       local l = Lighter()

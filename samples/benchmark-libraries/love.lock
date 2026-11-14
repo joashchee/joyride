@@ -451,6 +451,12 @@ spec = "rev=7e2bbef0193e986bb4e655e18c4e23123e7081d8"
 commit = "7e2bbef0193e986bb4e655e18c4e23123e7081d8"
 
 [[package]]
+name = "slick"
+git = "https://github.com/erinmaus/slick"
+spec = "rev=6ed541521fa684c26ad43c95f7649ebc9ed8dcce"
+commit = "6ed541521fa684c26ad43c95f7649ebc9ed8dcce"
+
+[[package]]
 name = "smiti18n"
 git = "https://github.com/Oval-Tutu/smiti18n"
 spec = "rev=dee7bde320ef3ccaa82ba98b473aa44f4c8c7802"

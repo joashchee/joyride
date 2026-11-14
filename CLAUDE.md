@@ -31,7 +31,9 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
    user asks for or turns on: the IDE update check, the signed toolchain
    manifest, library downloads, GitHub.
 2. **Open source and free, MIT** (`LICENSE`, `NOTICE`). **No
-   GPL/AGPL/LGPL dependencies.** Run `scripts/license-scan.py` whenever
+   GPL/AGPL/LGPL dependencies.** (MPL-2.0 libraries are fine, decided
+   2026-11-14: its copyleft is per file. Say so in the entry's caution; a
+   GPL, AGPL or LGPL file anywhere in a library's tree still keeps it out.) Run `scripts/license-scan.py` whenever
    `Cargo.lock` or `package-lock.json` changes. Bundled tools keep their
    own licences, listed in `NOTICE`. The global "closed source" rule
    does not apply; its other half (no user-visible text names a repo

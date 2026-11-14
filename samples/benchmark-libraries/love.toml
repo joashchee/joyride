@@ -304,6 +304,10 @@ rev = "d78683597606c6e13a1fed039bc91d86eb8f600f"
 git = "https://github.com/rxi/shash"
 rev = "7e2bbef0193e986bb4e655e18c4e23123e7081d8"
 
+[dependencies.slick]
+git = "https://github.com/erinmaus/slick"
+rev = "6ed541521fa684c26ad43c95f7649ebc9ed8dcce"
+
 [dependencies.smiti18n]
 git = "https://github.com/Oval-Tutu/smiti18n"
 rev = "dee7bde320ef3ccaa82ba98b473aa44f4c8c7802"

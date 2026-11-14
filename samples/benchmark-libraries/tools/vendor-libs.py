@@ -14,7 +14,7 @@ import os, re, shutil, subprocess, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(HERE)
 LIST = os.path.join(PROJECT, "..", "..", "joyride-core", "data", "libraries.toml")
-DROP_DIRS = {".git", ".github", ".gitlab", "docs", "doc", "documentation", "img", "images", "image", "screenshots", "media", "spec", "specs", "test", "tests", "rockspecs",
+DROP_DIRS = {".git", ".vscode", ".idea", ".github", ".gitlab", "docs", "doc", "documentation", "img", "images", "image", "screenshots", "media", "spec", "specs", "test", "tests", "rockspecs",
              "examples", "example", "demo", "demos", "samples", "sample", "benchmark", "benchmarks", "bin", "build", "dist", "scripts", "tools", "luasteam-examples"}
 # Per library: more to leave out. luasteam's repository carries Valve's Steamworks SDK (Valve's own agreement: never redistributed here), and
 # its generator and type stubs are build tools; cimgui-love's C parser is a build tool for regenerating its bindings; neumetik-midi's
