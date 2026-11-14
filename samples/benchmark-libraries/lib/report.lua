@@ -82,8 +82,11 @@ function R.build(s, how)
         end
       end
     end
+    local libOf = {}
+    for _, m in ipairs(g.members) do libOf[m.id] = m.lib end
     for _, sc in ipairs(suite.scores(g, s.results, s.ratings and s.ratings:lookup())) do
-      r:line("INFO", ("%s overall %s"):format(g.id, sc.id), sc.score and (("%.2f out of 5%s"):format(sc.score, sc.best and " (best)" or "")) or "not rated here")
+      -- "; library X" ends the line so tools/ingest-benchmark.py can tell which curated library a member is
+      r:line("INFO", ("%s overall %s"):format(g.id, sc.id), (sc.score and (("%.2f out of 5%s"):format(sc.score, sc.best and " (best)" or "")) or "not rated here") .. "; library " .. libOf[sc.id] .. "; of " .. #g.members)
     end
   end
 

@@ -17,10 +17,13 @@ L.deps = { lurker = { "lume" } }
 -- Libraries that cannot be required without a window (they build images, fonts or shaders as they load).
 L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true }
 
+-- Libraries whose own name for themselves matters: g3d finds its shader from the module name it was required by (`libs.g3d.g3d` ->
+-- `libs/g3d/g3d/g3d.vert`), so it must be required by its path from the game's root, not as `g3d`.
+L.moduleFor = { g3d = "libs.g3d.g3d" }
+
 -- A library that is known not to load on a LÖVE major version, and why: a finding about the library, not a failure of this project.
 -- (Checked against the real LÖVE binaries; the report says INFO, not FAIL.)
 L.known = {
-  g3d = { [11] = "reads its shader as g3d/g3d.vert from the game's root folder, so it only works copied there, not from libs/", [12] = "reads its shader as g3d/g3d.vert from the game's root folder, so it only works copied there, not from libs/" },
   lurker = { [12] = "calls love.filesystem.isDirectory when it loads, which LÖVE 12.0 removed" },
 }
 
@@ -44,7 +47,7 @@ local function roots(name, plain)
   end
   t[#t + 1] = L.root .. "/?.lua"
   t[#t + 1] = L.root .. "/?/init.lua"
-  return table.concat(t, ";") .. (plain and ";" .. plain or "")
+  return table.concat(t, ";") .. ";?.lua;?/init.lua" .. (plain and ";" .. plain or "")
 end
 L.roots = roots
 
@@ -137,7 +140,7 @@ function L.load(name, env)
   local realPrint, printed = print, 0
   print = function() printed = printed + 1 end
   local m0, t0 = collectgarbage("count"), os.clock()
-  local okr, mod = pcall(require, e.module)
+  local okr, mod = pcall(require, L.moduleFor[name] or e.module)
   local t1 = os.clock()
   print = realPrint
   cpathOff()

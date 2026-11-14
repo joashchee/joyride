@@ -83,6 +83,20 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
     with no record, so an update (a new `rev`) must be audited again. Put real
     hazards in the entry's `caution` (the panel shows it). Re-probe an audited
     commit with `--probe --pinned --only <names>`, which never re-pins.
+15. **New benchmark results always update the libraries' info and ratings**
+    (decided 2026-11-14). Whenever Benchmark Libraries reports arrive (the maintainer
+    pastes one, or a run is made), in the same commit: save the report under
+    `samples/benchmark-libraries/results/`, run `python3 -I scripts/ingest-benchmark.py
+    <report>` (it rewrites `joyride-core/data/library-benchmarks.json`: per-library
+    load result per LÖVE version, scores and best marks per comparison, findings,
+    and the one `benchmark` line the Libraries panel shows), then read what changed.
+    A finding that is a real hazard also goes into the library's `caution` (both
+    `library-seeds.toml` and `libraries.toml`); a library that no longer loads
+    gets its badge from the ingest and is refused on that LÖVE. If the sample's
+    own code changed since a report, `--skip name` leaves that library's stale
+    result out until it is run again. `python3 -I scripts/ingest-benchmark.py
+    --check` and the `every_library_has_benchmark_results...` test fail on
+    missing data. Update `README.md` findings, `ROADMAP.md` and `CHANGELOG.md`.
 11. **Asset licences are confirmed before use** (`docs/asset-library.md`):
     nothing is imported, added to a project or exported with an unknown
     licence unless the user overrides and says why. Imports never copy

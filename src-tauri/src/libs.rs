@@ -29,6 +29,8 @@ pub struct LibraryView {
     native: Option<String>,
     /// A warning to read before adding it.
     caution: Option<String>,
+    /// What the Benchmark Libraries sample measured for it (scores against what it was compared with, cost, findings).
+    benchmark: Option<String>,
 }
 
 fn views(root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
@@ -55,6 +57,7 @@ fn views(root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
             kind: e.kind.label().into(),
             native: e.native.clone(),
             caution: e.caution.clone(),
+            benchmark: e.benchmark.clone(),
         })
         .collect())
 }

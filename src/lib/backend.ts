@@ -145,6 +145,8 @@ export interface LibraryView {
   native: string | null;
   /** A warning to read before adding it. */
   caution: string | null;
+  /** What the Benchmark Libraries sample measured for it. */
+  benchmark: string | null;
 }
 export const libraryList = (query: string) => invoke<LibraryView[]>("library_list", { query });
 export const libraryAdd = (name: string, query: string) => invoke<LibraryView[]>("library_add", { name, query });

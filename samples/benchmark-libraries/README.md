@@ -55,6 +55,10 @@ Tables: `results/macos-11.5.md`; reports: `results/macos-11.5.txt`, `results/mac
 
 A compiled library can abort the whole program (nuklear does, if a frame is not ended with `draw`) and Lua cannot catch that, so before each such cell the benchmark writes a marker to the save folder; if the program dies there, the next start reports that cell as having aborted the program and skips it.
 
+## After a run
+
+A report is not finished until it is ingested: save it in `results/`, then `python3 -I scripts/ingest-benchmark.py results/<report>.txt` from the repository root updates the library list (the Benchmark line and load badges in JoyrIDE's Libraries panel). `CLAUDE.md` rule 15 has the whole routine.
+
 ## Run it
 
 - In JoyrIDE: **Samples… > Benchmark Libraries**, then **Run**. Comparisons that draw (the immediate-mode GUIs, anim8, moonshine, g3d, push, peachy, sti) only run with a window.

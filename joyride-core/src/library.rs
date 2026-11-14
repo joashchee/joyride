@@ -11,6 +11,8 @@ use crate::{err, Result};
 use serde::Deserialize;
 
 const BUNDLED: &str = include_str!("../data/libraries.toml");
+/// What the Benchmark Libraries sample measured, merged over the list (`scripts/ingest-benchmark.py` writes it from the sample's reports).
+const BENCHMARKS: &str = include_str!("../data/library-benchmarks.json");
 /// One record per audited pinned commit (`scripts/audit-libraries.py --stamp`).
 #[cfg(test)]
 const AUDITS: &str = include_str!("../data/library-audits.toml");
@@ -100,6 +102,8 @@ pub struct Entry {
     pub native: Option<String>,
     /// A warning to read before adding it (a development tool that opens a port, say).
     pub caution: Option<String>,
+    /// One line of what the benchmark found: its scores against the libraries it was compared with, its cost, what it got wrong.
+    pub benchmark: Option<String>,
     loads_11_5: Badge,
     loads_12_0: Badge,
 }
@@ -149,7 +153,42 @@ pub struct Library {
 
 impl Library {
     pub fn bundled() -> Library {
-        Library::parse(BUNDLED).expect("the bundled libraries.toml is valid (a test checks it)")
+        let mut lib = Library::parse(BUNDLED).expect("the bundled libraries.toml is valid (a test checks it)");
+        lib.apply_benchmarks(BENCHMARKS).expect("the bundled library-benchmarks.json is valid (a test checks it)");
+        lib
+    }
+
+    /// Merges benchmark results over the list: the measured way a library loads replaces "not tested", and the one-line summary is kept.
+    pub fn apply_benchmarks(&mut self, json: &str) -> Result<()> {
+        #[derive(Deserialize)]
+        struct Raw {
+            libraries: std::collections::BTreeMap<String, RawBench>,
+        }
+        #[derive(Deserialize)]
+        struct RawBench {
+            #[serde(default)]
+            benchmark: String,
+            loads_11_5: Option<String>,
+            loads_12_0: Option<String>,
+        }
+        let raw: Raw = serde_json::from_str(json).map_err(|e| crate::Error::Msg(format!("library-benchmarks.json: {e}")))?;
+        for e in &mut self.entries {
+            if let Some(b) = raw.libraries.get(&e.name) {
+                if !b.benchmark.is_empty() {
+                    e.benchmark = Some(b.benchmark.clone());
+                }
+                // A compiled library's load is never claimed from a run (the panel says what binary it needs).
+                if !e.kind.is_native() {
+                    if let Some(l) = &b.loads_11_5 {
+                        e.loads_11_5 = Badge::parse(l);
+                    }
+                    if let Some(l) = &b.loads_12_0 {
+                        e.loads_12_0 = Badge::parse(l);
+                    }
+                }
+            }
+        }
+        Ok(())
     }
 
     pub fn parse(text: &str) -> Result<Library> {
@@ -157,7 +196,7 @@ impl Library {
         let entries = raw
             .library
             .into_iter()
-            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, caution: r.caution, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
+            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, caution: r.caution, benchmark: None, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
             .collect();
         Ok(Library { entries })
     }
@@ -309,6 +348,26 @@ mod tests {
         m.project.love_version = "12.0".into();
         assert!(lib.add_to(&mut m, "a").unwrap_err().to_string().contains("does not load on LÖVE 12.0"));
         assert!(lib.add_to(&mut m, "nope").is_err());
+    }
+
+    #[test]
+    fn every_library_has_benchmark_results_and_they_change_what_the_panel_says() {
+        let lib = Library::bundled();
+        for e in &lib.entries {
+            assert!(e.benchmark.is_some(), "{} has no benchmark line: run scripts/ingest-benchmark.py on a Benchmark Libraries report", e.name);
+        }
+        // Measured on a window: classic is the best of its four, and says so.
+        assert!(lib.get("classic").unwrap().benchmark.as_ref().unwrap().contains("classes"), "classic's line names its comparison");
+        // lurker does not load on LÖVE 12.0 (it calls a function LÖVE removed): the panel refuses it there and not on 11.5.
+        let lurker = lib.get("lurker").unwrap();
+        assert!(lurker.known_broken_on(v("12.0")) && !lurker.known_broken_on(v("11.5")));
+        // A run is merged over the list, and a library the results do not name is left as it was.
+        let mut l = Library::bundled();
+        l.apply_benchmarks(r#"{"libraries": {"hump": {"benchmark": "x", "loads_12_0": "fails: nope"}}}"#).unwrap();
+        assert_eq!(l.get("hump").unwrap().benchmark.as_deref(), Some("x"));
+        assert!(l.get("hump").unwrap().known_broken_on(v("12.0")));
+        assert_eq!(l.get("bump").unwrap().benchmark, lib.get("bump").unwrap().benchmark);
+        assert!(l.apply_benchmarks("not json").is_err());
     }
 
     #[test]

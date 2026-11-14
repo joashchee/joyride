@@ -1,0 +1,2264 @@
+{
+ "libraries": {
+  "HC": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): collision 3.4/5 (3 compared); loads in 1.87 ms, keeps 68.0 KB, 1760 lines; findings: collision/ray: raycast finds the box only for rays heading left or up (its search box is built the wrong way round for the others); lacks: collision/sweep | macOS, LÖVE 12.0 (2026-11-14): collision 3.5/5 (3 compared); loads in 1.54 ms, keeps 69.1 KB, 1760 lines; findings: collision/ray: raycast finds the box only for rays heading left or up (its search box is built the wrong way round for the others); lacks: collision/sweep",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [
+      "collision/ray: raycast finds the box only for rays heading left or up (its search box is built the wrong way round for the others)"
+     ],
+     "groups": {
+      "collision:HC": {
+       "best": false,
+       "group": "collision",
+       "member": "HC",
+       "of": 3,
+       "score": 3.44
+      }
+     },
+     "kept_kb": 68.0,
+     "lacks": [
+      "collision/sweep"
+     ],
+     "lines": 1760,
+     "load_ms": 1.87,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [
+      "collision/ray: raycast finds the box only for rays heading left or up (its search box is built the wrong way round for the others)"
+     ],
+     "groups": {
+      "collision:HC": {
+       "best": false,
+       "group": "collision",
+       "member": "HC",
+       "of": 3,
+       "score": 3.55
+      }
+     },
+     "kept_kb": 69.1,
+     "lacks": [
+      "collision/sweep"
+     ],
+     "lines": 1760,
+     "load_ms": 1.54,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "Slab": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): gui 2.8/5 (4 compared); loads in 10.27 ms, keeps 414.1 KB, 18219 lines | macOS, LÖVE 12.0 (2026-11-14): loads in 10.18 ms, keeps 412.4 KB, 18219 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "gui:Slab": {
+       "best": false,
+       "group": "gui",
+       "member": "Slab",
+       "of": 4,
+       "score": 2.77
+      }
+     },
+     "kept_kb": 414.1,
+     "lacks": [],
+     "lines": 18219,
+     "load_ms": 10.27,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "gui:Slab": {
+       "best": false,
+       "group": "gui",
+       "member": "Slab",
+       "of": 4,
+       "score": null
+      }
+     },
+     "kept_kb": 412.4,
+     "lacks": [],
+     "lines": 18219,
+     "load_ms": 10.18,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "anim8": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): spritesheet animation: works; loads in 0.63 ms, keeps 12.7 KB, 303 lines | macOS, LÖVE 12.0 (2026-11-14): spritesheet animation: not tried; loads in 0.28 ms, keeps 12.7 KB, 303 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "spritesheet animation",
+     "kept_kb": 12.7,
+     "lacks": [],
+     "lines": 303,
+     "load_ms": 0.63,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "spritesheet animation",
+     "kept_kb": 12.7,
+     "lacks": [],
+     "lines": 303,
+     "load_ms": 0.28,
+     "loads": "loads",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "baton": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): input mapping (keys, pads, mouse): works; loads in 0.57 ms, keeps 12.8 KB, 375 lines | macOS, LÖVE 12.0 (2026-11-14): input mapping (keys, pads, mouse): works; loads in 0.28 ms, keeps 12.8 KB, 375 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "input mapping (keys, pads, mouse)",
+     "kept_kb": 12.8,
+     "lacks": [],
+     "lines": 375,
+     "load_ms": 0.57,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "input mapping (keys, pads, mouse)",
+     "kept_kb": 12.8,
+     "lacks": [],
+     "lines": 375,
+     "load_ms": 0.28,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "batteries": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): classes (batteries.class) 4.4/5 (4 compared); collections 4.5/5 best of 2; collision (intersect) 3.1/5 (3 compared); events (batteries.pubsub) 4.2/5 (2 compared); maths (mathx) 4.8/5 best of 2; pathfinding (batteries.pathfind) 3.8/5 (2 compared); printing (batteries.pretty) 3.1/5 (2 compared); profiling (batteries.measure) 3.5/5 best of 2; states (batteries.state_machine) 3.0/5 (2 compared); strings (stringx) 3.9/5 best of 2; testing (batteries.assert) 2.8/5 (2 compared); timers (batteries.timer) 2.5/5 (2 compared); vectors (batteries.vec2) 4.4/5 (3 compared); loads in 6.42 ms, keeps 191.9 KB, 6230 lines; findings: printing/meta: it does not print the metatable; testing/deep: compares tables by identity: equal contents are not enough; lacks: timers/count, timers/cancel, timers/script, states/args… | macOS, LÖVE 12.0 (2026-11-14): classes (batteries.class) 4.5/5 (4 compared); collections 4.5/5 best of 2; collision (intersect) 3.3/5 (3 compared); events (batteries.pubsub) 4.2/5 (2 compared); maths (mathx) 4.8/5 best of 2; pathfinding (batteries.pathfind) 3.8/5 (2 compared); printing (batteries.pretty) 3.0/5 (2 compared); profiling (batteries.measure) 3.5/5 best of 2; states (batteries.state_machine) 3.2/5 (2 compared); strings (stringx) 4.1/5 best of 2; testing (batteries.assert) 2.8/5 (2 compared); timers (batteries.timer) 2.7/5 (2 compared); vectors (batteries.vec2) 4.6/5 best of 3; loads in 5.83 ms, keeps 190.8 KB, 6230 lines; findings: printing/meta: it does not print the metatable; testing/deep: compares tables by identity: equal contents are not enough; lacks: timers/count, timers/cancel, timers/script, states/args…",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [
+      "printing/meta: it does not print the metatable",
+      "testing/deep: compares tables by identity: equal contents are not enough"
+     ],
+     "groups": {
+      "classes:batteries.class": {
+       "best": false,
+       "group": "classes",
+       "member": "batteries.class",
+       "of": 4,
+       "score": 4.37
+      },
+      "collections:batteries": {
+       "best": true,
+       "group": "collections",
+       "member": "batteries",
+       "of": 2,
+       "score": 4.49
+      },
+      "collision:intersect": {
+       "best": false,
+       "group": "collision",
+       "member": "intersect",
+       "of": 3,
+       "score": 3.11
+      },
+      "events:batteries.pubsub": {
+       "best": false,
+       "group": "events",
+       "member": "batteries.pubsub",
+       "of": 2,
+       "score": 4.18
+      },
+      "maths:mathx": {
+       "best": true,
+       "group": "maths",
+       "member": "mathx",
+       "of": 2,
+       "score": 4.75
+      },
+      "pathfinding:batteries.pathfind": {
+       "best": false,
+       "group": "pathfinding",
+       "member": "batteries.pathfind",
+       "of": 2,
+       "score": 3.76
+      },
+      "printing:batteries.pretty": {
+       "best": false,
+       "group": "printing",
+       "member": "batteries.pretty",
+       "of": 2,
+       "score": 3.14
+      },
+      "profiling:batteries.measure": {
+       "best": true,
+       "group": "profiling",
+       "member": "batteries.measure",
+       "of": 2,
+       "score": 3.55
+      },
+      "states:batteries.state_machine": {
+       "best": false,
+       "group": "states",
+       "member": "batteries.state_machine",
+       "of": 2,
+       "score": 3.04
+      },
+      "strings:stringx": {
+       "best": true,
+       "group": "strings",
+       "member": "stringx",
+       "of": 2,
+       "score": 3.92
+      },
+      "testing:batteries.assert": {
+       "best": false,
+       "group": "testing",
+       "member": "batteries.assert",
+       "of": 2,
+       "score": 2.83
+      },
+      "timers:batteries.timer": {
+       "best": false,
+       "group": "timers",
+       "member": "batteries.timer",
+       "of": 2,
+       "score": 2.54
+      },
+      "vectors:batteries.vec2": {
+       "best": false,
+       "group": "vectors",
+       "member": "batteries.vec2",
+       "of": 3,
+       "score": 4.36
+      }
+     },
+     "kept_kb": 191.9,
+     "lacks": [
+      "timers/count",
+      "timers/cancel",
+      "timers/script",
+      "states/args",
+      "states/stack",
+      "collections/slice",
+      "strings/wrap",
+      "printing/depth",
+      "collision/sweep",
+      "collision/ray",
+      "pathfinding/jps",
+      "testing/suite",
+      "testing/hooks",
+      "profiling/perfn"
+     ],
+     "lines": 6230,
+     "load_ms": 6.42,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [
+      "printing/meta: it does not print the metatable",
+      "testing/deep: compares tables by identity: equal contents are not enough"
+     ],
+     "groups": {
+      "classes:batteries.class": {
+       "best": false,
+       "group": "classes",
+       "member": "batteries.class",
+       "of": 4,
+       "score": 4.49
+      },
+      "collections:batteries": {
+       "best": true,
+       "group": "collections",
+       "member": "batteries",
+       "of": 2,
+       "score": 4.49
+      },
+      "collision:intersect": {
+       "best": false,
+       "group": "collision",
+       "member": "intersect",
+       "of": 3,
+       "score": 3.33
+      },
+      "events:batteries.pubsub": {
+       "best": false,
+       "group": "events",
+       "member": "batteries.pubsub",
+       "of": 2,
+       "score": 4.18
+      },
+      "maths:mathx": {
+       "best": true,
+       "group": "maths",
+       "member": "mathx",
+       "of": 2,
+       "score": 4.75
+      },
+      "pathfinding:batteries.pathfind": {
+       "best": false,
+       "group": "pathfinding",
+       "member": "batteries.pathfind",
+       "of": 2,
+       "score": 3.76
+      },
+      "printing:batteries.pretty": {
+       "best": false,
+       "group": "printing",
+       "member": "batteries.pretty",
+       "of": 2,
+       "score": 3.0
+      },
+      "profiling:batteries.measure": {
+       "best": true,
+       "group": "profiling",
+       "member": "batteries.measure",
+       "of": 2,
+       "score": 3.55
+      },
+      "states:batteries.state_machine": {
+       "best": false,
+       "group": "states",
+       "member": "batteries.state_machine",
+       "of": 2,
+       "score": 3.16
+      },
+      "strings:stringx": {
+       "best": true,
+       "group": "strings",
+       "member": "stringx",
+       "of": 2,
+       "score": 4.14
+      },
+      "testing:batteries.assert": {
+       "best": false,
+       "group": "testing",
+       "member": "batteries.assert",
+       "of": 2,
+       "score": 2.83
+      },
+      "timers:batteries.timer": {
+       "best": false,
+       "group": "timers",
+       "member": "batteries.timer",
+       "of": 2,
+       "score": 2.66
+      },
+      "vectors:batteries.vec2": {
+       "best": true,
+       "group": "vectors",
+       "member": "batteries.vec2",
+       "of": 3,
+       "score": 4.59
+      }
+     },
+     "kept_kb": 190.8,
+     "lacks": [
+      "timers/count",
+      "timers/cancel",
+      "timers/script",
+      "states/args",
+      "states/stack",
+      "collections/slice",
+      "strings/wrap",
+      "printing/depth",
+      "collision/sweep",
+      "collision/ray",
+      "pathfinding/jps",
+      "testing/suite",
+      "testing/hooks",
+      "profiling/perfn"
+     ],
+     "lines": 6230,
+     "load_ms": 5.83,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "binser": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): serialise 4.7/5 best of 3; loads in 0.71 ms, keeps 22.8 KB, 627 lines | macOS, LÖVE 12.0 (2026-11-14): serialise 4.9/5 best of 3; loads in 0.61 ms, keeps 24.4 KB, 627 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "serialise:binser": {
+       "best": true,
+       "group": "serialise",
+       "member": "binser",
+       "of": 3,
+       "score": 4.73
+      }
+     },
+     "kept_kb": 22.8,
+     "lacks": [],
+     "lines": 627,
+     "load_ms": 0.71,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "serialise:binser": {
+       "best": true,
+       "group": "serialise",
+       "member": "binser",
+       "of": 3,
+       "score": 4.9
+      }
+     },
+     "kept_kb": 24.4,
+     "lacks": [],
+     "lines": 627,
+     "load_ms": 0.61,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "bump": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): collision 3.9/5 best of 3; loads in 0.72 ms, keeps 24.1 KB, 776 lines; lacks: collision/circle, collision/polygon | macOS, LÖVE 12.0 (2026-11-14): collision 3.9/5 best of 3; loads in 0.64 ms, keeps 24.1 KB, 776 lines; lacks: collision/circle, collision/polygon",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "collision:bump": {
+       "best": true,
+       "group": "collision",
+       "member": "bump",
+       "of": 3,
+       "score": 3.89
+      }
+     },
+     "kept_kb": 24.1,
+     "lacks": [
+      "collision/circle",
+      "collision/polygon"
+     ],
+     "lines": 776,
+     "load_ms": 0.72,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "collision:bump": {
+       "best": true,
+       "group": "collision",
+       "member": "bump",
+       "of": 3,
+       "score": 3.89
+      }
+     },
+     "kept_kb": 24.1,
+     "lacks": [
+      "collision/circle",
+      "collision/polygon"
+     ],
+     "lines": 776,
+     "load_ms": 0.64,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "cimgui-love": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): gui (cimgui) 3.8/5 (4 compared); loads in 6.87 ms, keeps 593.1 KB, 7700 lines | macOS, LÖVE 12.0 (2026-11-14): ",
+   "loads_11_5": "loads",
+   "loads_12_0": "needs-display",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "gui:cimgui": {
+       "best": false,
+       "group": "gui",
+       "member": "cimgui",
+       "of": 4,
+       "score": 3.76
+      }
+     },
+     "job": "Dear ImGui (FFI)",
+     "kept_kb": 593.1,
+     "lacks": [],
+     "lines": 7700,
+     "load_ms": 6.87,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "gui:cimgui": {
+       "best": false,
+       "group": "gui",
+       "member": "cimgui",
+       "of": 4,
+       "score": null
+      }
+     },
+     "job": "Dear ImGui (FFI)",
+     "lacks": [],
+     "loads": "needs-display",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "classic": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): classes 4.9/5 best of 4; loads in 0.28 ms, keeps 1.6 KB, 69 lines | macOS, LÖVE 12.0 (2026-11-14): classes 5.0/5 best of 4; loads in 0.18 ms, keeps 1.6 KB, 69 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "classes:classic": {
+       "best": true,
+       "group": "classes",
+       "member": "classic",
+       "of": 4,
+       "score": 4.88
+      }
+     },
+     "kept_kb": 1.6,
+     "lacks": [],
+     "lines": 69,
+     "load_ms": 0.28,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "classes:classic": {
+       "best": true,
+       "group": "classes",
+       "member": "classic",
+       "of": 4,
+       "score": 5.0
+      }
+     },
+     "kept_kb": 1.6,
+     "lacks": [],
+     "lines": 69,
+     "load_ms": 0.18,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "flux": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): tweens 4.2/5 (3 compared); loads in 0.45 ms, keeps 20.1 KB, 225 lines; lacks: tweens/nested | macOS, LÖVE 12.0 (2026-11-14): tweens 4.2/5 (3 compared); loads in 0.36 ms, keeps 20.1 KB, 225 lines; lacks: tweens/nested",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "tweens:flux": {
+       "best": false,
+       "group": "tweens",
+       "member": "flux",
+       "of": 3,
+       "score": 4.21
+      }
+     },
+     "kept_kb": 20.1,
+     "lacks": [
+      "tweens/nested"
+     ],
+     "lines": 225,
+     "load_ms": 0.45,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "tweens:flux": {
+       "best": false,
+       "group": "tweens",
+       "member": "flux",
+       "of": 3,
+       "score": 4.21
+      }
+     },
+     "kept_kb": 20.1,
+     "lacks": [
+      "tweens/nested"
+     ],
+     "lines": 225,
+     "load_ms": 0.36,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "g3d": {
+   "benchmark": "macOS, LÖVE 11.5 (2026-11-14): 3D models and a camera: not tried | macOS, LÖVE 12.0 (2026-11-14): 3D models and a camera: not tried",
+   "loads_11_5": "needs-display",
+   "loads_12_0": "needs-display",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "3D models and a camera",
+     "lacks": [],
+     "loads": "needs-display",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": false
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "3D models and a camera",
+     "lacks": [],
+     "loads": "needs-display",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "gamera": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): cameras 4.2/5 best of 2; loads in 0.62 ms, keeps 9.8 KB, 209 lines; lacks: cameras/follow | macOS, LÖVE 12.0 (2026-11-14): cameras 4.2/5 (2 compared); loads in 0.42 ms, keeps 9.8 KB, 209 lines; lacks: cameras/follow",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "cameras:gamera": {
+       "best": true,
+       "group": "cameras",
+       "member": "gamera",
+       "of": 2,
+       "score": 4.21
+      }
+     },
+     "kept_kb": 9.8,
+     "lacks": [
+      "cameras/follow"
+     ],
+     "lines": 209,
+     "load_ms": 0.62,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "cameras:gamera": {
+       "best": false,
+       "group": "cameras",
+       "member": "gamera",
+       "of": 2,
+       "score": 4.21
+      }
+     },
+     "kept_kb": 9.8,
+     "lacks": [
+      "cameras/follow"
+     ],
+     "lines": 209,
+     "load_ms": 0.42,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "hump": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): cameras (hump.camera) 4.1/5 (2 compared); classes (hump.class) 4.2/5 (4 compared); events (hump.signal) 4.3/5 best of 2; states (hump.gamestate) 5.0/5 best of 2; timers (hump.timer) 5.0/5 best of 2; tweens (hump.timer) 4.8/5 best of 3; vectors (hump.vector) 3.7/5 (3 compared); vectors (vector-light) 4.5/5 best of 3; loads in 0.30 ms, keeps 3.0 KB, 1155 lines; lacks: classes/isa, events/once, vectors/lerp, vectors/lerp… | macOS, LÖVE 12.0 (2026-11-14): cameras (hump.camera) 4.2/5 best of 2; classes (hump.class) 4.1/5 (4 compared); events (hump.signal) 4.3/5 best of 2; states (hump.gamestate) 5.0/5 best of 2; timers (hump.timer) 4.9/5 best of 2; tweens (hump.timer) 4.6/5 best of 3; vectors (hump.vector) 4.5/5 (3 compared); vectors (vector-light) 4.5/5 (3 compared); loads in 0.20 ms, keeps 3.0 KB, 1155 lines; lacks: classes/isa, events/once, vectors/lerp, vectors/lerp…",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "cameras:hump.camera": {
+       "best": false,
+       "group": "cameras",
+       "member": "hump.camera",
+       "of": 2,
+       "score": 4.12
+      },
+      "classes:hump.class": {
+       "best": false,
+       "group": "classes",
+       "member": "hump.class",
+       "of": 4,
+       "score": 4.21
+      },
+      "events:hump.signal": {
+       "best": true,
+       "group": "events",
+       "member": "hump.signal",
+       "of": 2,
+       "score": 4.29
+      },
+      "states:hump.gamestate": {
+       "best": true,
+       "group": "states",
+       "member": "hump.gamestate",
+       "of": 2,
+       "score": 5.0
+      },
+      "timers:hump.timer": {
+       "best": true,
+       "group": "timers",
+       "member": "hump.timer",
+       "of": 2,
+       "score": 5.0
+      },
+      "tweens:hump.timer": {
+       "best": true,
+       "group": "tweens",
+       "member": "hump.timer",
+       "of": 3,
+       "score": 4.75
+      },
+      "vectors:hump.vector": {
+       "best": false,
+       "group": "vectors",
+       "member": "hump.vector",
+       "of": 3,
+       "score": 3.67
+      },
+      "vectors:vector-light": {
+       "best": true,
+       "group": "vectors",
+       "member": "vector-light",
+       "of": 3,
+       "score": 4.45
+      }
+     },
+     "kept_kb": 3.0,
+     "lacks": [
+      "classes/isa",
+      "events/once",
+      "vectors/lerp",
+      "vectors/lerp",
+      "cameras/bounds"
+     ],
+     "lines": 1155,
+     "load_ms": 0.3,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "cameras:hump.camera": {
+       "best": true,
+       "group": "cameras",
+       "member": "hump.camera",
+       "of": 2,
+       "score": 4.25
+      },
+      "classes:hump.class": {
+       "best": false,
+       "group": "classes",
+       "member": "hump.class",
+       "of": 4,
+       "score": 4.08
+      },
+      "events:hump.signal": {
+       "best": true,
+       "group": "events",
+       "member": "hump.signal",
+       "of": 2,
+       "score": 4.29
+      },
+      "states:hump.gamestate": {
+       "best": true,
+       "group": "states",
+       "member": "hump.gamestate",
+       "of": 2,
+       "score": 5.0
+      },
+      "timers:hump.timer": {
+       "best": true,
+       "group": "timers",
+       "member": "hump.timer",
+       "of": 2,
+       "score": 4.88
+      },
+      "tweens:hump.timer": {
+       "best": true,
+       "group": "tweens",
+       "member": "hump.timer",
+       "of": 3,
+       "score": 4.62
+      },
+      "vectors:hump.vector": {
+       "best": false,
+       "group": "vectors",
+       "member": "hump.vector",
+       "of": 3,
+       "score": 4.45
+      },
+      "vectors:vector-light": {
+       "best": false,
+       "group": "vectors",
+       "member": "vector-light",
+       "of": 3,
+       "score": 4.45
+      }
+     },
+     "kept_kb": 3.0,
+     "lacks": [
+      "classes/isa",
+      "events/once",
+      "vectors/lerp",
+      "vectors/lerp",
+      "cameras/bounds"
+     ],
+     "lines": 1155,
+     "load_ms": 0.2,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "inspect": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): printing 5.0/5 best of 2; loads in 0.78 ms, keeps 16.3 KB, 451 lines | macOS, LÖVE 12.0 (2026-11-14): printing 5.0/5 best of 2; loads in 0.62 ms, keeps 16.7 KB, 451 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "printing:inspect": {
+       "best": true,
+       "group": "printing",
+       "member": "inspect",
+       "of": 2,
+       "score": 5.0
+      }
+     },
+     "kept_kb": 16.3,
+     "lacks": [],
+     "lines": 451,
+     "load_ms": 0.78,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "printing:inspect": {
+       "best": true,
+       "group": "printing",
+       "member": "inspect",
+       "of": 2,
+       "score": 5.0
+      }
+     },
+     "kept_kb": 16.7,
+     "lacks": [],
+     "lines": 451,
+     "load_ms": 0.62,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "json": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): serialise 3.0/5 (3 compared); loads in 0.37 ms, keeps 13.3 KB, 611 lines; findings: serialise/intkeys: libs/json/json.lua:73: invalid table: mixed or invalid key types; serialise/precision: 1/3 came back as 0.33333333333332998 | macOS, LÖVE 12.0 (2026-11-14): serialise 2.9/5 (3 compared); loads in 0.29 ms, keeps 13.4 KB, 611 lines; findings: serialise/intkeys: libs/json/json.lua:73: invalid table: mixed or invalid key types; serialise/precision: 1/3 came back as 0.33333333333332998",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [
+      "serialise/intkeys: libs/json/json.lua:73: invalid table: mixed or invalid key types",
+      "serialise/precision: 1/3 came back as 0.33333333333332998",
+      "serialise/inf: libs/json/json.lua:109: unexpected number value '-inf'",
+      "serialise/cycle: libs/json/json.lua:64: circular reference"
+     ],
+     "groups": {
+      "serialise:json": {
+       "best": false,
+       "group": "serialise",
+       "member": "json",
+       "of": 3,
+       "score": 3.0
+      }
+     },
+     "kept_kb": 13.3,
+     "lacks": [],
+     "lines": 611,
+     "load_ms": 0.37,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [
+      "serialise/intkeys: libs/json/json.lua:73: invalid table: mixed or invalid key types",
+      "serialise/precision: 1/3 came back as 0.33333333333332998",
+      "serialise/inf: libs/json/json.lua:109: unexpected number value 'inf'",
+      "serialise/cycle: libs/json/json.lua:64: circular reference"
+     ],
+     "groups": {
+      "serialise:json": {
+       "best": false,
+       "group": "serialise",
+       "member": "json",
+       "of": 3,
+       "score": 2.9
+      }
+     },
+     "kept_kb": 13.4,
+     "lacks": [],
+     "lines": 611,
+     "load_ms": 0.29,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "jumper": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): pathfinding 4.3/5 best of 2; loads in 3.61 ms, keeps 59.1 KB, 2183 lines; lacks: pathfinding/cost | macOS, LÖVE 12.0 (2026-11-14): pathfinding 4.3/5 best of 2; loads in 2.94 ms, keeps 59.1 KB, 2183 lines; lacks: pathfinding/cost",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "pathfinding:jumper": {
+       "best": true,
+       "group": "pathfinding",
+       "member": "jumper",
+       "of": 2,
+       "score": 4.29
+      }
+     },
+     "kept_kb": 59.1,
+     "lacks": [
+      "pathfinding/cost"
+     ],
+     "lines": 2183,
+     "load_ms": 3.61,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "pathfinding:jumper": {
+       "best": true,
+       "group": "pathfinding",
+       "member": "jumper",
+       "of": 2,
+       "score": 4.29
+      }
+     },
+     "kept_kb": 59.1,
+     "lacks": [
+      "pathfinding/cost"
+     ],
+     "lines": 2183,
+     "load_ms": 2.94,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "log": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): levelled console logging: works; loads in 0.54 ms, keeps 4.7 KB, 91 lines | macOS, LÖVE 12.0 (2026-11-14): levelled console logging: works; loads in 0.23 ms, keeps 4.7 KB, 91 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "levelled console logging",
+     "kept_kb": 4.7,
+     "lacks": [],
+     "lines": 91,
+     "load_ms": 0.54,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "levelled console logging",
+     "kept_kb": 4.7,
+     "lacks": [],
+     "lines": 91,
+     "load_ms": 0.23,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "love-loader": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): loading assets on a thread: finding; loads in 0.61 ms, keeps 9.9 KB, 211 lines; findings: own check: it reads its own source as `love-loader.lua` from the game's root folder, so it only works copied there, not from libs/ | macOS, LÖVE 12.0 (2026-11-14): loading assets on a thread: finding; loads in 0.24 ms, keeps 10.0 KB, 211 lines; findings: own check: it reads its own source as `love-loader.lua` from the game's root folder, so it only works copied there, not from libs/",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [
+      "own check: it reads its own source as `love-loader.lua` from the game's root folder, so it only works copied there, not from libs/"
+     ],
+     "groups": {},
+     "job": "loading assets on a thread",
+     "kept_kb": 9.9,
+     "lacks": [],
+     "lines": 211,
+     "load_ms": 0.61,
+     "loads": "loads",
+     "own": "finding",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [
+      "own check: it reads its own source as `love-loader.lua` from the game's root folder, so it only works copied there, not from libs/"
+     ],
+     "groups": {},
+     "job": "loading assets on a thread",
+     "kept_kb": 10.0,
+     "lacks": [],
+     "lines": 211,
+     "load_ms": 0.24,
+     "loads": "loads",
+     "own": "finding",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "love-nuklear": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): gui (nuklear) 4.3/5 best of 4; loads in 1.08 ms, keeps 18.0 KB | macOS, LÖVE 12.0 (2026-11-14): loads in 0.60 ms, keeps 18.1 KB",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "gui:nuklear": {
+       "best": true,
+       "group": "gui",
+       "member": "nuklear",
+       "of": 4,
+       "score": 4.34
+      }
+     },
+     "job": "Nuklear GUI (compiled)",
+     "kept_kb": 18.0,
+     "lacks": [],
+     "lines": 0,
+     "load_ms": 1.08,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "gui:nuklear": {
+       "best": false,
+       "group": "gui",
+       "member": "nuklear",
+       "of": 4,
+       "score": null
+      }
+     },
+     "job": "Nuklear GUI (compiled)",
+     "kept_kb": 18.1,
+     "lacks": [],
+     "lines": 0,
+     "load_ms": 0.6,
+     "loads": "loads",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "lovebird": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): a web console for a running game: works; loads in 0.82 ms, keeps 49.5 KB, 738 lines | macOS, LÖVE 12.0 (2026-11-14): a web console for a running game: works; loads in 0.34 ms, keeps 40.5 KB, 738 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "a web console for a running game",
+     "kept_kb": 49.5,
+     "lacks": [],
+     "lines": 738,
+     "load_ms": 0.82,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "a web console for a running game",
+     "kept_kb": 40.5,
+     "lacks": [],
+     "lines": 738,
+     "load_ms": 0.34,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "lua-discordRPC": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): Discord Rich Presence: works; loads in 0.78 ms, keeps 11.1 KB, 255 lines | macOS, LÖVE 12.0 (2026-11-14): Discord Rich Presence: works; loads in 0.39 ms, keeps 11.1 KB, 255 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "Discord Rich Presence",
+     "kept_kb": 11.1,
+     "lacks": [],
+     "lines": 255,
+     "load_ms": 0.78,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "Discord Rich Presence",
+     "kept_kb": 11.1,
+     "lacks": [],
+     "lines": 255,
+     "load_ms": 0.39,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "luajit-request": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): HTTP through libcurl: works; loads in 2.18 ms, keeps 44.6 KB, 1380 lines | macOS, LÖVE 12.0 (2026-11-14): HTTP through libcurl: works; loads in 1.99 ms, keeps 44.4 KB, 1380 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "HTTP through libcurl",
+     "kept_kb": 44.6,
+     "lacks": [],
+     "lines": 1380,
+     "load_ms": 2.18,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "HTTP through libcurl",
+     "kept_kb": 44.4,
+     "lacks": [],
+     "lines": 1380,
+     "load_ms": 1.99,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "luasteam": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): Steamworks: not tried | macOS, LÖVE 12.0 (2026-11-14): Steamworks: not tried",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "Steamworks",
+     "lacks": [],
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "Steamworks",
+     "lacks": [],
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "lume": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): collections 4.1/5 (2 compared); maths 4.1/5 (2 compared); serialise 3.8/5 (3 compared); strings 3.3/5 (2 compared); loads in 0.81 ms, keeps 40.3 KB, 773 lines; findings: serialise/precision: 1/3 came back as 0.33333333333332998; serialise/cycle: libs/lume/lume.lua:556: circular reference; lacks: collections/partition, collections/zip, collections/deepcopy, maths/wrap… | macOS, LÖVE 12.0 (2026-11-14): collections 4.1/5 (2 compared); maths 3.9/5 (2 compared); serialise 3.5/5 (3 compared); strings 3.1/5 (2 compared); loads in 0.68 ms, keeps 40.2 KB, 773 lines; findings: serialise/precision: 1/3 came back as 0.33333333333332998; serialise/cycle: libs/lume/lume.lua:556: circular reference; lacks: collections/partition, collections/zip, collections/deepcopy, maths/wrap…",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [
+      "serialise/precision: 1/3 came back as 0.33333333333332998",
+      "serialise/cycle: libs/lume/lume.lua:556: circular reference"
+     ],
+     "groups": {
+      "collections:lume": {
+       "best": false,
+       "group": "collections",
+       "member": "lume",
+       "of": 2,
+       "score": 4.12
+      },
+      "maths:lume": {
+       "best": false,
+       "group": "maths",
+       "member": "lume",
+       "of": 2,
+       "score": 4.09
+      },
+      "serialise:lume": {
+       "best": false,
+       "group": "serialise",
+       "member": "lume",
+       "of": 3,
+       "score": 3.83
+      },
+      "strings:lume": {
+       "best": false,
+       "group": "strings",
+       "member": "lume",
+       "of": 2,
+       "score": 3.34
+      }
+     },
+     "kept_kb": 40.3,
+     "lacks": [
+      "collections/partition",
+      "collections/zip",
+      "collections/deepcopy",
+      "maths/wrap",
+      "maths/remap",
+      "strings/prefix",
+      "strings/title",
+      "strings/contains"
+     ],
+     "lines": 773,
+     "load_ms": 0.81,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [
+      "serialise/precision: 1/3 came back as 0.33333333333332998",
+      "serialise/cycle: libs/lume/lume.lua:556: circular reference"
+     ],
+     "groups": {
+      "collections:lume": {
+       "best": false,
+       "group": "collections",
+       "member": "lume",
+       "of": 2,
+       "score": 4.12
+      },
+      "maths:lume": {
+       "best": false,
+       "group": "maths",
+       "member": "lume",
+       "of": 2,
+       "score": 3.91
+      },
+      "serialise:lume": {
+       "best": false,
+       "group": "serialise",
+       "member": "lume",
+       "of": 3,
+       "score": 3.53
+      },
+      "strings:lume": {
+       "best": false,
+       "group": "strings",
+       "member": "lume",
+       "of": 2,
+       "score": 3.12
+      }
+     },
+     "kept_kb": 40.2,
+     "lacks": [
+      "collections/partition",
+      "collections/zip",
+      "collections/deepcopy",
+      "maths/wrap",
+      "maths/remap",
+      "strings/prefix",
+      "strings/title",
+      "strings/contains"
+     ],
+     "lines": 773,
+     "load_ms": 0.68,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "lurker": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): hot reloading of changed files: works; loads in 8.36 ms, keeps 11.2 KB, 222 lines | macOS, LÖVE 12.0 (2026-11-14): hot reloading of changed files: finding; does not load: calls love.filesystem.isDirectory when it loads, which LÖVE 12.0 removed; findings: own check: did not load: libs/lurker/lurker.lua:55: attempt to call upvalue 'isdir' (a nil value)",
+   "loads_11_5": "loads",
+   "loads_12_0": "fails: calls love.filesystem.isDirectory when it loads, which LÖVE 12.0 removed",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "hot reloading of changed files",
+     "kept_kb": 11.2,
+     "lacks": [],
+     "lines": 222,
+     "load_ms": 8.36,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [
+      "own check: did not load: libs/lurker/lurker.lua:55: attempt to call upvalue 'isdir' (a nil value)"
+     ],
+     "groups": {},
+     "job": "hot reloading of changed files",
+     "lacks": [],
+     "loads": "fails: calls love.filesystem.isDirectory when it loads, which LÖVE 12.0 removed",
+     "own": "finding",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "lust": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): testing 4.5/5 best of 2; loads in 0.62 ms, keeps 12.4 KB, 241 lines | macOS, LÖVE 12.0 (2026-11-14): testing 4.5/5 best of 2; loads in 0.41 ms, keeps 12.4 KB, 241 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "testing:lust": {
+       "best": true,
+       "group": "testing",
+       "member": "lust",
+       "of": 2,
+       "score": 4.5
+      }
+     },
+     "kept_kb": 12.4,
+     "lacks": [],
+     "lines": 241,
+     "load_ms": 0.62,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "testing:lust": {
+       "best": true,
+       "group": "testing",
+       "member": "lust",
+       "of": 2,
+       "score": 4.5
+      }
+     },
+     "kept_kb": 12.4,
+     "lacks": [],
+     "lines": 241,
+     "load_ms": 0.41,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "middleclass": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): classes 4.3/5 (4 compared); loads in 1.02 ms, keeps 10.7 KB, 242 lines | macOS, LÖVE 12.0 (2026-11-14): classes 4.6/5 (4 compared); loads in 0.32 ms, keeps 10.7 KB, 242 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "classes:middleclass": {
+       "best": false,
+       "group": "classes",
+       "member": "middleclass",
+       "of": 4,
+       "score": 4.33
+      }
+     },
+     "kept_kb": 10.7,
+     "lacks": [],
+     "lines": 242,
+     "load_ms": 1.02,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "classes:middleclass": {
+       "best": false,
+       "group": "classes",
+       "member": "middleclass",
+       "of": 4,
+       "score": 4.62
+      }
+     },
+     "kept_kb": 10.7,
+     "lacks": [],
+     "lines": 242,
+     "load_ms": 0.32,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "moonshine": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): post-processing shader effects: works; loads in 0.59 ms, keeps 6.4 KB, 1524 lines | macOS, LÖVE 12.0 (2026-11-14): post-processing shader effects: not tried; loads in 0.25 ms, keeps 6.5 KB, 1524 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "post-processing shader effects",
+     "kept_kb": 6.4,
+     "lacks": [],
+     "lines": 1524,
+     "load_ms": 0.59,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "post-processing shader effects",
+     "kept_kb": 6.5,
+     "lacks": [],
+     "lines": 1524,
+     "load_ms": 0.25,
+     "loads": "loads",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "nativefs": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): files anywhere on the computer: works; loads in 0.81 ms, keeps 26.0 KB, 496 lines | macOS, LÖVE 12.0 (2026-11-14): files anywhere on the computer: not tried; loads in 0.53 ms, keeps 26.1 KB, 496 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "files anywhere on the computer",
+     "kept_kb": 26.0,
+     "lacks": [],
+     "lines": 496,
+     "load_ms": 0.81,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "files anywhere on the computer",
+     "kept_kb": 26.1,
+     "lacks": [],
+     "lines": 496,
+     "load_ms": 0.53,
+     "loads": "loads",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "peachy": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): Aseprite animations: works; loads in 1.01 ms, keeps 29.3 KB, 957 lines | macOS, LÖVE 12.0 (2026-11-14): Aseprite animations: not tried; loads in 0.66 ms, keeps 29.4 KB, 957 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "Aseprite animations",
+     "kept_kb": 29.3,
+     "lacks": [],
+     "lines": 957,
+     "load_ms": 1.01,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "Aseprite animations",
+     "kept_kb": 29.4,
+     "lacks": [],
+     "lines": 957,
+     "load_ms": 0.66,
+     "loads": "loads",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "profile": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): profiling 2.8/5 (2 compared); loads in 0.57 ms, keeps 6.9 KB, 227 lines; lacks: profiling/memory, profiling/stats | macOS, LÖVE 12.0 (2026-11-14): profiling 2.8/5 (2 compared); loads in 0.40 ms, keeps 6.9 KB, 227 lines; lacks: profiling/memory, profiling/stats",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "profiling:profile": {
+       "best": false,
+       "group": "profiling",
+       "member": "profile",
+       "of": 2,
+       "score": 2.84
+      }
+     },
+     "kept_kb": 6.9,
+     "lacks": [
+      "profiling/memory",
+      "profiling/stats"
+     ],
+     "lines": 227,
+     "load_ms": 0.57,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "profiling:profile": {
+       "best": false,
+       "group": "profiling",
+       "member": "profile",
+       "of": 2,
+       "score": 2.84
+      }
+     },
+     "kept_kb": 6.9,
+     "lacks": [
+      "profiling/memory",
+      "profiling/stats"
+     ],
+     "lines": 227,
+     "load_ms": 0.4,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "push": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): a virtual resolution scaled to the window: works; loads in 0.67 ms, keeps 12.4 KB, 282 lines | macOS, LÖVE 12.0 (2026-11-14): a virtual resolution scaled to the window: not tried",
+   "loads_11_5": "loads",
+   "loads_12_0": "needs-display",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "a virtual resolution scaled to the window",
+     "kept_kb": 12.4,
+     "lacks": [],
+     "lines": 282,
+     "load_ms": 0.67,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "a virtual resolution scaled to the window",
+     "lacks": [],
+     "loads": "needs-display",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "ripple": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): sound tags, volume, fades: works; loads in 0.64 ms, keeps 18.3 KB, 519 lines | macOS, LÖVE 12.0 (2026-11-14): sound tags, volume, fades: works; loads in 0.29 ms, keeps 18.3 KB, 519 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "sound tags, volume, fades",
+     "kept_kb": 18.3,
+     "lacks": [],
+     "lines": 519,
+     "load_ms": 0.64,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "sound tags, volume, fades",
+     "kept_kb": 18.3,
+     "lacks": [],
+     "lines": 519,
+     "load_ms": 0.29,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "semver": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): version numbers: works; loads in 0.61 ms, keeps 10.9 KB, 210 lines | macOS, LÖVE 12.0 (2026-11-14): version numbers: works; loads in 0.29 ms, keeps 10.9 KB, 210 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "version numbers",
+     "kept_kb": 10.9,
+     "lacks": [],
+     "lines": 210,
+     "load_ms": 0.61,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "version numbers",
+     "kept_kb": 10.9,
+     "lacks": [],
+     "lines": 210,
+     "load_ms": 0.29,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "sock": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): networking (ENet): works; loads in 1.45 ms, keeps 43.9 KB, 1403 lines | macOS, LÖVE 12.0 (2026-11-14): networking (ENet): works; loads in 1.21 ms, keeps 44.5 KB, 1403 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "networking (ENet)",
+     "kept_kb": 43.9,
+     "lacks": [],
+     "lines": 1403,
+     "load_ms": 1.45,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "networking (ENet)",
+     "kept_kb": 44.5,
+     "lacks": [],
+     "lines": 1403,
+     "load_ms": 1.21,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "sti": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): Tiled maps: works; loads in 1.51 ms, keeps 53.1 KB, 2436 lines | macOS, LÖVE 12.0 (2026-11-14): Tiled maps: not tried; loads in 1.07 ms, keeps 53.3 KB, 2436 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "Tiled maps",
+     "kept_kb": 53.1,
+     "lacks": [],
+     "lines": 2436,
+     "load_ms": 1.51,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "Tiled maps",
+     "kept_kb": 53.3,
+     "lacks": [],
+     "lines": 2436,
+     "load_ms": 1.07,
+     "loads": "loads",
+     "own": "not tried",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "suit": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): gui 4.1/5 (4 compared); loads in 2.57 ms, keeps 56.4 KB, 1114 lines | macOS, LÖVE 12.0 (2026-11-14): loads in 2.36 ms, keeps 56.6 KB, 1114 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {
+      "gui:suit": {
+       "best": false,
+       "group": "gui",
+       "member": "suit",
+       "of": 4,
+       "score": 4.06
+      }
+     },
+     "kept_kb": 56.4,
+     "lacks": [],
+     "lines": 1114,
+     "load_ms": 2.57,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {
+      "gui:suit": {
+       "best": false,
+       "group": "gui",
+       "member": "suit",
+       "of": 4,
+       "score": null
+      }
+     },
+     "kept_kb": 56.6,
+     "lacks": [],
+     "lines": 1114,
+     "load_ms": 2.36,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "tiny-ecs": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): entities, components, systems: works; loads in 0.69 ms, keeps 19.0 KB, 868 lines | macOS, LÖVE 12.0 (2026-11-14): entities, components, systems: works; loads in 0.40 ms, keeps 19.0 KB, 868 lines",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [],
+     "groups": {},
+     "job": "entities, components, systems",
+     "kept_kb": 19.0,
+     "lacks": [],
+     "lines": 868,
+     "load_ms": 0.69,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [],
+     "groups": {},
+     "job": "entities, components, systems",
+     "kept_kb": 19.0,
+     "lacks": [],
+     "lines": 868,
+     "load_ms": 0.4,
+     "loads": "loads",
+     "own": "works",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  },
+  "tween": {
+   "benchmark": "macOS, LÖVE 11.5, window (2026-11-14): tweens 2.9/5 (3 compared); loads in 0.68 ms, keeps 23.4 KB, 368 lines; findings: tweens/nested: x arrives, but the sibling pos.y is gone once the tween ends (its final copy replaces the sub-table); lacks: tweens/chain, tweens/stop | macOS, LÖVE 12.0 (2026-11-14): tweens 3.0/5 (3 compared); loads in 0.56 ms, keeps 23.4 KB, 368 lines; findings: tweens/nested: x arrives, but the sibling pos.y is gone once the tween ends (its final copy replaces the sub-table); lacks: tweens/chain, tweens/stop",
+   "loads_11_5": "loads",
+   "loads_12_0": "loads",
+   "results": {
+    "macOS|11.5": {
+     "findings": [
+      "tweens/nested: x arrives, but the sibling pos.y is gone once the tween ends (its final copy replaces the sub-table)"
+     ],
+     "groups": {
+      "tweens:tween": {
+       "best": false,
+       "group": "tweens",
+       "member": "tween",
+       "of": 3,
+       "score": 2.88
+      }
+     },
+     "kept_kb": 23.4,
+     "lacks": [
+      "tweens/chain",
+      "tweens/stop"
+     ],
+     "lines": 368,
+     "load_ms": 0.68,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "11.5",
+      "platform": "macOS",
+      "window": true
+     }
+    },
+    "macOS|12.0": {
+     "findings": [
+      "tweens/nested: x arrives, but the sibling pos.y is gone once the tween ends (its final copy replaces the sub-table)"
+     ],
+     "groups": {
+      "tweens:tween": {
+       "best": false,
+       "group": "tweens",
+       "member": "tween",
+       "of": 3,
+       "score": 3.0
+      }
+     },
+     "kept_kb": 23.4,
+     "lacks": [
+      "tweens/chain",
+      "tweens/stop"
+     ],
+     "lines": 368,
+     "load_ms": 0.56,
+     "loads": "loads",
+     "run": {
+      "date": "2026-11-14",
+      "love": "12.0",
+      "platform": "macOS",
+      "window": false
+     }
+    }
+   }
+  }
+ }
+}

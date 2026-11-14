@@ -38,6 +38,7 @@ summary = "Human-readable representations of Lua tables."
 name = "tween"
 git = "https://github.com/kikito/tween.lua"
 module = "tween"
+caution = "When a tween of a nested table ends, the table's other fields are lost (tweening `pos.x` deletes `pos.y`): tween flat fields, or use hump.timer."
 summary = "Tweening and easing functions."
 
 [[library]]
@@ -111,6 +112,7 @@ summary = "Customizable Lua serializer."
 name = "HC"
 git = "https://github.com/vrld/HC"
 module = "HC"
+caution = "`HC:raycast` finds nothing for a ray heading right or down (only left or up work); use shape:intersectionsWithRay for those."
 summary = "General purpose collision detection with arbitrary shapes."
 
 # C libraries. kind = "ffi": the Lua code loads a shared library through LuaJIT's FFI.
@@ -207,6 +209,7 @@ summary = "Pathfinding on grids: A*, Dijkstra, Jump Point Search and others."
 name = "g3d"
 git = "https://github.com/groverburger/g3d"
 module = "g3d"
+caution = "Require it as `libs.g3d.g3d` (its path from the game's folder): it finds its shader from the name it was required by, so `require \"g3d\"` cannot find it."
 summary = "Simple 3D: load models, camera, collisions, in plain LÖVE."
 
 [[library]]
@@ -250,6 +253,7 @@ summary = "Aseprite animations: load the .json and .png Aseprite exports, play t
 name = "love-loader"
 git = "https://github.com/kikito/love-loader"
 module = "love-loader"
+caution = "It reads its own source as `love-loader.lua` from the game's root folder, so copy that one file there; it does not work from libs/."
 summary = "Loads images, sounds and fonts in a thread with a progress count, so a loading screen can draw."
 
 [[library]]
