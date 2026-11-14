@@ -165,12 +165,13 @@ function T.run(core)
   if nk.status == "PASS" then
     local gui = require("bench.groups.gui")
     for _, row in ipairs(gui.rows) do
-      if row.impl.nuklear and (row.id == "frame" or row.id == "speed") then
+      if row.impl.nuklear and (row.id == "frame" or row.id == "speed" or row.id == "click" or row.id == "toggle") then
         local ok, err = pcall(function()
           local r = row.impl.nuklear(nk.mod)
-          if type(r) == "function" then for _ = 1, 5 do r() end end
+          if type(r) == "function" then for _ = 1, 5 do r() end; return true end
+          return r
         end)
-        check(ok, "nuklear " .. row.id .. " survives repeated frames: " .. tostring(err))
+        check(ok and err == true, "nuklear " .. row.id .. " works (and survives repeated frames): " .. tostring(err))
       end
     end
   end

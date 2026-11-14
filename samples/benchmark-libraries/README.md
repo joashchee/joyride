@@ -60,7 +60,7 @@ A compiled library can abort the whole program (nuklear does, if a frame is not 
 - In JoyrIDE: **Samples… > Benchmark Libraries**, then **Run**. Comparisons that draw (the immediate-mode GUIs, anim8, moonshine, g3d, push, peachy, sti) only run with a window.
 - With a LÖVE on the command line: `love samples/benchmark-libraries`.
 - Without a window: `love samples/benchmark-libraries --report` runs everything that needs no screen, prints the report, saves it and the Markdown tables (`benchmark-libraries-<platform>-<LÖVE version>.txt` and `.md`, in the save folder; the paths go to stderr) and exits 1 only if a library that should load did not. A comparison cell that comes out wrong is a *result*, shown as `INFO`, not a failure.
-- Without a GPU: `love samples/benchmark-libraries --selftest` drives every screen against mocks (1093 checks).
+- Without a GPU: `love samples/benchmark-libraries --selftest` drives every screen against mocks (1095 checks).
 - Plain LuaJIT: `luajit tests/unit.lua` (2300 checks: the harness, the ratings, every group's shape, what each library does).
 
 Auto-Port may flag `ffi` use in nativefs, luajit-request and the other FFI libraries for the web: they are skipped there on purpose (the web profile has no FFI).
@@ -74,3 +74,7 @@ Tested here (`joyride-core/tests/benchmark_libraries_sample.rs`, `tests/unit.lua
 ## Licences
 
 The project's own code is MIT. Each library keeps its own licence file in `libs/<name>/` (all MIT or Zlib; `moonshine` and `hump` carry theirs in the README and the file headers). The UI font (`assets/fonts/vga.woff`) is IBM VGA 8x16 by VileR, CC BY-SA 4.0 (`LICENSE-vga-font.txt`).
+
+## The GUI click rows
+
+suit, nuklear and cimgui are clicked by a simulated mouse (a press and release on a button, a tick on a checkbox, a drag across a slider), so they are compared on whether input works, not only on drawing. nuklear's button reports on the frame after the release and its slider moves only when the press starts on the knob; cimgui is fed straight through ImGui's own input queue (`imgui.love`'s handlers ignore a mouse the window has not focused). Both were worked out against mocked drawing under real LÖVE (nuklear's are in the selftest; cimgui's are not, since the selftest does not load it). Slab has no row: its own mouse module is not driven. The saved window run predates these rows.
