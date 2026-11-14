@@ -30,3 +30,6 @@ build/
 # Claude Code settings and the maintainer's notes for this checkout only
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Compiled parts of the C libraries benchmarked by samples/benchmark-libraries (tools/build-binaries.sh): per platform, never committed
+samples/benchmark-libraries/bin/

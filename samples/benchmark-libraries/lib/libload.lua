@@ -15,7 +15,7 @@ for _, e in ipairs(catalog) do L.by[e.name] = e end
 L.deps = { lurker = { "lume" } }
 
 -- Libraries that cannot be required without a window (they build images, fonts or shaders as they load).
-L.windowLibs = { g3d = true, push = true, Slab = true }
+L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true }
 
 -- A library that is known not to load on a LÖVE major version, and why: a finding about the library, not a failure of this project.
 -- (Checked against the real LÖVE binaries; the report says INFO, not FAIL.)
@@ -65,10 +65,48 @@ local function looksLikeMissingBinary(msg)
   return false
 end
 
+-- The compiled parts, built by tools/build-binaries.sh into bin/ beside the game (never in the repository).
+local OS_FILES = {
+  ["OS X"] = { nuklear = "nuklear.so", cimgui = "cimgui.dylib", discord = "libdiscord-rpc.dylib" },
+}
+-- `preload`: a shared library the Lua side opens by its bare name, which is first opened by full path so the bare name then resolves.
+L.binaries = {
+  ["love-nuklear"] = { key = "nuklear" },
+  ["cimgui-love"] = { key = "cimgui" },
+  ["lua-discordRPC"] = { key = "discord", preload = true },
+}
+
+--- The folder holding the compiled parts: bin/ in the game's own folder (a C module cannot be opened from inside a .love file).
+function L.binDir()
+  local base = "."
+  if love and love.filesystem and love.filesystem.getSource then base = love.filesystem.getSource() end
+  return base .. "/bin"
+end
+
+--- The full path of a library's compiled part on this OS, or nil when it is not there (or this OS has no recipe for it).
+function L.binaryPath(name)
+  local b = L.binaries[name]
+  local os_ = (love and love.system and love.system.getOS and love.system.getOS()) or "OS X"
+  local file = b and OS_FILES[os_] and OS_FILES[os_][b.key]
+  if not file then return nil end
+  local path = L.binDir() .. "/" .. file
+  local f = io.open(path, "rb")
+  if f then f:close(); return path end
+end
+
+--- Puts bin/ on the C module path; returns the function that puts it back.
+local function cpathOn()
+  local saved, bin = package.cpath, L.binDir()
+  package.cpath = bin .. "/?.so;" .. bin .. "/?.dylib;" .. saved
+  return function() package.cpath = saved end
+end
+
 --- Whether this run can load a library of this kind. Returns true, or false and why (a SKIP).
 function L.canLoad(entry, env)
   env = env or {}
-  if entry.kind == "native" then return false, "a compiled module that is not bundled here: " .. (entry.native or "needs its binary") end
+  if entry.name == "luasteam" then return false, "needs Valve's Steamworks SDK, which cannot be redistributed or built here: " .. (entry.native or "") end
+  if entry.kind == "native" and not L.binaryPath(entry.name) then return false, "a compiled module that is not built here (tools/build-binaries.sh): " .. (entry.native or "needs its binary") end
+  if entry.kind == "ffi" and L.binaries[entry.name] and not L.binaryPath(entry.name) then return false, "its binary is not built here (tools/build-binaries.sh): " .. (entry.native or "") end
   if entry.kind == "ffi" then
     if env.ffi == "none" or not rawget(_G, "jit") then return false, "this platform has no FFI" end
   end
@@ -91,6 +129,9 @@ function L.load(name, env)
   for k in pairs(package.loaded) do before[k] = true end
   local saved = getPath()
   setPath(roots(name))
+  local cpathOff = cpathOn()
+  local bpath = L.binaryPath(name)
+  if bpath and L.binaries[name].preload and rawget(_G, "jit") then pcall(require("ffi").load, bpath) end
   collectgarbage(); collectgarbage()
   -- A library that prints when it is required (lurker does) would write into the middle of a report: its output is counted and dropped.
   local realPrint, printed = print, 0
@@ -99,6 +140,7 @@ function L.load(name, env)
   local okr, mod = pcall(require, e.module)
   local t1 = os.clock()
   print = realPrint
+  cpathOff()
   res.printed = printed
   collectgarbage(); collectgarbage()
   local m1 = collectgarbage("count")
@@ -115,7 +157,7 @@ function L.load(name, env)
   -- "No window" means no graphics module, or a graphics module with no window open (the self-test's mock has the first and not the second).
   local hasWindow = love and love.graphics ~= nil and not (love.window and love.window.isOpen and not love.window.isOpen())
   local needsBinary = e.native and e.native:find("^Needs") ~= nil
-  if e.kind == "ffi" and (needsBinary or looksLikeMissingBinary(msg)) then
+  if e.kind == "ffi" and not bpath and (needsBinary or looksLikeMissingBinary(msg)) then
     res.status, res.detail = "SKIP", "its binary is not here: " .. (e.native or msg)
   elseif not hasWindow and (L.windowLibs[name] or msg:find("graphics", 1, true) or msg:find("window", 1, true) or msg:find("getDimensions", 1, true) or msg:find("getWidth", 1, true) or msg:find("mouse", 1, true) or msg:find("keyboard", 1, true) or msg:find("joystick", 1, true)) then
     res.status, res.detail = "SKIP", "needs a window (" .. msg:sub(1, 60) .. ")"
@@ -133,7 +175,9 @@ end
 function L.require(name, module)
   local saved = getPath()
   setPath(roots(name))
+  local off = cpathOn()
   local ok, mod = pcall(require, module)
+  off()
   setPath(saved)
   if not ok then error(mod, 0) end
   return mod
@@ -144,7 +188,9 @@ end
 function L.withPath(name, fn)
   local saved = getPath()
   setPath(roots(name))
+  local off = cpathOn()
   local ok, a, b = pcall(fn)
+  off()
   setPath(saved)
   if not ok then error(a, 0) end
   return a, b

@@ -156,6 +156,14 @@ fn the_report_runs_on_each_real_love_with_no_fail() {
                 assert!(loaded, "LÖVE {ver}: {} should load: {line}", e.name);
             }
         }
+        // The compiled parts, when tools/build-binaries.sh has been run: nuklear and discord-rpc load, and discord-rpc starts and stops.
+        if sample().join("bin/nuklear.so").exists() {
+            assert!(out.lines().any(|l| l.starts_with("PASS love-nuklear:")), "LÖVE {ver}: nuklear should load\n{out}");
+            assert!(out.lines().any(|l| l.starts_with("PASS lua-discordRPC:")), "LÖVE {ver}: lua-discordRPC should load");
+            assert!(out.lines().any(|l| l.starts_with("PASS lua-discordRPC: Discord Rich Presence:")), "LÖVE {ver}: discord-rpc should start and stop");
+        }
+        // luasteam needs Valve's SDK, which is never built here.
+        assert!(out.lines().any(|l| l.starts_with("SKIP luasteam:") && l.contains("Steamworks SDK")), "LÖVE {ver}: luasteam");
         // lurker really does not load on 12.0 (it calls a function LÖVE removed): a finding, shown as INFO and not as a FAIL.
         if ver == "12.0" {
             assert!(out.lines().any(|l| l.starts_with("INFO lurker:") && l.contains("known on this LÖVE")), "LÖVE 12.0: lurker's incompatibility should be reported as a finding");

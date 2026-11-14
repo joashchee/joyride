@@ -49,6 +49,10 @@ Tables: `results/macos-11.5.md`; reports: `results/macos-11.5.txt`, `results/mac
 - hump.class has no type test; batteries.state_machine cannot pass arguments to a state; batteries.pretty does not show metatables; batteries.assert compares tables by identity.
 - lurker does not load on LÖVE 12.0 (it calls `love.filesystem.isDirectory`, removed there); love-loader and g3d only work with their files at the game's root, not in `libs/`.
 
+## The compiled libraries
+
+`sh tools/build-binaries.sh` builds, from source and universal (arm64 and x86_64), **love-nuklear** (a C module), **cimgui** (Dear ImGui 1.92 by CMake) and Discord's **discord-rpc**, into `bin/` (git-ignored: a binary is per platform). With them, nuklear and discord-rpc load and discord-rpc starts and stops (checked on LÖVE 11.5 and 12.0); cimgui loads its binary and then needs a window. Without them those libraries are `SKIP`, as before. macOS only so far; Linux and Windows need the same three builds. luasteam is not built (Steamworks SDK).
+
 ## Run it
 
 - In JoyrIDE: **Samples… > Benchmark Libraries**, then **Run**. Comparisons that draw (the immediate-mode GUIs, anim8, moonshine, g3d, push, peachy, sti) only run with a window.
@@ -63,7 +67,7 @@ Auto-Port may flag `ffi` use in nativefs, luajit-request and the other FFI libra
 
 Tested here (`joyride-core/tests/benchmark_libraries_sample.rs`, `tests/unit.lua`, `tests/selftest.lua`): `libs/` is the curated list at its pinned commits with no compiled files or SDK; the headless report on the real LÖVE 11.5 and 12.0 (no FAIL, every library accounted for, the findings above); the project rebuilt by JoyrIDE's pipeline for PortMaster, mobile and web and recognised under each shim (FFI libraries skipped on the web); every screen driven against mocks; lint-clean at 11.5 and 12.0.
 
-**Not tested** (needs a display or a device): the windowed comparison and window-only checks have been run once, by the maintainer on a Mac (suit, Slab, anim8, push worked; the suit click rows, the camera rows with a real window, moonshine and g3d were then fixed or recorded as findings and are not re-seen); peachy and sti only confirm their API; real drawing; a controller, touch screen or phone; the compiled libraries (luasteam, love-nuklear, cimgui-love, lua-discordRPC), which have no binary here; any platform other than macOS.
+**Not tested** (needs a display or a device): the windowed comparison and window-only checks have been run once, by the maintainer on a Mac (suit, Slab, anim8, push worked; the suit click rows, the camera rows with a real window, moonshine and g3d were then fixed or recorded as findings and are not re-seen); peachy and sti only confirm their API; real drawing; a controller, touch screen or phone; luasteam, which needs Valve's Steamworks SDK (a partner login; it may not be redistributed), so it is never built; the windowed rows of love-nuklear and cimgui-love, whose binaries load but whose drawing has not been seen; any platform other than macOS.
 
 ## Licences
 

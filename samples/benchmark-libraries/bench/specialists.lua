@@ -125,10 +125,31 @@ S.list = {
       log.level = "trace"
       return type(log.error) == "function" and log.level == "trace", "levels set; messages go to the console (and a file when asked)"
     end },
-  { lib = "lua-discordRPC", job = "Discord Rich Presence", run = function() return "skip", "needs Discord's library" end },
-  { lib = "luasteam", job = "Steamworks", run = function() return "skip", "needs Steam's library" end },
-  { lib = "love-nuklear", job = "Nuklear GUI (compiled)", run = function() return "skip", "needs its compiled module" end },
-  { lib = "cimgui-love", job = "Dear ImGui (FFI)", run = function() return "skip", "needs its compiled library" end },
+  { lib = "lua-discordRPC", job = "Discord Rich Presence",
+    run = function(discord)
+      -- Starts Discord's client library (a local connection attempt, no account, nothing sent) and shuts it down again.
+      silently(function() discord.initialize("0", false); discord.runCallbacks(); discord.shutdown() end)
+      return true, "discord-rpc, built from source, started and stopped; no presence was sent (Discord itself need not be running)"
+    end },
+  { lib = "luasteam", job = "Steamworks", run = function() return "skip", "needs Valve's Steamworks SDK" end },
+  { lib = "love-nuklear", job = "Nuklear GUI (compiled)", needs = "window",
+    run = function(nuklear)
+      local ui = nuklear.newUI()
+      ui:frameBegin()
+      if ui:windowBegin("Check", 10, 10, 200, 100, "border", "title") then ui:layoutRow("dynamic", 30, 1); ui:label("Hello"); ui:button("OK") end
+      ui:windowEnd(); ui:frameEnd(); ui:draw()
+      return true, "a window with a label and a button laid out and drawn"
+    end },
+  { lib = "cimgui-love", job = "Dear ImGui (FFI)", needs = "window",
+    run = function(imgui)
+      imgui.love.Init()
+      imgui.love.Update(1 / 60)
+      imgui.NewFrame()
+      imgui.Begin("Check"); imgui.Button("OK"); imgui.End()
+      imgui.Render()
+      imgui.love.RenderDrawLists()
+      return true, "a window with a button laid out and drawn"
+    end },
 }
 
 --- Run one specialist's check. Returns a cell: { status, note, ms }.

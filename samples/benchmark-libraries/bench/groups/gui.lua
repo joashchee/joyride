@@ -1,6 +1,6 @@
 -- Immediate-mode GUIs: you call a function for every widget, every frame, and it returns whether it was used. They draw with LÖVE, so
 -- every cell here needs a window: a headless run marks them SKIP, a run on a screen tries them. nuklear and cimgui are compiled
--- libraries that are not bundled (SKIP wherever they are not found).
+-- libraries built by tools/build-binaries.sh into bin/ (SKIP wherever that has not been run).
 
 local function frame(fn) local ok, e = pcall(fn); if not ok then error(e, 0) end; return true end
 
@@ -36,8 +36,22 @@ return {
           Slab.Draw()
           return true
         end,
-        nuklear = function() return "skip", "a compiled module that is not bundled" end,
-        cimgui = function() return "skip", "a compiled library that is not bundled" end,
+        nuklear = function(nuklear)
+          local ui = nuklear.newUI()
+          ui:frameBegin()
+          if ui:windowBegin("benchmark", 10, 10, 200, 150, "border", "title") then
+            ui:layoutRow("dynamic", 24, 1); ui:label("Benchmark"); ui:button("OK")
+          end
+          ui:windowEnd(); ui:frameEnd(); ui:draw()
+          return true
+        end,
+        cimgui = function(imgui)
+          if not imgui._benchmarkStarted then imgui.love.Init(); imgui._benchmarkStarted = true end
+          imgui.love.Update(1 / 60); imgui.NewFrame()
+          imgui.Begin("benchmark"); imgui.Text("Benchmark"); imgui.Button("OK"); imgui.End()
+          imgui.Render(); imgui.love.RenderDrawLists()
+          return true
+        end,
       } },
     { id = "click", label = "Click a button", kind = "feature", about = "Press and release a simulated mouse over a button: the button reports a hit (once).",
       impl = {
@@ -54,8 +68,8 @@ return {
           return hits == 1
         end,
         Slab = function() return "skip", "reads the real mouse, which a program cannot press" end,
-        nuklear = function() return "skip", "a compiled module that is not bundled" end,
-        cimgui = function() return "skip", "a compiled library that is not bundled" end,
+        nuklear = function() return "skip", "its mouse is not simulated by this benchmark" end,
+        cimgui = function() return "skip", "its mouse is not simulated by this benchmark" end,
       } },
     { id = "toggle", label = "Checkbox, slider", kind = "feature", about = "A simulated click flips a checkbox, and a drag across a slider changes its value.",
       impl = {
@@ -70,8 +84,8 @@ return {
           return box.checked == true and slider.value > 0
         end,
         Slab = function() return "skip", "reads the real mouse, which a program cannot press" end,
-        nuklear = function() return "skip", "a compiled module that is not bundled" end,
-        cimgui = function() return "skip", "a compiled library that is not bundled" end,
+        nuklear = function() return "skip", "its mouse is not simulated by this benchmark" end,
+        cimgui = function() return "skip", "its mouse is not simulated by this benchmark" end,
       } },
     { id = "speed", label = "100 buttons", kind = "speed", unit = "widgets/s", units = 100, about = "Lay out and update 100 buttons (not drawn).",
       expect = function(v) return v == 100, v end,
@@ -91,8 +105,25 @@ return {
           Slab.EndWindow()
           return n
         end end,
-        nuklear = false,
-        cimgui = false,
+        nuklear = function(nuklear) local ui = nuklear.newUI(); return function()
+          ui:frameBegin()
+          local n = 0
+          if ui:windowBegin("speed", 0, 0, 400, 600, "border") then
+            ui:layoutRow("dynamic", 14, 1)
+            for _ = 1, 100 do ui:button("x"); n = n + 1 end
+          end
+          ui:windowEnd(); ui:frameEnd()
+          return n
+        end end,
+        cimgui = function(imgui) return function()
+          if not imgui._benchmarkStarted then imgui.love.Init(); imgui._benchmarkStarted = true end
+          imgui.love.Update(1 / 60); imgui.NewFrame()
+          imgui.Begin("speed")
+          local n = 0
+          for _ = 1, 100 do imgui.Button("x"); n = n + 1 end
+          imgui.End(); imgui.Render()
+          return n
+        end end,
       } },
   },
 }
