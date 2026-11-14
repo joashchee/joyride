@@ -104,6 +104,17 @@ local function drawSoft(scr, s, p)
     end
     return
   end
+  if p.soft then
+    -- A list page's own buttons, on the row above the standard ones (they replace its key hint).
+    local bx = 0
+    scr:text(0, row - 1, string.rep(" ", screen.COLS), ST.body)
+    for _, b in ipairs(p.soft) do
+      local text = "[" .. b[1] .. "]"
+      scr:text(bx, row - 1, text, ST.key)
+      App.hits[#App.hits + 1] = { x = bx, y = row - 1, w = #text, h = 1, fn = b[2] }
+      bx = bx + #text + 1
+    end
+  end
   local x = 0
   for _, b in ipairs(SOFT) do
     local text = "[" .. b[1] .. "]"
@@ -269,7 +280,8 @@ function App.install(core)
       s.idle:update(dt)
       if s.idle:expired() then App.say("No input for 15 s: back to the list.", "warn"); App.go(p.parent or "home") return end
     end
-    if s.chord:update(dt, held) then s.chord.t = 0; App.say("Back."); App.go(p.parent or "home") return end
+    if App.latch and not love.keyboard.isDown("escape") then App.latch = false end
+    if s.chord:update(dt, held) then s.chord.t = 0; App.latch = true; App.say("Back."); App.go(p.parent or "home") return end
     if p.update then p.update(App, s, dt) end
   end
 
@@ -279,11 +291,20 @@ function App.install(core)
     s.input:key(k, isrepeat)
     touchIdle()
     local p = App.pages[s.page]
-    if p.key and p.key(App, s, k) then return end
+    if p.key and p.key(App, s, k, isrepeat) then return end
     local a = KEYS[k]
-    if a and not p.raw then App.act(a) end
+    if a and not p.raw then
+      -- A held key repeats: only moving through a list may repeat. Back, accept and the answers need a fresh press, and Back stays
+      -- ignored after a held Escape left a page until Escape is let go, so holding it cannot run on and quit from the list.
+      if isrepeat and (a == "back" or a == "accept" or a == "x" or a == "y") then return end
+      if a == "back" and App.latch then return end
+      App.act(a)
+    end
   end
-  function love.keyreleased(k) s.input:note("key " .. k .. " up") end
+  function love.keyreleased(k)
+    s.input:note("key " .. k .. " up")
+    if k == "escape" then App.latch = false end
+  end
   function love.textinput(t) s.input:addText(t); touchIdle() end
 
   function love.mousepressed(x, y, b, istouch)

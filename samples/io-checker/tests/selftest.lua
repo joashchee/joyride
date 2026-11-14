@@ -189,6 +189,22 @@ function T.run(core)
     for _ = 1, 80 do love.update(0.016) end
     keys.escape = nil
     check(App.s.page == "home", "holding Escape leaves the page")
+    -- Still holding it: the key repeats on the list, and that must not quit or even arm the quit.
+    local quits = 0
+    local realQuit = love.event.quit
+    love.event.quit = function() quits = quits + 1 end
+    keys.escape = true
+    for _ = 1, 20 do love.keypressed("escape", nil, true); love.update(0.016) end
+    check(quits == 0 and (s.quitT or 0) <= 0, "a held Escape does not quit or arm quitting after leaving")
+    keys.escape = nil
+    love.keyreleased("escape")
+    -- A fresh press arms it, a second quits; the soft Back button does the same.
+    press("escape")
+    check(quits == 0 and (s.quitT or 0) > 0, "one Escape on the list only asks")
+    press("escape")
+    check(quits == 1, "a second Escape quits")
+    love.event.quit = realQuit
+    s.quitT = 0
   end)
 
   step("pointer page", function()
@@ -262,9 +278,23 @@ function T.run(core)
   -- Sound: play and answer.
   step("sound answers", function()
     App.go("sound"); frame()
+    press("y"); check(s.answers.left == nil, "answering before playing does nothing")
     press("return"); check(s.answers.left == "played", "play marks the tone played")
-    press("h"); check(s.answers.left == "heard", "H marks heard")
-    press("down"); press("return"); press("n"); check(s.answers.right == "silent", "N marks silent")
+    press("y"); check(s.answers.left == "heard", "Y marks heard")
+    check(s.sel.sound == 2, "and moves on to the next tone")
+    press("return"); press("n"); check(s.answers.right == "silent", "N marks silent")
+    check(App.s.page == "sound", "answering does not leave the page")
+    -- The on-screen buttons do the same for a mouse or a finger.
+    frame()
+    local function tapButton(label)
+      for _, h in ipairs(App.hits) do
+        if h.fn and App.scr:row(h.y):sub(h.x + 1, h.x + #label + 2) == "[" .. label .. "]" then h.fn(App, s) return true end
+      end
+    end
+    check(tapButton("Play"), "a Play button is on screen")
+    check(tapButton("Heard"), "a Heard button is on screen")
+    check(s.answers.both == "heard", "the Heard button marks heard")
+    check(contains(screenText(App), "Did you hear it?"), "the instructions say what to do")
     App.go("home")
   end)
 

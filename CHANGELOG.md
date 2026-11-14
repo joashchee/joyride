@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **IO Checker: MIDI check measures the sound** (2026-11-14): the `timidity.cfg` line on the console is libmodplug finding no GUS patch set; the MIDI file still decodes and is audible (plain built-in tones, measured on macOS). The check now reports `INFO … SILENT` instead of `PASS` if a platform decodes it to silence, and the README explains the console line.
+
 ## 0.2.0 (2026-11-14)
 
 - **Choose your coding font** (2026-11-14): Settings has an *Editor font* with 13 fonts that ship with the app: JetBrains Mono, Source Code Pro, Hack, IBM Plex Mono, Inconsolata, Fira Code, Intel One Mono, DejaVu Sans Mono and Spleen (a pixel font in five sizes up to 32 by 64 cells), besides the default VGA. Each is offered only at sizes where its characters are whole screen pixels wide (small ones for a laptop, large for a big monitor), and **the window snaps** after a resize to a size that shows whole characters and whole lines in that font. Seen measuring in Chrome; not yet in the desktop window.

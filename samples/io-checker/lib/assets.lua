@@ -98,14 +98,35 @@ function L.texture(e)
   return true, ("%s %dx%d, %d mip level(s)"):format(tostring(c:getFormat()), c:getWidth(), c:getHeight(), c:getMipmapCount()), c
 end
 
+-- True when the first `seconds` of the decoder hold any sound at all (peak above a whisper).
+local function hasSound(path, seconds)
+  local d = love.sound.newDecoder(path)
+  local want = d:getSampleRate() * d:getChannelCount() * (d:getBitDepth() / 8) * seconds
+  local got = 0
+  while got < want do
+    local chunk = d:decode()
+    if not chunk then break end
+    for i = 0, chunk:getSampleCount() * chunk:getChannelCount() - 1 do
+      if math.abs(chunk:getSample(i)) > 0.001 then return true end
+    end
+    got = got + chunk:getSize()
+  end
+  return false
+end
+
 function L.audio(e)
   local d = love.sound.newDecoder(e.path)
   local dur = d.getDuration and d:getDuration() or -1
-  return true, ("%d Hz, %d ch, %d bit%s"):format(d:getSampleRate(), d:getChannelCount(), d:getBitDepth(), dur and dur >= 0 and (", %.1f s"):format(dur) or ""), d
+  local detail = ("%d Hz, %d ch, %d bit%s"):format(d:getSampleRate(), d:getChannelCount(), d:getBitDepth(), dur and dur >= 0 and (", %.1f s"):format(dur) or "")
+  -- MIDI is rendered from a GUS patch set (timidity.cfg) that desktop LOVE does not bring. Without one
+  -- libmodplug prints "can not open .../timidity.cfg" on the console and falls back to plain built-in
+  -- tones (measured on macOS, LOVE 11.5: audible, peak 0.73). A platform that gives silence is flagged.
+  if e.type == "Music (MIDI)" and not hasSound(e.path, 10) then e.silent = true end
+  return true, detail, d
 end
 
 function L.font(e)
-  local r = love.font.newRasterizer(e.path, 16)
+  local r = love.font.newRasterizer(e.path, 16, "normal", 1) -- dpiscale 1: the same numbers with or without a window
   return true, ("%d glyphs, height %d, ascent %d"):format(r:getGlyphCount(), r:getHeight(), r:getAscent()), r
 end
 
@@ -225,6 +246,10 @@ function A.check(e, ctx, model)
   if status == "INFO" and loaded then detail = tostring(detail) .. " (loaded, though this build is not expected to)" end
   if status == "INFO" and not loaded then detail = "refused (not confirmed on this platform): " .. tostring(detail) end
   if status == "FAIL" then detail = "refused: " .. tostring(detail) end
+  if e.silent and status == "PASS" then
+    status = "INFO"
+    detail = tostring(detail) .. "; but SILENT: no instrument patches (timidity.cfg) here, so the notes are not heard"
+  end
   return { entry = e, status = status, detail = detail, ms = ms, obj = obj, expect = expect }
 end
 

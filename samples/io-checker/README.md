@@ -29,13 +29,13 @@ It is the LÖVE counterpart of r3i6nos's IO Checker (`r3i6nos/docs/IO-CHECKER.md
 | Game controllers | every pad: buttons pressed and never pressed, chatter, each axis's range and rest position, the hat, rumble |
 | Sensors and vibration | `love.sensor` on 12.0 (accelerometer, gyroscope), the accelerometer-as-joystick on 11.5 phones, `love.system.vibrate` |
 | Screen | ten full-window patterns (colour bars, ramps, a checker and grid with edge and corner marks, a circle and the safe area, a motion bar that **measures the frame rate**), window, scale, safe area, orientation, renderer, limits |
-| Sound | six generated test tones (left, right, both, low, a sweep, quiet) you mark heard or silent, the output, the volume |
+| Sound | six generated test tones (left, right, both, low, a sweep, quiet): play one (Enter, A or the Play button), then say **Heard** (Y, pad X, or the button) or **Silent** (N, pad Y, or the button); the output, the volume |
 | Storage | write, read, append, list and delete in the save folder; 4 MB written and read back byte for byte; a run counter that proves saves survive a restart; plain `io` where the platform allows it |
 | System | LÖVE, LuaJIT, processors, memory, power, locale, identity, source and save folders |
 | Assets | every type below, loaded as a game would, judged against what this platform and LÖVE version are expected to do |
 | Device report | everything above in one text file, in the save folder, copyable with X |
 
-The input pages record everything and navigate nothing. Leave one by holding **Escape**, **Select+Start**, or the bar at the bottom for a second, or wait 15 seconds with no input.
+The input pages record everything and navigate nothing. Leave one by holding **Escape**, **Select+Start**, or the bar at the bottom for a second, or wait 15 seconds with no input. A held Escape leaves once and cannot run on into quitting; quitting from the list takes Back twice.
 
 Everything is the same few actions (up, down, left, right, accept, back, page up, page down, X, Y) whether it comes from a keyboard, a pad, a mouse or a finger, so the same screens work on a laptop, a handheld, a phone and a web page. The screen is a 48 by 25 grid of 8 by 16 cells in the VGA colours, drawn with the IBM VGA 8x16 font from `assets/fonts/vga.woff`, scaled to the window.
 
@@ -49,7 +49,7 @@ This is what exercises JoyrIDE's **Asset Library**. Every file under `assets/` h
 | Spritesheet, tileset | `hero-walk.png` (animated on the Assets page), `tiles.png` | Painter and Animator output |
 | Compressed texture | `dds` (BC1, BC3, BC7), `ktx` (ETC2), `pkm` (ETC1), `pvr` (PVRTC), `astc` | one block each, built by hand; whether a GPU can draw each is a separate answer, shown when you open one |
 | Sound | `wav`, `ogg`, `mp3`, `flac` | Composer's jingle, encoded four ways |
-| Music | `mid` (MIDI), `mod`, `xm`, `it`, `s3m` | |
+| Music | `mid` (MIDI), `mod`, `xm`, `it`, `s3m` | MIDI needs a GUS patch set (`timidity.cfg`); without one LÖVE prints `load_pat > can not open …/timidity.cfg` on the console and plays plain built-in tones. The check measures the decoded audio and reports `INFO … SILENT` if a platform gives none |
 | Font | `woff` (the UI font), `otf` (Source Code Pro, CFF outlines), `ttf`, `ttc`, BMFont (`fnt` and its page picture), an image font (a 3x5 hex font drawn for this project) | |
 | Video | `ogv` (Ogg Theora, no sound) | the only video LÖVE plays |
 | Shader | `glsl` | vertex and pixel stage in one file; applied to the hero on the Assets page |
@@ -66,7 +66,7 @@ This is what exercises JoyrIDE's **Asset Library**. Every file under `assets/` h
 
 - In JoyrIDE: **Samples… > IO Checker**, then **Run**. The **Screen:** button runs it as a PortMaster handheld (640x480, 720x720, 1280x720), an iPhone, an iPad or an Android phone.
 - With a LÖVE on the command line: `love samples/io-checker`.
-- Without a person or a window: `love samples/io-checker --report` runs the checks that need nobody, prints the report and exits with 1 if anything failed. This is how to check a handheld over SSH or a build in CI. Checks that need a window or a human are `SKIP`.
+- Without a person or a window: `love samples/io-checker --report` runs the checks that need nobody, prints the report, saves it as `io-checker-report-<platform>-<LÖVE version>.txt` in LÖVE's save folder for this project (on a Mac, `~/Library/Application Support/LOVE/joyride-io-checker/`; the path is printed on stderr as `Report file:`), and exits with 1 if anything failed. This is how to check a handheld over SSH or a build in CI. Checks that need a window or a human are `SKIP`.
 - Without a GPU: `love samples/io-checker --selftest` drives every screen, every asset viewer and the report against a mock of LÖVE's drawing and a fake controller, and exits 1 on any failure.
 
 Auto-Port will flag two things in this project, on purpose: `love.thread.newThread` and `io.popen` are *Blockers* for the web. Both are probes inside `pcall` that exist to find out whether the platform has them; the web shim makes them fail and the web profile expects exactly that.

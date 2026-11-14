@@ -3,7 +3,7 @@
 local screen = require("ui.screen")
 local ST = screen.ST
 
-local P = { title = "Sound", foot = "A play  X heard  Y silent  < > volume" }
+local P = { title = "Sound" }
 local tones, source = {}, nil
 
 local function play(app, s)
@@ -30,6 +30,28 @@ local function play(app, s)
   app.say(("Playing %s. Heard it? X yes, Y no."):format(t.label))
 end
 
+local function answer(app, s, heard)
+  local t = app.core.model.TONES[s.sel.sound]
+  if s.answers[t.id] == nil then app.say("Play it first (Enter, or the Play button).", "warn") return end
+  s.answers[t.id] = heard and "heard" or "silent"
+  app.say(("%s: %s."):format(t.label, heard and "heard" or "SILENT"), heard and "ok" or "warn")
+  s.sel.sound = s.sel.sound % #app.core.model.TONES + 1 -- on to the next tone
+end
+
+-- On screen for a mouse or a finger; on a keyboard Y and N (or H) answer, on a pad X and Y.
+P.soft = {
+  { "Play", function(app, s) play(app, s) end },
+  { "Heard", function(app, s) answer(app, s, true) end },
+  { "Silent", function(app, s) answer(app, s, false) end },
+}
+
+function P.key(app, s, k, isrepeat)
+  if isrepeat then return false end
+  if k == "y" or k == "h" then answer(app, s, true) return true end
+  if k == "n" then answer(app, s, false) return true end
+  return false
+end
+
 function P.draw(app, scr, s)
   local model = app.core.model
   local items = {}
@@ -48,20 +70,17 @@ function P.draw(app, scr, s)
     scr:text(2, y, screen.fit(("%-17s %s"):format(r.label, r.value), screen.COLS - 4), a.error and ST.error or ST.body)
     y = y + 1
   end
-  scr:text(2, y + 1, "Try the speaker, then headphones. On the web, sound", ST.dim)
-  scr:text(2, y + 2, "starts only after a click or key: press Play once.", ST.dim)
+  scr:text(2, y, "1. Play a tone   2. Did you hear it?   Heard or Silent", ST.strong)
+  scr:text(2, y + 1, "Keyboard: Enter plays, Y heard, N silent. Pad: A plays,", ST.dim)
+  scr:text(2, y + 2, "X heard, Y silent. Mouse or touch: the buttons below.", ST.dim)
+  scr:text(2, y + 3, "On the web, sound starts after a click or key.", ST.dim)
 end
 
 function P.act(app, s, a)
   local n = #app.core.model.TONES
   if a == "up" or a == "down" or a == "pgup" or a == "pgdn" then s.sel.sound = screen.nav(s.sel.sound or 1, n, n, a) return true end
   if a == "accept" then play(app, s) return true end
-  if a == "x" or a == "y" then
-    local t = app.core.model.TONES[s.sel.sound]
-    s.answers[t.id] = a == "x" and "heard" or "silent"
-    app.say(("%s: %s."):format(t.label, a == "x" and "heard" or "silent"), a == "x" and "ok" or "warn")
-    return true
-  end
+  if a == "x" or a == "y" then answer(app, s, a == "x") return true end
   if (a == "left" or a == "right") and love.audio then
     local v = math.max(0, math.min(1, love.audio.getVolume() + (a == "right" and 0.1 or -0.1)))
     love.audio.setVolume(v)

@@ -2,7 +2,7 @@
 local screen = require("ui.screen")
 local ST = screen.ST
 
-local P = { title = "Checks", foot = "A open  B quit" }
+local P = { title = "Checks", foot = "Enter open  Esc twice to quit" }
 
 -- id, label, the capability whose expectation it shows, and what counts as tried.
 local ITEMS = {
@@ -84,8 +84,21 @@ function P.act(app, s, a)
   s.sel.home = s.sel.home or 1
   if a == "up" or a == "down" or a == "pgup" or a == "pgdn" then s.sel.home = screen.nav(s.sel.home, #ITEMS, #ITEMS, a) return true end
   if a == "accept" then open(app, s) return true end
-  if a == "back" then love.event.quit() return true end
+  if a == "back" then
+    -- Quitting needs Back twice, so a stray press (or a held key) cannot close the app.
+    if (s.quitT or 0) > 0 then love.event.quit() return true end
+    s.quitT = 3
+    app.say("Press Back again to quit.", "warn")
+    return true
+  end
   return false
+end
+
+function P.update(app, s, dt)
+  if (s.quitT or 0) > 0 then
+    s.quitT = s.quitT - dt
+    if s.quitT <= 0 then app.say("Pick a check.") end
+  end
 end
 
 function P.tap(app, s, col, row)

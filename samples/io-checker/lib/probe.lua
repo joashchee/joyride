@@ -132,7 +132,7 @@ function P.capabilities(s)
   if accel > 0 then sensors[#sensors + 1] = "accelerometer (as a joystick)" end
   add("sensors", "Motion sensors", #sensors > 0, #sensors > 0 and table.concat(sensors, ", ") or (hasSensor and "none found" or "no love.sensor (LÖVE 11.5 has no sensor module)"))
   add("haptics", "Vibration", has(love.system, "vibrate") and (s.answers.vibrate == "felt" and true or (s.answers.vibrate == "not felt" and false or nil)) or false,
-      has(love.system, "vibrate") and (s.answers.vibrate or "press X on the Sensors page to buzz") or "love.system.vibrate is missing", true)
+      has(love.system, "vibrate") and (s.answers.vibrate or "press Buzz (or V) on the Sensors page") or "love.system.vibrate is missing", true)
 
   local windowed = love.window ~= nil and love.graphics ~= nil
   local NOWIN = "needs a window (not checked without one)"
@@ -155,7 +155,10 @@ function P.capabilities(s)
   else
     add("resizable", "Window can be resized", v.flags and v.flags.resizable or false, v.flags and ("flag " .. tostring(v.flags.resizable)) or "no window")
     add("fullscreen", "Fullscreen", has(love.window, "setFullscreen"), has(love.window, "setFullscreen") and (v.flags and v.flags.fullscreen and "on now" or "available") or "love.window.setFullscreen is missing")
-    add("safearea", "Safe area reported", has(love.window, "getSafeArea"), v.sx and ("x %d, y %d, %dx%d"):format(v.sx, v.sy, v.sw, v.sh) or "love.window.getSafeArea " .. (has(love.window, "getSafeArea") and "gave nothing" or "is missing"))
+    -- Every desktop answers getSafeArea with the whole window: only real insets (a notch, a home bar) count where none is expected.
+    local insets = v.sx and (v.sx > 0 or v.sy > 0 or v.sw < (v.w or 0) or v.sh < (v.h or 0))
+    local present = has(love.window, "getSafeArea") and (s.profile.safearea ~= "none" or insets and true or false)
+    add("safearea", "Safe area reported", present, v.sx and ("x %d, y %d, %dx%d"):format(v.sx, v.sy, v.sw, v.sh) or "love.window.getSafeArea " .. (has(love.window, "getSafeArea") and "gave nothing" or "is missing"))
   end
 
   -- Threads: start one, wait for it, read its answer.
