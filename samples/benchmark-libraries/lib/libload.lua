@@ -12,7 +12,7 @@ local L = { entries = catalog, by = {}, loaded = {}, root = "libs" }
 for _, e in ipairs(catalog) do L.by[e.name] = e end
 
 -- Libraries that need another one on the path (lurker requires lume by its bare name).
-L.deps = { lurker = { "lume" } }
+L.deps = { lurker = { "lume" }, ["lua-ljsqlite3"] = { "xsys" } }
 
 -- Libraries that cannot be required without a window (they build images, fonts or shaders as they load).
 L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true }

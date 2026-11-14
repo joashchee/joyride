@@ -577,3 +577,27 @@ caution = "Measured on the pinned commit: integers come back as 64-bit cdata (7L
 summary = "SQLite 3 through LuaJIT's FFI: connect to a file or memory, run SQL with positional and named parameters, read rows as tables."
 loads_11_5 = "unmeasured"
 loads_12_0 = "unmeasured"
+
+[[library]]
+name = "xsys"
+git = "https://github.com/stepelu/lua-xsys"
+rev = "aec247aa3a18cdc62338b8eaaec6652fb5127e98"
+licence = "MIT"
+module = "xsys"
+caution = "A helper library that lua-ljsqlite3 requires (string split and trim, and more); it adds nothing to the global string and table (it extends copies). It uses LuaJIT's FFI for a bit lookup table, so it cannot run in the web build. It bundles Templet (Peter Colberg, MIT/X11 per its LuaRocks listing; the copy has no licence file of its own, only a pointer to xsys's MIT LICENSE.TXT) and builds templates with loadstring, which only runs when you use its template functions."
+summary = "Small system helpers for LuaJIT (string split and trim, tables, templates): needed by lua-ljsqlite3."
+loads_11_5 = "loads"
+loads_12_0 = "loads"
+
+[[library]]
+name = "lua-ljsqlite3"
+git = "https://github.com/stepelu/lua-ljsqlite3"
+rev = "d7420028c1cc141ea6906b4afc467ce1f9d492f5"
+licence = "MIT"
+module = "lua-ljsqlite3"
+kind = "ffi"
+native = "Needs the SQLite 3 shared library, found by ffi.load(\"sqlite3\") when it is required: macOS has one in the system; for Windows ship sqlite3.dll beside the game, and for Linux, Android and iOS ship libsqlite3 (the sqlite.org amalgamation builds one; public domain)."
+caution = "Require it as `lua-ljsqlite3` (the folder is named after the repository; its README says `ljsqlite3`), with xsys in libs/ too. Measured on the pinned commit: integers come back as 64-bit cdata (7LL: equal to 7, exact up to 2^63, but not a table key); `exec` returns results by column (`r.a[1]`, not rows); `rowexec` raises \"multiple records returned\" unless the query gives exactly one row (add LIMIT 1); booleans cannot be bound (an error); a closed connection raises a clear error. Real BLOBs, text with NUL bytes and several statements in one `exec` all work. Not changed since 2018. Require raises if the SQLite library cannot be found."
+summary = "SQLite 3 through LuaJIT's FFI: prepared statements, typed values, Lua scalar and aggregate functions, a command-line style shell. Needs xsys in Libraries too."
+loads_11_5 = "unmeasured"
+loads_12_0 = "unmeasured"

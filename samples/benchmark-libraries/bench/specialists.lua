@@ -105,6 +105,30 @@ S.list = {
       local ok = #rows == 2 and rows[1].name == "Ada" and rows[1].points == 10 and rows[2].ratio == 1.25 and changed == 1 and n == 2
       return ok, "positional and named parameters, rows as tables, a row count; integers come back as 64-bit cdata (equal to 10, not a table key)"
     end },
+  { lib = "lua-ljsqlite3", job = "SQLite databases",
+    run = function(sql)
+      local conn = sql.open(":memory:")
+      conn:exec("CREATE TABLE score (name TEXT, points INTEGER, ratio REAL, raw BLOB)")
+      local insert = conn:prepare("INSERT INTO score VALUES (?, ?, ?, ?)")
+      insert:reset():bind("Ada", 10, 0.5, "a\0b"):step()
+      insert:reset():bind("Bo", 7, 1.25, nil):step()
+      local top = conn:rowexec("SELECT name FROM score ORDER BY points DESC LIMIT 1")
+      local all = conn:exec("SELECT name, points, ratio, raw FROM score ORDER BY points DESC")   -- by column
+      local count = conn:rowexec("SELECT count(*) FROM score")
+      conn:setscalar("double", function(x) return x * 2 end)
+      local doubled = conn:rowexec("SELECT double(21)")
+      insert:close(); conn:close()
+      local ok = top == "Ada" and #all.name == 2 and all.name[2] == "Bo" and all.points[1] == 10 and all.ratio[2] == 1.25 and #all.raw[1] == 3 and count == 2 and doubled == 42
+      return ok, "prepared statements, results by column, a text-with-NUL round trip, a Lua function called from SQL; integers come back as 64-bit cdata (equal to 10, not a table key)"
+    end },
+  { lib = "xsys", job = "string and table helpers (needed by lua-ljsqlite3)",
+    run = function(xsys)
+      local parts = xsys.string.split("a, b ,c", ",")
+      local trimmed = xsys.string.trim("  hi  ")
+      local joined = xsys.table.union({ a = 1 }, { b = 2 })
+      local clean = rawget(string, "split") == nil and rawget(table, "union") == nil
+      return #parts == 3 and trimmed == "hi" and joined.a == 1 and joined.b == 2 and clean, "split, trim and union work, and the global string and table are left alone (it extends copies)"
+    end },
   { lib = "ripple", job = "sound tags, volume, fades",
     run = function(ripple)
       if not (love and love.audio and love.sound) then return "skip", "needs LÖVE's audio and sound modules" end

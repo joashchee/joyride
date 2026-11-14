@@ -459,3 +459,21 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 1
 reviewed = "read the whole of sqlua/init.lua (267 lines) and ran it against the system SQLite: FFI is the point of the library, the only write is in its tests; measured and recorded its pitfalls (int64 cdata, blobs nil, NUL truncation, first statement only, double close)"
+
+[[audit]]
+name = "xsys"
+rev = "aec247aa3a18cdc62338b8eaaec6652fb5127e98"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 11
+reviewed = "read xsys (227 lines: ffi only for a lookup table; loadstring/setfenv only in its exec, from and template functions; extends copies of table and string, checked) and lua-ljsqlite3 (625 lines: its loadstring builds fixed internal code at load time; ffi.load of sqlite3), ran ljsqlite3 against the system SQLite and recorded its pitfalls; Templet's MIT/X11 licence is second-hand (LuaRocks), noted"
+
+[[audit]]
+name = "lua-ljsqlite3"
+rev = "d7420028c1cc141ea6906b4afc467ce1f9d492f5"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "read xsys (227 lines: ffi only for a lookup table; loadstring/setfenv only in its exec, from and template functions; extends copies of table and string, checked) and lua-ljsqlite3 (625 lines: its loadstring builds fixed internal code at load time; ffi.load of sqlite3), ran ljsqlite3 against the system SQLite and recorded its pitfalls; Templet's MIT/X11 licence is second-hand (LuaRocks), noted"

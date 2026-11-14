@@ -355,3 +355,21 @@ kind = "ffi"
 caution = "Measured on the pinned commit: integers come back as 64-bit cdata (7LL), equal to 7 and fine in sums, but not a table key (t[row.id] misses) and not a Lua number for JSON or tostring; a real BLOB reads as nil, and text is cut at its first NUL byte; booleans cannot be bound (an error); integers above 2^53 are stored as floats; only the first statement of an `execute` runs (\"CREATE ...; INSERT ...\" silently runs just the CREATE); `close` twice calls sqlite3_close on a freed handle. Statements are cached by their exact SQL for the life of the connection. Require raises if the SQLite library cannot be found. Build SQL with parameters, never by joining text."
 native = "Needs the SQLite 3 shared library, found by ffi.load(\"sqlite3\") when it is required: macOS has one in the system; for Windows ship sqlite3.dll beside the game, and for Linux, Android and iOS ship libsqlite3 (the sqlite.org amalgamation builds one; public domain)."
 summary = "SQLite 3 through LuaJIT's FFI: connect to a file or memory, run SQL with positional and named parameters, read rows as tables."
+
+[[library]]
+name = "xsys"
+git = "https://github.com/stepelu/lua-xsys"
+module = "xsys"
+pin = "head"   # its tag and master have the same code; master only drops the init forwarder and adds a rockspec
+caution = "A helper library that lua-ljsqlite3 requires (string split and trim, and more); it adds nothing to the global string and table (it extends copies). It uses LuaJIT's FFI for a bit lookup table, so it cannot run in the web build. It bundles Templet (Peter Colberg, MIT/X11 per its LuaRocks listing; the copy has no licence file of its own, only a pointer to xsys's MIT LICENSE.TXT) and builds templates with loadstring, which only runs when you use its template functions."
+summary = "Small system helpers for LuaJIT (string split and trim, tables, templates): needed by lua-ljsqlite3."
+
+[[library]]
+name = "lua-ljsqlite3"
+git = "https://github.com/stepelu/lua-ljsqlite3"
+module = "lua-ljsqlite3"
+kind = "ffi"
+caution = "Require it as `lua-ljsqlite3` (the folder is named after the repository; its README says `ljsqlite3`), with xsys in libs/ too. Measured on the pinned commit: integers come back as 64-bit cdata (7LL: equal to 7, exact up to 2^63, but not a table key); `exec` returns results by column (`r.a[1]`, not rows); `rowexec` raises \"multiple records returned\" unless the query gives exactly one row (add LIMIT 1); booleans cannot be bound (an error); a closed connection raises a clear error. Real BLOBs, text with NUL bytes and several statements in one `exec` all work. Not changed since 2018. Require raises if the SQLite library cannot be found."
+pin = "head"   # the last tag (v1.0.2, 2015) predates a fix to rowexec and stmt:bindkv
+native = "Needs the SQLite 3 shared library, found by ffi.load(\"sqlite3\") when it is required: macOS has one in the system; for Windows ship sqlite3.dll beside the game, and for Linux, Android and iOS ship libsqlite3 (the sqlite.org amalgamation builds one; public domain)."
+summary = "SQLite 3 through LuaJIT's FFI: prepared statements, typed values, Lua scalar and aggregate functions, a command-line style shell. Needs xsys in Libraries too."

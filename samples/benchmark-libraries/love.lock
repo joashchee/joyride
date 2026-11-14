@@ -163,6 +163,12 @@ spec = "rev=86f1a3ad9f1a1cdcb3191c951dcf099b12a0e3fc"
 commit = "86f1a3ad9f1a1cdcb3191c951dcf099b12a0e3fc"
 
 [[package]]
+name = "lua-ljsqlite3"
+git = "https://github.com/stepelu/lua-ljsqlite3"
+spec = "rev=d7420028c1cc141ea6906b4afc467ce1f9d492f5"
+commit = "d7420028c1cc141ea6906b4afc467ce1f9d492f5"
+
+[[package]]
 name = "luajit-request"
 git = "https://github.com/LPGhatguy/luajit-request"
 spec = "rev=c068a41e0fbb91bfe608e402e18421adacb0690c"
@@ -305,3 +311,9 @@ name = "tween"
 git = "https://github.com/kikito/tween.lua"
 spec = "rev=65d13504e54d85831a752e4aaa47ceba059a5035"
 commit = "65d13504e54d85831a752e4aaa47ceba059a5035"
+
+[[package]]
+name = "xsys"
+git = "https://github.com/stepelu/lua-xsys"
+spec = "rev=aec247aa3a18cdc62338b8eaaec6652fb5127e98"
+commit = "aec247aa3a18cdc62338b8eaaec6652fb5127e98"

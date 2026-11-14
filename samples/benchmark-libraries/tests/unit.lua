@@ -142,7 +142,7 @@ do
     names[e.name] = true
     check(e.module and e.rev and #e.rev == 40, e.name .. " has a module and a pinned commit")
   end
-  eq(#libload.entries, 51, "all 51 curated libraries are in the catalogue")
+  eq(#libload.entries, 53, "all 53 curated libraries are in the catalogue")
   local lock = io.open("love.lock"):read("*a")
   for _, e in ipairs(libload.entries) do
     check(lock:find('commit = "' .. e.rev .. '"', 1, true), e.name .. " is locked at its pinned commit in love.lock")
