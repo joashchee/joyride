@@ -1,0 +1,15 @@
+pocketsongs-gm.sf2: "PocketSongsGM", a General MIDI SoundFont of 128 melodic programs and one
+drum kit, 671,012 bytes.
+
+  Made by          "Vini" (its IENG field), with Polyphone
+  Its own text     ICOP "CC0 1.0 Universal"
+  Licence          CC0 1.0 Universal (public domain dedication):
+                   https://creativecommons.org/publicdomain/zero/1.0/
+  Found by         Fontastik's catalog (a pointer only), file from
+                   https://archive.org/download/wbs-full_202412/PocketSongsGM.sf2
+  SHA-256          99e5e0256ba4c657cb3126cbb63f4db4f88569a69a8bd3000b6a63e6bef5634b
+
+CC0 asks for nothing: no attribution, no notice. Its only evidence is the file's own text: the
+bank carries no comment saying where its samples came from (111 short samples named GTR2, BOTTLE,
+CHOIR2, THMP and the like), so its provenance cannot be checked beyond that statement. JoyrIDE
+credits it anyway.

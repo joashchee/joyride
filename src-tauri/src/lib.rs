@@ -17,6 +17,7 @@ mod fonts;
 mod preview;
 mod run;
 mod samples;
+mod soundfonts;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -44,6 +45,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(project::Project::default())
+        .manage(soundfonts::SoundfontCache::default())
         .manage(run::Game::default())
         .manage(preview::VideoSession::default())
         .manage(lsp::Lsp::default())
@@ -98,6 +100,8 @@ pub fn run() {
             preview::preview_file,
             preview::preview_video_frames,
             samples::sample_list,
+            soundfonts::soundfont_list,
+            soundfonts::soundfont_choose,
             samples::sample_copy,
             run::run_project,
             run::stop_project,

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { soundfontChoose, soundfontList, type SoundChoice } from "../lib/backend";
 import Panel from "./Panel";
 import { CODE_FONTS, VGA_ID, cleanSizes, fontById, loadChoice, nearestSize, saveChoice, sizeHint, type CodeChoice } from "../lib/codefonts";
 import { applyAppearance, currentAppearance, loadSwatch, PALETTES, SWATCHES, type Palette } from "../lib/theme";
@@ -18,6 +19,23 @@ export default function Settings(props: { onClose: () => void }) {
     applyAppearance("truecolor", SWATCHES.find((s) => s.id === id) ?? SWATCHES[0]);
     setPalette("truecolor");
     setSwatchId(id);
+  };
+  const [sound, setSound] = useState<SoundChoice | null>(null);
+  const [soundErr, setSoundErr] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    soundfontList()
+      .then((s) => live && setSound(s))
+      .catch((e) => live && setSoundErr(String(e)));
+    return () => {
+      live = false;
+    };
+  }, []);
+  const chooseSound = (id: string) => {
+    setSoundErr(null);
+    soundfontChoose(id)
+      .then(setSound)
+      .catch((e) => setSoundErr(String(e)));
   };
   const [code, setCode] = useState<CodeChoice>(loadChoice);
   const dpr = window.devicePixelRatio || 1;
@@ -44,6 +62,21 @@ export default function Settings(props: { onClose: () => void }) {
           </label>
         ))}
       </fieldset>
+      {sound && (
+        <fieldset className="palette-choice">
+          <legend>MIDI sound</legend>
+          {sound.fonts.map((f) => (
+            <label key={f.id}>
+              <input type="radio" name="soundfont" checked={sound.chosen === f.id} disabled={!f.available} onChange={() => chooseSound(f.id)} /> {f.name}
+              <span className="lib-meta">
+                {f.size > 0 ? `${Math.round(f.size / 1024)} KB · ` : ""}{f.licence} · {f.summary}
+              </span>
+            </label>
+          ))}
+          <span className="lib-meta">Used when a MIDI file is previewed (select the file again to hear the change). The SoundFonts ship with JoyrIDE; their licences are beside them.</span>
+          {soundErr && <span role="alert" className="panel-error">{soundErr}</span>}
+        </fieldset>
+      )}
       <fieldset className="palette-choice" disabled={palette !== "truecolor"}>
         <legend>Theme swatch{palette !== "truecolor" ? " (True colour only)" : ""}</legend>
         {SWATCHES.map((s) => (

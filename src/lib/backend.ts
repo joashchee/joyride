@@ -188,6 +188,24 @@ export const librariesDetect = (force: boolean) => invoke<LibraryOffer>("librari
 export const librariesOfferAdd = (names: string[]) => invoke<number>("libraries_offer_add", { names });
 export const librariesOfferDismiss = (names: string[]) => invoke<void>("libraries_offer_dismiss", { names });
 
+export interface SoundfontOption {
+  id: string;
+  name: string;
+  licence: string;
+  author: string;
+  /** Bytes; 0 for the built-in synthesizer. */
+  size: number;
+  summary: string;
+  available: boolean;
+}
+export interface SoundChoice {
+  chosen: string;
+  fonts: SoundfontOption[];
+}
+/** The sounds MIDI can have here: the built-in synthesizer, or a General MIDI SoundFont that ships with the app. */
+export const soundfontList = () => (inTauri ? invoke<SoundChoice>("soundfont_list") : Promise.resolve(null));
+export const soundfontChoose = (id: string) => invoke<SoundChoice>("soundfont_choose", { id });
+
 export interface SampleInfo {
   id: string;
   name: string;

@@ -48,6 +48,7 @@ pub mod samples;
 pub mod scan;
 pub mod shim;
 pub mod simulator;
+pub mod soundfonts;
 pub mod toolchain;
 pub mod web;
 pub mod trace;

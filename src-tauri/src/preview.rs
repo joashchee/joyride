@@ -201,7 +201,12 @@ pub fn find_nttplay(tools: Option<&Path>) -> Option<PathBuf> {
 
 /// Builds the preview of `rel` inside `root`, with what LÖVE does with the file.
 pub fn build(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, String> {
-    let mut p = build_inner(root, rel, nttplay)?;
+    build_with_sound(root, rel, nttplay, None)
+}
+
+/// [`build`], with MIDI played through a SoundFont when `sound` is one (the person's choice in Settings).
+pub fn build_with_sound(root: &Path, rel: &str, nttplay: Option<&Path>, sound: Option<&crate::soundfonts::Sound>) -> Result<Preview, String> {
+    let mut p = build_inner(root, rel, nttplay, sound)?;
     add_love_fact(&mut p);
     // Measured on the real LÖVE 11.5 and 12.0: a tiled OpenEXR aborts the whole game (no error to catch).
     if rel.to_ascii_lowercase().ends_with(".exr") {
@@ -237,7 +242,7 @@ fn add_love_fact(p: &mut Preview) {
     }
 }
 
-fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, String> {
+fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>, sound: Option<&crate::soundfonts::Sound>) -> Result<Preview, String> {
     let path = files::resolve(root, rel).map_err(|e| e.to_string())?;
     let real = path.canonicalize().map_err(|e| e.to_string())?;
     if !real.starts_with(root.canonicalize().map_err(|e| e.to_string())?) {
@@ -293,7 +298,7 @@ fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview
     if kind == Sniff::Unknown && looks_like_text(&head, size) {
         // Music written as text (ABC, MusicXML, RTTTL, Alda...) plays when nttplay reads it; a file it
         // does not read (any other `.xml`, `.pro`) opens in the editor as before.
-        if MUSIC_TEXT.contains(&ext.as_str()) && size <= joyride_core::files::MAX_TEXT_BYTES && music(&mut p, &real, nttplay) {
+        if MUSIC_TEXT.contains(&ext.as_str()) && size <= joyride_core::files::MAX_TEXT_BYTES && music(&mut p, &real, nttplay, sound) {
             p.editable = true;
             return Ok(p);
         }
@@ -301,7 +306,7 @@ fn build_inner(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview
         p.body = Body::Text;
         return Ok(p);
     }
-    if kind == Sniff::Unknown && size <= MAX_READ && music(&mut p, &real, nttplay) {
+    if kind == Sniff::Unknown && size <= MAX_READ && music(&mut p, &real, nttplay, sound) {
         return Ok(p);
     }
     hex(&mut p, &head);
@@ -588,6 +593,23 @@ fn members(p: &mut Preview, path: &Path) -> bool {
     true
 }
 
+/// A standard MIDI file played through `sound`'s bank: up to a minute of 16-bit stereo, little-endian. `None` for anything else.
+fn render_with_bank(path: &Path, sound: &crate::soundfonts::Sound) -> Option<Vec<u8>> {
+    let bytes = std::fs::read(path).ok()?;
+    if !bytes.starts_with(b"MThd") {
+        return None;
+    }
+    let mut player = neumetik_midi::Player::new(MUSIC_RATE);
+    player.set_sound_bank(Some(sound.bank.clone()));
+    player.load(&bytes).ok()?;
+    player.play();
+    let secs = (player.duration() + 1.0).min(MUSIC_SECONDS as f64);
+    let frames = (secs * MUSIC_RATE as f64) as usize;
+    let mut pcm = vec![0i16; frames * 2];
+    player.render_i16(&mut pcm);
+    Some(pcm.iter().flat_map(|s| s.to_le_bytes()).collect())
+}
+
 /// Wraps 16-bit stereo PCM in a WAV header.
 fn wav16(pcm: &[u8], rate: u32) -> Vec<u8> {
     let mut w = Vec::with_capacity(44 + pcm.len());
@@ -614,7 +636,7 @@ fn capital(k: &str) -> String {
 
 /// MIDI, tracker modules and music written as text, through `nttplay`: a file
 /// it can read plays, the first minute of it.
-fn music(p: &mut Preview, path: &Path, nttplay: Option<&Path>) -> bool {
+fn music(p: &mut Preview, path: &Path, nttplay: Option<&Path>, sound: Option<&crate::soundfonts::Sound>) -> bool {
     let Some(np) = nttplay else { return false };
     let probe = Command::new(np).arg("probe").arg(path).stdin(Stdio::null()).stderr(Stdio::null()).output();
     let Ok(out) = probe else { return false };
@@ -635,6 +657,19 @@ fn music(p: &mut Preview, path: &Path, nttplay: Option<&Path>) -> bool {
             "title" => p.facts.push(fact("Title", v)),
             "channels" => p.facts.push(fact("Channels", v)),
             _ => p.facts.push(fact(&capital(k), v)),
+        }
+    }
+    // A MIDI file with a SoundFont chosen: the bank plays it (nttplay has no option for a bank). Anything else, or a bank that cannot
+    // play this file, goes through nttplay as before.
+    if let Some(s) = sound {
+        if let Some(pcm) = render_with_bank(path, s) {
+            p.facts.push(fact("Sound", format!("{} (SoundFont)", s.name)));
+            if seconds.is_some_and(|d| d > MUSIC_SECONDS as f64) {
+                p.note = Some(format!("Plays the first {MUSIC_SECONDS} seconds."));
+            }
+            let wav = wav16(&pcm, MUSIC_RATE);
+            p.body = Body::Audio { data_url: Some(data_url("audio/wav", &wav)), waveform: None, seconds: Some(pcm.len() as f64 / (MUSIC_RATE as f64 * 4.0)) };
+            return true;
         }
     }
     let dec = Command::new(np)
@@ -734,7 +769,12 @@ pub async fn preview_file(app: AppHandle, project: State<'_, Project>, path: Str
     let root = project.root()?;
     let tools = crate::bundled_toolchains(&app);
     let np = find_nttplay(tools.as_deref());
-    tauri::async_runtime::spawn_blocking(move || build(&root, &path, np.as_deref())).await.map_err(|e| e.to_string())?
+    tauri::async_runtime::spawn_blocking(move || {
+        let sound = crate::soundfonts::current(&app);
+        build_with_sound(&root, &path, np.as_deref(), sound.as_ref())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 /// The next frames of an Ogg Theora video.
@@ -886,6 +926,37 @@ mod tests {
         let q = build(d.path(), "song.mid", None).unwrap();
         assert_eq!(q.kind, "binary");
         assert!(q.note.is_some());
+    }
+
+    #[test]
+    fn midi_plays_through_the_chosen_bundled_soundfont() {
+        use std::sync::Arc;
+        let Some(np) = find_nttplay(None) else { return eprintln!("no nttplay: skipped") };
+        let d = proj();
+        let song = Path::new(env!("CARGO_MANIFEST_DIR")).join("../samples/io-checker/assets/audio");
+        let mid = std::fs::read_dir(&song).unwrap().flatten().map(|e| e.path()).find(|p| p.extension().is_some_and(|x| x == "mid")).expect("the IO Checker's MIDI file");
+        std::fs::copy(&mid, d.path().join("song.mid")).unwrap();
+        let wav_of = |sound: Option<&crate::soundfonts::Sound>| -> (Preview, String) {
+            let p = build_with_sound(d.path(), "song.mid", Some(&np), sound).unwrap();
+            assert_eq!(p.kind, "music", "{:?}", p.facts);
+            let url = match &p.body {
+                Body::Audio { data_url: Some(u), .. } => u.clone(),
+                b => panic!("{b:?}"),
+            };
+            (p, url)
+        };
+        let (plain, plain_url) = wav_of(None);
+        assert!(fact_of(&plain, "Sound").is_none(), "the built-in sound says nothing");
+        let mut seen = vec![plain_url];
+        for b in joyride_core::soundfonts::BUNDLED {
+            let bytes = std::fs::read(Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/soundfonts").join(b.file)).unwrap();
+            let sound = crate::soundfonts::Sound { name: b.name.into(), bank: Arc::new(neumetik_midi::SoundBank::from_bytes(&bytes).unwrap()) };
+            let (p, url) = wav_of(Some(&sound));
+            assert_eq!(fact_of(&p, "Sound"), Some(format!("{} (SoundFont)", b.name).as_str()), "{}", b.id);
+            assert!(url.starts_with("data:audio/wav;base64,") && url.len() > 10_000, "{}: sound", b.id);
+            assert!(!seen.contains(&url), "{} sounds like another choice", b.id);
+            seen.push(url);
+        }
     }
 
     #[test]
