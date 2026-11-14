@@ -395,3 +395,11 @@ module = "patchy"
 pin = "head"   # no release tags
 caution = "Loading a 9-patch reads its metadata as a Lua file (`love.filesystem.load`) and runs it: use it only on files you ship, not on files a player supplies. Its `save` function writes the metadata and image through love.filesystem. The repository also has a demo main.lua and conf.lua, which stay inside libs/ and are never run."
 summary = "9-patch images: stretch a window or button from an image with .9.png markers."
+
+[[library]]
+name = "input"
+git = "https://github.com/xiejiangzhi/input"
+module = "input"
+pin = "head"   # no release tags
+caution = "A frame advances only when push_state runs, which bind_callbacks arranges by wrapping love.draw (and the input callbacks) when it is called: call it once, in love.load, after love.draw exists. If love.draw is defined or replaced afterwards, or push_state is never called, pressed and released stay true forever. It reads love.timer when required (do not disable that module), and calling bind_callbacks twice wraps the callbacks twice."
+summary = "Input handler: keyboard, mouse and gamepad as one state, with held-down delay and interval, pressed and released this frame, key sequences and a history."

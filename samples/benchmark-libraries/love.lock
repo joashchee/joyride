@@ -121,6 +121,12 @@ spec = "rev=be5a470da5fe8a8eb979761a4c410a392b360779"
 commit = "be5a470da5fe8a8eb979761a4c410a392b360779"
 
 [[package]]
+name = "input"
+git = "https://github.com/xiejiangzhi/input"
+spec = "rev=34735ee7f7ce07353033bb25bb213f50cd86c02a"
+commit = "34735ee7f7ce07353033bb25bb213f50cd86c02a"
+
+[[package]]
 name = "inspect"
 git = "https://github.com/kikito/inspect.lua"
 spec = "rev=691eea1fc6346be131e9749150976010f13e84f7"

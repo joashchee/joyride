@@ -9,3 +9,17 @@ decided = "2026-11-14"
 by = "the maintainer"
 # The facts as read, so the decision can be understood later (not the reason it was made).
 facts = "A Box2D wrapper by SSYGEN, last commit 2018-04-06 (830c6f9). Its own code is MIT, but only as a header in windfield/init.lua (no LICENSE file). It bundles windfield/mlib, whose mlib.lua header and README say GPL-2.0-or-later while mlib/LICENSE.md says zlib. windfield's mlib.lua is identical (header aside) to davisdude/mlib at 2015-08-17; the author relicensed upstream from GPL to zlib on 2015-10-10 (986d5f9, 'Changed to zlib license'), so windfield pairs the older GPL-headed file with the later zlib LICENSE.md. Re-checked 2026-11-14 when the maintainer asked to include it and, shown this, chose to keep it excluded (CLAUDE.md rule 2: no GPL dependencies)."
+
+[[exclude]]
+name = "light_world"
+git = "https://github.com/tanema/light_world.lua"
+decided = "2026-11-14"
+by = "CLAUDE.md rule 2 (no GPL dependencies), applied when asked to add it; the maintainer may lift it by deleting this entry"
+facts = "Dynamic 2D lights by Marcus Ihde and Tim Anema, MIT (header in lib/init.lua and a LICENSE file), 7a94adf (2025-11-03). Its lib/shaders/postshaders/phosphor.glsl is GPL-2.0-or-later (caligari's scanlines; the header quotes the author's consent to the GPL), and lib/postshader.lua reads every .glsl in that folder when the library loads, so the GPL shader is part of any game that requires it."
+
+[[exclude]]
+name = "slicy"
+git = "https://github.com/wqferr/slicy"
+decided = "2026-11-14"
+by = "CLAUDE.md rule 2 (no GPL dependencies), applied when asked to add it; the maintainer may lift it by deleting this entry"
+facts = "A 9-slice library by wqferr, 1b63884 (2022-05-29). Its LICENSE is the full GNU GPL version 3 (674 lines) and nothing else in the repository states another licence. Patchy (MIT) is the curated 9-patch library."

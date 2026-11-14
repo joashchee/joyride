@@ -84,6 +84,10 @@ rev = "08937cc0ecf72d1a964a8de6cd552c5e136bf0d4"
 git = "https://github.com/kikito/i18n.lua"
 rev = "be5a470da5fe8a8eb979761a4c410a392b360779"
 
+[dependencies.input]
+git = "https://github.com/xiejiangzhi/input"
+rev = "34735ee7f7ce07353033bb25bb213f50cd86c02a"
+
 [dependencies.inspect]
 git = "https://github.com/kikito/inspect.lua"
 rev = "691eea1fc6346be131e9749150976010f13e84f7"

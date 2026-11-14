@@ -3,6 +3,8 @@
 Checked 2026-11-14 against [love2d-community/awesome-love2d](https://github.com/love2d-community/awesome-love2d) at `8477dcd` (2026-09-26), the list the current LÖVE jam pointed to.
 Matched by repository address and name. The list has 260 library entries (tutorials, IDEs, distribution and related links left out): **43 are in `joyride-core/data/libraries.toml`** (hump's four modules count as `hump`), **217 are not**.
 
+Update 2026-11-14: `tactile`, `lighter`, `Patchy` and `input` have since been added; `Slicy` (GPL-3.0) and `Light World` (a GPL-2.0-or-later shader in its `lib/`) were refused and are in `joyride-core/data/library-exclusions.toml`. The lists below are as first checked.
+
 Nothing here has been audited, probed or licence-checked: a name on this list is only a candidate. Rule 14 (`CLAUDE.md`) applies before any is added: `scripts/audit-libraries.py`, read the findings, then `curate_libraries`, the Benchmark sample and the ingest. `windfield` is excluded for good (`joyride-core/data/library-exclusions.toml`); `MLib` is windfield's bundled math library, whose older copies carry GPL-2.0-or-later headers, so read its licence at the pinned commit first.
 
 ## Ours, on the list

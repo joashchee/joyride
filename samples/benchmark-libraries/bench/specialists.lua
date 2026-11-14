@@ -144,6 +144,21 @@ S.list = {
       local cancel = ctl:getValue() == 0
       return idle and moved and held and cancel, "button pairs as an axis (-1, 0, 1), pressed once then held, both ends cancel; keys and pads were not touched"
     end },
+  { lib = "input", job = "input state (keys, mouse, pads) with pressed, released and held",
+    run = function(input)
+      if not (love and love.timer) then return "skip", "needs LÖVE's timer module" end
+      input.init_state()
+      input.keypressed("a")                       -- what LÖVE would send, so no keyboard is needed
+      local first = input.pressed("a") and input.down("a")
+      love.timer.sleep(0.005); input.push_state()  -- the next frame
+      local later = input.pressed("a") == false and input.down("a") == true
+      input.keyreleased("a")
+      local rel = input.released("a") and input.down("a") == false
+      input.keypressed("x"); love.timer.sleep(0.005); input.push_state(); input.keypressed("y")
+      local seq = input.sequence({ "x", "y" }, 0, 5)
+      input.init_state()
+      return first and later and rel and seq == true, "pressed once then held, released, a two-key sequence; a frame only advances when push_state runs (bind_callbacks arranges that)"
+    end },
   { lib = "lighter", job = "2D lights and shadows", needs = "window",
     run = function(Lighter)
       local l = Lighter()
