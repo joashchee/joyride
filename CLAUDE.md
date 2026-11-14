@@ -71,6 +71,18 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
     background pair from `docs/ansiapps-color-contrast.md`. Run
     `checkGrid()` (dev console) on each panel after changing
     `src/ansiapps-theme.css`. Details: `docs/text-mode-ui.md`.
+14. **Every library added to or updated in the curated list is audited first**
+    (decided 2026-11-14). `python3 -I scripts/audit-libraries.py <names>` clones
+    each at its exact pinned commit (nothing is run) and flags secrets and
+    personal data, binaries, submodules, `os.execute`/`io.popen`/`ffi`,
+    `loadstring`, network and file writes, obfuscation and foreign licences.
+    **Read the findings before anything runs the code:** the audit comes before
+    `curate_libraries -- --probe` (which executes it) and before a commit.
+    Then `--stamp "what you reviewed" <names>` records it in
+    `joyride-core/data/library-audits.toml`; a test fails for a pinned commit
+    with no record, so an update (a new `rev`) must be audited again. Put real
+    hazards in the entry's `caution` (the panel shows it). Re-probe an audited
+    commit with `--probe --pinned --only <names>`, which never re-pins.
 11. **Asset licences are confirmed before use** (`docs/asset-library.md`):
     nothing is imported, added to a project or exported with an unknown
     licence unless the user overrides and says why. Imports never copy

@@ -98,6 +98,7 @@ summary = "Resolution-handling library."
 name = "sti"
 git = "https://github.com/karai17/Simple-Tiled-Implementation"
 module = "sti"
+caution = "Compressed tile layers (zlib, gzip, base64) are read through LuaJIT's FFI, so a web build needs the CSV layer format in Tiled."
 summary = "Tiled map loader and renderer."
 
 [[library]]
@@ -146,6 +147,7 @@ name = "luasteam"
 git = "https://github.com/uspgamedev/luasteam"
 module = "luasteam"
 kind = "native"
+caution = "Its repository includes Valve's Steamworks SDK (headers and binaries in sdk/), which is under Valve's own SDK agreement (sdk/LICENSE), not MIT. Read it, and keep libs/luasteam/sdk out of a game that is not released through Steam."
 native = "Needs its compiled module (luasteam.so or .dll, from the repository's releases) and Valve's Steamworks library (libsteam_api, steam_api64.dll) from the Steamworks SDK, next to the game; Steam must be running."
 summary = "The Steamworks API from Lua: achievements, stats, cloud saves, networking. Documented at luasteam.readthedocs.io; used by released Steam games."
 
@@ -164,3 +166,100 @@ module = "src"
 kind = "ffi"
 native = "Needs the cimgui shared library (cimgui.dll, libcimgui.so or .dylib) from the release with the same version number as the pinned one, kept outside the .love file, with package.cpath pointing at it. The Lua code is the repository's src folder: require it as libs.cimgui-love.src."
 summary = "Dear ImGui for LÖVE through LuaJIT's FFI (windows, menus, widgets, docking). Moved from GitHub to Codeberg."
+
+# Pure Lua (work on every platform, the web build included). Added 2026-11-14 after a gap review;
+# every one is audited (scripts/audit-libraries.py) before it is pinned and probed.
+
+[[library]]
+name = "tiny-ecs"
+git = "https://github.com/bakpakin/tiny-ecs"
+module = "tiny"
+summary = "Entity-component-system: entities, systems and worlds, filtered by components."
+
+[[library]]
+name = "Slab"
+git = "https://github.com/flamendless/Slab"
+module = "Slab"
+pin = "head"   # its newest tag (v0.9.0) is from 2021, the main branch from 2026
+caution = "Its file dialog uses LuaJIT's FFI, so it works on desktop and not in the web build."
+summary = "Immediate-mode GUI: windows, buttons, inputs, menus, dialogs, docking."
+
+[[library]]
+name = "suit"
+git = "https://github.com/vrld/SUIT"
+module = "suit"
+pin = "head"   # its newest tag (v0.10) is from 2017, the main branch from 2019
+summary = "Immediate-mode GUI: buttons, checkboxes, sliders, text inputs, layouts."
+
+[[library]]
+name = "gamera"
+git = "https://github.com/kikito/gamera"
+module = "gamera"
+summary = "Camera: position, scale, rotation, world bounds and visible-area queries."
+
+[[library]]
+name = "jumper"
+git = "https://github.com/Yonaba/Jumper"
+module = "jumper.pathfinder"
+summary = "Pathfinding on grids: A*, Dijkstra, Jump Point Search and others."
+
+[[library]]
+name = "g3d"
+git = "https://github.com/groverburger/g3d"
+module = "g3d"
+summary = "Simple 3D: load models, camera, collisions, in plain LÖVE."
+
+[[library]]
+name = "batteries"
+git = "https://github.com/1bardesign/batteries"
+module = "batteries"
+summary = "Toolkit: vectors, sets, state machines, timers, async, class, functional helpers, pooling."
+
+[[library]]
+name = "sock"
+git = "https://github.com/camchenry/sock.lua"
+module = "sock"
+summary = "Networking over LÖVE's bundled enet: clients, servers, events, serialisation hooks."
+
+[[library]]
+name = "lovebird"
+git = "https://github.com/rxi/lovebird"
+module = "lovebird"
+caution = "Development only, never ship it: it listens on port 8000 (all interfaces, accepting only 127.0.0.1) and runs any Lua typed into its web page, so a web page open in your browser may be able to reach it."
+summary = "A browser debug console for a running game: prints output, evaluates Lua, shows variables."
+
+[[library]]
+name = "profile"
+git = "https://github.com/2dengine/profile.lua"
+module = "profile"
+summary = "Sampling-free function profiler: call counts and times, with a report."
+
+[[library]]
+name = "lust"
+git = "https://github.com/bjornbytes/lust"
+module = "lust"
+summary = "Tiny test framework: describe, it, expect, before and after."
+
+[[library]]
+name = "peachy"
+git = "https://github.com/josh-perry/peachy"
+module = "peachy"
+summary = "Aseprite animations: load the .json and .png Aseprite exports, play tagged animations."
+
+[[library]]
+name = "love-loader"
+git = "https://github.com/kikito/love-loader"
+module = "love-loader"
+summary = "Loads images, sounds and fonts in a thread with a progress count, so a loading screen can draw."
+
+[[library]]
+name = "ripple"
+git = "https://github.com/tesselode/ripple"
+module = "ripple"
+summary = "Audio: tags with shared volume, instances, fades and per-sound settings."
+
+[[library]]
+name = "moonshine"
+git = "https://github.com/vrld/moonshine"
+module = "moonshine"
+summary = "Post-processing shader effects you chain: blur, CRT, glow, grain, scanlines, vignette and more."

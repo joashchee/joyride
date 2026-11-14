@@ -143,6 +143,8 @@ export interface LibraryView {
   kind: string;
   /** For a C library: the binary that has to sit next to the game. */
   native: string | null;
+  /** A warning to read before adding it. */
+  caution: string | null;
 }
 export const libraryList = (query: string) => invoke<LibraryView[]>("library_list", { query });
 export const libraryAdd = (name: string, query: string) => invoke<LibraryView[]>("library_add", { name, query });

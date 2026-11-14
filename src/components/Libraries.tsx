@@ -48,6 +48,7 @@ export default function Libraries(props: { onClose: () => void; onChanged: () =>
               <strong>{l.name}</strong> <span className="lib-meta">{l.version} · {l.licence} · {l.kind}</span>
               <div>{l.summary}</div>
               {l.native && <div className="lib-meta">Needs: {l.native}</div>}
+              {l.caution && <div className="lib-meta lib-broken">Caution: {l.caution}</div>}
               <div className={"lib-meta" + (l.broken ? " lib-broken" : "")}>{l.badge}</div>
             </div>
           </li>

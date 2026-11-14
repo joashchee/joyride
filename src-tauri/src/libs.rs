@@ -27,6 +27,8 @@ pub struct LibraryView {
     kind: String,
     /// For a C library: the binary that has to sit next to the game (desktop only; the web build has no FFI).
     native: Option<String>,
+    /// A warning to read before adding it.
+    caution: Option<String>,
 }
 
 fn views(root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
@@ -52,6 +54,7 @@ fn views(root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
             installed: installed.contains(&e.name),
             kind: e.kind.label().into(),
             native: e.native.clone(),
+            caution: e.caution.clone(),
         })
         .collect())
 }

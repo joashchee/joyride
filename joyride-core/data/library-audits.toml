@@ -1,0 +1,353 @@
+# Written by scripts/audit-libraries.py --stamp. One record per audited pinned commit.
+# A test refuses a library whose pinned commit has no record here.
+
+[[audit]]
+name = "luasteam"
+rev = "259b1d0de33061c1eec3b8c9b1e60a9b4fff21e1"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 7
+med = 2
+reviewed = "2026-11-14 reviewed: Valve Steamworks SDK headers and 7 proprietary binaries (sdk/redistributable_bin, not inspectable here) are in the repo under Valve's SDK agreement: kept with a caution; submodule luajit is not fetched"
+
+[[audit]]
+name = "lovebird"
+rev = "e84abe7b56a65ccb3ec6288e1955b6d772d41431"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 5
+reviewed = "2026-11-14 reviewed: serves a web console on port 8000 (all interfaces, 127.0.0.1 only accepted) that evaluates Lua typed in a browser: kept as development-only with a caution"
+
+[[audit]]
+name = "Slab"
+rev = "e696052474a695b93e8d73731b464d9d208a397a"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 7
+reviewed = "2026-11-14 reviewed: ffi only in the file dialog (directory listing, from MIT lovefs and public-domain luapower/fs); file writes are the dialog's save and copy; openURL on a clicked link; clipboard: kept with an FFI caution"
+
+[[audit]]
+name = "sti"
+rev = "69cdf8c7565f518c03967d0243cb54d1ee31da4e"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "2026-11-14 reviewed: ffi only to decode compressed tile layers (CSV layers need none): kept with a caution"
+
+[[audit]]
+name = "g3d"
+rev = "e8e92be6f7919a8516bf1008780cfe8c9cf5932c"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "2026-11-14 reviewed: ffi is optional (pcall) and only packs mesh memory; no network, no file writes"
+
+[[audit]]
+name = "sock"
+rev = "7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 6
+reviewed = "2026-11-14 reviewed: ffi and loadstring hits are in spec/ and examples/ copies of bitser and binser, never loaded by sock.lua, which needs only LÖVE's bundled enet"
+
+[[audit]]
+name = "tiny-ecs"
+rev = "8a3c22e74fb6e97a580c85b60bd857af47fea9a2"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 3
+reviewed = "2026-11-14 reviewed: loadstring compiles filter functions from component names quoted with %q, so no code injection"
+
+[[audit]]
+name = "bump"
+rev = "72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "2026-11-14 reviewed: the repo's one binary is img/responses.odg, a 120 KB documentation drawing; no code risk"
+
+[[audit]]
+name = "cimgui-love"
+rev = "59eaeb44433fdd0749cff633be5bb68ef37a46a8"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 16
+reviewed = "2026-11-14 reviewed: submodule cimgui is not fetched; cparser and generator.lua use io.popen(cpp) and write files only when the maintainer runs the generator by hand, and src/ never loads them; ffi is the point"
+
+[[audit]]
+name = "love-loader"
+rev = "659dd23fd8b53142dd45207cf592817795bfaeb4"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: love.thread.newThread loads its own file (how it works), nothing else"
+
+[[audit]]
+name = "tween"
+rev = "65d13504e54d85831a752e4aaa47ceba059a5035"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "2026-11-14 reviewed: findings are what the library is for (ffi into libcurl, discord-rpc, libc; a compiled module); submodules not fetched; BSD mentions are test files or Penner easing, both permissive"
+
+[[audit]]
+name = "nativefs"
+rev = "9338e01f623eea385fc38e7d792a3815a647a862"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 4
+reviewed = "2026-11-14 reviewed: findings are what the library is for (ffi into libcurl, discord-rpc, libc; a compiled module); submodules not fetched; BSD mentions are test files or Penner easing, both permissive"
+
+[[audit]]
+name = "lua-discordRPC"
+rev = "86f1a3ad9f1a1cdcb3191c951dcf099b12a0e3fc"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: findings are what the library is for (ffi into libcurl, discord-rpc, libc; a compiled module); submodules not fetched; BSD mentions are test files or Penner easing, both permissive"
+
+[[audit]]
+name = "luajit-request"
+rev = "c068a41e0fbb91bfe608e402e18421adacb0690c"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: findings are what the library is for (ffi into libcurl, discord-rpc, libc; a compiled module); submodules not fetched; BSD mentions are test files or Penner easing, both permissive"
+
+[[audit]]
+name = "love-nuklear"
+rev = "5336818494a0b80fd2ae3ce2d04c2e1bb9f9d9d3"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: findings are what the library is for (ffi into libcurl, discord-rpc, libc; a compiled module); submodules not fetched; BSD mentions are test files or Penner easing, both permissive"
+
+[[audit]]
+name = "hump"
+rev = "08937cc0ecf72d1a964a8de6cd552c5e136bf0d4"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "anim8"
+rev = "c1c12ec45fde28ffd2d6967675adcb3c3e501fa7"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "middleclass"
+rev = "dc0fb3612da5d41866a2f06076a4ecea5614ef78"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "inspect"
+rev = "691eea1fc6346be131e9749150976010f13e84f7"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "semver"
+rev = "42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "lume"
+rev = "b539dc74c7957a12722ef9c4a38554b662f10bcc"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "classic"
+rev = "e5610756c98ac2f8facd7ab90c94e1a097ecd2c6"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "flux"
+rev = "bb330231b87eabf84fbd68322f13a6320db30a41"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "json"
+rev = "d1e3b0f5d0f3d3493c7dadd0bb54135507fcebd7"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 6
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "log"
+rev = "7396ae2ee6d68829aecbc96d0b2ee1e5620c1ed7"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "lurker"
+rev = "fdd82e83b59508379128160feeadd4ff6ae2f62a"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "baton"
+rev = "3defe19f8f0da1a457ba86095e6f6a3c7ee6a8e9"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "push"
+rev = "9c165816a14c868339c3cd0d22eed65c313c8bf8"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "binser"
+rev = "15117c1d786b16249dcd1441a5be9e3244d42767"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 4
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "HC"
+rev = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "gamera"
+rev = "1e5f1b37377145d5d1106db6aed42663ddd0d36d"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "jumper"
+rev = "441176b33536f5cc0e915b93c9ab1aa3632aa2a0"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "batteries"
+rev = "89e5cd91481682dab89d5bc9be4c3b56dbbe6d2e"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "profile"
+rev = "febbb8ab53555d0290872e01181d259664d492cd"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "lust"
+rev = "7b4f12844e0e00dfc501b67f5a644232c3b275fe"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "peachy"
+rev = "1abdebbddb7a0fe8fc6c95326d1bc4c80b1e0d4e"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "ripple"
+rev = "e18db79b98546a12f560b817bfbc218d08b0fb13"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "moonshine"
+rev = "d39271e0c000e2fedbc2e3ad286b78b5a5146065"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "suit"
+rev = "17677826030a7270b474c5717af43834d583094c"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"

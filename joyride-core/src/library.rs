@@ -11,6 +11,9 @@ use crate::{err, Result};
 use serde::Deserialize;
 
 const BUNDLED: &str = include_str!("../data/libraries.toml");
+/// One record per audited pinned commit (`scripts/audit-libraries.py --stamp`).
+#[cfg(test)]
+const AUDITS: &str = include_str!("../data/library-audits.toml");
 
 /// What is known about a library on one LÖVE version.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -95,6 +98,8 @@ pub struct Entry {
     pub kind: Kind,
     /// For a C library: the binary that has to sit next to the game, and where it comes from.
     pub native: Option<String>,
+    /// A warning to read before adding it (a development tool that opens a port, say).
+    pub caution: Option<String>,
     loads_11_5: Badge,
     loads_12_0: Badge,
 }
@@ -116,6 +121,7 @@ struct RawEntry {
     summary: String,
     kind: Option<String>,
     native: Option<String>,
+    caution: Option<String>,
     loads_11_5: String,
     loads_12_0: String,
 }
@@ -151,7 +157,7 @@ impl Library {
         let entries = raw
             .library
             .into_iter()
-            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
+            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, caution: r.caution, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
             .collect();
         Ok(Library { entries })
     }
@@ -168,7 +174,7 @@ impl Library {
         self.entries
             .iter()
             .filter(|e| {
-                let hay = format!("{} {} {} {}", e.name, e.summary, e.kind.label(), e.native.as_deref().unwrap_or("")).to_lowercase();
+                let hay = format!("{} {} {} {} {}", e.name, e.summary, e.kind.label(), e.native.as_deref().unwrap_or(""), e.caution.as_deref().unwrap_or("")).to_lowercase();
                 words.iter().all(|w| hay.contains(w)) && v.is_none_or(|v| !e.known_broken_on(v))
             })
             .collect()
@@ -205,6 +211,9 @@ mod tests {
         let mut names = std::collections::BTreeSet::new();
         for e in &lib.entries {
             assert!(names.insert(e.name.to_lowercase()), "duplicate {}", e.name);
+            // The library lands in libs/<name>/ and `require` reads dots as folder separators, so a dot in the name
+            // (sock.lua) makes it impossible to require.
+            assert!(!e.name.contains('.'), "{}: a dot in the name cannot be required", e.name);
             assert!(manifest::valid_dep_name(&e.name) && manifest::valid_git_url(&e.git), "{}", e.name);
             assert!(e.git.starts_with("https://github.com/") || e.git.starts_with("https://codeberg.org/"), "{}", e.name);
             assert!(e.rev.len() == 40 && e.rev.chars().all(|c| c.is_ascii_hexdigit()), "{} has no exact commit", e.name);
@@ -215,6 +224,37 @@ mod tests {
             let mut m = Manifest::new_project("g", "dev.x.g");
             m.dependencies.insert(e.name.clone(), e.dependency());
             assert!(m.problems().is_empty(), "{}: {:?}", e.name, m.problems());
+        }
+    }
+
+    /// scripts/audit-libraries.py treats a library's git submodules as not installed, because the installer
+    /// only clones and checks out. If that ever changes, submodule code would be installed unaudited.
+    #[test]
+    fn the_installer_never_fetches_submodules() {
+        let pkg = include_str!("pkg.rs");
+        assert!(!pkg.contains("recurse") && !pkg.contains("submodule"), "pkg.rs now touches submodules: audit them first");
+    }
+
+    /// The rule: a library is audited (security and leaks, scripts/audit-libraries.py) and its findings reviewed
+    /// before it is probed or committed, and again whenever its pinned commit changes.
+    #[test]
+    fn every_pinned_commit_has_a_reviewed_audit() {
+        #[derive(Deserialize)]
+        struct Audit {
+            name: String,
+            rev: String,
+            reviewed: String,
+        }
+        #[derive(Deserialize)]
+        struct Audits {
+            #[serde(default)]
+            audit: Vec<Audit>,
+        }
+        let audits: Audits = toml::from_str(AUDITS).expect("library-audits.toml is valid");
+        for e in &Library::bundled().entries {
+            let a = audits.audit.iter().find(|a| a.name == e.name && a.rev == e.rev);
+            assert!(a.is_some(), "{} at {} has no audit: run `python3 -I scripts/audit-libraries.py --stamp \"<what you reviewed>\" {}`", e.name, e.rev, e.name);
+            assert!(a.unwrap().reviewed.trim().len() >= 12, "{}: the audit says nothing about what was reviewed", e.name);
         }
     }
 

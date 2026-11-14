@@ -5,6 +5,9 @@
 //!   cargo run --example curate_libraries            read only (needs github.com)
 //!   cargo run --example curate_libraries -- --probe also load each library
 //!   cargo run --example curate_libraries -- --only a,b   redo just these, keep every other pin as it is
+//!   cargo run --example curate_libraries -- --probe --pinned --only a,b
+//!                                                       probe the commit already pinned (the audited one)
+//!                                                       and only update the load results, never re-pin
 //!
 //! By default nothing from the cloned repositories is *run*: only their tags,
 //! commit and licence files are read, and the load results are recorded as
@@ -58,14 +61,20 @@ fn newest_tag(repo: &Path) -> Option<String> {
 
 /// Requires `module` from `repo` on this LÖVE, headless (runs the library's
 /// code). Returns "loads", "needs-display" or "fails: <message>".
-fn probe(love: &Path, repo: &Path, module: &str) -> String {
+fn probe(love: &Path, repo: &Path, name: &str, module: &str, others: &[String]) -> String {
     let d = tempfile::tempdir().unwrap();
+    // The repository appears as `<dir>/<name>`, as it does in a project's libs/ folder, so a library whose
+    // init.lua sits at its root (`require "batteries"`) loads; the repo itself stays on the path for flat ones.
+    let mount = d.path().join("mount");
+    std::fs::create_dir_all(&mount).unwrap();
+    std::os::unix::fs::symlink(repo, mount.join(name)).unwrap();
     std::fs::write(d.path().join("conf.lua"), "function love.conf(t) t.identity='curate' for _, m in ipairs({'window','graphics','video','joystick','touch','mouse','keyboard','audio','sound'}) do t.modules[m] = false end end").unwrap();
     std::fs::write(
         d.path().join("main.lua"),
         format!(
-            "package.path = {p:?} .. '/?.lua;' .. {p:?} .. '/?/init.lua;' .. {p:?} .. '/lib/?.lua;' .. package.path\nfunction love.load()\n  local ok, err = pcall(require, {m:?})\n  print('CURATE', ok and 'loads' or ('fails: ' .. tostring(err):gsub('\\n.*', '')))\n  love.event.quit(0)\nend\n",
+            "package.path = {mt:?} .. '/?.lua;' .. {mt:?} .. '/?/init.lua;' .. {p:?} .. '/?.lua;' .. {p:?} .. '/?/init.lua;' .. {p:?} .. '/lib/?.lua;' .. package.path\nfunction love.load()\n  local ok, err = pcall(require, {m:?})\n  print('CURATE', ok and 'loads' or ('fails: ' .. tostring(err):gsub('\\n.*', '')))\n  love.event.quit(0)\nend\n",
             p = repo.display().to_string(),
+            mt = mount.display().to_string(),
             m = module
         ),
     )
@@ -86,6 +95,8 @@ fn probe(love: &Path, repo: &Path, module: &str) -> String {
     match out.lines().find_map(|l| l.strip_prefix("CURATE\t")) {
         Some("loads") => "loads".into(),
         Some(m) if m.contains("graphics") || m.contains("love.window") || m.contains("'window'") || m.contains("love.mouse") || m.contains("love.keyboard") || m.contains("love.joystick") => "needs-display".into(),
+        // It needs another curated library (lurker needs lume), which this probe did not mount: not a failure.
+        Some(m) if others.iter().any(|o| o != name && m.contains(&format!("module '{o}' not found"))) => "unmeasured".into(),
         Some(m) => m.replace('"', "'"),
         None => format!("fails: no result ({})", out.lines().next().unwrap_or("")),
     }
@@ -96,6 +107,13 @@ fn main() {
     let probing = std::env::args().any(|a| a == "--probe");
     let args: Vec<String> = std::env::args().collect();
     let only: Option<Vec<String>> = args.iter().position(|a| a == "--only").and_then(|i| args.get(i + 1)).map(|v| v.split(',').map(|n| n.to_lowercase()).collect());
+    let pinned = args.iter().any(|a| a == "--pinned");
+    if pinned && only.is_none() {
+        eprintln!("--pinned needs --only name,name");
+        std::process::exit(2);
+    }
+    let existing = std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("data/libraries.toml")).unwrap_or_default();
+    let all_names: Vec<String> = seeds["library"].as_array().unwrap().iter().filter_map(|l| l["name"].as_str().map(String::from)).collect();
     let mut fresh: Vec<(String, String)> = Vec::new();
     let (l11, l12) = (love_binary("11.5"), love_binary("12.0"));
     if probing && (l11.is_none() || l12.is_none()) {
@@ -112,17 +130,36 @@ fn main() {
         }
         let kind = lib.get("kind").and_then(|k| k.as_str()).unwrap_or("lua");
         let native = lib.get("native").and_then(|k| k.as_str());
+        let caution = lib.get("caution").and_then(|k| k.as_str());
         let dir = work.path().join(name);
         eprint!("{name}: ");
         if let Err(e) = git(&["clone", "--quiet", url, dir.to_str().unwrap()], None) {
             eprintln!("clone failed: {e}");
             continue;
         }
-        let tag = newest_tag(&dir);
-        if let Some(t) = &tag {
-            let _ = git(&["checkout", "--quiet", "--detach", t], Some(&dir));
-        }
-        let rev = git(&["rev-parse", "HEAD"], Some(&dir)).unwrap();
+        // `pin = "head"`: the project keeps fixing things without tagging, so a tag would be years old.
+        // --pinned: the commit already in libraries.toml (audited), never a newer one.
+        let pin_line = |key: &str| -> Option<String> {
+            let blk = existing.split("\n[[library]]\n").find(|b| b.lines().any(|l| l == format!("name = {name:?}")))?;
+            blk.lines().find_map(|l| l.strip_prefix(&format!("{key} = "))).map(|v| v.trim_matches('"').to_string())
+        };
+        let (tag, rev) = if pinned {
+            let Some(rev) = pin_line("rev") else {
+                eprintln!("not in libraries.toml yet: run without --pinned first");
+                continue;
+            };
+            if let Err(e) = git(&["checkout", "--quiet", "--detach", &rev], Some(&dir)) {
+                eprintln!("cannot check out the pinned commit: {e}");
+                continue;
+            }
+            (pin_line("tag"), rev)
+        } else {
+            let tag = if lib.get("pin").and_then(|p| p.as_str()) == Some("head") { None } else { newest_tag(&dir) };
+            if let Some(t) = &tag {
+                let _ = git(&["checkout", "--quiet", "--detach", t], Some(&dir));
+            }
+            (tag, git(&["rev-parse", "HEAD"], Some(&dir)).unwrap())
+        };
         let spdx = ["LICENSE", "LICENSE.md", "LICENSE.txt", "license.txt", "COPYING", "README.md", "readme.md"]
             .iter()
             .find_map(|f| licence::guess_for(&dir.join(f), &dir).map(|g| g.spdx))
@@ -137,7 +174,7 @@ fn main() {
             })
             .unwrap_or_else(|| "unknown".into());
         // Native libraries cannot load without their binary, so they are never probed.
-        let (a, b) = if probing && kind == "lua" { (probe(l11.as_ref().unwrap(), &dir, module), probe(l12.as_ref().unwrap(), &dir, module)) } else { ("unmeasured".to_string(), "unmeasured".to_string()) };
+        let (a, b) = if probing && kind == "lua" { (probe(l11.as_ref().unwrap(), &dir, name, module, &all_names), probe(l12.as_ref().unwrap(), &dir, name, module, &all_names)) } else { ("unmeasured".to_string(), "unmeasured".to_string()) };
         eprintln!("{} {} {} | 11.5 {a} | 12.0 {b}", tag.as_deref().unwrap_or("(no tag)"), &rev[..7], spdx);
         let mut block = format!("\n[[library]]\nname = {name:?}\ngit = {url:?}\nrev = {rev:?}\n");
         if let Some(t) = tag {
@@ -149,6 +186,9 @@ fn main() {
         }
         if let Some(n) = native {
             block.push_str(&format!("native = {n:?}\n"));
+        }
+        if let Some(c) = caution {
+            block.push_str(&format!("caution = {c:?}\n"));
         }
         block.push_str(&format!("summary = {summary:?}\nloads_11_5 = {a:?}\nloads_12_0 = {b:?}\n"));
         fresh.push((name.to_string(), block.clone()));
