@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **C libraries in Libraries** (2026-11-14): six that LÖVE games use through LuaJIT's FFI or as compiled modules, each pinned to a commit with its licence: `nativefs` (files outside LÖVE's folders), `lua-discordRPC` (Discord Rich Presence), `luajit-request` (HTTP and HTTPS through libcurl), `luasteam` (the Steamworks API; Balatro and SNKRX use it) `love-nuklear` (an immediate-mode GUI) and `cimgui-love` (Dear ImGui, from Codeberg: the curated list now takes Codeberg as well as GitHub). The panel shows each one's kind and the binary it still needs next to the game; adding installs the source only, and no "loads" result is claimed for them. Desktop only (the web build has no FFI).
+
 - **IO Checker: MIDI check measures the sound** (2026-11-14): the `timidity.cfg` line on the console is libmodplug finding no GUS patch set; the MIDI file still decodes and is audible (plain built-in tones, measured on macOS). The check now reports `INFO … SILENT` instead of `PASS` if a platform decodes it to silence, and the README explains the console line.
 
 ## 0.2.0 (2026-11-14)

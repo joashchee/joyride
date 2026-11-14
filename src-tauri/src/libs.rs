@@ -23,6 +23,10 @@ pub struct LibraryView {
     badge: String,
     broken: bool,
     installed: bool,
+    /// "Lua", "C library (FFI)" or "C module".
+    kind: String,
+    /// For a C library: the binary that has to sit next to the game (desktop only; the web build has no FFI).
+    native: Option<String>,
 }
 
 fn views(root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
@@ -42,9 +46,12 @@ fn views(root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
             licence: e.licence.clone(),
             git: e.git.clone(),
             version: e.tag.clone().unwrap_or_else(|| e.rev.chars().take(8).collect()),
-            badge: e.badge(v).label(),
+            // A C library cannot be loaded here without its binary, so no load result is claimed for it.
+            badge: if e.kind.is_native() { "Not tested: needs its binary; desktop only".into() } else { e.badge(v).label() },
             broken: e.known_broken_on(v),
             installed: installed.contains(&e.name),
+            kind: e.kind.label().into(),
+            native: e.native.clone(),
         })
         .collect())
 }

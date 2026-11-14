@@ -111,3 +111,56 @@ name = "HC"
 git = "https://github.com/vrld/HC"
 module = "HC"
 summary = "General purpose collision detection with arbitrary shapes."
+
+# C libraries. kind = "ffi": the Lua code loads a shared library through LuaJIT's FFI.
+# kind = "native": a compiled Lua module loaded with `require` (package.cpath).
+# Adding one installs the pinned source; `native` says what binary still has to sit next to the game.
+# Not run by --probe (they cannot load without their binary). Desktop only: the web build has no FFI.
+
+[[library]]
+name = "nativefs"
+git = "https://github.com/EngineerSmith/nativefs"
+module = "nativefs"
+kind = "ffi"
+native = "Nothing to ship: calls the C library already in the process (libc, or LÖVE's own on Windows)."
+summary = "love.filesystem's API without its path limits: read and write any file on the computer."
+
+[[library]]
+name = "lua-discordRPC"
+git = "https://github.com/pfirsich/lua-discordRPC"
+module = "discordRPC"
+kind = "ffi"
+native = "Needs Discord's discord-rpc shared library (discord-rpc.dll, libdiscord-rpc.so or .dylib) next to the game. Discord has deprecated it in favour of its GameSDK."
+summary = "Discord Rich Presence: show what the player is doing, through discord-rpc."
+
+[[library]]
+name = "luajit-request"
+git = "https://github.com/LPGhatguy/luajit-request"
+module = "luajit-request"
+kind = "ffi"
+native = "Needs libcurl with SSL: already on macOS and many Linux systems; on Windows, libcurl.dll next to the game."
+summary = "HTTP and HTTPS requests (GET, POST, forms, cookies, file upload) through libcurl."
+
+[[library]]
+name = "luasteam"
+git = "https://github.com/uspgamedev/luasteam"
+module = "luasteam"
+kind = "native"
+native = "Needs its compiled module (luasteam.so or .dll, from the repository's releases) and Valve's Steamworks library (libsteam_api, steam_api64.dll) from the Steamworks SDK, next to the game; Steam must be running."
+summary = "The Steamworks API from Lua: achievements, stats, cloud saves, networking. Documented at luasteam.readthedocs.io; used by released Steam games."
+
+[[library]]
+name = "love-nuklear"
+git = "https://github.com/keharriso/love-nuklear"
+module = "nuklear"
+kind = "native"
+native = "Needs its compiled module (nuklear.so or .dll): Windows builds are on the releases page, other systems build it with CMake."
+summary = "Nuklear, a lightweight immediate-mode GUI (windows, buttons, sliders, combo boxes) drawn by LÖVE."
+
+[[library]]
+name = "cimgui-love"
+git = "https://codeberg.org/apicici/cimgui-love"
+module = "src"
+kind = "ffi"
+native = "Needs the cimgui shared library (cimgui.dll, libcimgui.so or .dylib) from the release with the same version number as the pinned one, kept outside the .love file, with package.cpath pointing at it. The Lua code is the repository's src folder: require it as libs.cimgui-love.src."
+summary = "Dear ImGui for LÖVE through LuaJIT's FFI (windows, menus, widgets, docking). Moved from GitHub to Codeberg."

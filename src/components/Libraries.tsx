@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { libraryAdd, libraryList, libraryRemove, type LibraryView } from "../lib/backend";
 import Panel from "./Panel";
 
-/** The curated libraries: search, add at the pinned commit, remove. Adding needs git and the network, only when clicked. */
+/** The curated libraries (Lua, and C libraries through FFI or as native modules): search, add at the pinned commit, remove. Adding needs git and the network, only when clicked. */
 export default function Libraries(props: { onClose: () => void; onChanged: () => void }) {
   const [q, setQ] = useState("");
   const [libs, setLibs] = useState<LibraryView[] | null>(null);
@@ -45,8 +45,9 @@ export default function Libraries(props: { onClose: () => void; onChanged: () =>
               {busy === l.name ? "…" : l.installed ? "Remove" : "Add"}
             </button>
             <div className="lib-main">
-              <strong>{l.name}</strong> <span className="lib-meta">{l.version} · {l.licence}</span>
+              <strong>{l.name}</strong> <span className="lib-meta">{l.version} · {l.licence} · {l.kind}</span>
               <div>{l.summary}</div>
+              {l.native && <div className="lib-meta">Needs: {l.native}</div>}
               <div className={"lib-meta" + (l.broken ? " lib-broken" : "")}>{l.badge}</div>
             </div>
           </li>

@@ -46,6 +46,41 @@ impl Badge {
     }
 }
 
+/// How a library is written.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Kind {
+    /// Lua only: installing it is all there is to do.
+    Lua,
+    /// Lua that loads a C shared library through LuaJIT's FFI.
+    Ffi,
+    /// A compiled C module loaded with `require` (found through `package.cpath`).
+    Native,
+}
+
+impl Kind {
+    fn parse(s: Option<&str>) -> Kind {
+        match s {
+            Some("ffi") => Kind::Ffi,
+            Some("native") => Kind::Native,
+            _ => Kind::Lua,
+        }
+    }
+
+    /// The label the library manager shows.
+    pub fn label(self) -> &'static str {
+        match self {
+            Kind::Lua => "Lua",
+            Kind::Ffi => "C library (FFI)",
+            Kind::Native => "C module",
+        }
+    }
+
+    /// Needs a binary that is not Lua: desktop only, never the web build (no FFI, no native modules).
+    pub fn is_native(self) -> bool {
+        self != Kind::Lua
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Entry {
     pub name: String,
@@ -57,6 +92,9 @@ pub struct Entry {
     pub licence: String,
     pub module: String,
     pub summary: String,
+    pub kind: Kind,
+    /// For a C library: the binary that has to sit next to the game, and where it comes from.
+    pub native: Option<String>,
     loads_11_5: Badge,
     loads_12_0: Badge,
 }
@@ -76,6 +114,8 @@ struct RawEntry {
     licence: String,
     module: String,
     summary: String,
+    kind: Option<String>,
+    native: Option<String>,
     loads_11_5: String,
     loads_12_0: String,
 }
@@ -111,7 +151,7 @@ impl Library {
         let entries = raw
             .library
             .into_iter()
-            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
+            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
             .collect();
         Ok(Library { entries })
     }
@@ -128,7 +168,7 @@ impl Library {
         self.entries
             .iter()
             .filter(|e| {
-                let hay = format!("{} {}", e.name, e.summary).to_lowercase();
+                let hay = format!("{} {} {} {}", e.name, e.summary, e.kind.label(), e.native.as_deref().unwrap_or("")).to_lowercase();
                 words.iter().all(|w| hay.contains(w)) && v.is_none_or(|v| !e.known_broken_on(v))
             })
             .collect()
@@ -166,7 +206,7 @@ mod tests {
         for e in &lib.entries {
             assert!(names.insert(e.name.to_lowercase()), "duplicate {}", e.name);
             assert!(manifest::valid_dep_name(&e.name) && manifest::valid_git_url(&e.git), "{}", e.name);
-            assert!(e.git.starts_with("https://github.com/"), "{}", e.name);
+            assert!(e.git.starts_with("https://github.com/") || e.git.starts_with("https://codeberg.org/"), "{}", e.name);
             assert!(e.rev.len() == 40 && e.rev.chars().all(|c| c.is_ascii_hexdigit()), "{} has no exact commit", e.name);
             assert!(!e.module.is_empty() && !e.summary.is_empty());
             assert_ne!(e.licence, "unknown", "{} has no recorded licence", e.name);
@@ -176,6 +216,29 @@ mod tests {
             m.dependencies.insert(e.name.clone(), e.dependency());
             assert!(m.problems().is_empty(), "{}: {:?}", e.name, m.problems());
         }
+    }
+
+    #[test]
+    fn c_libraries_say_what_binary_they_need() {
+        let lib = Library::bundled();
+        let native: Vec<_> = lib.entries.iter().filter(|e| e.kind.is_native()).collect();
+        assert!(native.len() >= 6, "{} C libraries", native.len());
+        for e in &native {
+            assert!(e.native.as_deref().is_some_and(|n| n.len() > 20), "{} does not say what it needs", e.name);
+        }
+        // Pure Lua entries have no such note, and the old pins did not move.
+        assert!(lib.entries.iter().filter(|e| !e.kind.is_native()).all(|e| e.native.is_none()));
+        assert_eq!(lib.get("bump").unwrap().kind, Kind::Lua);
+        assert_eq!(lib.get("nativefs").unwrap().kind, Kind::Ffi);
+        assert_eq!(lib.get("luasteam").unwrap().kind, Kind::Native);
+        // A Codeberg library installs like a GitHub one: its URL passes the manifest validator and pins an exact commit.
+        let c = lib.get("cimgui-love").unwrap();
+        assert!(c.git.starts_with("https://codeberg.org/") && manifest::valid_git_url(&c.git));
+        assert_eq!(c.tag.as_deref(), Some("1.92-0-1"));
+        // Found by what they are and what they need.
+        assert!(lib.search("ffi", None).iter().any(|e| e.name == "nativefs"));
+        assert!(lib.search("libcurl", None).iter().any(|e| e.name == "luajit-request"));
+        assert!(lib.search("steam", None).iter().any(|e| e.name == "luasteam"));
     }
 
     #[test]
