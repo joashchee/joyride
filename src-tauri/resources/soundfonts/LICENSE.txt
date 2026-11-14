@@ -1,0 +1,46 @@
+sony-ericsson-p800-gm.sf2: "Sony Ericsson P800", a General MIDI SoundFont of 128 melodic
+programs and one drum kit, 334,920 bytes.
+
+  Sound designer   Brian Salter (Presage Software / Beatnik), 2000
+  This SoundFont   made by "DroidLite", 2021, with Polyphone, "based on the SalterNokia
+                   soundbank found in the miniBAE code" (its own comment), a version that
+                   "sacrifices accuracy for filesize"
+  Its own text     ICOP "2000 Beatnik Inc. (BSD license)"
+  Upstream         https://github.com/heyigor/miniBAE (Beatnik released miniBAE under
+                   the BSD licence below when it ended business in December 2009)
+  Found by         Fontastik's catalog (a pointer only), file from
+                   https://archive.org/download/wbs-full_202412/Sony_Ericsson_P800_SF2.sf2
+  SHA-256          4d78a19f60518664f6e2ccdd0cf3216a12eceb6bd27e2e85704be3660a40f5fa
+
+The licence is the New BSD licence of miniBAE, reproduced here as it requires. It does not
+let anyone use Beatnik's name to endorse a product made with this bank.
+
+----------------------------------------------------------------------------------------
+Copyright (c) 2009 Beatnik, Inc All rights reserved.
+
+Redistribution and use in source and binary forms, with or withou
+modification, are permitted provided that the following conditions are
+met:
+
+Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+
+Neither the name of the Beatnik, Inc nor the names of its contributors may
+be used to endorse or promote products derived from this software withou
+specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

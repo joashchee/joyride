@@ -497,6 +497,7 @@ dependencies = [
  "ed25519-dalek",
  "hex",
  "image",
+ "neumetik-midi",
  "plist",
  "regex",
  "serde",
@@ -584,6 +585,10 @@ dependencies = [
  "num-traits",
  "pxfm",
 ]
+
+[[package]]
+name = "neumetik-midi"
+version = "0.3.0"
 
 [[package]]
 name = "num-complex"

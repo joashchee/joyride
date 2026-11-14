@@ -22,4 +22,6 @@ zip = { version = "8", default-features = false, features = ["deflate"] }
 
 [dev-dependencies]
 tempfile = "3"
+# The vendored Neumetik synthesizer (MIT, standard library only), to prove the bundled SoundFont loads and sounds.
+neumetik-midi = { path = "../vendor/neumetik/midi" }
 toml = "0.8"

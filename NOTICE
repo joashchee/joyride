@@ -42,6 +42,11 @@ third-party licence ships in the app (scripts/license-scan.py).
   libraries (`joyride-core/data/libraries.toml`) at their pinned commits, each with its own licence file (MIT or Zlib; docs, pictures and
   tests removed; luasteam's Steamworks SDK is never copied). Its one asset, the VGA font, is CC BY-SA 4.0 (VileR), see
   `samples/benchmark-libraries/assets.tsv`.
+- The bundled General MIDI SoundFont (`src-tauri/resources/soundfonts/sony-ericsson-p800-gm.sf2`, 334,920 bytes, SHA-256
+  4d78a19f…f5fa): Brian Salter's General MIDI patches for Beatnik (2000), as a SoundFont by "DroidLite" (2021), under the New BSD licence
+  of Beatnik's miniBAE (https://github.com/heyigor/miniBAE; copyright 2009 Beatnik, Inc). The licence text, the provenance and the
+  no-endorsement clause are in `LICENSE.txt` beside it; keep that file with the bank. Chosen as the smallest General MIDI SoundFont with a
+  permissive licence in Fontastik's catalog (2026-11-14).
 - The IO Checker sample (`samples/io-checker/`): its code is MIT like the rest. Its assets are
   listed one by one, with licence, author, source and recipe, in `samples/io-checker/assets.tsv`
   (and as the Asset Library's record in `.joyride/assets.toml`): most are CC0-1.0, made by
