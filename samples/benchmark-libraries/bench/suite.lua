@@ -54,7 +54,7 @@ function Suite.steps(results, env, only)
       local cell
       if r.status == "SKIP" then cell = { status = "SKIP", note = r.detail }
       elseif r.status == "FAIL" then cell = { status = "FAIL", note = "did not load: " .. r.detail }
-      else cell = specialists.run(p.spec, r.mod, env) end
+      else cell = libload.withPath(p.spec.lib, function() return specialists.run(p.spec, r.mod, env) end) end
       results.specialists[p.spec.lib] = cell
     else
       local gr = results.groups[p.g.id]

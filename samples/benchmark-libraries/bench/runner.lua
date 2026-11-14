@@ -68,7 +68,7 @@ cellNow = function(group, row, m, env)
     if not ok or v == nil then return H.cell("FAIL", "the library has no " .. m.id) end
     obj = v
   end
-  return H.run(row, impl, obj)
+  return libload.withPath(m.lib, function() return H.run(row, impl, obj) end)
 end
 
 --- The rows of a group with the cost rows after its own.

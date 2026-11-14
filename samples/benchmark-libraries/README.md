@@ -47,7 +47,7 @@ Tables: `results/macos-11.5.md`; reports: `results/macos-11.5.txt`, `results/mac
 - json and lume.serialize lose digits (`1/3` comes back as `0.33333333333333`) and refuse cycles; json also refuses `inf` and mixed keys; binser keeps all of them.
 - HC's `raycast` finds nothing for rays heading right or down; only bump moves a fast box without tunnelling through a thin wall.
 - hump.class has no type test; batteries.state_machine cannot pass arguments to a state; batteries.pretty does not show metatables; batteries.assert compares tables by identity.
-- lurker does not load on LÖVE 12.0 (it calls `love.filesystem.isDirectory`, removed there); love-loader only works with its file at the game's root, not in `libs/`.
+- lurker does not load on LÖVE 12.0 (it calls `love.filesystem.isDirectory`, removed there); love-loader and g3d only work with their files at the game's root, not in `libs/`.
 
 ## Run it
 
@@ -63,7 +63,7 @@ Auto-Port may flag `ffi` use in nativefs, luajit-request and the other FFI libra
 
 Tested here (`joyride-core/tests/benchmark_libraries_sample.rs`, `tests/unit.lua`, `tests/selftest.lua`): `libs/` is the curated list at its pinned commits with no compiled files or SDK; the headless report on the real LÖVE 11.5 and 12.0 (no FAIL, every library accounted for, the findings above); the project rebuilt by JoyrIDE's pipeline for PortMaster, mobile and web and recognised under each shim (FFI libraries skipped on the web); every screen driven against mocks; lint-clean at 11.5 and 12.0.
 
-**Not tested** (needs a display or a device): the windowed comparison (suit and Slab) and the stand-alone checks that need a window (anim8, moonshine, g3d, push; peachy and sti only confirm their API), so those adapters have never run; real drawing; a controller, touch screen or phone; the compiled libraries (luasteam, love-nuklear, cimgui-love, lua-discordRPC), which have no binary here; any platform other than macOS.
+**Not tested** (needs a display or a device): the windowed comparison and window-only checks have been run once, by the maintainer on a Mac (suit, Slab, anim8, push worked; the suit click rows, the camera rows with a real window, moonshine and g3d were then fixed or recorded as findings and are not re-seen); peachy and sti only confirm their API; real drawing; a controller, touch screen or phone; the compiled libraries (luasteam, love-nuklear, cimgui-love, lua-discordRPC), which have no binary here; any platform other than macOS.
 
 ## Licences
 

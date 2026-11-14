@@ -20,6 +20,7 @@ L.windowLibs = { g3d = true, push = true, Slab = true }
 -- A library that is known not to load on a LÖVE major version, and why: a finding about the library, not a failure of this project.
 -- (Checked against the real LÖVE binaries; the report says INFO, not FAIL.)
 L.known = {
+  g3d = { [11] = "reads its shader as g3d/g3d.vert from the game's root folder, so it only works copied there, not from libs/", [12] = "reads its shader as g3d/g3d.vert from the game's root folder, so it only works copied there, not from libs/" },
   lurker = { [12] = "calls love.filesystem.isDirectory when it loads, which LÖVE 12.0 removed" },
 }
 
@@ -136,6 +137,17 @@ function L.require(name, module)
   setPath(saved)
   if not ok then error(mod, 0) end
   return mod
+end
+
+--- Run `fn` with a library's folders on the require path: a library that requires its own parts later, when it is used (moonshine loads
+--- an effect the first time it is asked for), needs them then, not only while it loads.
+function L.withPath(name, fn)
+  local saved = getPath()
+  setPath(roots(name))
+  local ok, a, b = pcall(fn)
+  setPath(saved)
+  if not ok then error(a, 0) end
+  return a, b
 end
 
 --- Forget what was loaded (a test, or a re-run).

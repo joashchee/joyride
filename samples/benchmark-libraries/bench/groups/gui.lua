@@ -44,6 +44,7 @@ return {
         suit = function(suit)
           local hits = 0
           local function run(down)
+            suit.enterFrame()            -- a frame begins (it reads the real mouse, so the simulated one goes in after)
             suit.updateMouse(20, 20, down)
             suit.layout:reset(10, 10)
             local b = suit.Button("OK", suit.layout:row(100, 30))
@@ -61,7 +62,7 @@ return {
         suit = function(suit)
           local box, slider = { checked = false }, { value = 0, min = 0, max = 1 }
           local function run(x, y, down)
-            suit.updateMouse(x, y, down); suit.layout:reset(10, 10)
+            suit.enterFrame(); suit.updateMouse(x, y, down); suit.layout:reset(10, 10)
             suit.Checkbox(box, suit.layout:row(100, 20)); suit.Slider(slider, suit.layout:row(100, 20))
           end
           run(15, 15, false); run(15, 15, true); run(15, 15, false)

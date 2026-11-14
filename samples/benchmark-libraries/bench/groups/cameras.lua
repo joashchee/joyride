@@ -4,6 +4,9 @@
 local U = require("bench.util")
 local close = U.close
 
+-- The screen's size as the libraries see it (a real window, or the runner's pretend 800 x 600), and its centre.
+local function centre() local w, h = love.graphics.getWidth(), love.graphics.getHeight(); return w / 2, h / 2 end
+
 return {
   id = "cameras", title = "Cameras",
   about = "Screen to world and back with zoom and rotation; keep the view inside the world; follow a target.",
@@ -13,20 +16,20 @@ return {
     { id = "hump.camera", short = "camera", lib = "hump", get = function(_, req) return req("hump.camera") end },
   },
   rows = {
-    { id = "centre", label = "Screen centre", kind = "feature", about = "A camera looking at (1000,1000): the middle of an 800 x 600 screen is world (1000,1000).",
+    { id = "centre", label = "Screen centre", kind = "feature", about = "A camera looking at (1000,1000): the middle of the screen is world (1000,1000).",
       impl = {
-        gamera = function(g) local c = g.new(0, 0, 2000, 2000); c:setPosition(1000, 1000); local x, y = c:toWorld(400, 300); return close(x, 1000) and close(y, 1000) end,
-        ["hump.camera"] = function(cam) local c = cam(1000, 1000); local x, y = c:worldCoords(400, 300); return close(x, 1000) and close(y, 1000) end,
+        gamera = function(g) local c = g.new(0, 0, 2000, 2000); local cx, cy = centre(); c:setPosition(1000, 1000); local x, y = c:toWorld(cx, cy); return close(x, 1000) and close(y, 1000) end,
+        ["hump.camera"] = function(cam) local cx, cy = centre(); local c = cam(1000, 1000); local x, y = c:worldCoords(cx, cy); return close(x, 1000) and close(y, 1000) end,
       } },
     { id = "zoom", label = "Zoom", kind = "feature", about = "At zoom 2, 100 screen pixels right of the centre is 50 world units right.",
       impl = {
-        gamera = function(g) local c = g.new(0, 0, 2000, 2000); c:setPosition(1000, 1000); c:setScale(2); local x, y = c:toWorld(500, 300); return close(x, 1050) and close(y, 1000) end,
-        ["hump.camera"] = function(cam) local c = cam(1000, 1000); c:zoomTo(2); local x, y = c:worldCoords(500, 300); return close(x, 1050) and close(y, 1000) end,
+        gamera = function(g) local c = g.new(0, 0, 2000, 2000); c:setPosition(1000, 1000); c:setScale(2); local cx, cy = centre(); local x, y = c:toWorld(cx + 100, cy); return close(x, 1050) and close(y, 1000) end,
+        ["hump.camera"] = function(cam) local c = cam(1000, 1000); c:zoomTo(2); local cx, cy = centre(); local x, y = c:worldCoords(cx + 100, cy); return close(x, 1050) and close(y, 1000) end,
       } },
     { id = "rotate", label = "Rotate", kind = "feature", about = "A quarter turn swaps the axes: 100 pixels right of centre becomes 100 world units up or down.",
       impl = {
-        gamera = function(g) local c = g.new(0, 0, 2000, 2000); c:setPosition(1000, 1000); c:setAngle(math.pi / 2); local x, y = c:toWorld(500, 300); return close(x, 1000, 1e-6) and close(math.abs(y - 1000), 100, 1e-6) end,
-        ["hump.camera"] = function(cam) local c = cam(1000, 1000); c:rotateTo(math.pi / 2); local x, y = c:worldCoords(500, 300); return close(x, 1000, 1e-6) and close(math.abs(y - 1000), 100, 1e-6) end,
+        gamera = function(g) local c = g.new(0, 0, 2000, 2000); c:setPosition(1000, 1000); c:setAngle(math.pi / 2); local cx, cy = centre(); local x, y = c:toWorld(cx + 100, cy); return close(x, 1000, 1e-6) and close(math.abs(y - 1000), 100, 1e-6) end,
+        ["hump.camera"] = function(cam) local c = cam(1000, 1000); c:rotateTo(math.pi / 2); local cx, cy = centre(); local x, y = c:worldCoords(cx + 100, cy); return close(x, 1000, 1e-6) and close(math.abs(y - 1000), 100, 1e-6) end,
       } },
     { id = "roundtrip", label = "There and back", kind = "feature", about = "At zoom 1.5 and a turn of 0.3, a world point to the screen and back is the same point.",
       impl = {
