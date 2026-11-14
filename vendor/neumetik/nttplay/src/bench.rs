@@ -11,7 +11,9 @@
 use std::path::Path;
 use std::time::Instant;
 
-use crate::{gen, Engine, Song, Vis, BLOCK};
+use crate::{gen, Engine, Song, BLOCK};
+#[cfg(feature = "visual")]
+use crate::Vis;
 
 /// The plan's bar: an engine must play at least this many times faster
 /// than real time, leaving the rest of the CPU to drawing and the system.
@@ -78,49 +80,57 @@ pub fn run(dir: Option<&Path>, rate: u32, seconds: f64, out: &mut dyn FnMut(&str
             Err(e) => out(&format!("FAIL module generated {ch} channels: {}", key(&e.to_string()))),
         }
     }
-    let bank = neumetik_bgn::BANK;
-    let mut scenes = vec![0usize];
-    for word in ["rain", "crowd", "storm"] {
-        if let Some(i) = bank.iter().position(|p| p.id.contains(word)) {
-            if !scenes.contains(&i) {
-                scenes.push(i);
+    #[cfg(feature = "bgn")]
+    {
+        let bank = neumetik_bgn::BANK;
+        let mut scenes = vec![0usize];
+        for word in ["rain", "crowd", "storm"] {
+            if let Some(i) = bank.iter().position(|p| p.id.contains(word)) {
+                if !scenes.contains(&i) {
+                    scenes.push(i);
+                }
             }
         }
-    }
-    for i in scenes {
-        if let Some(s) = Song::bgn(i, rate) {
-            let (took, x) = time_song(s, rate, seconds);
-            tally(line_for("bgn", bank[i].name, seconds, took, x), x, out);
+        for i in scenes {
+            if let Some(s) = Song::bgn(i, rate) {
+                let (took, x) = time_song(s, rate, seconds);
+                tally(line_for("bgn", bank[i].name, seconds, took, x), x, out);
+            }
         }
+
     }
 
-    // Visual, drawing what the MIDI song plays: 60 frames of each kind at 30 a second.
-    let mut e = Engine::new(rate);
-    if let Ok(s) = Song::midi(&midi, "generated", "MIDI", rate) {
-        e.play(Some(Box::new(s)));
-    }
-    let per_frame = (rate / 30) as usize;
-    let mut buf = vec![0f32; per_frame * 2];
-    let mut worst = (0.0f64, "");
-    for (k, kind) in neumetik_visual::visual::KINDS.iter().enumerate() {
-        let mut v = Vis::new(k);
-        let mut took = 0.0;
-        let frames = 60;
-        for _ in 0..frames {
-            e.render(&mut buf);
-            v.capture(&e);
-            let t = Instant::now();
-            v.draw(1.0 / 30.0, 64, 20);
-            took += t.elapsed().as_secs_f64();
+    #[cfg(feature = "visual")]
+    {
+        // Visual, drawing what the MIDI song plays: 60 frames of each kind at 30 a second.
+        let mut e = Engine::new(rate);
+        if let Ok(s) = Song::midi(&midi, "generated", "MIDI", rate) {
+            e.play(Some(Box::new(s)));
         }
-        let ms = took * 1000.0 / f64::from(frames);
-        if ms > worst.0 {
-            worst = (ms, kind.name);
+        let per_frame = (rate / 30) as usize;
+        let mut buf = vec![0f32; per_frame * 2];
+        let mut worst = (0.0f64, "");
+        for (k, kind) in neumetik_visual::visual::KINDS.iter().enumerate() {
+            let mut v = Vis::new(k);
+            let mut took = 0.0;
+            let frames = 60;
+            for _ in 0..frames {
+                e.render(&mut buf);
+                v.capture(&e);
+                let t = Instant::now();
+                v.draw(1.0 / 30.0, 64, 20);
+                took += t.elapsed().as_secs_f64();
+            }
+            let ms = took * 1000.0 / f64::from(frames);
+            if ms > worst.0 {
+                worst = (ms, kind.name);
+            }
+            out(&format!("INFO visual {}: {ms:.3} ms a frame (64 x 20)", key(kind.name)));
         }
-        out(&format!("INFO visual {}: {ms:.3} ms a frame (64 x 20)", key(kind.name)));
+        let status = if worst.0 <= VISUAL_GOAL_MS { "PASS" } else { "FAIL" };
+        out(&format!("{status} visual slowest: {} at {:.3} ms a frame (goal {VISUAL_GOAL_MS} ms of a 33 ms frame at 30 fps)", key(worst.1), worst.0));
+
     }
-    let status = if worst.0 <= VISUAL_GOAL_MS { "PASS" } else { "FAIL" };
-    out(&format!("{status} visual slowest: {} at {:.3} ms a frame (goal {VISUAL_GOAL_MS} ms of a 33 ms frame at 30 fps)", key(worst.1), worst.0));
 
     if let Some(dir) = dir {
         let mut files: Vec<_> = std::fs::read_dir(dir).map(|r| r.filter_map(Result::ok).map(|d| d.path()).filter(|p| p.is_file()).collect()).unwrap_or_default();

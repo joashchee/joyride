@@ -666,6 +666,17 @@ impl Driver {
         if tr.len > 0 {
             return;
         }
+        // The driver ticks a track's envelope before its sequence: on the frame a note ends, the old @e envelope runs
+        // once more, and what it wrote to the noise and mixer registers stays unless the next note writes them (measured
+        // against MGSDRV: @2 -> @0 left the old envelope's next noise period). Its volume is the next note's to set.
+        if matches!(self.chip(i), Chip::Psg(_)) {
+            let tr = &self.t[i];
+            if tr.run.on && !tr.run.adsr && tr.keyed && !tr.fresh && !tr.env_wait && tr.played {
+                let saved = self.t[i].run;
+                let _ = self.run_e(i);
+                self.t[i].run = saved;
+            }
+        }
         self.read(i);
     }
 
@@ -788,7 +799,10 @@ impl Driver {
                     for k in 0..48 {
                         let b = self.byte(i);
                         for j in 0..4 {
-                            t[k * 4 + j] = (b >> (6 - 2 * j)) & 3;
+                            // MGSC writes a two-frame step (tempo below 75) as 3, which the driver plays as two frames
+                            // (measured against MGSDRV's own driver: a quarter note at t60 is 60 frames, not 72).
+                            let v = (b >> (6 - 2 * j)) & 3;
+                            t[k * 4 + j] = if v == 3 { 2 } else { v };
                         }
                     }
                     self.table = t;
@@ -1254,7 +1268,10 @@ impl Driver {
                 return 4 * self.span - i32::from(self.song.fm_tune[0]);
             }
             let oct = i32::from(tr.octave) - 1;
-            return 0x800 + (tr.bnew >> oct) + tr.bold;
+            // A new-style bend (`p` under 128, `bnew`) before the first note counts from 0 on a PSG or SCC track, not from 0x800
+            // (measured against MGSDRV: p40 at o4 is the period 10); the old style (`bold`) and no bend at all keep the 0x800.
+            let start = if tr.bnew != 0 && tr.bold == 0 { 0 } else { 0x800 };
+            return start + (tr.bnew >> oct) + tr.bold;
         }
         if tr.porta {
             let d = tr.pk * (tr.pto - tr.pfrom).abs() / tr.pstep;
@@ -1916,6 +1933,43 @@ mod tests {
         let t = tempo_table(120);
         assert_eq!(&t[..8], &[1, 0, 1, 1, 0, 1, 0, 1]);
         assert_eq!(tempo_table(75), [1; 192]);
+    }
+
+    #[test]
+    fn a_two_frame_tempo_step_plays_two_frames() {
+        // `t60` in a track: MGSC writes its two-frame steps as 3, and the driver plays them as two (measured against
+        // MGSDRV's own driver: a quarter note is 60 frames, 14400 / 60 / 4).
+        let bin = crate::mgsc::compile(b"#opll_mode 0\r\n#tempo 120\r\n#title \"T\"\r\n1 v13@0o4l4t60 cdefgabcdefgab\r\n").unwrap();
+        let song = Song::parse(&bin).unwrap();
+        let mut d = Driver::new(&song);
+        let mut onsets = Vec::new();
+        let mut prev = String::new();
+        for f in 0..600 {
+            d.frame();
+            let k = d.log_line()[..4].to_string();
+            if k != prev && k != "0000" {
+                onsets.push(f);
+            }
+            prev = k;
+        }
+        let gaps: Vec<i32> = onsets.windows(2).map(|w| w[1] - w[0]).collect();
+        assert!(gaps.len() >= 4 && gaps.iter().all(|&g| g == 60), "{gaps:?}");
+    }
+
+    #[test]
+    fn a_bend_before_the_first_note_counts_from_zero() {
+        // `p40` at o4 on a PSG track that has not played a note: the period is 40 * 2 >> 3 = 10, not 0x800 + 10 (measured
+        // against MGSDRV's own driver); with no bend the period stays 0x800.
+        let line = |mml: &[u8]| {
+            let song = Song::parse(&crate::mgsc::compile(mml).unwrap()).unwrap();
+            let mut d = Driver::new(&song);
+            for _ in 0..3 {
+                d.frame();
+            }
+            d.log_line()
+        };
+        let bent = line(b"#opll_mode 0\r\n#tempo 120\r\n#title \"T\"\r\n1 o4l16v14p40r1\r\n");
+        assert_eq!(&bent[..8], "0a000000", "{bent}");
     }
 
     // Two log lines the same, but for an FM channel's registers before the

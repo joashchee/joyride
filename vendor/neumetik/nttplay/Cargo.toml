@@ -22,13 +22,19 @@ crate-type = ["staticlib", "rlib"]
 name = "nttplay"
 path = "src/bin/nttplay.rs"
 
+[features]
+# BGN scenes and Visual are what the C host needs and nttplay does not: `--no-default-features` is the decoder-only build (r36s/package/build-nttplay.sh).
+default = ["bgn", "visual"]
+bgn = ["dep:neumetik-bgn"]
+visual = ["dep:neumetik-visual"]
+
 [dependencies]
 # ansiapps' own crates, standard library only: no third-party code comes in.
 neumetik-midi = { path = "../midi" }
-neumetik-bgn = { path = "../bgn" }
+neumetik-bgn = { path = "../bgn", optional = true }
 # Without the samples repository (a desktop library) or the cover painter.
 neumetik-tracker = { path = "../tracker", default-features = false }
-neumetik-visual = { path = "../visual" }
+neumetik-visual = { path = "../visual", optional = true }
 
 [profile.release]
 opt-level = 3

@@ -246,7 +246,7 @@ pub enum Notation {
     Intervals,
     /// Bjorklund's: `E(5,8)`.
     Euclid,
-    /// Tala, tabla bols, konnakol and solkattu: a syllable a pulse.
+    /// Tala, tabla bols, konnakol, solkattu and the janggu's kudum syllables (Dung, Kung, Duk): a syllable a pulse.
     Bols,
     /// Takadimi and Kodaly syllables: a word a beat.
     Syllables,
@@ -276,7 +276,7 @@ pub const NOTATIONS: [(Notation, &str, &str); 15] = [
     (Notation::Onsets, "onsets", "Onset sets {0,3,6,10,12}/16"),
     (Notation::Intervals, "intervals", "Inter-onset intervals and additive meters 3+3+4+2+4"),
     (Notation::Euclid, "euclid", "Euclidean rhythms E(5,8)"),
-    (Notation::Bols, "bols", "Tala, tabla bols, konnakol and solkattu"),
+    (Notation::Bols, "bols", "Tala, tabla bols, konnakol, solkattu and the janggu's kudum (jangdan)"),
     (Notation::Syllables, "syllables", "Takadimi and Kodaly syllables"),
     (Notation::Counts, "counts", "Counting: 1 e & a 2"),
     (Notation::Values, "values", "Note values: q e e q"),

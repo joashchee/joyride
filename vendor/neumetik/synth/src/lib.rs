@@ -134,6 +134,7 @@ pub mod instereo;
 pub mod jam;
 pub mod klystrack;
 pub mod mgs;
+pub mod m68k;
 pub mod mdsdrv;
 pub mod mdsmml;
 pub mod mgsc;

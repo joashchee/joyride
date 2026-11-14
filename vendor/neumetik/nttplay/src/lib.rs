@@ -28,10 +28,15 @@ use std::path::Path;
 use std::sync::{Arc, OnceLock};
 
 use neumetik_tracker::Module;
+#[cfg(feature = "visual")]
 use neumetik_visual::visual::{Input, Settings, Visualizer, Voice, KINDS};
 
 /// Samples a side kept for Visual: its analysis's window.
+#[cfg(feature = "visual")]
 pub const RING: usize = neumetik_visual::analysis::FFT_SIZE;
+/// Without Visual nothing reads the ring; the same size keeps the engine one shape.
+#[cfg(not(feature = "visual"))]
+pub const RING: usize = 2048;
 /// Frames rendered at a time.
 const BLOCK: usize = 512;
 
@@ -43,6 +48,7 @@ pub const NM36_BGN: i32 = 3;
 enum Source {
     Midi(Box<neumetik_midi::Player>),
     Module(Box<neumetik_tracker::Player>, Arc<Module>),
+    #[cfg(feature = "bgn")]
     Bgn(Box<neumetik_bgn::Engine>),
 }
 
@@ -63,6 +69,7 @@ impl Song {
         match self.source {
             Source::Midi(_) => NM36_MIDI,
             Source::Module(..) => NM36_MODULE,
+            #[cfg(feature = "bgn")]
             Source::Bgn(_) => NM36_BGN,
         }
     }
@@ -120,7 +127,8 @@ impl Song {
         Song { source: Source::Module(Box::new(p), module), title: name, words, format, duration, channels }
     }
 
-    /// A scene from BGN's bank, by its place in [`neumetik_bgn::BANK`].
+    /// A scene from BGN's bank, by its place in `neumetik_bgn::BANK`.
+    #[cfg(feature = "bgn")]
     pub fn bgn(preset: usize, rate: u32) -> Option<Song> {
         let p = neumetik_bgn::BANK.get(preset)?;
         let mut e = neumetik_bgn::Engine::new(rate);
@@ -168,6 +176,7 @@ impl Song {
         match &mut self.source {
             Source::Midi(p) => p.render(l, r),
             Source::Module(p, _) => p.render(l, r),
+            #[cfg(feature = "bgn")]
             Source::Bgn(e) => e.render(l, r),
         }
     }
@@ -176,6 +185,7 @@ impl Song {
         match &self.source {
             Source::Midi(p) => p.is_finished(),
             Source::Module(p, _) => p.ended(),
+            #[cfg(feature = "bgn")]
             Source::Bgn(_) => false,
         }
     }
@@ -184,6 +194,7 @@ impl Song {
         match &mut self.source {
             Source::Midi(p) => p.set_looping(on),
             Source::Module(p, _) => p.repeat = on,
+            #[cfg(feature = "bgn")]
             Source::Bgn(_) => {}
         }
     }
@@ -275,6 +286,7 @@ impl Engine {
                 let to = (p.position().order as i64 + i64::from(step)).clamp(0, last) as usize;
                 p.seek(to, 0);
             }
+            #[cfg(feature = "bgn")]
             Source::Bgn(_) => {}
         }
         self.ended = false;
@@ -369,6 +381,7 @@ impl Engine {
                 i.orders = m.orders.len() as i32;
                 i.row = pos.row as i32;
             }
+            #[cfg(feature = "bgn")]
             Source::Bgn(_) => {}
         }
         copy_c(&mut i.title, &s.title);
@@ -437,6 +450,7 @@ fn copy_c(out: &mut [c_char], s: &str) {
 }
 
 /// Visual, drawing what the engine played into cells.
+#[cfg(feature = "visual")]
 pub struct Vis {
     vis: Visualizer,
     l: Vec<f32>,
@@ -451,6 +465,7 @@ pub struct Vis {
     playing: bool,
 }
 
+#[cfg(feature = "visual")]
 impl Vis {
     pub fn new(kind: usize) -> Vis {
         let id = KINDS.get(kind).map_or("bars", |k| k.id);
@@ -533,10 +548,12 @@ fn put_err(err: *mut c_char, cap: usize, msg: &str) {
     copy_c(out, msg);
 }
 
+#[cfg(any(feature = "bgn", feature = "visual"))]
 fn static_names(cell: &'static OnceLock<Vec<CString>>, make: impl FnOnce() -> Vec<String>) -> &'static [CString] {
     cell.get_or_init(|| make().into_iter().map(|s| CString::new(s.replace('\0', " ")).unwrap_or_default()).collect())
 }
 
+#[cfg(any(feature = "bgn", feature = "visual"))]
 fn name_at(list: &'static [CString], i: i32) -> *const c_char {
     usize::try_from(i).ok().and_then(|i| list.get(i)).map_or(std::ptr::null(), |c| c.as_ptr())
 }
@@ -583,6 +600,7 @@ pub extern "C" fn nm36_song_load(path: *const c_char, rate: u32, err: *mut c_cha
 
 /// BGN's scene `preset` (0 up, `nm36_bgn_count` of them), to play at `rate`.
 #[no_mangle]
+#[cfg(feature = "bgn")]
 pub extern "C" fn nm36_bgn_song(preset: i32, rate: u32) -> *mut Song {
     usize::try_from(preset).ok().and_then(|p| catch_unwind(|| Song::bgn(p, rate)).ok().flatten()).map_or(std::ptr::null_mut(), |s| Box::into_raw(Box::new(s)))
 }
@@ -685,36 +703,42 @@ pub unsafe extern "C" fn nm36_info(e: *const Engine, out: *mut Nm36Info) {
 }
 
 #[no_mangle]
+#[cfg(feature = "bgn")]
 pub extern "C" fn nm36_bgn_count() -> i32 {
     neumetik_bgn::BANK.len() as i32
 }
 
 /// A scene's name, its section ("Nature") and its subsection ("Weather"); null past the end.
 #[no_mangle]
+#[cfg(feature = "bgn")]
 pub extern "C" fn nm36_bgn_name(i: i32) -> *const c_char {
     static N: OnceLock<Vec<CString>> = OnceLock::new();
     name_at(static_names(&N, || neumetik_bgn::BANK.iter().map(|p| p.name.to_string()).collect()), i)
 }
 
 #[no_mangle]
+#[cfg(feature = "bgn")]
 pub extern "C" fn nm36_bgn_category(i: i32) -> *const c_char {
     static N: OnceLock<Vec<CString>> = OnceLock::new();
     name_at(static_names(&N, || neumetik_bgn::BANK.iter().map(|p| p.category.to_string()).collect()), i)
 }
 
 #[no_mangle]
+#[cfg(feature = "bgn")]
 pub extern "C" fn nm36_bgn_group(i: i32) -> *const c_char {
     static N: OnceLock<Vec<CString>> = OnceLock::new();
     name_at(static_names(&N, || neumetik_bgn::BANK.iter().map(|p| p.group.to_string()).collect()), i)
 }
 
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub extern "C" fn nm36_visual_count() -> i32 {
     KINDS.len() as i32
 }
 
 /// A Visual kind's name ("Spectrum Bars"); null past the end.
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub extern "C" fn nm36_visual_name(i: i32) -> *const c_char {
     static N: OnceLock<Vec<CString>> = OnceLock::new();
     name_at(static_names(&N, || KINDS.iter().map(|k| k.name.to_string()).collect()), i)
@@ -722,6 +746,7 @@ pub extern "C" fn nm36_visual_name(i: i32) -> *const c_char {
 
 /// Its id ("bars"), as settings keep it.
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub extern "C" fn nm36_visual_id(i: i32) -> *const c_char {
     static N: OnceLock<Vec<CString>> = OnceLock::new();
     name_at(static_names(&N, || KINDS.iter().map(|k| k.id.to_string()).collect()), i)
@@ -729,12 +754,14 @@ pub extern "C" fn nm36_visual_id(i: i32) -> *const c_char {
 
 /// What it shows, in a sentence.
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub extern "C" fn nm36_visual_about(i: i32) -> *const c_char {
     static N: OnceLock<Vec<CString>> = OnceLock::new();
     name_at(static_names(&N, || KINDS.iter().map(|k| k.about.to_string()).collect()), i)
 }
 
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub extern "C" fn nm36_vis_new(kind: i32) -> *mut Vis {
     Box::into_raw(Box::new(Vis::new(usize::try_from(kind).unwrap_or(0))))
 }
@@ -742,6 +769,7 @@ pub extern "C" fn nm36_vis_new(kind: i32) -> *mut Vis {
 /// # Safety
 /// `v` is from `nm36_vis_new` (or null), and not used after.
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub unsafe extern "C" fn nm36_vis_free(v: *mut Vis) {
     if !v.is_null() {
         drop(Box::from_raw(v));
@@ -751,6 +779,7 @@ pub unsafe extern "C" fn nm36_vis_free(v: *mut Vis) {
 /// # Safety
 /// `v` is a live visual.
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub unsafe extern "C" fn nm36_vis_set(v: *mut Vis, kind: i32) {
     if let (Some(v), Ok(k)) = (v.as_mut(), usize::try_from(kind)) {
         v.set_kind(k);
@@ -762,6 +791,7 @@ pub unsafe extern "C" fn nm36_vis_set(v: *mut Vis, kind: i32) {
 /// # Safety
 /// `v` a live visual, `e` a live engine.
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub unsafe extern "C" fn nm36_vis_capture(v: *mut Vis, e: *const Engine) {
     if let (Some(v), Some(e)) = (v.as_mut(), e.as_ref()) {
         v.capture(e);
@@ -774,6 +804,7 @@ pub unsafe extern "C" fn nm36_vis_capture(v: *mut Vis, e: *const Engine) {
 /// # Safety
 /// `v` a live visual; `cells` holds 3 x `w` x `h` bytes.
 #[no_mangle]
+#[cfg(feature = "visual")]
 pub unsafe extern "C" fn nm36_vis_draw(v: *mut Vis, dt: f32, cells: *mut u8, w: i32, h: i32) -> i32 {
     let (Some(v), Ok(w), Ok(h)) = (v.as_mut(), usize::try_from(w), usize::try_from(h)) else { return -1 };
     if cells.is_null() || w == 0 || h == 0 {

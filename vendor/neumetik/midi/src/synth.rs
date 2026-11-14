@@ -46,6 +46,12 @@ pub(crate) struct Channel {
     bend: f32,
     bend_range: f32,
     tuning: f32,
+    /// XG: master tune and transpose, in semitones, for every part.
+    fine: f32,
+    /// XG: this part's note shift in semitones (melodic parts) and the notes it plays (its limits).
+    shift: i8,
+    low: u8,
+    high: u8,
     sustain: bool,
     reverb: f32,
     chorus: f32,
@@ -73,6 +79,10 @@ impl Channel {
             bend: 0.0,
             bend_range: 2.0,
             tuning: 0.0,
+            fine: 0.0,
+            shift: 0,
+            low: 0,
+            high: 127,
             sustain: false,
             reverb: 40.0 / 127.0,
             chorus: 0.0,
@@ -92,7 +102,7 @@ impl Channel {
     }
 
     fn controls(&self) -> Controls {
-        Controls { bend: self.bend * self.bend_range + self.tuning, modulation: self.modulation, brightness: self.brightness, resonance: self.resonance }
+        Controls { bend: self.bend * self.bend_range + self.tuning + self.fine, modulation: self.modulation, brightness: self.brightness, resonance: self.resonance }
     }
 }
 
@@ -104,6 +114,9 @@ pub(crate) struct State {
     channels: [Channel; 16],
     mode: Mode,
     master: f32,
+    /// XG's master tune and transpose, in semitones.
+    xg_tune: f32,
+    xg_transpose: f32,
     /// XG's variation effect: its type (the MSB of the XG type number).
     variation_type: u8,
 }
@@ -158,7 +171,14 @@ enum Effect {
 
 impl State {
     pub(crate) fn new() -> State {
-        State { channels: std::array::from_fn(|i| Channel::new(i == 9)), mode: Mode::Gm, master: 1.0, variation_type: DEFAULT_VARIATION }
+        State { channels: std::array::from_fn(|i| Channel::new(i == 9)), mode: Mode::Gm, master: 1.0, xg_tune: 0.0, xg_transpose: 0.0, variation_type: DEFAULT_VARIATION }
+    }
+
+    fn apply_fine(&mut self) {
+        let fine = self.xg_tune + self.xg_transpose;
+        for c in &mut self.channels {
+            c.fine = fine;
+        }
     }
 
     fn reset(&mut self, mode: Mode) {
@@ -195,13 +215,24 @@ impl State {
         (c.drums, c.bank, c.program)
     }
 
+    /// A key after XG's note shift (melodic parts only).
+    fn shifted(&self, ch: usize, key: u8) -> u8 {
+        let c = &self.channels[ch];
+        if c.drums || c.shift == 0 {
+            key
+        } else {
+            (i32::from(key) + i32::from(c.shift)).clamp(0, 127) as u8
+        }
+    }
+
     fn channel(&mut self, status: u8, a: u8, b: u8) -> Effect {
         let ch = usize::from(status & 0x0f);
         let (a, b) = (a & 0x7f, b & 0x7f);
         match status & 0xf0 {
-            0x80 => Effect::NoteOff(ch, a),
-            0x90 if b == 0 => Effect::NoteOff(ch, a),
-            0x90 => Effect::NoteOn(ch, a, b),
+            0x80 => Effect::NoteOff(ch, self.shifted(ch, a)),
+            0x90 if b == 0 => Effect::NoteOff(ch, self.shifted(ch, a)),
+            0x90 if (self.channels[ch].low..=self.channels[ch].high).contains(&a) => Effect::NoteOn(ch, self.shifted(ch, a), b),
+            0x90 => Effect::None,
             0xb0 => self.control(ch, a, b),
             0xc0 => {
                 self.program(ch, a);
@@ -280,8 +311,19 @@ impl State {
                 self.reset(Mode::Xg);
                 return Effect::ReleaseAll;
             }
+            // Master tune: four bytes, a nibble each, 0x400 the middle, in tenths of a cent (-102.4 to +102.3).
+            (0x00, 0x00, 0x00) if data.len() >= 4 => {
+                let n = data[..4].iter().fold(0i32, |n, &d| n << 4 | i32::from(d & 15));
+                self.xg_tune = (n - 0x400) as f32 / 1000.0;
+                self.apply_fine();
+            }
             // Master volume.
             (0x00, 0x00, 0x04) => self.master = f32::from(v) / 127.0,
+            // Transpose: 0x28 to 0x58, 0x40 none, in semitones.
+            (0x00, 0x00, 0x06) => {
+                self.xg_transpose = (f32::from(v) - 64.0).clamp(-24.0, 24.0);
+                self.apply_fine();
+            }
             // Variation effect type (MSB).
             (0x02, 0x01, 0x40) => self.variation_type = v,
             // Multi part, one parameter each: only in XG mode.
@@ -299,6 +341,10 @@ impl State {
                         let program = ch_c.program;
                         self.program(ch, program);
                     }
+                    // Note shift: 0x28 to 0x58, 0x40 none, in semitones; the note limits.
+                    0x08 => ch_c.shift = (i16::from(v) - 64).clamp(-24, 24) as i8,
+                    0x0f => ch_c.low = v,
+                    0x10 => ch_c.high = v,
                     0x0b => ch_c.volume = f32::from(v) / 127.0,
                     // Pan: 0 is random in XG; take it as the middle.
                     0x0e => ch_c.pan = if v == 0 { 0.0 } else { (f32::from(v) - 64.0) / 63.0 },
@@ -903,6 +949,31 @@ mod tests {
         s.sysex(&[0x43, 0x10, 0x4c, 0x08, 0x02, 0x19, 0x60, 0xf7]);
         assert_eq!(s.channels[2].brightness, -2.0);
         assert!(s.channels[2].resonance > 0.0);
+    }
+
+    // Yamaha's XG tables (DB50XG data list, 2026-11-14): master tune 00 00 00 (four nibbles, 0x400 the middle, tenths of a cent),
+    // transpose 00 00 06, and per part 08 nn 08 note shift, 0F and 10 the note limits.
+    #[test]
+    fn xg_master_tune_transpose_note_shift_and_limits() {
+        let mut s = State::new();
+        s.sysex(&[0x43, 0x10, 0x4c, 0x00, 0x00, 0x7e, 0x00, 0xf7]);
+        // +50.0 cents: 0x400 + 500 = 0x5f4.
+        s.sysex(&[0x43, 0x10, 0x4c, 0x00, 0x00, 0x00, 0x00, 0x05, 0x0f, 0x04, 0xf7]);
+        assert!((s.channels[3].controls().bend - 0.5).abs() < 1e-4);
+        // Transpose +2 semitones.
+        s.sysex(&[0x43, 0x10, 0x4c, 0x00, 0x00, 0x06, 0x42, 0xf7]);
+        assert!((s.channels[3].controls().bend - 2.5).abs() < 1e-4);
+        // Part 2: note shift -12, notes 48 to 72 only.
+        s.sysex(&[0x43, 0x10, 0x4c, 0x08, 0x02, 0x08, 0x34, 0xf7]);
+        s.sysex(&[0x43, 0x10, 0x4c, 0x08, 0x02, 0x0f, 0x30, 0xf7]);
+        s.sysex(&[0x43, 0x10, 0x4c, 0x08, 0x02, 0x10, 0x48, 0xf7]);
+        assert!(matches!(s.channel(0x92, 60, 100), Effect::NoteOn(2, 48, 100)));
+        assert!(matches!(s.channel(0x92, 40, 100), Effect::None), "below the limit");
+        assert!(matches!(s.channel(0x92, 80, 100), Effect::None), "above the limit");
+        assert!(matches!(s.channel(0x82, 60, 0), Effect::NoteOff(2, 48)));
+        // Other parts and the drums are not shifted.
+        assert!(matches!(s.channel(0x93, 60, 100), Effect::NoteOn(3, 60, 100)));
+        assert!(matches!(s.channel(0x99, 36, 100), Effect::NoteOn(9, 36, 100)));
     }
 
     #[test]

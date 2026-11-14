@@ -19,7 +19,7 @@ use std::sync::Arc;
 
 use crate::ay::Ay;
 use crate::cpu6502::{Bus, Cpu, RETURN};
-use crate::nes::{Apu, Pending, DMC_NTSC, DMC_PAL, FRAME_NTSC, FRAME_PAL, NTSC_HZ, PAL_HZ};
+use crate::nes::{Apu, Pending, DMC_NTSC, DMC_PAL, FRAME_NTSC, FRAME_PAL, LENGTHS, NTSC_HZ, PAL_HZ};
 use crate::nes_ext::Expansion;
 use crate::opll::Opll;
 use crate::replay::{Bufs, Driver, Tune};
@@ -355,6 +355,11 @@ struct Status {
     five: bool,
     inhibit: bool,
     frame_irq: bool,
+    /// The length counters of pulse 1, pulse 2, the triangle and the noise (what $4015 bits 0 to 3 say), their halt flags and enables:
+    /// sound engines that wait for a note to end read them.
+    lengths: [u8; 4],
+    halts: [bool; 4],
+    enabled: [bool; 4],
 }
 
 impl Status {
@@ -378,7 +383,21 @@ impl Status {
                 self.rate = if self.pal { DMC_PAL } else { DMC_NTSC }[usize::from(v & 15)];
             }
             0x4013 => self.address_len = (u16::from(v) << 4) | 1,
+            0x4000 | 0x4004 | 0x400c => self.halts[usize::from((a - 0x4000) / 4).min(3)] = v & 0x20 != 0,
+            0x4008 => self.halts[2] = v & 0x80 != 0,
+            0x4003 | 0x4007 | 0x400b | 0x400f => {
+                let i = usize::from((a - 0x4003) / 4);
+                if self.enabled[i] {
+                    self.lengths[i] = LENGTHS[usize::from(v >> 3)];
+                }
+            }
             0x4015 => {
+                for i in 0..4 {
+                    self.enabled[i] = v >> i & 1 != 0;
+                    if !self.enabled[i] {
+                        self.lengths[i] = 0;
+                    }
+                }
                 self.dmc_irq = false;
                 if v & 0x10 == 0 {
                     self.remaining = 0;
@@ -400,7 +419,8 @@ impl Status {
 
     /// $4015 read: the DMC playing (bit 4), its IRQ (bit 7) and the frame counter's (bit 6, cleared by the read).
     fn read(&mut self) -> u8 {
-        let v = u8::from(self.remaining > 0) << 4 | u8::from(self.frame_irq) << 6 | u8::from(self.dmc_irq) << 7;
+        let lengths = self.lengths.iter().enumerate().fold(0u8, |b, (i, &l)| b | u8::from(l > 0) << i);
+        let v = lengths | u8::from(self.remaining > 0) << 4 | u8::from(self.frame_irq) << 6 | u8::from(self.dmc_irq) << 7;
         self.frame_irq = false;
         v
     }
@@ -409,16 +429,31 @@ impl Status {
     /// counts down (a bit out each time it runs out). Taken a timer period at a time, and in one step when the DMC
     /// has nothing to fetch.
     fn run(&mut self, cycles: u32) {
-        let last = if self.pal { FRAME_PAL[3] } else { FRAME_NTSC[3] };
-        let fc = self.frame_cycle + cycles;
-        if fc >= last {
-            if !self.five && !self.inhibit {
-                self.frame_irq = true;
+        let steps = if self.pal { &FRAME_PAL } else { &FRAME_NTSC };
+        let (half, last) = (steps[1], steps[3]);
+        // The frame counter: a half frame (the lengths count down) at its second step, and at its last the frame IRQ and a half frame again.
+        let (mut c, mut left) = (self.frame_cycle, cycles);
+        loop {
+            let target = if c < half { half } else { last };
+            if left < target - c {
+                c += left;
+                break;
             }
-            self.frame_cycle = fc % last;
-        } else {
-            self.frame_cycle = fc;
+            left -= target - c;
+            c = target;
+            for (l, h) in self.lengths.iter_mut().zip(self.halts) {
+                if !h && *l > 0 {
+                    *l -= 1;
+                }
+            }
+            if target == last {
+                if !self.five && !self.inhibit {
+                    self.frame_irq = true;
+                }
+                c = 0;
+            }
         }
+        self.frame_cycle = c;
         let mut n = cycles;
         while n > 0 {
             if !self.buffer && self.remaining > 0 {
@@ -850,23 +885,28 @@ impl Player {
         self.calls += 1;
         // Changes the APU's rendering didn't reach (none render between ticks) are made now.
         self.machine.apu.flush_before(start);
-        // An IRQ handler still running from the frame before finishes first.
+        // An IRQ handler (or a long play routine) still running from the frame before finishes first. A play routine that never
+        // returns (some rips loop `JSR engine / CLC / BCC` in it: libgme runs those too) simply keeps running, a frame at a time.
+        let next = self.frame_start(self.calls);
         if self.cpu.pc != RETURN {
-            let end = self.cpu.cycles + CALL_CYCLES;
-            while self.cpu.pc != RETURN && self.cpu.cycles < end && !self.cpu.jammed {
+            while self.cpu.pc != RETURN && self.machine.clock < next && !self.cpu.jammed {
                 self.cpu.step(&mut self.machine);
             }
-            if self.cpu.pc != RETURN {
+            if self.cpu.jammed {
                 self.halted = true;
+                return;
+            }
+            if self.cpu.pc != RETURN {
+                self.machine.frame += 1;
                 return;
             }
         }
         self.wait(start);
         self.cpu.a = 0;
-        if !self.cpu.call(&mut self.machine, self.nsf.play, CALL_CYCLES) {
+        self.cpu.call(&mut self.machine, self.nsf.play, next.saturating_sub(start).max(1));
+        if self.cpu.jammed {
             self.halted = true;
         }
-        let next = self.frame_start(self.calls);
         if !self.halted {
             self.wait(next);
         }
@@ -1251,6 +1291,34 @@ mod tests {
                 assert_eq!(a, b, "at {t}");
             }
         }
+    }
+
+    // The length counters the CPU reads in $4015 (some sound engines wait on them to time their notes): loaded by $4003 and its kin when the
+    // channel is enabled, counted down at the frame counter's half frames (cycles 14913 and 29829 of 29830), held by the halt flag.
+    #[test]
+    fn the_status_length_counters_count_down_at_half_frames() {
+        let mut st = Status::new(false);
+        st.write(0x4015, 0x0f);
+        st.write(0x4000, 0x00);
+        st.write(0x4003, 0x18); // length index 3: 2 half frames
+        st.write(0x4007, 0x08); // length index 1: 254
+        assert_eq!(st.read() & 0x0f, 0b0011);
+        st.run(14_912);
+        assert_eq!(st.read() & 1, 1, "before the first half frame");
+        st.run(1);
+        assert_eq!(st.read() & 1, 1, "one half frame: one to go");
+        st.run(14_916);
+        assert_eq!(st.read() & 1, 0, "two half frames: ended");
+        assert_eq!(st.read() & 2, 2, "the other is 254 long");
+        // Halted: stays. Disabled: gone. A write to a disabled channel loads nothing.
+        st.write(0x4004, 0x20);
+        st.write(0x4003, 0x18);
+        st.run(60_000);
+        assert_eq!(st.read() & 0b11, 0b10);
+        st.write(0x4015, 0x00);
+        assert_eq!(st.read() & 0x0f, 0);
+        st.write(0x4003, 0x18);
+        assert_eq!(st.read() & 1, 0);
     }
 
     // The CPU-side clock says the DMC plays exactly when the APU's does.

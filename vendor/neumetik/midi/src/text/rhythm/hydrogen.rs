@@ -14,7 +14,8 @@
 //! its first pattern if it has no sequence. A drum is named by the song's
 //! instrument list (Kick, Snare Rock, Hat Closed, Tom Low ...); a pattern
 //! file names none, so its instrument ids are read as the places in
-//! Hydrogen's default kit ([`DEFAULT_KIT`], from memory). A song may not
+//! Hydrogen's default kit ([`DEFAULT_KIT`], GMRockKit's list). A note's `type` ("Hi-hat Closed", "Snare Rimshot"...), which newer
+//! pattern files give each note, names its drum first. A song may not
 //! change meter (a group not a whole number of the first bar long is
 //! refused: a [`Pattern`] has one meter), and an instrument whose name is
 //! no drum Neumetik knows is refused by name. A note's velocity (0 to 1) is
@@ -22,7 +23,7 @@
 //! offs are left out (a note off is skipped).
 //!
 //! **Writing:** a `.h2pattern` of one pattern for the default kit. Hydrogen's
-//! kit has 13 different sounds, so a drum within 3 keys of one of them
+//! kit has 15 different sounds, so a drum within 3 keys of one of them
 //! takes it and any other is refused.
 
 use super::names;
@@ -32,11 +33,10 @@ use crate::text::xml::{self, Element};
 
 type R<T> = Result<T, String>;
 
-/// Hydrogen's default kit as General MIDI keys, by instrument id: Kick,
-/// Stick, Snare Jazz, Hand Clap, Snare Rock, Tom Low, Hat Closed, Tom Mid,
-/// Hat Pedal, Tom Hi, Hat Open, Cowbell, Ride Jazz, Crash Jazz, Ride Rock,
-/// Crash. The order is from memory.
-pub const DEFAULT_KIT: [u8; 16] = [36, 37, 38, 39, 38, 45, 42, 47, 44, 50, 46, 56, 51, 49, 51, 49];
+/// Hydrogen's default kit (GMRockKit, `data/drumkits/GMRockKit/drumkit.xml` in Hydrogen's repository: read as data on 2026-11-14) as
+/// General MIDI keys, by instrument id: Kick, Stick, Snare, Hand Clap, Snare Rimshot, Floor Tom, Hat Closed, Tom 2, Hat Pedal, Tom 1,
+/// Hat Open, Cowbell, Ride, Crash, Ride 2, Splash, Hat Semi-Open, Bell.
+pub const DEFAULT_KIT: [u8; 18] = [36, 37, 38, 39, 38, 43, 42, 47, 44, 50, 46, 56, 51, 49, 51, 55, 46, 53];
 
 /// A Hydrogen instrument's name as a General MIDI drum key.
 pub fn key_of(name: &str) -> Option<u8> {
@@ -44,12 +44,12 @@ pub fn key_of(name: &str) -> Option<u8> {
     let has = |s: &str| n.contains(s);
     let k = if has("kick") || has("bass drum") || has("bassdrum") || n.trim() == "bd" {
         36
+    } else if has("snare") && !has("side") {
+        38
     } else if has("stick") || has("rim") {
         37
     } else if has("clap") {
         39
-    } else if has("snare") {
-        38
     } else if has("hat") || has("hihat") || n.starts_with("hh") {
         if has("open") {
             46
@@ -65,15 +65,17 @@ pub fn key_of(name: &str) -> Option<u8> {
             } else {
                 41
             }
-        } else if has("hi") {
+        } else if has("hi") || n.ends_with("1") {
             50
-        } else if has("mid") {
+        } else if has("mid") || n.ends_with("2") {
             47
         } else {
             45
         }
-    } else if has("crash") {
+    } else if has("crash") || has("cymbal") {
         49
+    } else if n.trim() == "bell" {
+        53
     } else if has("china") {
         52
     } else if has("splash") {
@@ -211,7 +213,10 @@ pub fn read(text: &str, o: &Opts) -> R<Pattern> {
                     continue;
                 }
                 let id = id as u32;
+                // A pattern file's instrument ids index the kit it names, which the file doesn't carry; each note's `type` says what it is.
+                let typed = n.get("type").filter(|t| !t.trim().is_empty()).and_then(|t| key_of(&t));
                 let key = match inst.iter().find(|i| i.0 == id) {
+                    _ if typed.is_some() && inst.is_empty() => typed.unwrap(),
                     Some((_, name)) => key_of(name).ok_or_else(|| format!("'{name}' is not a drum Neumetik knows"))?,
                     None if inst.is_empty() => *DEFAULT_KIT.get(id as usize).ok_or_else(|| format!("instrument {id} is past Hydrogen's default kit, and the file names none"))?,
                     None => return Err(format!("a note plays instrument {id}, which the song doesn't list")),
@@ -313,6 +318,55 @@ mod tests {
         assert_eq!(cells(38), [0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0]);
         assert_eq!(cells(36), [3, 0, 0, 0, 3, 0, 0, 0, 2, 0, 0, 0]);
         assert_eq!(p.title, "groove");
+    }
+
+    #[test]
+    fn the_two_shipped_kits_name_known_drums() {
+        // The instrument names of Hydrogen's GMRockKit and TR808EmulationKit (their drumkit.xml, read as data), as GM keys.
+        let gm = [("Kick", 36), ("Stick", 37), ("Snare", 38), ("Hand Clap", 39), ("Snare Rimshot", 38), ("Floor Tom", 41), ("Hat Closed", 42), ("Tom 2", 47), ("Hat Pedal", 44), ("Tom 1", 50), ("Hat Open", 46), ("Cowbell", 56), ("Ride", 51), ("Crash", 49), ("Ride 2", 51), ("Splash", 55), ("Hat Semi-Open", 46), ("Bell", 53)];
+        for (name, key) in gm {
+            assert_eq!(key_of(name), Some(key), "{name}");
+        }
+        for name in ["Kick Long", "Kick Short", "Snare 1", "Snare 2", "Clap", "Tom Low", "Tom Mid", "Tom Hi", "Closed Hat", "Pedal Hat", "Open Hat", "Cymbal", "Shaker", "Conga", "Clave", "Cowbell"] {
+            assert!(key_of(name).is_some(), "{name}");
+        }
+    }
+
+    #[test]
+    fn a_pattern_notes_type_names_its_drum() {
+        // Hydrogen 1.2's pattern files: the instrument id indexes the kit the file names (not in it), `type` says what it is.
+        let n = |pos: u32, inst: u32, ty: &str| format!("<note><position>{pos}</position><velocity>0.8</velocity><instrument>{inst}</instrument><type>{ty}</type><note_off>false</note_off></note>");
+        let notes: String = [n(0, 0, "Kick"), n(48, 4, "Snare Rimshot"), n(96, 16, "Hi-hat Semi-Open"), n(144, 12, "Ride Bow"), n(0, 99, "Tom Floor"), n(96, 9, "Ride Bell")].concat();
+        let f = format!("<drumkit_pattern><drumkit_name>GMRockKit</drumkit_name><pattern><name>t</name><size>192</size><denominator>4</denominator><noteList>{notes}</noteList></pattern></drumkit_pattern>");
+        let p = parse(&f, None, &Opts::default()).expect("pattern");
+        let keys: Vec<u8> = p.lanes.iter().map(|l| l.key).collect();
+        for k in [36, 38, 46, 51, 41, 53] {
+            assert!(keys.contains(&k), "{k} in {keys:?}");
+        }
+    }
+
+    /// Real files: H2_DIR a folder of `.h2pattern` and `.h2song` (nothing is checked in: their licences vary).
+    #[test]
+    #[ignore]
+    fn reads_real_hydrogen_files() {
+        let Ok(dir) = std::env::var("H2_DIR") else { return };
+        let mut paths: Vec<_> = std::fs::read_dir(dir).unwrap().flatten().map(|e| e.path()).filter(|p| p.extension().is_some_and(|e| e == "h2pattern" || e == "h2song")).collect();
+        paths.sort();
+        let (mut ok, mut bad) = (0, 0);
+        for path in paths {
+            let text = std::fs::read_to_string(&path).unwrap();
+            match parse(&text, None, &Opts::default()) {
+                Ok(p) => {
+                    ok += 1;
+                    eprintln!("{}: {}/{} x {} bars, {} hits, {} drums", path.file_name().unwrap().to_string_lossy(), p.beats, p.unit, p.bars, p.hits(), p.lanes.len());
+                }
+                Err(e) => {
+                    bad += 1;
+                    eprintln!("{}: {e}", path.file_name().unwrap().to_string_lossy());
+                }
+            }
+        }
+        eprintln!("{ok} read, {bad} refused");
     }
 
     #[test]

@@ -37,9 +37,9 @@
 //! The PCM channels are the Z80 mixer's behaviour (not its cycles): two channels at 17.8 kHz or three at 13.4 kHz, the
 //! driver's volume table, the rate steps, mixed with the Z80's clamp into the YM2612's DAC.
 //!
-//! **Not done:** fade-in requests, the command API (pause, fades) except what `Player` needs. **Not run against the original**:
-//! it is 68000 and Z80 assembly (asm68k, sjasmplus) with no assembler here; checked by what the format
-//! says and by ear's arithmetic.
+//! **Not done:** the command API's DMA protection and the PCM buffer. **Compared with the original** 68000 driver
+//! (`m68k/mds_ref.rs`, assembled and run by our own 68000 core): every FM and PSG write and the work memory, on
+//! songs and effects and on requests and commands. **Not compared:** the Z80's PCM mixer (a Z80 isn't run).
 
 use crate::replay::{Bufs, Driver as ReplayDriver, Tune};
 use crate::sn76489::Sn76489;
@@ -79,7 +79,7 @@ const T_PEG_DELAY: usize = 34;
 const T_PEG_POS: usize = 35;
 const T_STACK: usize = 36;
 const T_TYPE: usize = 52;
-const TSIZE: usize = 58;
+pub const TSIZE: usize = 58;
 // FM: pan/lfo, algorithm, four TLs. PSG: envelope address (word), position, delay, noise reset, noise mode.
 const T_FM_PAN_LFO: usize = T_TYPE;
 const T_FM_ALG: usize = T_TYPE + 1;
@@ -337,6 +337,11 @@ impl Song {
         Ok(Song { rom, file: file.to_vec(), pcm: std::sync::Arc::new(pcm.to_vec()) })
     }
 
+    /// The ROM image the driver reads (the sequence data table and what it points to).
+    pub fn rom(&self) -> &[u8] {
+        &self.rom
+    }
+
     pub fn file_bytes(&self) -> &[u8] {
         &self.file
     }
@@ -381,6 +386,8 @@ pub struct Driver {
     pub heard: Option<Vec<(u64, usize, Option<u8>)>>,
     looped: u16,
     done: bool,
+    /// Every write to the chips, in order, when a test asks: (0 or 1 the YM2612's port, 2 the PSG; register; value).
+    pub chip_log: Option<Vec<(u8, u8, u8)>>,
 }
 
 /// One of the Z80's PCM channels.
@@ -403,6 +410,14 @@ const PCM_VOL: [i32; 16] = [256, 203, 161, 128, 102, 81, 64, 51, 40, 32, 26, 20,
 const PCM_CLOCK: f64 = 3_579_545.0;
 
 /// The NTSC frame, in seconds.
+/// The track mask's bit of a track: track 0 is bit 15, as in the driver's work area.
+fn tbit(tn: usize) -> u16 {
+    1 << (TCOUNT - 1 - tn)
+}
+
+/// `mds_fade_rate`: the fade's rate by speed (bit pattern rotated once a frame; a set top bit steps the volume).
+const FADE_RATES: [u8; 8] = [0x01, 0x11, 0x49, 0x55, 0x57, 0x77, 0x7f, 0xff];
+
 pub const FRAME: f64 = 1.0 / 59.922_74;
 
 impl Driver {
@@ -440,6 +455,7 @@ impl Driver {
             heard: None,
             looped: 0,
             done: false,
+            chip_log: None,
         };
         for t in d.track.iter_mut() {
             t[T_NOTE_FLAG] = 0;
@@ -458,13 +474,122 @@ impl Driver {
         d
     }
 
+    /// The tracks' memory, one slice of `TSIZE` bytes each, laid out as the driver's work area has it.
+    pub fn tracks(&self) -> &[[u8; TSIZE]] {
+        &self.track
+    }
+
+    /// The work area before the tracks, as the driver's own layout has it (after `w_sdtop`), for comparing with the original's memory.
+    pub fn work_image(&self) -> Vec<u8> {
+        let mut v = vec![];
+        for tab in [&self.request, &self.tempo, &self.counter, &self.seq_step, &self.volume, &self.tmask, &self.chmask] {
+            for w in tab.iter() {
+                v.extend(w.to_be_bytes());
+            }
+        }
+        v.extend([self.bgm_volume, self.se_volume, self.priority, self.fade_rate, self.fade_target, self.comm]);
+        v
+    }
+
     /// `mds_request`.
     pub fn request_song(&mut self, id: u16, priority: usize) {
         self.request[priority & 3] = id | 0xC000;
     }
 
+    /// `mds_command`: the commands of `doc/api.md`, by number, with `d1` and `d2` as the driver takes them. Returns `d0` (a command with no value returns 0;
+    /// the version string, 0x03, isn't here). Slots (`d1` of the per-slot commands) wrap to 0 to 3 as the request's do. The FM writes go to the chip at once.
+    pub fn command(&mut self, cmd: u8, d1: u32, d2: u32) -> u32 {
+        let slot = (d1 & 3) as usize;
+        match cmd {
+            0x00 => 0x13,
+            0x01 => u32::from(self.rd16(self.sdtop as isize - 2)),
+            0x02 => u32::from(self.tmask[slot]),
+            0x04 => u32::from(self.gtempo),
+            0x05 => {
+                self.gtempo = d1 as u16;
+                0
+            }
+            0x06 => u32::from(self.bgm_volume) << 8 | u32::from(self.se_volume),
+            0x07 => {
+                self.bgm_volume = (d1 >> 8) as u8;
+                self.se_volume = d1 as u8;
+                0
+            }
+            0x08 | 0x09 => {
+                self.fm(usize::from(cmd == 0x09), (d1 >> 8) as u8, d1 as u8);
+                0
+            }
+            0x0a => {
+                // `fade_bgm`: bit 7 of the target stops the song at the end of the fade; the rate is the upper byte of `d1`.
+                self.pcm_mode &= !0x10;
+                if d1 & 0x80 != 0 {
+                    self.pcm_mode |= 0x10;
+                }
+                // (the driver indexes the table by the whole upper byte: past 7 it reads beyond it; the last entry stands in)
+                self.fade_rate = FADE_RATES[((d1 >> 8) as usize & 0xff).min(7)];
+                self.fade_target = (d1 & 0x7f) as u8;
+                0
+            }
+            0x0b => {
+                let tm = self.tmask[slot];
+                for tn in 0..TCOUNT {
+                    if tm & tbit(tn) == 0 {
+                        continue;
+                    }
+                    if d2 & 0xffff != 0 {
+                        if self.track[tn][T_NOTE_FLAG] & (1 << NF_ENABLED) != 0 {
+                            self.track[tn][T_CHANNEL_FLAG] |= (1 << CF_SUSPEND) | (1 << CF_STOP);
+                        }
+                    } else if self.track[tn][T_CHANNEL_FLAG] & (1 << CF_SUSPEND) != 0 {
+                        self.track[tn][T_CHANNEL_FLAG] &= !(1 << CF_SUSPEND);
+                        self.track[tn][T_NOTE_FLAG] |= NM_INIT | NM_RESTORE;
+                    }
+                }
+                0
+            }
+            0x0c => u32::from(self.vol_hi(slot * 2)),
+            0x0d => {
+                let v = d2 as u8;
+                self.volume[slot] = u16::from(v) << 8 | u16::from(convert_vol(v));
+                let tm = self.tmask[slot];
+                for tn in 0..TCOUNT {
+                    if tm & tbit(tn) != 0 {
+                        self.track[tn][T_NOTE_FLAG] |= 1 << NF_VOL;
+                    }
+                }
+                0
+            }
+            0x0e => u32::from(self.tempo[slot]),
+            0x0f => {
+                self.tempo[slot] = d2 as u16;
+                0
+            }
+            0x10 => u32::from(self.comm),
+            0x11 => {
+                // The mixing mode only (2 or 3; 0 keeps it): the DMA buffering in `d2` isn't modelled.
+                let m = d1 as u8;
+                if m == 2 || m == 3 {
+                    self.set_pcm_mode(m);
+                }
+                0
+            }
+            0x12 => u32::from(self.pcm_mode & 3),
+            _ => 0,
+        }
+    }
+
     fn fm(&mut self, port: usize, reg: u8, v: u8) {
+        if let Some(l) = &mut self.chip_log {
+            l.push((port as u8, reg, v));
+        }
         self.ym.write(port != 0, reg, v);
+    }
+
+    fn psg(&mut self, v: u8) {
+        if let Some(l) = &mut self.chip_log {
+            l.push((2, 0, v));
+        }
+        self.sn.write(v);
     }
 
     fn rd8(&self, at: isize) -> u8 {
@@ -602,9 +727,24 @@ impl Driver {
             return;
         }
         let maxid = self.rd16(self.sdtop as isize - 2);
+        // BGM fade-in: `$2000 + (speed << 10)` added to the sound number (bits 10-13 are the rate's index into `FADE_RATES`, 8 to 15).
+        let mut fade_in = false;
         if req > maxid {
-            // Fade-in requests aren't played.
-            return;
+            let rate = req & 0x3c00;
+            if rate == 0 {
+                return;
+            }
+            req ^= rate;
+            if req == 0 || req > maxid {
+                return;
+            }
+            // An index below 8 reads the driver's code before the rate table: not modelled, the request is turned away.
+            let Some(&fr) = usize::from(rate >> 10).checked_sub(8).and_then(|i| FADE_RATES.get(i)) else {
+                return;
+            };
+            self.fade_rate = fr;
+            // Only the music (slot 3) starts silent and fades; another slot keeps its rate and starts normally, as the driver's overflow flag decides.
+            fade_in = r == 3;
         }
         // The song's header.
         self.tempo[r] = self.gtempo - 1;
@@ -624,7 +764,14 @@ impl Driver {
         if v & 0x80 != 0 {
             v = 0x7f;
         }
-        self.volume[r] = u16::from(v) << 8 | u16::from(convert_vol(v));
+        if fade_in {
+            // The fade's target is the song's volume; it starts at $50 (the quietest steps) and rises, never stopping the song afterwards.
+            self.fade_target = v;
+            self.pcm_mode &= !0x10;
+            self.volume[r] = 0x500f;
+        } else {
+            self.volume[r] = u16::from(v) << 8 | u16::from(convert_vol(v));
+        }
         let tcount = self.rd8(p);
         p += 1;
         if tcount == 0 {
@@ -648,11 +795,10 @@ impl Driver {
             t[T_REQUEST_ID] = (r * 2) as u8;
             t[T_NOTE_FLAG] = NM_INIT;
             t[T_CHANNEL_FLAG] = cflag;
-            self.tmask[r] |= 1 << tn;
+            self.tmask[r] |= tbit(tn);
             self.chmask[r] |= 1u16.checked_shl(u32::from(ch)).unwrap_or(0);
             let t = &mut self.track[tn];
-            t[T_LAST_PITCH] = 0xff;
-            t[T_LAST_PITCH + 1] = 0xff;
+            t[T_LAST_PITCH] = 0xff; // `st`: the high byte only; the low byte keeps what it had
             t[T_INS] = 0x00;
             t[T_INS_TRS] = 0x30;
             t[T_NOTE] = 0;
@@ -691,7 +837,7 @@ impl Driver {
     fn stop_song(&mut self, r: usize) {
         let tm = self.tmask[r];
         for tn in 0..TCOUNT {
-            if tm & (1 << tn) != 0 {
+            if tm & tbit(tn) != 0 {
                 self.track[tn][T_CHANNEL_FLAG] |= 1 << CF_STOP;
                 self.track[tn][T_CHANNEL_FLAG] &= !(1 << CF_SUSPEND);
                 self.track[tn][T_REQUEST_ID] = (RCOUNT << 1) as u8;
@@ -769,7 +915,7 @@ impl Driver {
         self.volume[3] = u16::from(v) << 8 | u16::from(convert_vol(v));
         let tm = self.tmask[3];
         for tn in 0..TCOUNT {
-            if tm & (1 << tn) != 0 {
+            if tm & tbit(tn) != 0 {
                 self.track[tn][T_NOTE_FLAG] |= 1 << NF_VOL;
             }
         }
@@ -862,7 +1008,7 @@ impl Driver {
                             self.track[tn][T_FM_ALG] = self.rd8(at as isize);
                             self.track[tn][T_INS_TRS] = self.rd8(at as isize + 1);
                             f.nf_set(NF_INS);
-                            self.set_tw(tn, T_LAST_PITCH, 0xffff);
+                            self.track[tn][T_LAST_PITCH] = 0xff; // `st`: the high byte only
                         } else {
                             f.nf_set(NF_KEY_OFF);
                             f.nf_clr(NF_SLUR);
@@ -912,7 +1058,7 @@ impl Driver {
                             self.track[tn][T_FM_PAN_LFO] = v;
                             f.nf_set(NF_PAN_LFO);
                         } else {
-                            self.set_tw(tn, T_LAST_PITCH, 0xffff);
+                            self.track[tn][T_LAST_PITCH] = 0xff; // `st`: the high byte only
                             self.track[tn][T_PSG_NMODE] = arg(self);
                             f.nf_set(NF_PAN_LFO);
                         }
@@ -930,7 +1076,7 @@ impl Driver {
                         }
                     }
                     0xec => {
-                        self.set_tw(tn, T_LAST_PITCH, 0xffff);
+                        self.track[tn][T_LAST_PITCH] = 0xff; // `st`: the high byte only
                         let a = arg(self);
                         if a & 0x80 != 0 {
                             f.nf |= (1 << NF_FM3) | (1 << NF_VOL);
@@ -1073,7 +1219,7 @@ impl Driver {
                             self.priority = 0xff;
                             f.cf_set(CF_STOP);
                             self.track[tn][T_REQUEST_ID] = (RCOUNT << 1) as u8;
-                            self.tmask[rn] &= !(1 << tn);
+                            self.tmask[rn] &= !tbit(tn);
                             let ch = self.track[tn][T_CHANNEL_ID];
                             self.chmask[rn] &= !(1u16.checked_shl(u32::from(ch)).unwrap_or(0));
                             self.looped |= 1 << tn;
@@ -1235,7 +1381,7 @@ impl Driver {
                 }
                 0x89 => {
                     if self.track[tn][T_CHANNEL_ID] >= 6 {
-                        self.set_tw(tn, T_LAST_PITCH, 0xffff);
+                        self.track[tn][T_LAST_PITCH] = 0xff; // `st`: the high byte only
                         self.track[tn][T_PSG_NMODE] = param;
                         f.nf_set(NF_PAN_LFO);
                     }
@@ -1300,9 +1446,10 @@ impl Driver {
             self.set_tw(tn, T_PEG_MOD, m);
             d0 = d0.wrapping_add(m);
             if delay == self.rd8(at + 1) {
-                let next = self.rd16(at + 2).wrapping_sub(0x7f00) as i16;
-                if next >= 0 {
-                    self.set_tw(tn, T_PEG_DELAY, next as u16);
+                // `subi.w #$7f00` then `blt`: a signed compare of the word, so only $7f00 to $7fff jump.
+                let w = self.rd16(at + 2) as i16;
+                if w >= 0x7f00 {
+                    self.set_tw(tn, T_PEG_DELAY, (w - 0x7f00) as u16);
                 } else {
                     self.track[tn][T_PEG_DELAY] = 0;
                     self.track[tn][T_PEG_POS] = self.track[tn][T_PEG_POS].wrapping_add(1);
@@ -1395,7 +1542,7 @@ impl Driver {
                 if d4 & 0x80 == 0 {
                     self.psg_update(tn, rn, chn, f);
                 } else {
-                    self.sn.write(0xdf);
+                    self.psg(0xdf);
                     let m = d4 & 0x7f;
                     if m != 0 {
                         self.fm3_update(tn, rn, f, m);
@@ -1567,7 +1714,7 @@ impl Driver {
         d3 = d3.wrapping_add(self.vol_hi(rn));
         let d4 = self.op_mask(tn);
         let alg = usize::from(self.fm3_alg & 7);
-        for (op, bit) in [(3u8, 6), (1, 4), (2, 5), (0, 3)] {
+        for (op, bit) in [(3u8, 6), (2, 4), (1, 5), (0, 3)] {
             if d4 & (1 << bit) != 0 {
                 continue;
             }
@@ -1576,7 +1723,7 @@ impl Driver {
                 let (s, c) = d0.overflowing_add(d3);
                 d0 = if c || s & 0x80 != 0 { 0x7f } else { s };
             }
-            // Operator `op` (register order 1, 3, 2, 4) of FM3: 0x42 + op*4.
+            // Operator `op` of FM3 is register 0x42 + op*4; the mask bits go 6, 4, 5, 3 down the table (as the original has them).
             self.fm(0, 0x42 + op * 4, d0);
         }
     }
@@ -1764,7 +1911,7 @@ impl Driver {
                 self.track[tn][T_PSG_EG_POS] = 0;
                 self.track[tn][T_PSG_EG_DELAY] = 0x1f;
                 f.nf_set(NF_SUSTAIN);
-                self.set_tw(tn, T_LAST_PITCH, 0xffff);
+                self.track[tn][T_LAST_PITCH] = 0xff; // `st`: the high byte only
                 self.set_tw(tn, T_PEG_DELAY, 0);
                 St::Command
             } else {
@@ -1850,7 +1997,7 @@ impl Driver {
         self.track[tn][T_PSG_EG_DELAY] = 0x0f;
         f.cf_clr(CF_KEY_ON);
         f.nf_clr(NF_KEY_OFF);
-        self.sn.write(0x1f | chnid);
+        self.psg(0x1f | chnid);
     }
 
     fn psg_write_vol(&mut self, tn: usize, rn: usize, chnid: u8, evol: u8) {
@@ -1863,7 +2010,7 @@ impl Driver {
         if tvol >= 15 {
             tvol = 15;
         }
-        self.sn.write(0x10 | tvol | chnid);
+        self.psg(0x10 | tvol | chnid);
     }
 
     fn psg_update(&mut self, tn: usize, rn: usize, chn: u8, f: &mut Fl) {
@@ -1879,8 +2026,8 @@ impl Driver {
         self.set_tw(tn, T_LAST_PITCH, pitch);
         let p = self.psg_pitch(pitch);
         let chnid = Driver::psg_id(chn);
-        self.sn.write((p as u8 & 0x0f) | chnid);
-        self.sn.write(((p >> 4) as u8) & 0x7f);
+        self.psg((p as u8 & 0x0f) | chnid);
+        self.psg(((p >> 4) as u8) & 0x7f);
     }
 
     fn psgn_update(&mut self, tn: usize, rn: usize, f: &mut Fl) {
@@ -1897,7 +2044,7 @@ impl Driver {
                 return self.psg_set_pitch(tn, 8, pitch);
             }
         } else if mode != 0 {
-            self.sn.write(mode);
+            self.psg(mode);
             if pitch != self.tw(tn, T_LAST_PITCH) {
                 self.psg_set_pitch(tn, 8, pitch);
             }
@@ -1905,7 +2052,7 @@ impl Driver {
         }
         // Preset noise: the octave picks the rate.
         self.set_tw(tn, T_LAST_PITCH, pitch);
-        self.sn.write(0xe0 | (((pitch >> 8) as u8) & 7));
+        self.psg(0xe0 | (((pitch >> 8) as u8) & 7));
     }
 }
 
@@ -2157,6 +2304,118 @@ mod tests {
         v.push(0x07); // FB/ALG: algorithm 7, all carriers
         v.push(0x30);
         v
+    }
+
+    // A song of one looping FM note, as a driver ready to be asked things.
+    fn looping() -> Driver {
+        let s = seq(0, 1, &[0xe1, 0x00, 0xe2, 0x00, 0x82 + 24, 0x17, 0x17, 0xf5, 0xff, 0xf4]);
+        Driver::new(&Song::parse(&mds(&s, &[(0, voice())])).unwrap())
+    }
+
+    #[test]
+    fn a_fade_in_request_starts_quiet_and_rises_to_the_songs_volume() {
+        let mut d = looping();
+        d.request_song(1 | 0x3c00, 3); // $2000 + (7 << 10): the fastest fade, a step a frame
+        d.update();
+        d.update();
+        assert!(d.playing());
+        let start = d.command(0x0c, 3, 0);
+        assert!((0x40..=0x50).contains(&start), "starts near $50, not {start:#x}");
+        for _ in 0..30 {
+            d.update();
+        }
+        let later = d.command(0x0c, 3, 0);
+        assert!(later < start, "louder after a while: {start:#x} then {later:#x}");
+        for _ in 0..200 {
+            d.update();
+        }
+        assert_eq!(d.command(0x0c, 3, 0), 0, "ends at the song's own volume");
+        assert!(d.playing(), "a fade-in never stops the song");
+        // A sound number out of range, a fade-in of song 0 and of a song that isn't there are turned away (the request still stops what played).
+        for bad in [0x0002u16, 0x3c00, 0x3c05] {
+            let mut e = looping();
+            e.request_song(bad, 3);
+            for _ in 0..5 {
+                e.update();
+            }
+            assert!(!e.playing(), "{bad:#x} played");
+        }
+    }
+
+    #[test]
+    fn commands_ask_and_set_what_the_api_says() {
+        let mut d = looping();
+        for _ in 0..4 {
+            d.update();
+        }
+        assert_eq!(d.command(0x00, 0, 0), 0x13);
+        assert_eq!(d.command(0x01, 0, 0), 1);
+        assert_ne!(d.command(0x02, 3, 0), 0, "the music's track is active");
+        assert_eq!(d.command(0x02, 0, 0), 0);
+        assert_eq!(d.command(0x04, 0, 0), 128);
+        d.command(0x05, 100, 0);
+        assert_eq!(d.command(0x04, 0, 0), 100);
+        d.command(0x07, 0x0a05, 0);
+        assert_eq!(d.command(0x06, 0, 0), 0x0a05);
+        d.command(0x0d, 3, 0x20);
+        assert_eq!(d.command(0x0c, 3, 0), 0x20);
+        d.command(0x0f, 3, 77);
+        assert_eq!(d.command(0x0e, 3, 0), 77);
+        assert_eq!(d.command(0x12, 0, 0), 2);
+        d.command(0x11, 3, 0);
+        assert_eq!(d.command(0x12, 0, 0), 3);
+        d.command(0x11, 0, 0);
+        assert_eq!(d.command(0x12, 0, 0), 3, "0 keeps the mode");
+        assert_eq!(d.command(0x7f, 0, 0), 0, "an unknown command does nothing");
+    }
+
+    #[test]
+    fn pause_holds_the_music_and_resume_goes_on() {
+        let mut d = looping();
+        for _ in 0..4 {
+            d.update();
+        }
+        let before = d.steps;
+        d.command(0x0b, 3, 1);
+        for _ in 0..60 {
+            d.update();
+        }
+        let held = d.steps;
+        assert!(held >= before);
+        for _ in 0..60 {
+            d.update();
+        }
+        // The steps counter is the slot's clock, which keeps counting; what stops is the track, so its note flag stays enabled and it is suspended.
+        assert!(d.track.iter().any(|t| t[T_CHANNEL_FLAG] & (1 << CF_SUSPEND) != 0));
+        d.command(0x0b, 3, 0);
+        assert!(d.track.iter().all(|t| t[T_CHANNEL_FLAG] & (1 << CF_SUSPEND) == 0));
+        for _ in 0..60 {
+            d.update();
+        }
+        assert!(d.playing());
+    }
+
+    #[test]
+    fn a_fade_out_with_bit_7_stops_the_song() {
+        let mut d = looping();
+        for _ in 0..4 {
+            d.update();
+        }
+        d.command(0x0a, 0x0700 | 0x80 | 0x10, 0); // fastest, to volume 16, then stop
+        for _ in 0..100 {
+            d.update();
+        }
+        assert!(!d.playing(), "stopped after the fade");
+        let mut e = looping();
+        for _ in 0..4 {
+            e.update();
+        }
+        e.command(0x0a, 0x0700 | 0x10, 0); // the same without the stop bit
+        for _ in 0..100 {
+            e.update();
+        }
+        assert!(e.playing());
+        assert_eq!(e.command(0x0c, 3, 0), 0x10);
     }
 
     #[test]

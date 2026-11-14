@@ -18,6 +18,7 @@
 //! | `@title Name` | the pattern's name |
 //! | `@from 2` | the bar a score is read from |
 //! | `@bols konnakol` | read bols as konnakol (else tabla, or found by the words) |
+//! | `jangdan semachi` | a janggu cycle by name ([`JANGDAN`]): kudum syllables Dung, Kung, Duk (`>` an accent, `Duk.Du` a dotted pair) |
 //!
 //! In a grid or tab, `|` marks bars, unless there are exactly as many of
 //! them as the meter has beats (then they mark beats). `@bars` settles it.
@@ -244,7 +245,7 @@ pub fn detect(text: &str) -> Option<Notation> {
     if body.starts_with("e(") || body.starts_with("euclid") || body.starts_with("bjorklund") || is_euclid_pair(&body) {
         return Some(Notation::Euclid);
     }
-    if lower.starts_with("tala") || lower.starts_with("konnakol") || lower.starts_with("solkattu") || bol_share(t) >= 0.6 {
+    if lower.starts_with("tala") || lower.starts_with("jangdan") || lower.starts_with("taiko") || lower.starts_with("kuchishoga") || lower.starts_with("konnakol") || lower.starts_with("solkattu") || bol_share(t) >= 0.6 {
         return Some(Notation::Bols);
     }
     // Rows of cells (a label then a bar line or colon, or a bare row).
@@ -741,6 +742,47 @@ pub const TALAS: [(&str, &str, &str, (u8, u8)); 8] = [
     ("deepchandi", "Dha Dhin - | Dha Dha Tin - | Ta Tin - | Dha Dha Dhin -", "X 2 0 3", (7, 4)),
 ];
 
+/// The janggu's jangdan (rhythmic cycles) of Korean samulnori and pansori, as Pyeongkang Park's DMA document ("A Study of Traditional Korean
+/// Rhythm and Its Potential for Western Art Music", University of Georgia, 2022: its figures 3.3 to 3.11, read from the figures) writes them:
+/// (name, the cycle in kudum syllables a pulse with `|` between beats, the meter, cells a pulse or 0 for the default). `Duk.Du` is the dotted
+/// pair (three quarters of the pulse, then one), `>` an accent, `Du-Ru` two syllables in a pulse. Dung is both heads, Kung the left (bass) head
+/// with the hand, Duk the right head with the mallet (yeolchae), Giduk a grace note before Duk (kept as the Duk), Du and Ru the rolled strokes.
+pub const JANGDAN: [(&str, &str, (u8, u8), u8); 9] = [
+    ("gutgeori", "Dung - Giduk | Kung Du-Ru Ru-Ru | Kung - Giduk | Kung Du-Ru Ru-Ru", (12, 8), 0),
+    ("gutgeori-plain", "Dung - Duk | Kung Duk Duk | Kung - Duk | Kung Duk -", (12, 8), 0),
+    ("semachi", "Dung - - | Dung - Duk | Kung Duk> -", (9, 8), 0),
+    ("jungmori", "Dung - Duk | Kung Duk.Du Duk-Duk | Kung Kung Duk> | Kung Duk.Du Duk-Duk", (12, 4), 0),
+    ("jungjungmori", "Dung - Duk | Kung Duk Duk | Kung Kung Duk> | Kung - Kung", (12, 8), 0),
+    ("jajinmori", "Dung - Duk | Kung Duk - | Kung - Duk | Kung Duk -", (12, 8), 0),
+    ("hwimori", "Dung - | Duk Duk | Kung Duk | Kung -", (4, 4), 2),
+    ("danmori", "Dung - | Duk Duk | Kung Duk | Kung -", (4, 4), 2),
+    ("eonmori", "Dung - Duk | Kung - | Kung - Duk> | Kung -", (10, 8), 0),
+];
+
+/// The janggu's strokes on the drums: the left head low, the right head high, both for Dung (Neumetik's own mapping, on the tabla's drums).
+fn kudum_keys(bol: &str) -> Option<&'static [u8]> {
+    Some(match bol {
+        "dung" | "deong" | "dong" => &[64, 63],
+        "kung" | "gung" => &[64],
+        "duk" | "deok" | "giduk" | "gideok" => &[63],
+        "gi" | "du" | "ru" | "duru" | "ruru" => &[62],
+        _ => return None,
+    })
+}
+
+/// Taiko's kuchishoga as the P2PU "Intro to Taiko" course (CC BY-SA 4.0, saltfie.github.io/intro-to-taiko) defines it: Don a loud hit on the drum head,
+/// Doko (or Doro) two loud even hits, Tsu a soft hit, Tsuku two soft ones, Ka a loud hit on the rim, Kara two on the rim, Su a silence of a hit's
+/// length. The page gives no time values, so a word is a pulse and a double syllable halves it. Which hand is not said, so none is kept.
+/// (Neumetik's drums: the floor tom for the head, the side stick for the rim.) Returns the drums and the level.
+fn taiko_keys(bol: &str) -> Option<(&'static [u8], u8)> {
+    Some(match bol {
+        "don" | "do" | "ko" | "go" => (&[41], HIT),
+        "tsu" | "ku" => (&[41], SOFT),
+        "ka" | "ra" => (&[37], HIT),
+        _ => return None,
+    })
+}
+
 /// The drums a bol plays: tabla's right hand on the high congas and
 /// bongos, its left on the low ones (Neumetik's own mapping).
 fn tabla_keys(bol: &str) -> Option<&'static [u8]> {
@@ -774,7 +816,7 @@ fn bol_share(text: &str) -> f64 {
     if words.len() < 4 {
         return 0.0;
     }
-    let bols = words.iter().filter(|w| tabla_keys(w).is_some_and(|_| !matches!(w.as_str(), "ta" | "ka" | "na" | "ra" | "ti" | "te" | "ki" | "tu")) || matches!(w.as_str(), "dhin" | "dha" | "tirakita" | "dhage")).count();
+    let bols = words.iter().filter(|w| matches!(w.as_str(), "don" | "doko" | "tsuku" | "kara" | "doro") || kudum_keys(w).is_some_and(|_| !matches!(w.as_str(), "gi" | "du" | "ru")) || tabla_keys(w).is_some_and(|_| !matches!(w.as_str(), "ta" | "ka" | "na" | "ra" | "ti" | "te" | "ki" | "tu")) || matches!(w.as_str(), "dhin" | "dha" | "tirakita" | "dhage")).count();
     bols as f64 / words.len() as f64
 }
 
@@ -800,6 +842,9 @@ fn syllables_of(tok: &str) -> Vec<String> {
             "tirakita" => v.extend(["ti", "ra", "ki", "ta"].map(String::from)),
             "dhage" => v.extend(["dha", "ge"].map(String::from)),
             "terekete" => v.extend(["te", "re", "ke", "te"].map(String::from)),
+            "doko" | "doro" => v.extend(["do", "ko"].map(String::from)),
+            "tsuku" => v.extend(["tsu", "ku"].map(String::from)),
+            "kara" => v.extend(["ka", "ra"].map(String::from)),
             _ => v.push(s),
         }
     }
@@ -807,7 +852,7 @@ fn syllables_of(tok: &str) -> Vec<String> {
 }
 
 fn is_rest_token(t: &str) -> bool {
-    matches!(t, "-" | "," | "." | "~" | "S" | "s" | "_")
+    matches!(t, "-" | "," | "." | "~" | "S" | "s" | "_" | "su" | "Su" | "SU")
 }
 
 /// Tala, tabla bols and konnakol: a syllable a pulse, `|` between groups,
@@ -817,6 +862,8 @@ pub fn bols(text: &str, o: &Opts) -> R<Pattern> {
     let mut theka = String::new();
     let mut marks_line = String::new();
     let mut named: Option<usize> = None;
+    let mut jangdan: Option<usize> = None;
+    let mut taiko_line = false;
     for line in text.lines().map(str::trim).filter(|l| !l.is_empty() && !l.starts_with('#')) {
         let lower = line.to_ascii_lowercase();
         if let Some(rest) = lower.strip_prefix("tala") {
@@ -826,6 +873,19 @@ pub fn bols(text: &str, o: &Opts) -> R<Pattern> {
                 format!("'{name}' is not a tala Neumetik has ({})", known.join(", "))
             })?;
             named = Some(i);
+            continue;
+        }
+        if let Some(rest) = lower.strip_prefix("jangdan") {
+            let name = rest.trim_start_matches([':', ' ']).trim();
+            let i = JANGDAN.iter().position(|j| j.0 == name || (name == "gutgeori-basic" && j.0 == "gutgeori") || (name == "gutgeori-simple" && j.0 == "gutgeori-plain")).ok_or_else(|| {
+                let known: Vec<&str> = JANGDAN.iter().map(|j| j.0).collect();
+                format!("'{name}' is not a jangdan Neumetik has ({})", known.join(", "))
+            })?;
+            jangdan = Some(i);
+            continue;
+        }
+        if lower.starts_with("taiko") || lower.starts_with("kuchishoga") {
+            taiko_line = true;
             continue;
         }
         if lower.starts_with("konnakol") || lower.starts_with("solkattu") {
@@ -841,6 +901,16 @@ pub fn bols(text: &str, o: &Opts) -> R<Pattern> {
         }
     }
     let mut table_meter = None;
+    if let Some(i) = jangdan {
+        let j = &JANGDAN[i];
+        if theka.trim().is_empty() {
+            theka = j.1.to_string();
+        }
+        table_meter = Some(j.2);
+        if o.per == 0 && j.3 > 0 {
+            o.per = u32::from(j.3);
+        }
+    }
     if let Some(i) = named {
         let t = &TALAS[i];
         if theka.trim().is_empty() {
@@ -871,6 +941,8 @@ pub fn bols(text: &str, o: &Opts) -> R<Pattern> {
     if pulses == 0 {
         return Err("no bols found".into());
     }
+    // Taiko's kuchishoga, said (a `taiko` line) or found by words only it has (Ka and Ra are tabla's too).
+    let taiko_mode = taiko_line || groups.iter().flatten().any(|t| matches!(t.trim_end_matches('>').to_ascii_lowercase().as_str(), "don" | "doko" | "doro" | "tsuku" | "kara" | "tsu"));
     let konnakol = o.konnakol || groups.iter().flatten().any(|t| matches!(t.to_ascii_lowercase().as_str(), "di" | "mi" | "ju" | "nu" | "ma" | "dhom" | "lan" | "gu"));
     let (beats, unit) = if o.meter_set() {
         o.meter()
@@ -907,25 +979,43 @@ pub fn bols(text: &str, o: &Opts) -> R<Pattern> {
                     p.marks[base] = *m;
                 }
             }
+            let (tok, accent) = match tok.strip_suffix('>') {
+                Some(t) if !t.is_empty() => (t.to_string(), true),
+                _ => (tok.clone(), false),
+            };
+            let tok = &tok;
             if is_rest_token(tok) {
                 pulse += 1;
                 continue;
             }
-            let syl = syllables_of(tok);
+            // `Duk.Du`: a dotted pair, three quarters of the pulse and then one.
+            let dotted = tok.len() > 2 && tok.contains('.') && !tok.starts_with('.') && !tok.ends_with('.');
+            let syl = if dotted { tok.split('.').map(String::from).collect() } else { syllables_of(tok) };
             if syl.is_empty() {
                 pulse += 1;
                 continue;
             }
-            if per % syl.len() != 0 {
+            if dotted && (syl.len() != 2 || per % 4 != 0) {
+                return Err(format!("'{tok}' is a dotted pair of two syllables in a pulse of a multiple of 4 cells (say @per 4)"));
+            }
+            if !dotted && per % syl.len() != 0 {
                 return Err(format!("'{tok}' has {} syllables in a pulse of {per} cells: say @per {}", syl.len(), per * syl.len()));
             }
             let gap = per / syl.len();
             for (si, s) in syl.iter().enumerate() {
                 let low = s.to_ascii_lowercase();
-                let keys = if konnakol { konnakol_keys(&low).or_else(|| tabla_keys(&low)) } else { tabla_keys(&low).or_else(|| konnakol_keys(&low)) };
+                let offset = if dotted { si * per * 3 / 4 } else { si * gap };
+                let taiko = if taiko_mode { taiko_keys(&low) } else { None };
+                let keys = taiko.map(|t| t.0).or_else(|| kudum_keys(&low)).or_else(|| if konnakol { konnakol_keys(&low).or_else(|| tabla_keys(&low)) } else { tabla_keys(&low).or_else(|| konnakol_keys(&low)) });
                 let keys = keys.ok_or_else(|| format!("'{s}' is not a bol Neumetik knows"))?;
-                let cell = base + si * gap;
-                let level = if (gi == 0 && ti == 0 && si == 0) || (konnakol && ti == 0 && si == 0 && g.len() > 1) { ACCENT } else { HIT };
+                let cell = base + offset;
+                let level = if let Some((_, l)) = taiko {
+                    if accent {
+                        ACCENT
+                    } else {
+                        l
+                    }
+                } else if accent || (gi == 0 && ti == 0 && si == 0) || (konnakol && ti == 0 && si == 0 && g.len() > 1) { ACCENT } else { HIT };
                 for k in keys {
                     p.put(*k, cell as i64, level);
                 }
@@ -1847,6 +1937,55 @@ mod tests {
         assert_eq!(cells(&p, 36), "x.....x...x.....");
         assert_eq!(cells(&p, 38), "....x.......x...");
         assert_eq!(cells(&p, 42), "x.x.x.x.x.x.x.x.");
+    }
+
+    #[test]
+    fn the_jangdan_are_the_documents_figures() {
+        // Pyeongkang Park's DMA document, figures 3.3 to 3.11 (cells a sixteenth: a pulse of an eighth is 2, a quarter 4).
+        let hits = |name: &str, key: u8| -> Vec<usize> {
+            let p = read(&format!("jangdan {name}"));
+            let l = p.lanes.iter().find(|l| l.key == key);
+            l.map(|l| l.cells.iter().enumerate().filter(|(_, c)| **c > 0).map(|(i, _)| i / 2 * 2 + i % 2).collect()).unwrap_or_default()
+        };
+        // Gutgeori's plain form, 12/8: Dung . Duk | Kung Duk Duk | Kung . Duk | Kung Duk . (eighths 0, 2, 3, 4, 5, 6, 8, 9, 10).
+        let p = read("jangdan gutgeori-plain");
+        assert_eq!((p.beats, p.unit, p.bars, p.steps), (12, 8, 1, 24));
+        assert_eq!(hits("gutgeori-plain", 64), [0, 6, 12, 18], "Dung and the Kungs on the low drum");
+        assert_eq!(hits("gutgeori-plain", 63), [0, 4, 8, 10, 16, 20], "Dung and the Duks on the high one");
+        // Semachi, 9/8: Dung at 0 and 3, Duk at 5 and 7 (accented), Kung at 6.
+        let p = read("jangdan semachi");
+        assert_eq!((p.beats, p.unit, p.steps), (9, 8, 18));
+        assert_eq!(hits("semachi", 63), [0, 6, 10, 14]);
+        assert_eq!(hits("semachi", 64), [0, 6, 12]);
+        // Jungmori, 12/4: the dotted pair Duk.Du on beats 5 and 11 (a Duk, then a Du three sixteenths later).
+        let p = read("jangdan jungmori");
+        assert_eq!((p.beats, p.unit, p.steps), (12, 4, 48));
+        assert_eq!(hits("jungmori", 62), [19, 43]);
+        assert!(hits("jungmori", 63).contains(&16) && hits("jungmori", 63).contains(&32));
+        // Hwimori is 4/4 in eighths, Eonmori 10/8 as 3 + 2 + 3 + 2.
+        assert_eq!(hits("hwimori", 63), [0, 4, 6, 10]);
+        assert_eq!((read("jangdan hwimori").beats, read("jangdan hwimori").steps), (4, 16));
+        assert_eq!(hits("eonmori", 63), [0, 4, 14]);
+        // Found by its words, and a name it does not have says so.
+        assert_eq!(super::detect("Dung - Duk | Kung Duk Duk | Kung - Duk | Kung Duk -"), Some(Notation::Bols));
+        assert!(parse("jangdan nope", Some(Notation::Bols), &Opts::default()).unwrap_err().contains("not a jangdan"));
+    }
+
+    #[test]
+    fn taiko_kuchishoga_words_are_pulses_and_double_syllables_halve_them() {
+        // "Don Doko Tsu Tsuku | Ka Kara Su Don": 8 pulses of sixteenths in two bars of 4/4 (a pulse a quarter), the doubles two eighths.
+        let p = read("taiko\nDon Doko Tsu Tsuku | Ka Kara Su Don");
+        assert_eq!((p.beats, p.unit, p.bars, p.steps), (4, 4, 2, 16));
+        // The head (floor tom 41): Don at 0, Doko at 4 and 6, Tsu 8 (soft), Tsuku 12 and 14 (soft); the last Don at 28.
+        let head = p.lanes.iter().find(|l| l.key == 41).unwrap();
+        let at: Vec<(usize, u8)> = head.cells.iter().enumerate().filter(|(_, c)| **c > 0).map(|(i, c)| (i, *c)).collect();
+        assert_eq!(at, [(0, 2), (4, 2), (6, 2), (8, 1), (12, 1), (14, 1), (28, 2)]);
+        // The rim (side stick 37): Ka at 16, Kara at 20 and 22; the Su at 24 is a silence.
+        let rim = p.lanes.iter().find(|l| l.key == 37).unwrap();
+        assert_eq!(rim.cells.iter().enumerate().filter(|(_, c)| **c > 0).map(|(i, _)| i).collect::<Vec<_>>(), [16, 20, 22]);
+        // Found by its words (Don, Doko, Tsuku, Kara are taiko's only), and Ka stays tabla's in tabla.
+        assert_eq!(super::detect("Don Doko Don Doko | Don Ka Don Ka"), Some(Notation::Bols));
+        assert!(read("tala dhamar").lanes.iter().all(|l| l.key != 41 && l.key != 37));
     }
 
     #[test]

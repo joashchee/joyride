@@ -13,7 +13,7 @@
 //! Supported: notes, rests, ties, slurs, `o < > l Q q C s R ~`, loops with `/` break, `L`, `*n` subroutines,
 //! `{a/b/c}` blocks, key signatures, `v V ( ) p _ __ k K M P G D t T`, drum mode, the `'...'` commands of the
 //! platform, the echo macro, FM / `2op` / PSG / PCM instruments, pitch envelopes (both formats), macro tracks.
-//! Not supported (an error): `E` and pan envelopes.
+//! Refused (an error): `E` and pan envelopes, which MDSDRV doesn't have.
 
 use crate::mdsdrv::Error;
 use std::collections::{BTreeMap, HashMap};
