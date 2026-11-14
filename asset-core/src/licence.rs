@@ -178,6 +178,10 @@ pub fn guess_from_text(text: &str) -> Option<String> {
     if has("gnu general public license") {
         return Some(if has("version 3") { "GPL-3.0-only" } else { "GPL-2.0-only" }.into());
     }
+    if has("permission to use, copy, modify, and/or distribute this software for any purpose with or without fee") {
+        // ISC asks for the notice to be kept; 0BSD (the same words) does not.
+        return Some(if has("provided that the above copyright notice") { "ISC" } else { "0BSD" }.into());
+    }
     if has("redistribution and use in source and binary forms") {
         return Some(if has("neither the name") { "BSD-3-Clause" } else { "BSD-2-Clause" }.into());
     }
@@ -333,6 +337,14 @@ mod tests {
         std::fs::write(e.path().join("README.md"), "Permission is hereby granted, free of charge").unwrap();
         std::fs::write(e.path().join("a.lua"), "x").unwrap();
         assert_eq!(guess_for(&e.path().join("a.lua"), e.path()).unwrap().spdx, "Unlicense", "the licence file outranks the readme");
+    }
+
+    #[test]
+    fn isc_is_told_from_0bsd() {
+        let isc = "Copyright (c) 2020 A\n\nPermission to use, copy, modify, and/or distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\ncopyright notice and this permission notice appear in all copies.";
+        assert_eq!(guess_from_text(isc).as_deref(), Some("ISC"));
+        let bsd0 = "Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.";
+        assert_eq!(guess_from_text(bsd0).as_deref(), Some("0BSD"));
     }
 
     #[test]

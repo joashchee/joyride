@@ -28,6 +28,10 @@ rev = "89e5cd91481682dab89d5bc9be4c3b56dbbe6d2e"
 git = "https://github.com/bakpakin/binser"
 rev = "15117c1d786b16249dcd1441a5be9e3244d42767"
 
+[dependencies.bitser]
+git = "https://github.com/gvx/bitser"
+rev = "454539159112129a92c1970f662249301d61df4e"
+
 [dependencies.bump]
 git = "https://github.com/kikito/bump.lua"
 rev = "72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
@@ -39,6 +43,10 @@ rev = "59eaeb44433fdd0749cff633be5bb68ef37a46a8"
 [dependencies.classic]
 git = "https://github.com/rxi/classic"
 rev = "e5610756c98ac2f8facd7ab90c94e1a097ecd2c6"
+
+[dependencies.cpml]
+git = "https://github.com/excessive/cpml"
+rev = "ddb80f48e6a3f7d9b98aa45b6feeb461db3d0c6a"
 
 [dependencies.flux]
 git = "https://github.com/rxi/flux"
@@ -96,6 +104,10 @@ rev = "c068a41e0fbb91bfe608e402e18421adacb0690c"
 git = "https://github.com/uspgamedev/luasteam"
 rev = "259b1d0de33061c1eec3b8c9b1e60a9b4fff21e1"
 
+[dependencies.luaunit]
+git = "https://github.com/bluebird75/luaunit"
+rev = "9678c933e71cb26adcdfa6cf1baceb926398eb48"
+
 [dependencies.lume]
 git = "https://github.com/rxi/lume"
 rev = "b539dc74c7957a12722ef9c4a38554b662f10bcc"
@@ -140,6 +152,10 @@ rev = "9c165816a14c868339c3cd0d22eed65c313c8bf8"
 git = "https://github.com/tesselode/ripple"
 rev = "e18db79b98546a12f560b817bfbc218d08b0fb13"
 
+[dependencies.roomy]
+git = "https://github.com/tesselode/roomy"
+rev = "2574a9cc11d42da4863e58f24c9f984cc2087e33"
+
 [dependencies.semver]
 git = "https://github.com/kikito/semver.lua"
 rev = "42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
@@ -155,6 +171,10 @@ rev = "69cdf8c7565f518c03967d0243cb54d1ee31da4e"
 [dependencies.suit]
 git = "https://github.com/vrld/SUIT"
 rev = "17677826030a7270b474c5717af43834d583094c"
+
+[dependencies.talkies]
+git = "https://github.com/tanema/talkies"
+rev = "057501c37a62a02d9ea6b7bb9c2d51d02330a51d"
 
 [dependencies.tiny-ecs]
 git = "https://github.com/bakpakin/tiny-ecs"

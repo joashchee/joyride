@@ -47,6 +47,14 @@ S.list = {
       input:update()
       return input:down("fire") == false and input:pressed("left") == false and type(input:getActiveDevice()) == "string", "nothing pressed: nothing reported"
     end },
+  { lib = "talkies", job = "dialogue boxes", needs = "window",
+    run = function(talkies)
+      talkies.say("Ada", { "Hello", "Goodbye" })
+      local open = talkies.isOpen()
+      talkies.update(0.1); talkies.advanceMsg(); talkies.advanceMsg()
+      talkies.clearMessages()
+      return open == true and talkies.isOpen() == false, "two lines queued, advanced past, and the box closed; nothing was drawn (needs a screen to look at)"
+    end },
   { lib = "ripple", job = "sound tags, volume, fades",
     run = function(ripple)
       if not (love and love.audio and love.sound) then return "skip", "needs LÖVE's audio and sound modules" end

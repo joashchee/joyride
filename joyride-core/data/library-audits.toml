@@ -360,3 +360,48 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 1
 reviewed = "2026-11-14 reviewed: Rust crate has no dependencies and no build script; no network or process use, std::env and std::fs only inside tests; capi's 53 unsafe blocks are FFI pointer boundaries with null checks; the Lua binding only ffi.loads its own library; demo, examples and scripts are not installed or run; no binaries, secrets or personal data"
+
+[[audit]]
+name = "cpml"
+rev = "ddb80f48e6a3f7d9b98aa45b6feeb461db3d0c6a"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 6
+med = 1
+reviewed = "read the scan and the flagged files at the pinned commits (cpml's pcall-guarded FFI and LICENSE.md parts; luaunit's os.execute only in its own test runner; bitser's FFI and demo loadstring; talkies' CC-BY example font): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "luaunit"
+rev = "9678c933e71cb26adcdfa6cf1baceb926398eb48"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 14
+reviewed = "read the scan and the flagged files at the pinned commits (cpml's pcall-guarded FFI and LICENSE.md parts; luaunit's os.execute only in its own test runner; bitser's FFI and demo loadstring; talkies' CC-BY example font): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "talkies"
+rev = "057501c37a62a02d9ea6b7bb9c2d51d02330a51d"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "read the scan and the flagged files at the pinned commits (cpml's pcall-guarded FFI and LICENSE.md parts; luaunit's os.execute only in its own test runner; bitser's FFI and demo loadstring; talkies' CC-BY example font): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "roomy"
+rev = "2574a9cc11d42da4863e58f24c9f984cc2087e33"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the scan and the flagged files at the pinned commits (cpml's pcall-guarded FFI and LICENSE.md parts; luaunit's os.execute only in its own test runner; bitser's FFI and demo loadstring; talkies' CC-BY example font): cautions recorded, nothing else of concern"
+
+[[audit]]
+name = "bitser"
+rev = "454539159112129a92c1970f662249301d61df4e"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 4
+med = 5
+reviewed = "read the scan and the flagged files at the pinned commits (cpml's pcall-guarded FFI and LICENSE.md parts; luaunit's os.execute only in its own test runner; bitser's FFI and demo loadstring; talkies' CC-BY example font): cautions recorded, nothing else of concern"

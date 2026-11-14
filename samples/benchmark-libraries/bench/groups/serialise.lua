@@ -1,15 +1,17 @@
 -- Turning tables into text or bytes and back, for saves and messages. json is the portable text format; lume.serialize writes Lua
--- source; binser is a compact binary format that keeps more types.
+-- source; binser and bitser are compact binary formats that keep more types.
 
 local U = require("bench.util")
 
 local function enc(m, v)
   if m.id == "json" then return m.lib.encode(v)
+  elseif m.id == "bitser" then return m.lib.dumps(v)
   else return m.lib.serialize(v) end
 end
 
 local function dec(m, s)
   if m.id == "json" then return m.lib.decode(s)
+  elseif m.id == "bitser" then return m.lib.loads(s)
   elseif m.id == "lume" then return m.lib.deserialize(s)
   else return (m.lib.deserialize(s))[1] end   -- binser returns a list of the values, and how many
 end
@@ -17,7 +19,7 @@ end
 local function rowFor(fn)
   -- impl table where each member runs fn(roundtrip, encode)
   local out = {}
-  for _, name in ipairs({ "binser", "lume", "json" }) do
+  for _, name in ipairs({ "binser", "bitser", "lume", "json" }) do
     out[name] = function(lib)
       local m = { id = name, lib = lib }
       return fn(function(v) return dec(m, enc(m, v)) end, function(v) return enc(m, v) end, name)
@@ -28,7 +30,7 @@ end
 
 local function speedImpl(which)
   local out = {}
-  for _, name in ipairs({ "binser", "lume", "json" }) do
+  for _, name in ipairs({ "binser", "bitser", "lume", "json" }) do
     out[name] = function(lib)
       local m = { id = name, lib = lib }
       local data = U.crowd()
@@ -45,6 +47,7 @@ return {
   about = "Save a table to text or bytes and read it back: how much survives, how big, how fast.",
   members = {
     { id = "binser", short = "binser", lib = "binser" },
+    { id = "bitser", short = "bitser", lib = "bitser" },
     { id = "lume", short = "lume", lib = "lume" },
     { id = "json", short = "json", lib = "json" },
   },
@@ -82,7 +85,7 @@ return {
     { id = "size", label = "Output size", kind = "value", lower = true, unit = "bytes", floor = 1, about = "Bytes the 200-unit crowd takes once saved.",
       impl = (function()
         local out = {}
-        for _, name in ipairs({ "binser", "lume", "json" }) do
+        for _, name in ipairs({ "binser", "bitser", "lume", "json" }) do
           out[name] = function(lib)
             local m = { id = name, lib = lib }
             local data = U.crowd()

@@ -154,7 +154,14 @@ fn main() {
             }
             (pin_line("tag"), rev)
         } else {
-            let tag = if lib.get("pin").and_then(|p| p.as_str()) == Some("head") { None } else { newest_tag(&dir) };
+            // `tag = "NAME"` in a seed names the release tag when its spelling is not a version number (luaunit's `LUAUNIT_V3_5`).
+            let tag = if lib.get("pin").and_then(|p| p.as_str()) == Some("head") {
+                None
+            } else if let Some(t) = lib.get("tag").and_then(|t| t.as_str()) {
+                Some(t.to_string())
+            } else {
+                newest_tag(&dir)
+            };
             if let Some(t) = &tag {
                 let _ = git(&["checkout", "--quiet", "--detach", t], Some(&dir));
             }

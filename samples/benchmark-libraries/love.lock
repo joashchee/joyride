@@ -37,6 +37,12 @@ spec = "rev=15117c1d786b16249dcd1441a5be9e3244d42767"
 commit = "15117c1d786b16249dcd1441a5be9e3244d42767"
 
 [[package]]
+name = "bitser"
+git = "https://github.com/gvx/bitser"
+spec = "rev=454539159112129a92c1970f662249301d61df4e"
+commit = "454539159112129a92c1970f662249301d61df4e"
+
+[[package]]
 name = "bump"
 git = "https://github.com/kikito/bump.lua"
 spec = "rev=72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
@@ -53,6 +59,12 @@ name = "classic"
 git = "https://github.com/rxi/classic"
 spec = "rev=e5610756c98ac2f8facd7ab90c94e1a097ecd2c6"
 commit = "e5610756c98ac2f8facd7ab90c94e1a097ecd2c6"
+
+[[package]]
+name = "cpml"
+git = "https://github.com/excessive/cpml"
+spec = "rev=ddb80f48e6a3f7d9b98aa45b6feeb461db3d0c6a"
+commit = "ddb80f48e6a3f7d9b98aa45b6feeb461db3d0c6a"
 
 [[package]]
 name = "flux"
@@ -139,6 +151,12 @@ spec = "rev=259b1d0de33061c1eec3b8c9b1e60a9b4fff21e1"
 commit = "259b1d0de33061c1eec3b8c9b1e60a9b4fff21e1"
 
 [[package]]
+name = "luaunit"
+git = "https://github.com/bluebird75/luaunit"
+spec = "rev=9678c933e71cb26adcdfa6cf1baceb926398eb48"
+commit = "9678c933e71cb26adcdfa6cf1baceb926398eb48"
+
+[[package]]
 name = "lume"
 git = "https://github.com/rxi/lume"
 spec = "rev=b539dc74c7957a12722ef9c4a38554b662f10bcc"
@@ -205,6 +223,12 @@ spec = "rev=e18db79b98546a12f560b817bfbc218d08b0fb13"
 commit = "e18db79b98546a12f560b817bfbc218d08b0fb13"
 
 [[package]]
+name = "roomy"
+git = "https://github.com/tesselode/roomy"
+spec = "rev=2574a9cc11d42da4863e58f24c9f984cc2087e33"
+commit = "2574a9cc11d42da4863e58f24c9f984cc2087e33"
+
+[[package]]
 name = "semver"
 git = "https://github.com/kikito/semver.lua"
 spec = "rev=42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
@@ -227,6 +251,12 @@ name = "suit"
 git = "https://github.com/vrld/SUIT"
 spec = "rev=17677826030a7270b474c5717af43834d583094c"
 commit = "17677826030a7270b474c5717af43834d583094c"
+
+[[package]]
+name = "talkies"
+git = "https://github.com/tanema/talkies"
+spec = "rev=057501c37a62a02d9ea6b7bb9c2d51d02330a51d"
+commit = "057501c37a62a02d9ea6b7bb9c2d51d02330a51d"
 
 [[package]]
 name = "tiny-ecs"

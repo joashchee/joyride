@@ -6,7 +6,7 @@ It is the library counterpart of the IO Checker: the same 48 by 25 text-mode scr
 
 ## What it compares
 
-All 40 curated libraries are in `libs/`, each at its pinned commit (`love.toml`, `love.lock`; `tools/vendor-libs.py` rebuilds them from `joyride-core/data/libraries.toml` and drops docs, pictures, tests and compiled files). The ones that overlap are compared with the same task, written the way each library wants:
+All 45 curated libraries are in `libs/`, each at its pinned commit (`love.toml`, `love.lock`; `tools/vendor-libs.py` rebuilds them from `joyride-core/data/libraries.toml` and drops docs, pictures, tests and compiled files). The ones that overlap are compared with the same task, written the way each library wants:
 
 | Comparison | Libraries | What is rated (features, then speed or size) |
 |---|---|---|
@@ -14,17 +14,17 @@ All 40 curated libraries are in `libs/`, each at its pinned commit (`love.toml`,
 | Tweening | tween, flux, hump.timer | Tween a number; Named easing; Nested fields; Completion; Delay and chain; Stop a tween; Run 100 tweens |
 | Timers | hump.timer, batteries.timer | After a delay; Repeat; Repeat N times; Progress; Cancel; Wait in a script; 1000 timers |
 | Events and messages | hump.signal, batteries.pubsub | Send + arguments; Remove a listener; Listen once; Wildcards; Change mid-send; 10000 sends |
-| Game states | hump.gamestate, batteries.state_machine | Enter / leave; Pass arguments; Update current; Push and pop; Self-transition; Ask where we are; 20000 switches |
-| 2D vectors | hump.vector, vector-light, batteries.vec2 | Add, scale; Length, distance; Normalise; Rotate; Dot, project; Interpolate; 1000 steps; Garbage made |
+| Game states | hump.gamestate, batteries.state_machine, roomy | Enter / leave; Pass arguments; Update current; Push and pop; Self-transition; Ask where we are; 20000 switches |
+| 2D vectors | hump.vector, vector-light, batteries.vec2, cpml.vec2 | Add, scale; Length, distance; Normalise; Rotate; Dot, project; Interpolate; 1000 steps; Garbage made |
 | Arrays and tables | lume, batteries | map; filter; reduce; find a value; slice; count / any / all; Remove duplicates; Group / partition; Zip; Shuffle; Copy (shallow); Copy (deep); Merge; Keys; map+filter+reduce; Copy 1000 |
 | Maths helpers | lume, mathx | Clamp; Round; Lerp; Smoothstep; Ping-pong; Wrap; Remap a range; Distance, angle; Sign; 10000 clamp+lerp |
 | String helpers | lume, stringx | Split; Trim; Prefix / suffix; Fill a template; Word wrap; Title case; Contains; Split 1000 fields |
-| Serialising tables | binser, lume, json | Round trip; 1 and "1" apart; Full precision; inf and -inf; Cycles; Binary strings; Output size; Save speed; Load speed |
+| Serialising tables | binser, bitser, lume, json | Round trip; 1 and "1" apart; Full precision; inf and -inf; Cycles; Binary strings; Output size; Save speed; Load speed |
 | Printing tables | inspect, batteries.pretty | Nested table; Stable key order; Cycles; Metatables; Depth limit; Print 200 units |
 | Collision | bump, HC, intersect | Box vs box; Circle vs circle; Point in box; Polygon; Push apart; No tunnelling; Ray cast; Find all overlaps |
 | Pathfinding | jumper, batteries.pathfind | Shortest path; No way across; Diagonal moves; Terrain costs; Jump point search; 40 by 40 maze |
 | Cameras | gamera, hump.camera | Screen centre; Zoom; Rotate; There and back; World bounds; Follow a target; 10000 conversions |
-| Assertions and tests | lust, batteries.assert | Equal passes; Failure says why; Type check; Compare tables; Describe / it; Before / after; 10000 checks |
+| Assertions and tests | lust, batteries.assert, luaunit | Equal passes; Failure says why; Type check; Compare tables; Describe / it; Before / after; 10000 checks |
 | Timing and profiling | profile, batteries.measure | Time a function; Which function; Memory used; Mean, min, max; Cost of measuring |
 | Immediate-mode GUI | suit, Slab, nuklear, cimgui | One frame; Click a button; Checkbox, slider; 100 buttons |
 

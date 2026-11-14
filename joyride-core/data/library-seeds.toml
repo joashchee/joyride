@@ -278,3 +278,38 @@ pin = "head"   # no release tags; the repository is a synced copy of the library
 caution = "Require it as `libs.neumetik-midi.bindings.love.neumetik_midi`. Its native library has to be built for each platform you ship (desktop, Android, PortMaster); it cannot run in the web build, and on iOS the library must be embedded in the app."
 native = "Needs its shared library (libneumetik_midi.dylib, libneumetik_midi.so or neumetik_midi.dll), built from capi/ with cargo build --release (Rust, no dependencies; about 0.5 MB), kept beside the game or in its save folder. No SoundFont is needed: it synthesizes every instrument itself, and plays a SoundFont or DLS bank too if you load one."
 summary = "General MIDI and GS music with no SoundFont: a small synthesizer you feed a .mid file and play through a LÖVE queueable source (loops, fades, seeking, muted channels, live notes), or through a SoundFont or DLS bank you give it."
+
+[[library]]
+name = "cpml"
+git = "https://github.com/excessive/cpml"
+module = "cpml"
+caution = "Its vectors use LuaJIT's FFI when it is there and fall back to tables when it is not (so the web build works, slower). LICENSE.md lists a few parts from other authors under MIT, BSD-2-Clause or CC0."
+summary = "Cirno's Perfect Math Library: vectors, matrices, quaternions, intersections, easing, noise, colours and more."
+
+[[library]]
+name = "luaunit"
+git = "https://github.com/bluebird75/luaunit"
+module = "luaunit"
+tag = "LUAUNIT_V3_5"
+caution = "The repository also carries its own test runner (run_functional_tests.lua, which calls os.execute) and example output files; the library itself writes a file only when you ask for an output file, and reads LUAUNIT_* environment variables. Its `run` and `runSuiteByInstances` read the program's command line, so a game started with an option luaunit does not know (like `--report`) prints luaunit's usage text: call `runSuiteByInstancesNoCmdLineParsing`. Use it from your own test script, not in the shipped game."
+summary = "Unit testing framework in the xUnit style: assertions, test suites, a command-line runner (run it with plain Lua or LÖVE)."
+
+[[library]]
+name = "bitser"
+git = "https://github.com/gvx/bitser"
+module = "bitser"
+caution = "Needs LuaJIT's FFI, so it cannot run in the web build. Its demo main.lua uses loadstring (not the library). Not audited for hostile input: treat a save file from someone else as untrusted."
+summary = "Fast, compact binary serialisation of Lua values, with metatables and cycles (LuaJIT)."
+
+[[library]]
+name = "talkies"
+git = "https://github.com/tanema/talkies"
+module = "talkies"
+caution = "The example/ folder includes a font under Creative Commons Attribution (Pixel UniCode by ivancr72) and a bfxr sound: do not ship example/ with a game without crediting them."
+summary = "Simple dialogue boxes: queued messages, typewriter text, avatars, options and a font and colour theme."
+
+[[library]]
+name = "roomy"
+git = "https://github.com/tesselode/roomy"
+module = "roomy"
+summary = "Scene (room) manager: push, pop and switch scenes that receive LÖVE's callbacks."
