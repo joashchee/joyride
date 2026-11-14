@@ -1,0 +1,235 @@
+# Written by JoyrIDE. Commit it.
+
+[[package]]
+name = "HC"
+git = "https://github.com/vrld/HC"
+spec = "rev=92a51492f323ec5360f56bed0aebac30dbbd52ac"
+commit = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
+
+[[package]]
+name = "Slab"
+git = "https://github.com/flamendless/Slab"
+spec = "rev=e696052474a695b93e8d73731b464d9d208a397a"
+commit = "e696052474a695b93e8d73731b464d9d208a397a"
+
+[[package]]
+name = "anim8"
+git = "https://github.com/kikito/anim8"
+spec = "rev=c1c12ec45fde28ffd2d6967675adcb3c3e501fa7"
+commit = "c1c12ec45fde28ffd2d6967675adcb3c3e501fa7"
+
+[[package]]
+name = "baton"
+git = "https://github.com/tesselode/baton"
+spec = "rev=3defe19f8f0da1a457ba86095e6f6a3c7ee6a8e9"
+commit = "3defe19f8f0da1a457ba86095e6f6a3c7ee6a8e9"
+
+[[package]]
+name = "batteries"
+git = "https://github.com/1bardesign/batteries"
+spec = "rev=89e5cd91481682dab89d5bc9be4c3b56dbbe6d2e"
+commit = "89e5cd91481682dab89d5bc9be4c3b56dbbe6d2e"
+
+[[package]]
+name = "binser"
+git = "https://github.com/bakpakin/binser"
+spec = "rev=15117c1d786b16249dcd1441a5be9e3244d42767"
+commit = "15117c1d786b16249dcd1441a5be9e3244d42767"
+
+[[package]]
+name = "bump"
+git = "https://github.com/kikito/bump.lua"
+spec = "rev=72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
+commit = "72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
+
+[[package]]
+name = "cimgui-love"
+git = "https://codeberg.org/apicici/cimgui-love"
+spec = "rev=59eaeb44433fdd0749cff633be5bb68ef37a46a8"
+commit = "59eaeb44433fdd0749cff633be5bb68ef37a46a8"
+
+[[package]]
+name = "classic"
+git = "https://github.com/rxi/classic"
+spec = "rev=e5610756c98ac2f8facd7ab90c94e1a097ecd2c6"
+commit = "e5610756c98ac2f8facd7ab90c94e1a097ecd2c6"
+
+[[package]]
+name = "flux"
+git = "https://github.com/rxi/flux"
+spec = "rev=bb330231b87eabf84fbd68322f13a6320db30a41"
+commit = "bb330231b87eabf84fbd68322f13a6320db30a41"
+
+[[package]]
+name = "g3d"
+git = "https://github.com/groverburger/g3d"
+spec = "rev=e8e92be6f7919a8516bf1008780cfe8c9cf5932c"
+commit = "e8e92be6f7919a8516bf1008780cfe8c9cf5932c"
+
+[[package]]
+name = "gamera"
+git = "https://github.com/kikito/gamera"
+spec = "rev=1e5f1b37377145d5d1106db6aed42663ddd0d36d"
+commit = "1e5f1b37377145d5d1106db6aed42663ddd0d36d"
+
+[[package]]
+name = "hump"
+git = "https://github.com/vrld/hump"
+spec = "rev=08937cc0ecf72d1a964a8de6cd552c5e136bf0d4"
+commit = "08937cc0ecf72d1a964a8de6cd552c5e136bf0d4"
+
+[[package]]
+name = "inspect"
+git = "https://github.com/kikito/inspect.lua"
+spec = "rev=691eea1fc6346be131e9749150976010f13e84f7"
+commit = "691eea1fc6346be131e9749150976010f13e84f7"
+
+[[package]]
+name = "json"
+git = "https://github.com/rxi/json.lua"
+spec = "rev=d1e3b0f5d0f3d3493c7dadd0bb54135507fcebd7"
+commit = "d1e3b0f5d0f3d3493c7dadd0bb54135507fcebd7"
+
+[[package]]
+name = "jumper"
+git = "https://github.com/Yonaba/Jumper"
+spec = "rev=441176b33536f5cc0e915b93c9ab1aa3632aa2a0"
+commit = "441176b33536f5cc0e915b93c9ab1aa3632aa2a0"
+
+[[package]]
+name = "log"
+git = "https://github.com/rxi/log.lua"
+spec = "rev=7396ae2ee6d68829aecbc96d0b2ee1e5620c1ed7"
+commit = "7396ae2ee6d68829aecbc96d0b2ee1e5620c1ed7"
+
+[[package]]
+name = "love-loader"
+git = "https://github.com/kikito/love-loader"
+spec = "rev=659dd23fd8b53142dd45207cf592817795bfaeb4"
+commit = "659dd23fd8b53142dd45207cf592817795bfaeb4"
+
+[[package]]
+name = "love-nuklear"
+git = "https://github.com/keharriso/love-nuklear"
+spec = "rev=5336818494a0b80fd2ae3ce2d04c2e1bb9f9d9d3"
+commit = "5336818494a0b80fd2ae3ce2d04c2e1bb9f9d9d3"
+
+[[package]]
+name = "lovebird"
+git = "https://github.com/rxi/lovebird"
+spec = "rev=e84abe7b56a65ccb3ec6288e1955b6d772d41431"
+commit = "e84abe7b56a65ccb3ec6288e1955b6d772d41431"
+
+[[package]]
+name = "lua-discordRPC"
+git = "https://github.com/pfirsich/lua-discordRPC"
+spec = "rev=86f1a3ad9f1a1cdcb3191c951dcf099b12a0e3fc"
+commit = "86f1a3ad9f1a1cdcb3191c951dcf099b12a0e3fc"
+
+[[package]]
+name = "luajit-request"
+git = "https://github.com/LPGhatguy/luajit-request"
+spec = "rev=c068a41e0fbb91bfe608e402e18421adacb0690c"
+commit = "c068a41e0fbb91bfe608e402e18421adacb0690c"
+
+[[package]]
+name = "luasteam"
+git = "https://github.com/uspgamedev/luasteam"
+spec = "rev=259b1d0de33061c1eec3b8c9b1e60a9b4fff21e1"
+commit = "259b1d0de33061c1eec3b8c9b1e60a9b4fff21e1"
+
+[[package]]
+name = "lume"
+git = "https://github.com/rxi/lume"
+spec = "rev=b539dc74c7957a12722ef9c4a38554b662f10bcc"
+commit = "b539dc74c7957a12722ef9c4a38554b662f10bcc"
+
+[[package]]
+name = "lurker"
+git = "https://github.com/rxi/lurker"
+spec = "rev=fdd82e83b59508379128160feeadd4ff6ae2f62a"
+commit = "fdd82e83b59508379128160feeadd4ff6ae2f62a"
+
+[[package]]
+name = "lust"
+git = "https://github.com/bjornbytes/lust"
+spec = "rev=7b4f12844e0e00dfc501b67f5a644232c3b275fe"
+commit = "7b4f12844e0e00dfc501b67f5a644232c3b275fe"
+
+[[package]]
+name = "middleclass"
+git = "https://github.com/kikito/middleclass"
+spec = "rev=dc0fb3612da5d41866a2f06076a4ecea5614ef78"
+commit = "dc0fb3612da5d41866a2f06076a4ecea5614ef78"
+
+[[package]]
+name = "moonshine"
+git = "https://github.com/vrld/moonshine"
+spec = "rev=d39271e0c000e2fedbc2e3ad286b78b5a5146065"
+commit = "d39271e0c000e2fedbc2e3ad286b78b5a5146065"
+
+[[package]]
+name = "nativefs"
+git = "https://github.com/EngineerSmith/nativefs"
+spec = "rev=9338e01f623eea385fc38e7d792a3815a647a862"
+commit = "9338e01f623eea385fc38e7d792a3815a647a862"
+
+[[package]]
+name = "peachy"
+git = "https://github.com/josh-perry/peachy"
+spec = "rev=1abdebbddb7a0fe8fc6c95326d1bc4c80b1e0d4e"
+commit = "1abdebbddb7a0fe8fc6c95326d1bc4c80b1e0d4e"
+
+[[package]]
+name = "profile"
+git = "https://github.com/2dengine/profile.lua"
+spec = "rev=febbb8ab53555d0290872e01181d259664d492cd"
+commit = "febbb8ab53555d0290872e01181d259664d492cd"
+
+[[package]]
+name = "push"
+git = "https://github.com/Ulydev/push"
+spec = "rev=9c165816a14c868339c3cd0d22eed65c313c8bf8"
+commit = "9c165816a14c868339c3cd0d22eed65c313c8bf8"
+
+[[package]]
+name = "ripple"
+git = "https://github.com/tesselode/ripple"
+spec = "rev=e18db79b98546a12f560b817bfbc218d08b0fb13"
+commit = "e18db79b98546a12f560b817bfbc218d08b0fb13"
+
+[[package]]
+name = "semver"
+git = "https://github.com/kikito/semver.lua"
+spec = "rev=42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
+commit = "42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
+
+[[package]]
+name = "sock"
+git = "https://github.com/camchenry/sock.lua"
+spec = "rev=7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
+commit = "7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
+
+[[package]]
+name = "sti"
+git = "https://github.com/karai17/Simple-Tiled-Implementation"
+spec = "rev=69cdf8c7565f518c03967d0243cb54d1ee31da4e"
+commit = "69cdf8c7565f518c03967d0243cb54d1ee31da4e"
+
+[[package]]
+name = "suit"
+git = "https://github.com/vrld/SUIT"
+spec = "rev=17677826030a7270b474c5717af43834d583094c"
+commit = "17677826030a7270b474c5717af43834d583094c"
+
+[[package]]
+name = "tiny-ecs"
+git = "https://github.com/bakpakin/tiny-ecs"
+spec = "rev=8a3c22e74fb6e97a580c85b60bd857af47fea9a2"
+commit = "8a3c22e74fb6e97a580c85b60bd857af47fea9a2"
+
+[[package]]
+name = "tween"
+git = "https://github.com/kikito/tween.lua"
+spec = "rev=65d13504e54d85831a752e4aaa47ceba059a5035"
+commit = "65d13504e54d85831a752e4aaa47ceba059a5035"

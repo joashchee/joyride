@@ -1,0 +1,9 @@
+# Written by JoyrIDE: the library assets this project uses and their licences.
+
+[[asset]]
+path = "assets/fonts/vga.woff"
+hash = "ec1ceffba1d3dd885b59b15aa1c48d8c94b3356d9ea3c5865c0ed8970fb84a50"
+licence = "CC-BY-SA-4.0"
+confirmed = true
+author = "VileR (The Ultimate Oldschool PC Font Pack)"
+source = "https://int10h.org/oldschool-pc-fonts/"

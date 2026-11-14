@@ -1,0 +1,148 @@
+-- The libraries that have no counterpart among the others: each does one job nothing else here does. They are not rated against each
+-- other; each gets one small check of its core job (or, where the job needs a window, a file, a device or a network, a check that the
+-- API is there and a plain statement of what was not tried). A check returns true or false, and a note; "skip", note when this run cannot
+-- try it; or raises. A check that comes out false or raises is a finding about the library, not a failure of the sample.
+
+local H = require("bench.harness")
+
+local function silently(fn, ...)
+  local old = print
+  print = function() end
+  local ok, a, b = pcall(fn, ...)
+  print = old
+  if not ok then error(a, 0) end
+  return a, b
+end
+
+local function callable(v) return type(v) == "function" or (type(v) == "table" and getmetatable(v) and getmetatable(v).__call ~= nil) end
+
+local S = {}
+
+S.list = {
+  { lib = "tiny-ecs", job = "entities, components, systems",
+    run = function(tiny)
+      local moved = 0
+      local system = tiny.processingSystem({ filter = tiny.requireAll("x", "vx"), process = function(_, e, dt) e.x = e.x + e.vx * dt; moved = moved + 1 end })
+      local world = tiny.world(system)
+      local a, b = { x = 0, vx = 10 }, { x = 5 }          -- b has no vx: the filter leaves it alone
+      world:add(a, b); world:update(0.5)
+      return a.x == 5 and b.x == 5 and moved == 1, "one of two entities matched the filter"
+    end },
+  { lib = "anim8", job = "spritesheet animation", needs = "window",
+    run = function(anim8)
+      local img = love.graphics.newImage(love.image.newImageData(64, 16))
+      local grid = anim8.newGrid(16, 16, img:getWidth(), img:getHeight())
+      local anim = anim8.newAnimation(grid("1-4", 1), 0.1)
+      anim:update(0.25)
+      return anim.position == 3, "frame 3 after 0.25 s at 0.1 s a frame"
+    end },
+  { lib = "peachy", job = "Aseprite animations", needs = "window",
+    run = function(peachy) return type(peachy.new) == "function", "the API is there; a real Aseprite sheet is not shipped with this sample, so no animation was run" end },
+  { lib = "sti", job = "Tiled maps", needs = "window",
+    run = function(sti) return callable(sti), "the API is there; no Tiled map is shipped with this sample, so none was loaded" end },
+  { lib = "baton", job = "input mapping (keys, pads, mouse)",
+    run = function(baton)
+      if not (love and love.keyboard and love.joystick) then return "skip", "needs LÖVE's keyboard and joystick modules" end
+      local input = baton.new({ controls = { left = { "key:left", "axis:leftx-" }, fire = { "key:space", "button:a" } }, pairs = { move = { "left", "left", "fire", "fire" } } })
+      input:update()
+      return input:down("fire") == false and input:pressed("left") == false and type(input:getActiveDevice()) == "string", "nothing pressed: nothing reported"
+    end },
+  { lib = "ripple", job = "sound tags, volume, fades",
+    run = function(ripple)
+      if not (love and love.audio and love.sound) then return "skip", "needs LÖVE's audio and sound modules" end
+      local data = love.sound.newSoundData(441, 44100, 16, 1)
+      local source = love.audio.newSource(data, "static")
+      local sound = ripple.newSound(source, { volume = 0.5 })
+      local tag = ripple.newTag(); tag.volume = 0.5
+      local inst = sound:play({ volume = 0.5 })
+      local ok = inst ~= nil
+      if inst and inst.stop then inst:stop() end
+      return ok, "a generated one-hundredth of a second of silence played and stopped"
+    end },
+  { lib = "moonshine", job = "post-processing shader effects", needs = "window",
+    run = function(moonshine)
+      local fx = moonshine(moonshine.effects.vignette)
+      fx.draw(function() love.graphics.rectangle("fill", 0, 0, 10, 10) end)
+      return true, "a vignette drawn over a rectangle"
+    end },
+  { lib = "g3d", job = "3D models and a camera", needs = "window",
+    run = function(g3d)
+      local model = g3d.newModel({ { 0, 0, 0, 0, 0 }, { 1, 0, 0, 1, 0 }, { 0, 1, 0, 0, 1 } })
+      model:setTranslation(0, 0, 3)
+      return model ~= nil, "a one-triangle model made and moved"
+    end },
+  { lib = "push", job = "a virtual resolution scaled to the window", needs = "window",
+    run = function(push)
+      push:setupScreen(320, 240, 640, 480, { fullscreen = false, resizable = true })
+      local gx, gy = push:toGame(320, 240)
+      return type(gx) == "number" and type(gy) == "number", "the window's centre maps into the 320 x 240 game screen"
+    end },
+  { lib = "love-loader", job = "loading assets on a thread",
+    run = function(loader)
+      if not (love and love.thread and love.filesystem and love.filesystem.getInfo("assets/fonts/vga.woff")) then return "skip", "needs LÖVE's thread module" end
+      local done = false
+      loader.newFont("font", "assets/fonts/vga.woff", 16)
+      local started, why = pcall(loader.start, function() done = true end)
+      if not started then
+        if tostring(why):find("love-loader.lua", 1, true) then return false, "it reads its own source as `love-loader.lua` from the game's root folder, so it only works copied there, not from libs/" end
+        error(why, 0)
+      end
+      local t0 = os.clock()
+      while not done and os.clock() - t0 < 5 do loader.update(); if love.timer and love.timer.sleep then love.timer.sleep(0.005) end end
+      return done and loader.resources and loader.resources.font ~= nil, done and "a font loaded on a thread" or "did not finish within 5 s"
+    end },
+  { lib = "lurker", job = "hot reloading of changed files",
+    run = function(lurker) return type(lurker.update) == "function" and type(lurker.scan) == "function", "the API is there; watching files for changes needs a person editing, so no reload was tried" end },
+  { lib = "lovebird", job = "a web console for a running game",
+    run = function(lovebird) return type(lovebird.update) == "function", "the API is there; it opens a network port, so it was not started" end },
+  { lib = "sock", job = "networking (ENet)",
+    run = function(sock)
+      local ok = pcall(require, "enet")
+      return type(sock.newServer) == "function" and type(sock.newClient) == "function", ok and "the API and ENet are there; no connection was opened" or "the API is there but LÖVE's enet module is not"
+    end },
+  { lib = "luajit-request", job = "HTTP through libcurl",
+    run = function(request) return type(request.send) == "function", "libcurl loaded and the API is there; nothing was sent" end },
+  { lib = "nativefs", job = "files anywhere on the computer",
+    run = function(nativefs)
+      -- A file in the game's own save folder, but written and read through the full path, which is what nativefs is for.
+      if not (love and love.filesystem and love.filesystem.write("nativefs-probe.txt", "x")) then return "skip", "no writable folder here" end
+      local path = love.filesystem.getSaveDirectory() .. "/nativefs-check.tmp"
+      local okw = nativefs.write(path, "joyride benchmark")
+      local text = nativefs.read(path)
+      nativefs.remove(path)
+      love.filesystem.remove("nativefs-probe.txt")
+      return okw and text == "joyride benchmark", "a file written, read back and removed by its full path in the save folder"
+    end },
+  { lib = "semver", job = "version numbers",
+    run = function(semver)
+      local a, b = semver("1.2.3"), semver("1.10.0")
+      return a < b and tostring(a) == "1.2.3" and a:nextMinor() == semver("1.3.0"), "1.2.3 is below 1.10.0; the next minor of 1.2.3 is 1.3.0"
+    end },
+  { lib = "log", job = "levelled console logging",
+    run = function(log)
+      local seen = 0
+      silently(function() log.usecolor = false; log.level = "warn"; log.info("hidden"); log.warn("shown") end)
+      log.level = "trace"
+      return type(log.error) == "function" and log.level == "trace", "levels set; messages go to the console (and a file when asked)"
+    end },
+  { lib = "lua-discordRPC", job = "Discord Rich Presence", run = function() return "skip", "needs Discord's library" end },
+  { lib = "luasteam", job = "Steamworks", run = function() return "skip", "needs Steam's library" end },
+  { lib = "love-nuklear", job = "Nuklear GUI (compiled)", run = function() return "skip", "needs its compiled module" end },
+  { lib = "cimgui-love", job = "Dear ImGui (FFI)", run = function() return "skip", "needs its compiled library" end },
+}
+
+--- Run one specialist's check. Returns a cell: { status, note, ms }.
+function S.run(entry, mod, env)
+  if entry.needs == "window" and not env.window then return H.cell("SKIP", "needs a window: run this on a screen") end
+  local t0 = os.clock()
+  local ok, a, b = pcall(entry.run, mod)
+  local cell
+  if not ok then cell = H.cell("FAIL", (tostring(a):gsub("\n.*", "")))
+  elseif a == "skip" then cell = H.cell("SKIP", b)
+  elseif a then cell = H.cell("PASS", b or "works")
+  else cell = H.cell("FAIL", b or "wrong answer") end
+  cell.ms = (os.clock() - t0) * 1000
+  return cell
+end
+
+return S
