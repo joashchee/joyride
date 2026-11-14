@@ -19,7 +19,7 @@ import Settings from "./components/Settings";
 import { currentFit } from "./lib/editorfit";
 import { installSnap } from "./lib/windowsnap";
 import { onChoice } from "./lib/codefonts";
-import { projectListing, chooseFolder, librariesDetect, type LibraryChange, type LibraryOffer as Offer, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
+import { projectListing, chooseFolder, librariesDetect, type LibraryChange, type LibraryOffer as Offer, coreInfo, lastProject, inTauri, createDir, createFile, trashPath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -346,13 +346,14 @@ export default function App() {
     const u = unsaved(match);
     if (u) return setNotice(`Save or close ${u} first.`);
     const what = sel.dir ? `the folder ${sel.path} and everything in it` : sel.path;
-    if (!window.confirm(`Delete ${what}? This cannot be undone.`)) return;
+    const trashable = /Mac/.test(navigator.platform);
+    if (!window.confirm(trashable ? `Move ${what} to the Trash?` : `Delete ${what}? This cannot be undone.`)) return;
     try {
-      const l = await deletePath(sel.path);
+      const r = await trashPath(sel.path);
       dropTabs(match);
-      setProject(l);
+      setProject(r.listing);
       setSelected(null);
-      setNotice(null);
+      setNotice(r.trashed || !trashable ? null : `${sel.path} could not go to the Trash, so it was deleted.`);
     } catch (e) {
       fail(e);
     }

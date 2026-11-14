@@ -81,6 +81,8 @@ export const createFile = (path: string) => invoke<Listing>("create_project_file
 export const createDir = (path: string) => invoke<Listing>("create_project_dir", { path });
 export const renamePath = (from: string, to: string) => invoke<Listing>("rename_project_path", { from, to });
 export const deletePath = (path: string) => invoke<Listing>("delete_project_path", { path });
+/** Moves to the Trash where there is one (the Mac), else deletes for good: `trashed` says which happened. */
+export const trashPath = (path: string) => invoke<{ listing: Listing; trashed: boolean }>("trash_project_path", { path });
 
 export const formatLua = (text: string) => invoke<string>("format_lua", { text });
 

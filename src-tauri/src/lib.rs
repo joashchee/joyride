@@ -62,6 +62,7 @@ pub fn run() {
             project::create_project_dir,
             project::rename_project_path,
             project::delete_project_path,
+            project::trash_project_path,
             project::search_project,
             project::format_lua,
             project::lint_lua,

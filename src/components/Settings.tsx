@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { soundfontChoose, soundfontList, type SoundChoice } from "../lib/backend";
 import Panel from "./Panel";
 import { CODE_FONTS, VGA_ID, cleanSizes, fontById, loadChoice, nearestSize, saveChoice, sizeHint, type CodeChoice } from "../lib/codefonts";
+import { formatOnSave, setFormatOnSave } from "../lib/editorprefs";
 import { applyAppearance, currentAppearance, loadSwatch, PALETTES, SWATCHES, type Palette } from "../lib/theme";
 
 /** The appearance options, all of them colour: the palette, and in True
@@ -37,6 +38,7 @@ export default function Settings(props: { onClose: () => void }) {
       .then(setSound)
       .catch((e) => setSoundErr(String(e)));
   };
+  const [fmt, setFmt] = useState(formatOnSave);
   const [code, setCode] = useState<CodeChoice>(loadChoice);
   const dpr = window.devicePixelRatio || 1;
   const font = fontById(code.id);
@@ -112,6 +114,21 @@ export default function Settings(props: { onClose: () => void }) {
           {code.id === VGA_ID ? "fixed at 16: the grid's own size" : font?.kind === "bitmap" ? "whole multiples of the size it was drawn for: every pixel sharp" : "sizes where every character is a whole number of screen pixels wide"}
         </span>
       </div>
+      <fieldset className="palette-choice">
+        <legend>Saving</legend>
+        <label>
+          <input
+            type="checkbox"
+            checked={fmt}
+            onChange={(e) => {
+              setFormatOnSave(e.target.checked);
+              setFmt(e.target.checked);
+            }}
+          />{" "}
+          Format Lua files with StyLua when saving
+          <span className="lib-meta">off by default; a file with a syntax error is saved as written, and the error shows in the status bar</span>
+        </label>
+      </fieldset>
       <p className="lib-meta">The window snaps to sizes that show whole characters and whole lines in this font.</p>
       {font && (
         <p className="credit">

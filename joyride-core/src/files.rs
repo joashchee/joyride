@@ -212,6 +212,41 @@ pub fn delete(root: &Path, rel: &str) -> Result<()> {
     Ok(())
 }
 
+/// Moves a file or folder of the project into `trash_dir` (the person's Trash), under a name that
+/// is not taken there, and returns where it went. Nothing is copied or deleted: it is a rename, so
+/// it fails (and leaves the file where it was) when the Trash is on another volume.
+pub fn trash_into(root: &Path, rel: &str, trash_dir: &Path) -> Result<PathBuf> {
+    let p = target(root, rel)?;
+    fs::symlink_metadata(&p).map_err(|_| crate::Error::Msg(format!("`{rel}` does not exist")))?;
+    fs::create_dir_all(trash_dir)?;
+    let name = p.file_name().and_then(|n| n.to_str()).unwrap_or("item");
+    let (stem, ext) = match name.rfind('.') {
+        Some(i) if i > 0 => (&name[..i], &name[i..]),
+        _ => (name, ""),
+    };
+    let mut dest = trash_dir.join(name);
+    let mut n = 2;
+    while fs::symlink_metadata(&dest).is_ok() {
+        dest = trash_dir.join(format!("{stem} {n}{ext}"));
+        n += 1;
+    }
+    fs::rename(&p, &dest)?;
+    Ok(dest)
+}
+
+/// Moves a project path to the Trash where there is one JoyrIDE can use (macOS: `~/.Trash`).
+/// `Ok(None)` means there is none here, and nothing was changed: the caller decides whether to delete for good.
+pub fn trash(root: &Path, rel: &str) -> Result<Option<PathBuf>> {
+    #[cfg(target_os = "macos")]
+    {
+        if let Some(home) = std::env::var_os("HOME") {
+            return trash_into(root, rel, &Path::new(&home).join(".Trash")).map(Some);
+        }
+    }
+    let _ = (root, rel);
+    Ok(None)
+}
+
 /// One match of a text search.
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -281,6 +316,22 @@ mod tests {
         fs::write(d.path().join("src/a.lua"), "x").unwrap();
         fs::write(d.path().join("src/sub/b.lua"), "y").unwrap();
         d
+    }
+
+    #[test]
+    fn trashing_moves_the_path_and_never_replaces_what_is_in_the_trash() {
+        let d = project();
+        let t = tempfile::tempdir().unwrap();
+        fs::write(t.path().join("a.lua"), "old").unwrap();
+        let dest = trash_into(d.path(), "src/a.lua", t.path()).unwrap();
+        assert_eq!(dest, t.path().join("a 2.lua"));
+        assert_eq!(fs::read_to_string(t.path().join("a.lua")).unwrap(), "old");
+        assert!(!d.path().join("src/a.lua").exists());
+        let dir = trash_into(d.path(), "src/sub", t.path()).unwrap();
+        assert_eq!(fs::read_to_string(dir.join("b.lua")).unwrap(), "y");
+        assert!(!d.path().join("src/sub").exists());
+        assert!(trash_into(d.path(), "../x", t.path()).is_err());
+        assert!(trash_into(d.path(), "nope.lua", t.path()).is_err());
     }
 
     #[test]

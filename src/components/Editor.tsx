@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor/editor/editor.api.js";
 import "../monaco-setup";
+import { formatOnSave } from "../lib/editorprefs";
 import { colorLiterals, colorText, formatLua, inTauri, integrateClear, integrateMarks, lintLua } from "../lib/backend";
 import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
@@ -212,6 +213,20 @@ export default function Editor(props: {
       const m = editor.getModel();
       const path = m && [...docs].find(([, d]) => d.model === m)?.[0];
       if (!m || !path) return;
+      // Format on save (Settings): a Lua file is run through StyLua first; a syntax error is
+      // reported and the file is still saved as written.
+      if (inTauri && formatOnSave() && m.getLanguageId() === "lua") {
+        try {
+          const text = await formatLua(m.getValue());
+          if (text !== m.getValue() && editor.getModel() === m) {
+            editor.executeEdits("format-on-save", [{ range: m.getFullModelRange(), text }]);
+            editor.pushUndoStop();
+          }
+          cb.current.onNotice?.(null);
+        } catch (e) {
+          cb.current.onNotice?.(`Format: ${String(e)}`);
+        }
+      }
       const version = m.getAlternativeVersionId();
       await cb.current.onSave(path, m.getValue());
       docs.get(path)!.saved = version;

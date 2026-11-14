@@ -91,6 +91,29 @@ pub fn rename_project_path(state: State<Project>, from: String, to: String) -> R
     files::list(&root).map_err(msg)
 }
 
+/// What a delete did: the new listing, and whether the path went to the Trash (else it is gone for good).
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Deleted {
+    pub listing: Listing,
+    pub trashed: bool,
+}
+
+/// Moves to the Trash where there is one (macOS), else deletes for good, after the frontend's confirm.
+/// A Trash that cannot take it (another volume) falls back to the permanent delete the person was told about.
+#[tauri::command]
+pub fn trash_project_path(state: State<Project>, path: String) -> Result<Deleted, String> {
+    let root = state.root()?;
+    let trashed = match files::trash(&root, &path) {
+        Ok(Some(_)) => true,
+        Ok(None) | Err(_) => {
+            files::delete(&root, &path).map_err(msg)?;
+            false
+        }
+    };
+    Ok(Deleted { listing: files::list(&root).map_err(msg)?, trashed })
+}
+
 /// Permanent: the frontend confirms first.
 #[tauri::command]
 pub fn delete_project_path(state: State<Project>, path: String) -> Result<Listing, String> {
