@@ -236,6 +236,103 @@ S.list = {
     end },
   { lib = "cartographer", job = "Tiled maps", needs = "window",
     run = function(cartographer) return type(cartographer.load) == "function", "the API is there; no Tiled map is shipped with this sample, so none was loaded" end },
+  { lib = "30log", job = "classes and inheritance",
+    run = function(class)
+      local A = class("A", { x = 1 })
+      function A:init(v) self.v = v end
+      local B = A:extend("B")
+      local b = B:new(5)
+      return b.v == 5 and b.x == 1 and b:instanceOf(A) and B:subclassOf(A), "a class, a subclass, an instance and the instance and subclass checks"
+    end },
+  { lib = "knife", job = "a base class (one of its many small modules)",
+    run = function(Base)
+      local C = Base:extend()
+      function C:constructor(a) self.a = a end
+      return C(3).a == 3, "knife.base: a class with a constructor; its timer, event, bind, memoize and other modules were not tried"
+    end },
+  { lib = "nata", job = "entity management",
+    run = function(nata)
+      local updated = 0
+      local pool = nata.new({ groups = { all = {} }, systems = { nata.oop() } })   -- the oop system calls an entity's method named after the event
+      pool:queue({ name = "a", update = function() updated = updated + 1 end })
+      pool:queue({ name = "b", update = function() updated = updated + 1 end })
+      pool:flush()
+      pool:emit("update", 0.1)
+      return #pool.entities == 2 and updated == 2, "two entities queued and flushed into a pool; an update event reached both through the oop system"
+    end },
+  { lib = "lua-state-machine", job = "a finite state machine",
+    run = function(machine)
+      local log = {}
+      local fsm = machine.create({ initial = "green", events = { { name = "warn", from = "green", to = "yellow" }, { name = "panic", from = "yellow", to = "red" } },
+        callbacks = { onenteryellow = function() log[#log + 1] = "yellow" end } })
+      fsm:warn()
+      return fsm.current == "yellow" and fsm:can("panic") and not fsm:can("warn") and log[1] == "yellow", "states, events, can(), and an on-enter callback"
+    end },
+  { lib = "Bresenham", job = "cells along a line",
+    run = function(bresenham)
+      local n = 0
+      local reached = bresenham.line(0, 0, 3, 3, function() n = n + 1; return true end)
+      local blocked = bresenham.line(0, 0, 3, 0, function(x) return x < 2 end)
+      return reached == true and n == 4 and blocked == false, "four cells on a diagonal; a callback that returns false stops the walk and the call says so"
+    end },
+  { lib = "trickle", job = "a bitstream for network messages",
+    run = function(trickle)
+      local s = trickle.create()
+      s:write(7, "3bits"); s:write(true, "bool"); s:write(1.8, "float")
+      local r = trickle.create(tostring(s))
+      return r:read("3bits") == 7 and r:read("bool") == true and math.abs(r:read("float") - 1.8) < 1e-6, "3 bits, a bool and a float packed into a string and read back"
+    end },
+  { lib = "HSLUV", job = "a perceptual colour space",
+    run = function(hsluv)
+      local c = hsluv.hsluv_to_rgb({ 0, 0, 50 })
+      local back = hsluv.rgb_to_hsluv(c)
+      return c[1] > 0.4 and c[1] < 0.5 and math.abs(back[3] - 50) < 0.01, "a mid-lightness grey converts to RGB and back to the same lightness"
+    end },
+  { lib = "Vornmath", job = "vectors, matrices and quaternions",
+    run = function(vm)
+      local c = vm.add(vm.vec2(1, 2), vm.vec2(3, 4))
+      return c.x == 4 and c.y == 6 and math.abs(vm.length(vm.vec2(3, 4)) - 5) < 1e-9, "vector add and length through its type-dispatched functions"
+    end },
+  { lib = "Vivid", job = "colour conversion",
+    run = function(vivid)
+      local r, g, b = vivid.HSLtoRGB(0, 1, 0.5)
+      return (r == 255 or r == 1) and g == 0 and b == 0, "pure red from HSL (it returns 0 to 255 or 0 to 1: check which before passing it to love.graphics.setColor)"
+    end },
+  { lib = "Luvent", job = "events with actions",
+    run = function(Luvent)
+      local ev = Luvent.newEvent()
+      local n = 0
+      local action = ev:addAction(function() n = n + 1 end)
+      ev:trigger()
+      ev:removeAction(action)
+      ev:trigger()
+      return n == 1, "an action runs on trigger and not after it is removed"
+    end },
+  { lib = "smiti18n", job = "translations, plurals, fallbacks",
+    run = function(i18n)
+      i18n.load({ en = { hi = "Hello %{name}", items = { one = "one item", other = "%{count} items" } }, fr = { hi = "Bonjour %{name}" } })
+      i18n.setFallbackLocale("en")
+      i18n.setLocale("en")
+      local en = i18n("hi", { name = "Ada" }) == "Hello Ada" and i18n("items", { count = 1 }) == "one item" and i18n("items", { count = 3 }) == "3 items"
+      i18n.setLocale("fr")
+      local fr = i18n("hi", { name = "Ada" }) == "Bonjour Ada" and i18n("items", { count = 2 }) == "2 items"
+      i18n.setLocale("en")
+      return en and fr, "interpolation, one and other plurals, and a missing French line falling back to English"
+    end },
+  { lib = "AppleCake", job = "a profiler with a trace file",
+    run = function(AppleCake)
+      return type(AppleCake) == "function", "the module is there (it is called with true to profile and false for no-op functions); its thread and trace file were not run: it needs libs.AppleCake to find its thread"
+    end },
+  { lib = "Shove", job = "resolution scaling", needs = "window",
+    run = function(shove) return type(shove) == "table", "the API is there; nothing was drawn (needs a window to scale)" end },
+  { lib = "resolution_solution", job = "resolution scaling", needs = "window",
+    run = function(rs) return type(rs) == "table", "the API is there; nothing was drawn (needs a window to scale)" end },
+  { lib = "Maid64", job = "a low-resolution scaler", needs = "window",
+    run = function(maid) return type(maid.setup) == "function" and type(maid.start) == "function" and type(maid.finish) == "function", "setup, start and finish are there; nothing was drawn (needs a window)" end },
+  { lib = "Brady", job = "a camera with parallax layers", needs = "window",
+    run = function(camera) return type(camera.new) == "function", "the constructor is there; no camera was created (needs a window)" end },
+  { lib = "GamepadGuesser", job = "button prompts for the right controller",
+    run = function(gg) return type(gg.joystickNameToConsole) == "function" and type(gg.loadMappings) == "function", "the API is there; the prompt images need a window and a pad" end },
   { lib = "lighter", job = "2D lights and shadows", needs = "window",
     run = function(Lighter)
       local l = Lighter()

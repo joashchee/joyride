@@ -630,3 +630,156 @@ scanner = "audit-libraries.py v1"
 high = 7
 med = 0
 reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "Shove"
+rev = "ee1dedbca78ca988589edd4c5314d7e662223973"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "resolution_solution"
+rev = "cc922fff0cc36a4c5aabc2eb594b0db156524aec"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 15
+med = 1
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "Maid64"
+rev = "ea95633209714cce2ee6623b5cceed5e88f122c3"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "30log"
+rev = "173f45756d99426d89990388e5d8c8e38b9695b9"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 5
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "knife"
+rev = "5ccd9b425f2c5363389534c7e12b9df05b18ad8e"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 12
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "nata"
+rev = "eb9d49bdb32b964be9419f50dfec14e9adb1bcf0"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "lua-state-machine"
+rev = "e076260cd49500f029708d3a8f04f6206493682f"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "Bresenham"
+rev = "fc100c9fc1138d0ee335bded5dec1b4eb68b89fb"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "Brady"
+rev = "6f8f8d34ddc0fde9f017233caca6e68e00a6a766"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "AppleCake"
+rev = "2d2e2b235ac3a490f0c74f32c536f6e012bfa7af"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "trickle"
+rev = "16b4354e45e56c6afcab00a6bf5ea95e942650fb"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "HSLUV"
+rev = "be26eba8c76f41ab8de274d99c102f00162db91c"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "Vornmath"
+rev = "dfb359b154132d11bd1b8eff2643c020ff88083b"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 14
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "Vivid"
+rev = "55cb54578949f74534ab89e75e72a3f013292fda"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 1
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "smiti18n"
+rev = "dee7bde320ef3ccaa82ba98b473aa44f4c8c7802"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 5
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "Luvent"
+rev = "963fe5c66de6c0677839a2b7861c2574c6d3faf7"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"
+
+[[audit]]
+name = "GamepadGuesser"
+rev = "8a4184fe0c0a88ffd2e2f27aef7f63f4747e5880"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: Shove (ffi only in its profiler, debug.getinfo to find its folder), resolution_solution (Unlicense; binary docs and demo.love in the repository, minified history copies, none run), Maid64, 30log, nata, Bresenham, trickle, Vivid, Luvent (small, clean), knife (system.lua builds code with loadstring from aspect names, own code), lua-state-machine (dot export writes a file only when asked), Brady (MIT header), AppleCake (writes the trace through love.filesystem, finds thread.lua from its require name), HSLUV (dkjson only for tests), Vornmath (fixed-template load at run time), smiti18n (loadFile through love.filesystem runs the file as Lua; spec popen never run), GamepadGuesser (CC0 prompt images); cautions recorded; run nothing before this stamp"

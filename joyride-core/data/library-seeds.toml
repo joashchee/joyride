@@ -499,3 +499,116 @@ git = "https://github.com/tesselode/cartographer"
 module = "cartographer"
 caution = "A Tiled map is a Lua file that is loaded with love.filesystem.load and run: load only maps you ship, not maps a player supplies. Compressed tile layers need LuaJIT's FFI (not the web build); drawing needs a window. Last changed in 2020."
 summary = "Loads and draws Tiled maps (.lua exports): tile layers, object layers, animated tiles."
+
+[[library]]
+name = "Shove"
+git = "https://github.com/Oval-Tutu/shove"
+module = "shove"
+summary = "Resolution handling: render at a fixed game size and scale it to the window with fit, stretch or pixel-perfect modes, layers and shaders."
+
+[[library]]
+name = "resolution_solution"
+git = "https://github.com/grif-on/love2d_resolution_solution"
+module = "resolution_solution"
+caution = "The repository also holds its manual and a demo (resolution_solution_documentation.pdf and .odt, demo.love and old minified versions in history/: about 2.4 MB): delete them before shipping a game. Needs a window. Public domain (Unlicense)."
+summary = "Scale a game to any window or screen: letterboxing, pixel-perfect or stretched, with mouse position conversion."
+
+[[library]]
+name = "Maid64"
+git = "https://github.com/adekto/maid64"
+module = "maid64"
+caution = "Last changed in 2017. It draws through a canvas, so it needs a window."
+summary = "A low-resolution scaler for pixel-art games: draw at a small size, scaled to the window."
+
+[[library]]
+name = "30log"
+git = "https://github.com/Yonaba/30log"
+module = "30log"
+summary = "A small object-orientation library: classes, inheritance, mixins, instance and subclass checks."
+
+[[library]]
+name = "knife"
+git = "https://github.com/airstruck/knife"
+module = "knife.base"
+caution = "Require its modules by name: `knife.base`, `knife.timer`, `knife.event` and so on. `knife.system` builds its processing functions with loadstring from the aspect names you give it, so give it names from your own code, not from player input. Last changed in 2018."
+summary = "A collection of small independent modules: base class, behaviour, bind, chain, convoke, event, memoize, serialize, system, test, timer and more."
+
+[[library]]
+name = "nata"
+git = "https://github.com/tesselode/nata"
+module = "nata"
+summary = "Entity management: a pool of plain-table entities with groups, systems and events."
+
+[[library]]
+name = "lua-state-machine"
+git = "https://github.com/kyleconroy/lua-state-machine"
+module = "statemachine"
+summary = "A finite state machine: declare states and events, call an event, get callbacks as it changes state."
+
+[[library]]
+name = "Bresenham"
+git = "https://github.com/rm-code/Bresenham"
+module = "Bresenham"
+caution = "MIT by the header of Bresenham.lua (there is no LICENSE file). Last changed in 2017."
+summary = "Bresenham's line algorithm: walk the cells on a line, with a callback that can stop at a wall."
+
+[[library]]
+name = "Brady"
+git = "https://github.com/davisdude/Brady"
+module = "camera"
+caution = "Its module name is the generic `camera`, so once libs/Brady is on the require path any other `camera.lua` in the path can answer for it (a file at your game's root wins). MIT by the header of camera.lua (no LICENSE file). Needs a window to draw."
+summary = "A camera with parallax scrolling layers, zoom, rotation and bounds."
+
+[[library]]
+name = "AppleCake"
+git = "https://github.com/EngineerSmith/AppleCake"
+module = "AppleCake"
+caution = "Require it as `libs.AppleCake` (its path from the game's folder): it finds its thread.lua from the name it was required by, so `require \"AppleCake\"` loads but cannot start its profiling thread. It writes the trace (profile.json) into LÖVE's save folder and needs love.thread. Names LÖVE 12 correctly (it calls openFile there)."
+summary = "A profiler for LÖVE with thread support: mark zones, save a trace, and open it in a Chrome-style trace viewer."
+
+[[library]]
+name = "trickle"
+git = "https://github.com/bjornbytes/trickle"
+module = "trickle"
+summary = "A bitstream: pack booleans, bits, integers and floats into the fewest bytes, for network messages."
+
+[[library]]
+name = "HSLUV"
+git = "https://github.com/hsluv/hsluv-lua"
+module = "hsluv"
+caution = "MIT by its README (no LICENSE file). The repository also holds dkjson.lua and a JSON snapshot used only by its tests."
+summary = "HSLuv: a human-friendly colour space where equal lightness looks equally light; converts to and from RGB."
+
+[[library]]
+name = "Vornmath"
+git = "https://github.com/DUznanski/vornmath"
+module = "vornmath"
+caution = "Builds its specialised functions with load() at run time from fixed templates (no input from outside), so it needs `load` and a few milliseconds at first use of each function and argument-type combination. A large library (about 400 KB with its tests)."
+summary = "Vectors, matrices, quaternions and complex numbers, with GLSL-style functions."
+
+[[library]]
+name = "Vivid"
+git = "https://github.com/WetDesertRock/vivid"
+module = "vivid"
+summary = "Colour maths: convert between RGB, HSL, HSV and more, and lighten, darken or mix colours."
+
+[[library]]
+name = "smiti18n"
+git = "https://github.com/Oval-Tutu/smiti18n"
+module = "smiti18n"
+caution = "`i18n.loadFile` reads the file through love.filesystem (so it works inside a packaged .love) and runs it as Lua: load only translation files you ship. Its repository also has specs that call `ls` (never run here)."
+summary = "Internationalisation: translations with interpolation, plurals, locale fallbacks and loading from files; a maintained fork of i18n.lua."
+
+[[library]]
+name = "Luvent"
+git = "https://github.com/ejmr/Luvent"
+module = "Luvent"
+paths = "src"   # its only file is src/Luvent.lua (capital L: a case-sensitive filesystem needs it)
+summary = "Events with actions: add and remove actions, trigger them, and control their order and priority."
+
+[[library]]
+name = "GamepadGuesser"
+git = "https://github.com/idbrii/love-gamepadguesser"
+module = "gamepadguesser"
+caution = "Ships about 60 button-prompt images (Xelu's prompts, CC0 per its readme); needs love.joystick and a window to draw the icons."
+summary = "Guesses which gamepad is plugged in to show the right button icons (Xbox, PlayStation, Nintendo)."
