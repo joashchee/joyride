@@ -13,6 +13,12 @@ spec = "rev=92a51492f323ec5360f56bed0aebac30dbbd52ac"
 commit = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
 
 [[package]]
+name = "Patchy"
+git = "https://github.com/excessive/patchy"
+spec = "rev=dc42c10425005927c39f5e12e70abcdf51751397"
+commit = "dc42c10425005927c39f5e12e70abcdf51751397"
+
+[[package]]
 name = "Slab"
 git = "https://github.com/flamendless/Slab"
 spec = "rev=e696052474a695b93e8d73731b464d9d208a397a"
@@ -131,6 +137,12 @@ name = "jumper"
 git = "https://github.com/Yonaba/Jumper"
 spec = "rev=441176b33536f5cc0e915b93c9ab1aa3632aa2a0"
 commit = "441176b33536f5cc0e915b93c9ab1aa3632aa2a0"
+
+[[package]]
+name = "lighter"
+git = "https://github.com/speakk/lighter"
+spec = "rev=9fb63e07d47c1dfc1866eb2114a32f933150c358"
+commit = "9fb63e07d47c1dfc1866eb2114a32f933150c358"
 
 [[package]]
 name = "log"
@@ -293,6 +305,12 @@ name = "suit"
 git = "https://github.com/vrld/SUIT"
 spec = "rev=17677826030a7270b474c5717af43834d583094c"
 commit = "17677826030a7270b474c5717af43834d583094c"
+
+[[package]]
+name = "tactile"
+git = "https://github.com/tesselode/tactile"
+spec = "rev=904f5c6b9ac2e9916393ead7f216179f46198175"
+commit = "904f5c6b9ac2e9916393ead7f216179f46198175"
 
 [[package]]
 name = "talkies"

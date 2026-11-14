@@ -477,3 +477,30 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 2
 reviewed = "read xsys (227 lines: ffi only for a lookup table; loadstring/setfenv only in its exec, from and template functions; extends copies of table and string, checked) and lua-ljsqlite3 (625 lines: its loadstring builds fixed internal code at load time; ffi.load of sqlite3), ran ljsqlite3 against the system SQLite and recorded its pitfalls; Templet's MIT/X11 licence is second-hand (LuaRocks), noted"
+
+[[audit]]
+name = "tactile"
+rev = "904f5c6b9ac2e9916393ead7f216179f46198175"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the scans and the sources: tactile (159 lines; only love.keyboard/mouse/joystick calls), lighter (361 lines + bundled hump.class, vector-light, rxi shash, all MIT, and an OLC-3 licence file for the shadow-casting algorithm; loads an image at require, stencil drawing), Patchy (loads metadata Lua via love.filesystem.load, writes via love.filesystem.write in save); no licence files in tactile or Patchy: MIT stated in their READMEs, lighter's in its init.lua header; cautions recorded"
+
+[[audit]]
+name = "lighter"
+rev = "9fb63e07d47c1dfc1866eb2114a32f933150c358"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the scans and the sources: tactile (159 lines; only love.keyboard/mouse/joystick calls), lighter (361 lines + bundled hump.class, vector-light, rxi shash, all MIT, and an OLC-3 licence file for the shadow-casting algorithm; loads an image at require, stencil drawing), Patchy (loads metadata Lua via love.filesystem.load, writes via love.filesystem.write in save); no licence files in tactile or Patchy: MIT stated in their READMEs, lighter's in its init.lua header; cautions recorded"
+
+[[audit]]
+name = "Patchy"
+rev = "dc42c10425005927c39f5e12e70abcdf51751397"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "read the scans and the sources: tactile (159 lines; only love.keyboard/mouse/joystick calls), lighter (361 lines + bundled hump.class, vector-light, rxi shash, all MIT, and an OLC-3 licence file for the shadow-casting algorithm; loads an image at require, stencil drawing), Patchy (loads metadata Lua via love.filesystem.load, writes via love.filesystem.write in save); no licence files in tactile or Patchy: MIT stated in their READMEs, lighter's in its init.lua header; cautions recorded"

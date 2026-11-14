@@ -601,3 +601,36 @@ caution = "Require it as `lua-ljsqlite3` (the folder is named after the reposito
 summary = "SQLite 3 through LuaJIT's FFI: prepared statements, typed values, Lua scalar and aggregate functions, a command-line style shell. Needs xsys in Libraries too."
 loads_11_5 = "unmeasured"
 loads_12_0 = "unmeasured"
+
+[[library]]
+name = "tactile"
+git = "https://github.com/tesselode/tactile"
+rev = "904f5c6b9ac2e9916393ead7f216179f46198175"
+tag = "v2.0.1"
+licence = "MIT"
+module = "tactile"
+summary = "Input library: bind keys, mouse buttons, gamepad buttons and axes to named controls, with detectors that read them together."
+loads_11_5 = "loads"
+loads_12_0 = "loads"
+
+[[library]]
+name = "lighter"
+git = "https://github.com/speakk/lighter"
+rev = "9fb63e07d47c1dfc1866eb2114a32f933150c358"
+licence = "MIT"
+module = "lighter"
+caution = "Needs a window to load (it creates its default light image when required). It draws with love.graphics.stencil and setStencilTest, whose behaviour on LÖVE 12.0 was not measured (needs a display). It bundles hump.class, vector-light and rxi's shash (MIT) and a shadow-casting algorithm from OneLoneCoder under OLC-3 (a BSD-3 style licence): keep libs/licenses/ with the game."
+summary = "Dynamic 2D lights and shadows: add lights and polygon occluders, draw the lit scene (stencil based, with a default gradient image)."
+loads_11_5 = "needs-display"
+loads_12_0 = "needs-display"
+
+[[library]]
+name = "Patchy"
+git = "https://github.com/excessive/patchy"
+rev = "dc42c10425005927c39f5e12e70abcdf51751397"
+licence = "MIT"
+module = "patchy"
+caution = "Loading a 9-patch reads its metadata as a Lua file (`love.filesystem.load`) and runs it: use it only on files you ship, not on files a player supplies. Its `save` function writes the metadata and image through love.filesystem. The repository also has a demo main.lua and conf.lua, which stay inside libs/ and are never run."
+summary = "9-patch images: stretch a window or button from an image with .9.png markers."
+loads_11_5 = "loads"
+loads_12_0 = "loads"

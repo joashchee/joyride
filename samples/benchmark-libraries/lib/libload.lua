@@ -15,7 +15,7 @@ for _, e in ipairs(catalog) do L.by[e.name] = e end
 L.deps = { lurker = { "lume" }, ["lua-ljsqlite3"] = { "xsys" } }
 
 -- Libraries that cannot be required without a window (they build images, fonts or shaders as they load).
-L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true }
+L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true, lighter = true }
 
 -- Libraries whose own name for themselves matters: g3d finds its shader from the module name it was required by (`libs.g3d.g3d` ->
 -- `libs/g3d/g3d/g3d.vert`), so it must be required by its path from the game's root, not as `g3d`.

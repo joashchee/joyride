@@ -129,6 +129,33 @@ S.list = {
       local clean = rawget(string, "split") == nil and rawget(table, "union") == nil
       return #parts == 3 and trimmed == "hi" and joined.a == 1 and joined.b == 2 and clean, "split, trim and union work, and the global string and table are left alone (it extends copies)"
     end },
+  { lib = "tactile", job = "input mapping (keys, pads, mouse)",
+    run = function(tactile)
+      -- Detectors are plain functions, so the logic is tried with no keyboard or pad.
+      local left, right, fire = false, false, false
+      local ctl = tactile.newControl():addButtonPair(function() return left end, function() return right end):addButton(function() return fire end)
+      ctl:update()
+      local idle = ctl:getValue() == 0 and not ctl:isDown()
+      right = true; ctl:update()
+      local moved = ctl:getValue() == 1 and ctl:isDown() and ctl:pressed(1)
+      ctl:update()
+      local held = ctl:pressed(1) == false          -- pressed once, then held
+      left = true; ctl:update()                    -- both ends: they cancel
+      local cancel = ctl:getValue() == 0
+      return idle and moved and held and cancel, "button pairs as an axis (-1, 0, 1), pressed once then held, both ends cancel; keys and pads were not touched"
+    end },
+  { lib = "lighter", job = "2D lights and shadows", needs = "window",
+    run = function(Lighter)
+      local l = Lighter()
+      local wall = { 100, 100, 300, 100, 300, 300, 100, 300 }
+      l:addPolygon(wall)
+      local light = l:addLight(500, 500, 500, 1, 0.5, 0.5)
+      l:updateLight(light, 450, 450)
+      l:removeLight(light); l:removePolygon(wall)
+      return type(l.drawLights) == "function", "a polygon and a light added, moved and removed; nothing was drawn (needs a screen to look at, and the stencil calls are untried on 12.0)"
+    end },
+  { lib = "Patchy", job = "9-patch images",
+    run = function(patchy) return type(patchy.load) == "function" and type(patchy.import) == "function", "the API is there; no .9.png is shipped with this sample, so none was loaded or drawn" end },
   { lib = "ripple", job = "sound tags, volume, fades",
     run = function(ripple)
       if not (love and love.audio and love.sound) then return "skip", "needs LÖVE's audio and sound modules" end

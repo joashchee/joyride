@@ -12,6 +12,10 @@ rev = "7b8f7b2f0a1090a4b7deb6eeddec9cfbf67544c7"
 git = "https://github.com/vrld/HC"
 rev = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
 
+[dependencies.Patchy]
+git = "https://github.com/excessive/patchy"
+rev = "dc42c10425005927c39f5e12e70abcdf51751397"
+
 [dependencies.Slab]
 git = "https://github.com/flamendless/Slab"
 rev = "e696052474a695b93e8d73731b464d9d208a397a"
@@ -91,6 +95,10 @@ rev = "d1e3b0f5d0f3d3493c7dadd0bb54135507fcebd7"
 [dependencies.jumper]
 git = "https://github.com/Yonaba/Jumper"
 rev = "441176b33536f5cc0e915b93c9ab1aa3632aa2a0"
+
+[dependencies.lighter]
+git = "https://github.com/speakk/lighter"
+rev = "9fb63e07d47c1dfc1866eb2114a32f933150c358"
 
 [dependencies.log]
 git = "https://github.com/rxi/log.lua"
@@ -199,6 +207,10 @@ rev = "69cdf8c7565f518c03967d0243cb54d1ee31da4e"
 [dependencies.suit]
 git = "https://github.com/vrld/SUIT"
 rev = "17677826030a7270b474c5717af43834d583094c"
+
+[dependencies.tactile]
+git = "https://github.com/tesselode/tactile"
+rev = "904f5c6b9ac2e9916393ead7f216179f46198175"
 
 [dependencies.talkies]
 git = "https://github.com/tanema/talkies"

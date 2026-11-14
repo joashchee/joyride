@@ -21,6 +21,8 @@ DROP_DIRS = {".git", ".github", ".gitlab", "docs", "doc", "documentation", "img"
 # Rust source (built by tools/build-binaries.sh from its repository) is not needed to run the Lua binding.
 EXTRA_DROP = {"luasteam": {"sdk", "generator", "luals"}, "cimgui-love": {"cparser"}, "neumetik-midi": {"src", "capi"}, "serpent": {"t", "misc"}}
 DROP_FILES = {"cimgui-love": {"generator.lua"}}
+# A file a library loads when it is required, so it stays although its folder or type is dropped (lighter creates its default light from this image).
+KEEP_FILES = {"lighter": ("media/default_light.png",)}
 DROP_EXT = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".ogg", ".wav", ".mp3", ".flac", ".mid", ".ttf", ".otf", ".woff", ".woff2", ".ico", ".icns", ".psd", ".xcf", ".zip", ".gz",
             ".dll", ".so", ".dylib", ".a", ".lib", ".exe", ".o", ".obj", ".mtl", ".pdf", ".rockspec", ".yml", ".yaml", ".sh", ".bat", ".ps1", ".cpp", ".cc", ".c", ".h", ".hpp", ".cmake", ".mk"}
 
@@ -81,6 +83,10 @@ def vendor(e, libs):
                 out = os.path.normpath(os.path.join(dest, rel, f))
                 os.makedirs(os.path.dirname(out), exist_ok=True)
                 shutil.copy2(p, out)
+        for rel_keep in KEEP_FILES.get(e["name"], ()):
+            out = os.path.join(dest, rel_keep)
+            os.makedirs(os.path.dirname(out), exist_ok=True)
+            shutil.copy2(os.path.join(src, rel_keep), out)
         open(mark, "w").write(e["rev"] + "\n")
         return "vendored"
     finally:

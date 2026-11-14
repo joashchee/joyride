@@ -151,7 +151,7 @@ fn the_report_runs_on_each_real_love_with_no_fail() {
         for e in &lib.entries {
             let line = section.lines().find(|l| l.split(' ').nth(1).map(|n| n.trim_end_matches(':')) == Some(e.name.as_str())).unwrap_or_else(|| panic!("LÖVE {ver}: no line for {}", e.name));
             let loaded = line.starts_with("PASS");
-            let needs_window = ["g3d", "push", "talkies"].contains(&e.name.as_str());
+            let needs_window = ["g3d", "push", "talkies", "lighter"].contains(&e.name.as_str());
             if e.kind == joyride_core::library::Kind::Lua && !needs_window && !(ver == "12.0" && e.name == "lurker") {
                 assert!(loaded, "LÖVE {ver}: {} should load: {line}", e.name);
             }
