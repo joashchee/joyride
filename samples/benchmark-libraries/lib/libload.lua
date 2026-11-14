@@ -15,6 +15,9 @@ for _, e in ipairs(catalog) do L.by[e.name] = e end
 L.deps = { lurker = { "lume" }, ["lua-ljsqlite3"] = { "xsys" } }
 
 -- Libraries that cannot be required without a window (they build images, fonts or shaders as they load).
+-- Libraries that start threads when they are required: skipped where the platform has none (the web).
+L.needsThreads = { Lily = true }
+
 L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true, lighter = true }
 
 -- Libraries whose own name for themselves matters: g3d finds its shader from the module name it was required by (`libs.g3d.g3d` ->
@@ -114,6 +117,7 @@ function L.canLoad(entry, env)
   if entry.name == "luasteam" then return false, "needs Valve's Steamworks SDK, which cannot be redistributed or built here: " .. (entry.native or "") end
   if entry.kind == "native" and not L.binaryPath(entry.name) then return false, "a compiled module that is not built here (tools/build-binaries.sh): " .. (entry.native or "needs its binary") end
   if entry.kind == "ffi" and L.binaries[entry.name] and not L.binaryPath(entry.name) then return false, "its binary is not built here (tools/build-binaries.sh): " .. (entry.native or "") end
+  if L.needsThreads[entry.name] and env.threads == "none" then return false, "this platform has no threads (love.thread)" end
   if entry.kind == "ffi" then
     if env.ffi == "none" or not rawget(_G, "jit") then return false, "this platform has no FFI" end
   end

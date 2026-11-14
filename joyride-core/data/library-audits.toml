@@ -540,3 +540,93 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 8
 reviewed = "read the scans and the sources: Lua-star (src/lua-star.lua, pure Lua), Luafinding (src/ heap, vector and luafinding; its love-example/profile.lua uses debug.sethook, example only), jprof (jprof.lua 199 lines read: no-op unless PROF_CAPTURE, connect() is an outbound TCP client to localhost:1338, write() saves via love.filesystem; the network thread and viewer are the repo's main.lua, not the library; bundled lua-MessagePack is MIT/X11 by its own header); MIT LICENSE files in all three; cautions recorded"
+
+[[audit]]
+name = "Smallfolk"
+rev = "314925bc6442025a7f96789c2d256474256dc74b"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "Ser"
+rev = "3bea79546bd6b33a26dd628b7f65673dd902856b"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 3
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "moonblob"
+rev = "7c41401570dda3300c046ea4ac4e7bcb7a8e4559"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 7
+med = 11
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "shash"
+rev = "7e2bbef0193e986bb4e655e18c4e23123e7081d8"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "tick"
+rev = "4708b24b44554a1bc410c618737bfcac66bcc943"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "lovebpm"
+rev = "22f8537083818ebfc2a0788fbec3e991894371f9"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "beehive"
+rev = "00877150688ce42fffbaeeb76d7a4cb87e88da60"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "breezefield"
+rev = "01faa2dd8def34aecc7018492f93f5a8e224237a"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "Lily"
+rev = "1ce5078cb70b4eac35bd8bcfa675ac85d9690282"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 10
+med = 8
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"
+
+[[audit]]
+name = "cartographer"
+rev = "382e6ff313784e7bdc2e50f0486b0fe6f78a7381"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 7
+med = 0
+reviewed = "read each scan and the sources: Smallfolk, shash, tick (single small files, clean); Ser (loadstring of its own output on load, caution); moonblob (FFI by design, binary test fixtures are not run, bundled benchmarks are third-party test code); lovebpm (love.audio only); beehive (pure functions); breezefield (love.physics wrapper); Lily (process-count fallback only when love.system is absent, writes via love.filesystem on request); cartographer (Tiled Lua maps are loaded and run, FFI only for compressed maps; demos hold base64 map data, not run); MIT/zlib texts in each; cautions recorded"

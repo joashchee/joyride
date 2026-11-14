@@ -21,6 +21,7 @@ const WRONG_REQUIRE: &[(&str, &[&str], &str, &str)] = &[
     ("g3d", &["g3d"], "libs.g3d.g3d", "g3d finds its shader from the name it was required by, so `require \"g3d\"` cannot find it"),
     ("neumetik-midi", &["neumetik_midi", "neumetik-midi"], "libs.neumetik-midi.bindings.love.neumetik_midi", "its Lua binding is under bindings/love"),
     ("lua-ljsqlite3", &["ljsqlite3"], "lua-ljsqlite3", "the library's folder is named after its repository"),
+    ("Lily", &["lily"], "lily_single", "lily.lua looks for lily_thread.lua from the name it was required by; lily_single has the thread code inside"),
     ("serpent", &["serpent"], "libs.serpent.src.serpent", "its only file is src/serpent.lua"),
     ("cimgui-love", &["cimgui", "cimgui-love"], "libs.cimgui-love.src", "the Lua side of cimgui-love is its src folder"),
 ];

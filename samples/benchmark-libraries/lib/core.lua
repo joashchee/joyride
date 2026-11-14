@@ -31,7 +31,7 @@ end
 
 --- What a benchmark run depends on: whether there is a window, and whether the platform has an FFI.
 function C.runEnv(s)
-  return { window = love.graphics ~= nil and love.window ~= nil and love.window.isOpen and love.window.isOpen() or false, ffi = s.profile.ffi }
+  return { window = love.graphics ~= nil and love.window ~= nil and love.window.isOpen and love.window.isOpen() or false, ffi = s.profile.ffi, threads = s.profile.threads }
 end
 
 function C.refresh(s)

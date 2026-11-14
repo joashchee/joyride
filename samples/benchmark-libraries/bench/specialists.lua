@@ -185,6 +185,57 @@ S.list = {
       if not (info and info.size > 0) then return false, "write returned but no profile file was saved" end
       return true, "two nested zones saved to a profile file (it is a no-op unless PROF_CAPTURE is set before it is required); the viewer was not run"
     end },
+  { lib = "shash", job = "a spatial hash",
+    run = function(shash)
+      local sh = shash.new(10)
+      local a, b = {}, {}
+      sh:add(a, 5, 5, 2, 2); sh:add(b, 100, 100, 2, 2)
+      local near = 0
+      sh:each(0, 0, 20, 20, function(o) if o == a then near = near + 1 end end)
+      sh:update(a, 60, 60, 2, 2)
+      local after = 0
+      sh:each(0, 0, 20, 20, function() after = after + 1 end)
+      sh:remove(b)
+      return near == 1 and after == 0, "an object found in a box, then not after it moved away"
+    end },
+  { lib = "beehive", job = "behaviour trees",
+    run = function()
+      local sequence, selector = require("beehive.sequence"), require("beehive.selector")
+      local ok = function() return "success" end
+      local no = function() return "failure" end
+      local run = function() return "running" end
+      return sequence({ ok, ok })() == "success" and sequence({ ok, no })() == "failure" and selector({ no, ok })() == "success" and selector({ no, no })() == "failure" and sequence({ ok, run })() == "running", "sequence and selector over success, failure and running"
+    end },
+  { lib = "breezefield", job = "a love.physics wrapper",
+    run = function(bf)
+      if not (love and love.physics) then return "skip", "needs LÖVE's physics module" end
+      local world = bf.newWorld(0, 100, true)
+      local ball = bf.Collider.new(world, "Circle", 10, 10, 5)
+      for _ = 1, 30 do world:update(1 / 60) end
+      local fell = ball:getY() > 10
+      pcall(ball.destroy, ball)
+      return fell, "a ball dropped under gravity moved down in half a second"
+    end },
+  { lib = "Lily", job = "loading assets on background threads",
+    run = function(lily)
+      if not (love and love.thread and love.event and love.handlers) then return "skip", "needs LÖVE's thread and event modules" end
+      local got
+      lily.read("conf.lua"):onComplete(function(_, data) got = data end)
+      local t0 = os.clock()
+      while not got and os.clock() - t0 < 3 do
+        love.timer.sleep(0.01); love.event.pump()
+        for name, a, b, c, d in love.event.poll() do if love.handlers[name] then love.handlers[name](a, b, c, d) end end
+      end
+      return type(got) == "string" and #got > 0, "a file read on a background thread and delivered through LÖVE's event queue"
+    end },
+  { lib = "lovebpm", job = "beat events for a music track",
+    run = function(lovebpm)
+      local track = lovebpm.newTrack()
+      track:setBPM(120)
+      return type(track.on) == "function" and type(track.play) == "function" and type(track.update) == "function", "a track object with BPM, events, play and update; no audio file is shipped, so none was played"
+    end },
+  { lib = "cartographer", job = "Tiled maps", needs = "window",
+    run = function(cartographer) return type(cartographer.load) == "function", "the API is there; no Tiled map is shipped with this sample, so none was loaded" end },
   { lib = "lighter", job = "2D lights and shadows", needs = "window",
     run = function(Lighter)
       local l = Lighter()

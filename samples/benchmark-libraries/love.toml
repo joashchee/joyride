@@ -12,6 +12,10 @@ rev = "7b8f7b2f0a1090a4b7deb6eeddec9cfbf67544c7"
 git = "https://github.com/vrld/HC"
 rev = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
 
+[dependencies.Lily]
+git = "https://github.com/MikuAuahDark/lily"
+rev = "1ce5078cb70b4eac35bd8bcfa675ac85d9690282"
+
 [dependencies.Lua-star]
 git = "https://github.com/wesleywerner/lua-star"
 rev = "b444e278fc1a481b3235d9acffde6034ce9c20e6"
@@ -24,9 +28,17 @@ rev = "674501e83151a9cf2d3657aa67db2b0c2bf2901b"
 git = "https://github.com/excessive/patchy"
 rev = "dc42c10425005927c39f5e12e70abcdf51751397"
 
+[dependencies.Ser]
+git = "https://github.com/gvx/Ser"
+rev = "3bea79546bd6b33a26dd628b7f65673dd902856b"
+
 [dependencies.Slab]
 git = "https://github.com/flamendless/Slab"
 rev = "e696052474a695b93e8d73731b464d9d208a397a"
+
+[dependencies.Smallfolk]
+git = "https://github.com/gvx/Smallfolk"
+rev = "314925bc6442025a7f96789c2d256474256dc74b"
 
 [dependencies.anim8]
 git = "https://github.com/kikito/anim8"
@@ -40,6 +52,10 @@ rev = "3defe19f8f0da1a457ba86095e6f6a3c7ee6a8e9"
 git = "https://github.com/1bardesign/batteries"
 rev = "89e5cd91481682dab89d5bc9be4c3b56dbbe6d2e"
 
+[dependencies.beehive]
+git = "https://github.com/drhayes/beehive.lua"
+rev = "00877150688ce42fffbaeeb76d7a4cb87e88da60"
+
 [dependencies.binser]
 git = "https://github.com/bakpakin/binser"
 rev = "15117c1d786b16249dcd1441a5be9e3244d42767"
@@ -48,6 +64,10 @@ rev = "15117c1d786b16249dcd1441a5be9e3244d42767"
 git = "https://github.com/gvx/bitser"
 rev = "454539159112129a92c1970f662249301d61df4e"
 
+[dependencies.breezefield]
+git = "https://github.com/HDictus/breezefield"
+rev = "01faa2dd8def34aecc7018492f93f5a8e224237a"
+
 [dependencies.bump]
 git = "https://github.com/kikito/bump.lua"
 rev = "72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
@@ -55,6 +75,10 @@ rev = "72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
 [dependencies.cargo]
 git = "https://github.com/bjornbytes/cargo"
 rev = "8014bc0ad7d4639c112e5d00fac6c9ac68b0d696"
+
+[dependencies.cartographer]
+git = "https://github.com/tesselode/cartographer"
+rev = "382e6ff313784e7bdc2e50f0486b0fe6f78a7381"
 
 [dependencies.cimgui-love]
 git = "https://codeberg.org/apicici/cimgui-love"
@@ -132,6 +156,10 @@ rev = "5336818494a0b80fd2ae3ce2d04c2e1bb9f9d9d3"
 git = "https://github.com/rxi/lovebird"
 rev = "e84abe7b56a65ccb3ec6288e1955b6d772d41431"
 
+[dependencies.lovebpm]
+git = "https://github.com/rxi/lovebpm"
+rev = "22f8537083818ebfc2a0788fbec3e991894371f9"
+
 [dependencies.lua-discordRPC]
 git = "https://github.com/pfirsich/lua-discordRPC"
 rev = "86f1a3ad9f1a1cdcb3191c951dcf099b12a0e3fc"
@@ -167,6 +195,10 @@ rev = "7b4f12844e0e00dfc501b67f5a644232c3b275fe"
 [dependencies.middleclass]
 git = "https://github.com/kikito/middleclass"
 rev = "dc0fb3612da5d41866a2f06076a4ecea5614ef78"
+
+[dependencies.moonblob]
+git = "https://github.com/megagrump/moonblob"
+rev = "7c41401570dda3300c046ea4ac4e7bcb7a8e4559"
 
 [dependencies.moonshine]
 git = "https://github.com/vrld/moonshine"
@@ -208,6 +240,10 @@ rev = "42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
 git = "https://github.com/pkulchenko/serpent"
 rev = "d78683597606c6e13a1fed039bc91d86eb8f600f"
 
+[dependencies.shash]
+git = "https://github.com/rxi/shash"
+rev = "7e2bbef0193e986bb4e655e18c4e23123e7081d8"
+
 [dependencies.sock]
 git = "https://github.com/camchenry/sock.lua"
 rev = "7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
@@ -231,6 +267,10 @@ rev = "904f5c6b9ac2e9916393ead7f216179f46198175"
 [dependencies.talkies]
 git = "https://github.com/tanema/talkies"
 rev = "057501c37a62a02d9ea6b7bb9c2d51d02330a51d"
+
+[dependencies.tick]
+git = "https://github.com/rxi/tick"
+rev = "4708b24b44554a1bc410c618737bfcac66bcc943"
 
 [dependencies.tiny-ecs]
 git = "https://github.com/bakpakin/tiny-ecs"

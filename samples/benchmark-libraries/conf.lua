@@ -16,7 +16,7 @@ function love.conf(t)
   t.window.resizable = true
   t.window.highdpi = true
   t.window.vsync = 1
-  t.modules.physics = false
+  t.modules.physics = true         -- breezefield (a love.physics wrapper) is tried for real
   if report then
     t.window = false               -- no window, no graphics: the headless run
     t.modules.window = false

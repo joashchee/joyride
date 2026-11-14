@@ -431,3 +431,71 @@ module = "jprof"
 pin = "head"   # no release tags
 caution = "Does nothing unless the global PROF_CAPTURE is true when it is required (set it first, or every call is a no-op; that is the release-build switch). It sets a global named _prefix, and briefly swaps package.loaded[\"MessagePack\"] while loading its own copy (lua-MessagePack, MIT/X11, in the same folder). `prof.connect()` sends the profile over plain TCP to localhost:1338 (needs luasocket, which LÖVE bundles); the viewer is the rest of the repository (main.lua and networkThread.lua), whose server listens on all interfaces: run it only on a network you trust. `prof.write` saves into LÖVE's save folder. It saves with love.filesystem.newFile, which LÖVE 12.0 deprecated (renamed openFile): it warns there, and its saving was not measured on 12.0."
 summary = "Profiler for LÖVE: mark zones with push and pop, save a profile of the frames, and open it in jprof's own viewer."
+
+[[library]]
+name = "Smallfolk"
+git = "https://github.com/gvx/Smallfolk"
+module = "smallfolk"
+caution = "`smallfolk.loads` refuses text longer than 10000 characters (\"input too large\") unless you pass a larger limit as its second argument (loads(text, #text)); that limit is part of how it stays safe on text from outside. Cycles and shared tables survive; a function or userdata raises \"cannot dump type\"."
+summary = "Table serialisation that reads back without running code: fast, compact text for saves and messages."
+
+[[library]]
+name = "Ser"
+git = "https://github.com/gvx/Ser"
+module = "ser"
+caution = "Reading a saved file back means running it as Lua (loadstring), so a save file from someone else can run code: use it only for files you wrote, and prefer Smallfolk for anything that crosses a network or a player."
+summary = "Table serialisation to Lua source: cycles, metatables you register, and special numbers."
+
+[[library]]
+name = "moonblob"
+git = "https://github.com/megagrump/moonblob"
+module = "BlobWriter"
+caution = "LuaJIT only (it uses the FFI), so not for the web build. Tables with cycles raise an error (\"Cycle detected\"). The repository holds its own tests, benchmarks and test fixtures, which are never run; require BlobWriter and BlobReader by those bare names."
+summary = "Compact binary serialisation: write numbers, strings and tables to a blob with BlobWriter and read them back with BlobReader."
+
+[[library]]
+name = "shash"
+git = "https://github.com/rxi/shash"
+module = "shash"
+summary = "A spatial hash: find the entities near a point or inside a box without testing them all."
+
+[[library]]
+name = "tick"
+git = "https://github.com/rxi/tick"
+module = "tick"
+summary = "Delay or repeat a function call: tick.delay and tick.recur, updated once a frame."
+
+[[library]]
+name = "lovebpm"
+git = "https://github.com/rxi/lovebpm"
+module = "lovebpm"
+caution = "Last changed in 2016. It plays and syncs the track through love.audio, so it needs a sound device and cannot be tried headless."
+summary = "Sync events to the beat of a music track: callbacks on each beat and each measure."
+
+[[library]]
+name = "beehive"
+git = "https://github.com/drhayes/beehive.lua"
+module = "beehive.selector"
+caution = "Unchanged since 2022. A behaviour is a function returning \"success\", \"failure\" or \"running\"; require the nodes as `beehive.sequence`, `beehive.selector`, `beehive.parallel` and so on (there is no single `beehive` module)."
+summary = "Behaviour trees as plain functions: sequence, selector, parallel, repeat, invert and fail."
+
+[[library]]
+name = "breezefield"
+git = "https://github.com/HDictus/breezefield"
+module = "breezefield"
+caution = "Needs love.physics (the module must not be disabled); create colliders with `bf.Collider.new(world, \"Circle\", x, y, r)`. On LÖVE 12.0 it prints a deprecation warning (its require strings use forward slashes). It is a wrapper: Box2D's own limits apply. It replaces windfield for the common cases but not all of its features."
+summary = "A thin wrapper over love.physics: a world of colliders with collision classes and callbacks."
+
+[[library]]
+name = "Lily"
+git = "https://github.com/MikuAuahDark/lily"
+module = "lily_single"
+caution = "Require it as `lily_single` (the same library with its thread code inside): plain `lily` looks for lily_thread.lua from the name it was required by, so it only works as `libs.Lily.lily`. Runs on background threads (love.thread must be enabled) and can write files on request through love.filesystem. Only when love.system is missing does it fall back to running `nproc` or `wmic` to count processors, never inside LÖVE. Last changed in 2022."
+summary = "Loads images, sound, fonts, data and more on background threads, with callbacks as each finishes."
+
+[[library]]
+name = "cartographer"
+git = "https://github.com/tesselode/cartographer"
+module = "cartographer"
+caution = "A Tiled map is a Lua file that is loaded with love.filesystem.load and run: load only maps you ship, not maps a player supplies. Compressed tile layers need LuaJIT's FFI (not the web build); drawing needs a window. Last changed in 2020."
+summary = "Loads and draws Tiled maps (.lua exports): tile layers, object layers, animated tiles."
