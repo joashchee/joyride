@@ -142,7 +142,7 @@ do
     names[e.name] = true
     check(e.module and e.rev and #e.rev == 40, e.name .. " has a module and a pinned commit")
   end
-  eq(#libload.entries, 93, "all 93 curated libraries are in the catalogue")
+  eq(#libload.entries, 183, "all 183 curated libraries are in the catalogue")
   local lock = io.open("love.lock"):read("*a")
   for _, e in ipairs(libload.entries) do
     check(lock:find('commit = "' .. e.rev .. '"', 1, true), e.name .. " is locked at its pinned commit in love.lock")
@@ -243,7 +243,7 @@ do
   -- a library that prints when required is quiet and counted
   eq(libload.loaded["lurker"].printed, 1, "lurker's greeting is counted, not printed")
   -- isolation: nothing a library required under a bare name is left behind
-  check(package.loaded["class"] == nil and package.loaded["vector"] == nil, "bare helper names are forgotten after a library loads")
+  check(package.loaded["class"] == nil and package.loaded["heap"] == nil, "bare helper names are forgotten after a library loads")
   check(libload.getPath() == package.path, "the require path is put back")
 end
 

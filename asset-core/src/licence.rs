@@ -65,7 +65,7 @@ impl Licence {
             share_alike: sa,
         };
         match id {
-            "CC0-1.0" | "Unlicense" | "0BSD" => l(Yes, Yes, Yes, false, false),
+            "CC0-1.0" | "Unlicense" | "0BSD" | "WTFPL" => l(Yes, Yes, Yes, false, false),
             "Zlib" => l(Yes, Yes, Yes, false, false),
             "MIT" | "ISC" | "Apache-2.0" | "BSD-2-Clause" | "BSD-3-Clause" | "OFL-1.1" => {
                 l(Yes, Yes, Yes, true, false)
@@ -156,6 +156,9 @@ pub fn guess_from_text(text: &str) -> Option<String> {
     }
     if has("sil open font license") {
         return Some("OFL-1.1".into());
+    }
+    if has("do what the fuck you want to public license") {
+        return Some("WTFPL".into());
     }
     if has("this is free and unencumbered software released into the public domain") {
         return Some("Unlicense".into());
@@ -337,6 +340,12 @@ mod tests {
         std::fs::write(e.path().join("README.md"), "Permission is hereby granted, free of charge").unwrap();
         std::fs::write(e.path().join("a.lua"), "x").unwrap();
         assert_eq!(guess_for(&e.path().join("a.lua"), e.path()).unwrap().spdx, "Unlicense", "the licence file outranks the readme");
+    }
+
+    #[test]
+    fn wtfpl_is_known_and_free_to_sell() {
+        assert_eq!(guess_from_text("DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE\nVersion 2").as_deref(), Some("WTFPL"));
+        assert!(Licence::from_spdx("WTFPL").allows_commercial_use());
     }
 
     #[test]

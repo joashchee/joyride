@@ -64,8 +64,13 @@ def vendor(e, libs):
         if os.path.isdir(dest):
             shutil.rmtree(dest)
         for root, dirs, files in os.walk(src):
-            dirs[:] = [d for d in dirs if d not in DROP_DIRS and d not in EXTRA_DROP.get(e["name"], ())]
             rel = os.path.relpath(root, src)
+            # A folder on the entry's `paths` stays even when its name is usually dropped (SYSL-Text's code is in example/library).
+            wanted = [x.strip().strip("/") for x in e.get("paths", "").split(";") if x.strip()]
+            def on_path(d):
+                full = os.path.normpath(os.path.join(rel, d)).strip("./")
+                return any(w == full or w.startswith(full + "/") or full.startswith(w + "/") for w in wanted)
+            dirs[:] = [d for d in dirs if on_path(d) or (d not in DROP_DIRS and d not in EXTRA_DROP.get(e["name"], ()))]
             for f in files:
                 p = os.path.join(root, f)
                 if os.path.islink(p):

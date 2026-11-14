@@ -5,6 +5,8 @@ Matched by repository address and name. The list has 260 library entries (tutori
 
 Update 2026-11-14: `tactile`, `lighter`, `Patchy` and `input` have since been added; `Slicy` (GPL-3.0) and `Light World` (a GPL-2.0-or-later shader in its `lib/`) were refused and are in `joyride-core/data/library-exclusions.toml`. The lists below are as first checked.
 
+Update 2026-11-15: the rest of the list was worked through (90 added, 24 refused with recorded reasons: `ROADMAP.md`, `CHANGELOG.md`, `joyride-core/data/library-exclusions.toml`); entries below that are now curated are the ones in `libraries.toml`.
+
 Nothing here has been audited, probed or licence-checked: a name on this list is only a candidate. Rule 14 (`CLAUDE.md`) applies before any is added: `scripts/audit-libraries.py`, read the findings, then `curate_libraries`, the Benchmark sample and the ingest. `windfield` is excluded for good (`joyride-core/data/library-exclusions.toml`); `MLib` is windfield's bundled math library, whose older copies carry GPL-2.0-or-later headers, so read its licence at the pinned commit first.
 
 ## Ours, on the list

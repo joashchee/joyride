@@ -87,9 +87,9 @@ fn libs_are_exactly_the_curated_list_at_its_pinned_commits() {
             let n = f.file_name().to_string_lossy().to_lowercase();
             n.contains("licen") || n.starts_with("copying")
         });
-        let in_readme = std::fs::read_to_string(dir.join("README.md")).unwrap_or_default().contains("## License");
+        let in_readme = std::fs::read_to_string(dir.join("README.md")).unwrap_or_default().lines().any(|l| matches!(l.trim().trim_start_matches('#').trim().to_lowercase().as_str(), "license" | "licence"));
         // hump has neither: its licence text heads every source file.
-        let in_source = walkdir::WalkDir::new(&dir).into_iter().flatten().any(|f| f.path().extension().is_some_and(|x| x == "lua") && std::fs::read_to_string(f.path()).unwrap_or_default().contains("Permission is hereby granted"));
+        let in_source = walkdir::WalkDir::new(&dir).into_iter().flatten().any(|f| f.path().extension().is_some_and(|x| x == "lua") && std::fs::read_to_string(f.path()).unwrap_or_default().contains("Permission is hereby granted") || std::fs::read_to_string(f.path()).unwrap_or_default().contains("provided 'as-is'"));
         assert!(has_file || in_readme || in_source, "libs/{} carries no licence", e.name);
     }
     let folders: Vec<String> = std::fs::read_dir(root.join("libs")).unwrap().flatten().map(|f| f.file_name().to_string_lossy().to_string()).collect();
@@ -151,7 +151,7 @@ fn the_report_runs_on_each_real_love_with_no_fail() {
         for e in &lib.entries {
             let line = section.lines().find(|l| l.split(' ').nth(1).map(|n| n.trim_end_matches(':')) == Some(e.name.as_str())).unwrap_or_else(|| panic!("LÖVE {ver}: no line for {}", e.name));
             let loaded = line.starts_with("PASS");
-            let needs_window = ["g3d", "push", "talkies", "lighter", "splashy", "Helium"].contains(&e.name.as_str());
+            let needs_window = ["g3d", "push", "talkies", "lighter", "splashy", "Helium", "Menori", "3DreamEngine", "Lovox", "FPSGraph", "LoveDebug", "turtle", "shack", "swipe", "bitumbra", "Light", "simple-love-lights", "Piefiller", "gooi", "LoveFrames", "TuxRedux", "Sysl-Pixel", "SYSL-Text"].contains(&e.name.as_str());
             if e.kind == joyride_core::library::Kind::Lua && !needs_window && !(ver == "12.0" && e.name == "lurker") {
                 assert!(loaded, "LÖVE {ver}: {} should load: {line}", e.name);
             }

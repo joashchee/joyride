@@ -74,7 +74,7 @@ fn probe(love: &Path, repo: &Path, name: &str, module: &str, others: &[String], 
         format!(
             "package.path = {mt:?} .. '/?.lua;' .. {mt:?} .. '/?/init.lua;' .. {p:?} .. '/?.lua;' .. {p:?} .. '/?/init.lua;' .. {p:?} .. '/lib/?.lua;'{extra} .. package.path\nfunction love.load()\n  local ok, err = pcall(require, {m:?})\n  print('CURATE', ok and 'loads' or ('fails: ' .. tostring(err):gsub('\\n.*', '')))\n  love.event.quit(0)\nend\n",
             p = repo.display().to_string(),
-            extra = paths.iter().map(|x| format!(" .. {:?} .. '/{x}/?.lua;'", repo.display().to_string())).collect::<String>(),
+            extra = paths.iter().map(|x| format!(" .. {:?} .. '/{x}/?.lua;' .. {:?} .. '/{x}/?/init.lua;'", repo.display().to_string(), repo.display().to_string())).collect::<String>(),
             mt = mount.display().to_string(),
             m = module
         ),
@@ -192,9 +192,14 @@ fn main() {
                     licence::guess_from_text(&text.chars().take(8192).collect::<String>())
                 })
             })
+            // `licence = "MIT"` in a seed: the licence is stated somewhere the scanner does not read (a README line, a rockspec); used only when nothing else was found.
+            .or_else(|| lib.get("licence").and_then(|v| v.as_str()).map(|v| v.to_string()))
             .unwrap_or_else(|| "unknown".into());
         // Native libraries cannot load without their binary, so they are never probed.
-        let (a, b) = if probing && kind == "lua" { (probe(l11.as_ref().unwrap(), &dir, name, module, &all_names, &extra_paths), probe(l12.as_ref().unwrap(), &dir, name, module, &all_names, &extra_paths)) } else { ("unmeasured".to_string(), "unmeasured".to_string()) };
+        // `display = true` in a seed: it uses love.graphics while it loads (a shader, a canvas) and says nothing about it when there is no window, so a failure here is "needs a display", not a fault.
+        let display = lib.get("display").and_then(|d| d.as_bool()).unwrap_or(false);
+        let mark = |r: String| if display && r.starts_with("fails") { "needs-display".to_string() } else { r };
+        let (a, b) = if probing && kind == "lua" { (mark(probe(l11.as_ref().unwrap(), &dir, name, module, &all_names, &extra_paths)), mark(probe(l12.as_ref().unwrap(), &dir, name, module, &all_names, &extra_paths))) } else { ("unmeasured".to_string(), "unmeasured".to_string()) };
         eprintln!("{} {} {} | 11.5 {a} | 12.0 {b}", tag.as_deref().unwrap_or("(no tag)"), &rev[..7], spdx);
         let mut block = format!("\n[[library]]\nname = {name:?}\ngit = {url:?}\nrev = {rev:?}\n");
         if let Some(t) = tag {

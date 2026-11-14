@@ -12,13 +12,15 @@ local L = { entries = catalog, by = {}, loaded = {}, root = "libs" }
 for _, e in ipairs(catalog) do L.by[e.name] = e end
 
 -- Libraries that need another one on the path (lurker requires lume by its bare name).
-L.deps = { lurker = { "lume" }, ["lua-ljsqlite3"] = { "xsys" } }
+L.deps = { lurker = { "lume" }, ["lua-ljsqlite3"] = { "xsys" }, anim9 = { "cpml" } }
 
 -- Libraries that cannot be required without a window (they build images, fonts or shaders as they load).
 -- Libraries that start threads when they are required: skipped where the platform has none (the web).
 L.needsThreads = { Lily = true }
+L.replacedRequire = {}
+L.previous = {}   -- results from before a reset: a library that defines ffi types cannot be required twice, so its first result stands
 
-L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true, lighter = true, splashy = true, Helium = true }
+L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true, lighter = true, splashy = true, Helium = true, ["3DreamEngine"] = true, bitumbra = true, Light = true, LoveFrames = true, gooi = true, ["Runtime-TextureAtlas"] = true }
 
 -- Libraries whose own name for themselves matters: g3d finds its shader from the module name it was required by (`libs.g3d.g3d` ->
 -- `libs/g3d/g3d/g3d.vert`), so it must be required by its path from the game's root, not as `g3d`.
@@ -49,7 +51,7 @@ local function roots(name, plain)
     t[#t + 1] = L.root .. "/" .. n .. "/?/init.lua"
     -- Folders inside the library whose files require each other by bare name (Luafinding's src/): the curated entry's `paths`.
     local entry = L.by[n]
-    for p in ((entry and entry.paths) or ""):gmatch("[^;]+") do t[#t + 1] = L.root .. "/" .. n .. "/" .. p:match("^%s*(.-)%s*$") .. "/?.lua" end
+    for p in ((entry and entry.paths) or ""):gmatch("[^;]+") do t[#t + 1] = L.root .. "/" .. n .. "/" .. p:match("^%s*(.-)%s*$") .. "/?.lua"; t[#t + 1] = L.root .. "/" .. n .. "/" .. p:match("^%s*(.-)%s*$") .. "/?/init.lua" end
   end
   t[#t + 1] = L.root .. "/?.lua"
   t[#t + 1] = L.root .. "/?/init.lua"
@@ -148,9 +150,20 @@ function L.load(name, env)
   local realPrint, printed = print, 0
   print = function() printed = printed + 1 end
   local m0, t0 = collectgarbage("count"), os.clock()
+  local globalsBefore = {}
+  for k in pairs(_G) do globalsBefore[k] = true end
+  local realRequire = require
   local okr, mod = pcall(require, L.moduleFor[name] or e.module)
   local t1 = os.clock()
   print = realPrint
+  -- A library that replaces the global `require` (LuaRequireExtended) would change every later library's loading: put it back, and say so.
+  if require ~= realRequire then require = realRequire; res.replacedRequire = true; L.replacedRequire[name] = true end
+  -- A library whose whole API is globals (CatUI) returns nothing: its module is the table of the globals it made, so a check can use it.
+  if okr and type(mod) ~= "table" and type(mod) ~= "function" then
+    local made, any = {}, false
+    for k, v in pairs(_G) do if not globalsBefore[k] then made[k] = v; any = true end end
+    if any then mod, res.globalApi = made, true end
+  end
   cpathOff()
   res.printed = printed
   collectgarbage(); collectgarbage()
@@ -161,7 +174,7 @@ function L.load(name, env)
   end
   res.ms, res.kb = (t1 - t0) * 1000, math.max(0, m1 - m0)
   if okr then
-    res.status, res.mod, res.detail = "PASS", mod, ("required `%s`"):format(e.module)
+    res.status, res.mod, res.detail = "PASS", mod, ("required `%s`"):format(e.module) .. (res.replacedRequire and "; it replaced the global `require` (put back here)" or "") .. (res.globalApi and "; its API is globals, which the check uses as its module" or "")
     return res
   end
   local msg = tostring(mod):gsub("\n.*", "")
@@ -172,6 +185,10 @@ function L.load(name, env)
     res.status, res.detail = "SKIP", "its binary is not here: " .. (e.native or msg)
   elseif not hasWindow and (L.windowLibs[name] or msg:find("graphics", 1, true) or msg:find("window", 1, true) or msg:find("getDimensions", 1, true) or msg:find("getWidth", 1, true) or msg:find("mouse", 1, true) or msg:find("keyboard", 1, true) or msg:find("joystick", 1, true)) then
     res.status, res.detail = "SKIP", "needs a window (" .. msg:sub(1, 60) .. ")"
+  elseif L.previous[name] and L.previous[name].status == "PASS" and (msg:find("protected metatable", 1, true) or msg:find("redefin", 1, true) or msg:find("already", 1, true)) then
+    -- A second require of a library that defined ffi types: it loaded the first time, which is what counts.
+    L.loaded[name] = L.previous[name]
+    return L.previous[name]
   else
     res.status, res.detail = "FAIL", msg
     local major = love and love.getVersion and love.getVersion()
@@ -241,6 +258,7 @@ end
 --- Forget what was loaded (a test, or a re-run).
 function L.reset()
   for name, r in pairs(L.loaded) do
+    if r.status == "PASS" then L.previous[name] = r end
     if r.entry then
       for k in pairs(package.loaded) do if owns(r.entry, k) then package.loaded[k] = nil end end
     end

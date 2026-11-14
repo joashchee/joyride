@@ -42,6 +42,7 @@ pub fn path_templates(e: &Entry) -> Vec<String> {
     // Folders inside the library whose files require each other by bare name (Luafinding's src/).
     for p in &e.paths {
         t.push(format!("libs/{n}/{p}/?.lua"));
+        t.push(format!("libs/{n}/{p}/?/init.lua"));
     }
     t
 }
@@ -329,7 +330,7 @@ mod tests {
         let e = lib.get("Luafinding").unwrap();
         assert_eq!(e.paths, ["src"]);
         let l = line_for(e).unwrap();
-        assert!(l.text.contains(";libs/Luafinding/src/?.lua\")"), "{}", l.text);
+        assert!(l.text.contains(";libs/Luafinding/src/?.lua;libs/Luafinding/src/?/init.lua\")"), "{}", l.text);
         assert!(l.text.contains("libs/Luafinding/?.lua"), "the usual templates stay: {}", l.text);
         // Most libraries have none.
         assert!(lib.get("bump").unwrap().paths.is_empty());

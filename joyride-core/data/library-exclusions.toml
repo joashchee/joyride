@@ -30,3 +30,171 @@ git = "https://github.com/SiENcE/luis"
 decided = "2026-11-15"
 by = "applied when asked to add all the remaining libraries; the maintainer may lift it by deleting this entry"
 facts = "A retained UI system by Florian Fischer, df9b601. Its LICENSE is 'MIT License with Additional Terms': the MIT text plus 'This software, or any derivative works thereof, may not be used, in whole or in part, for the purpose of training, fine-tuning, or improving machine learning models or artificial intelligence systems' (the README repeats it). That is a field-of-use restriction, so it is not the MIT licence and not an open-source licence by the usual definitions, and no ruling exists for it (CLAUDE.md rule 2 covers GPL, AGPL, LGPL, and MPL-2.0 is allowed). The Benchmark sample would vendor it inside an MIT repository. The rest is clean: no GPL file, fonts CC0, OFL and Apache-2.0, 5.9 MB with themes and fonts."
+
+[[exclude]]
+name = "LOVElyTrees"
+git = "https://github.com/Nrosa01/LOVElyTrees"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 2 (no GPL, AGPL or LGPL), applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At b85abac: GNU AGPL (LICENSE.md is the full AGPL text)."
+
+[[exclude]]
+name = "center"
+git = "https://github.com/swalrus1/center"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 2 (no GPL, AGPL or LGPL), applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 624fbb9: GNU GPL (LICENSE is the full GPL text)."
+
+[[exclude]]
+name = "chance.lua"
+git = "https://github.com/ejmr/chance.lua"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 2 (no GPL, AGPL or LGPL), applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At eb85683: GNU GPL (LICENSE, README and chance.lua all say GPL)."
+
+[[exclude]]
+name = "layouter"
+git = "https://github.com/nekromoff/layouter"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 2 (no GPL, AGPL or LGPL), applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 79a2827: GNU LGPL (LICENSE is the LGPL text)."
+
+[[exclude]]
+name = "svglover"
+git = "https://github.com/globalcitizen/svglover"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 2 (no GPL, AGPL or LGPL), applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 0a2de66: GNU GPL (LICENSE is the full GPL text)."
+
+[[exclude]]
+name = "iffy"
+git = "https://github.com/besnoi/iffy"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 2 (no GPL, AGPL or LGPL), applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At afd6792: GPLv3 (its README says 'Iffy along with all the other libraries under lovelib is licensed under GPLv3'); no licence file."
+
+[[exclude]]
+name = "animX"
+git = "https://github.com/besnoi/animX"
+decided = "2026-11-15"
+by = "no stated licence means all rights reserved, so nothing may be copied into JoyrIDE's Benchmark sample or offered; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 7b38b61: no licence file and no licence statement in its README or sources."
+
+[[exclude]]
+name = "clove"
+git = "https://github.com/besnoi/clove"
+decided = "2026-11-15"
+by = "no stated licence means all rights reserved, so nothing may be copied into JoyrIDE's Benchmark sample or offered; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At b513341: no licence file and no licence statement in its README or sources."
+
+[[exclude]]
+name = "ListBox"
+git = "https://github.com/darkmetalic/ListBox"
+decided = "2026-11-15"
+by = "no stated licence means all rights reserved, so nothing may be copied into JoyrIDE's Benchmark sample or offered; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 522e7f3: no licence file and no licence statement in its README or sources."
+
+[[exclude]]
+name = "lovepatch"
+git = "https://github.com/notcl4y14/lovepatch"
+decided = "2026-11-15"
+by = "no stated licence means all rights reserved, so nothing may be copied into JoyrIDE's Benchmark sample or offered; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 154e191: no licence file and no licence statement in its README or sources (Patchy is the curated 9-patch library)."
+
+[[exclude]]
+name = "hex2color"
+git = "https://github.com/swalrus1/hex2color"
+decided = "2026-11-15"
+by = "no stated licence means all rights reserved, so nothing may be copied into JoyrIDE's Benchmark sample or offered; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 9de90c6: no licence file, no README licence statement."
+
+[[exclude]]
+name = "adorbs"
+git = "https://github.com/JosephShering/adorbs"
+decided = "2026-11-15"
+by = "no stated licence means all rights reserved, so nothing may be copied into JoyrIDE's Benchmark sample or offered; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At e4c763e: no licence file, no README licence statement."
+
+[[exclude]]
+name = "vudu"
+git = "https://github.com/deltadaedalus/vudu"
+decided = "2026-11-15"
+by = "no stated licence means all rights reserved, so nothing may be copied into JoyrIDE's Benchmark sample or offered; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At b3916da: no licence file and no statement in its README."
+
+[[exclude]]
+name = "OdaiHTN"
+git = "https://github.com/Safebox36/OdaiHTN"
+decided = "2026-11-15"
+by = "no stated licence means all rights reserved, so nothing may be copied into JoyrIDE's Benchmark sample or offered; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 2c70590: no licence file and no statement in its readme."
+
+[[exclude]]
+name = "FlexLove"
+git = "https://github.com/mikefreno/FlexLove"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries (clone and checkout only); applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 07b1fc1: a git submodule in its tree (JoyrIDE's installer clones and checks out only, no submodule init), so a clone is incomplete."
+
+[[exclude]]
+name = "LuaJIT-ImGui"
+git = "https://github.com/sonoro1234/LuaJIT-ImGui"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries (clone and checkout only); applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At 216d510: git submodules (cimgui) and compiled Dear ImGui bindings; cimgui-love is the curated Dear ImGui binding."
+
+[[exclude]]
+name = "love-ws"
+git = "https://github.com/holywyvern/love-ws"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries (clone and checkout only); applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At d57addf: a git submodule in its tree (no submodule init in the installer)."
+
+[[exclude]]
+name = "love-misc-libs"
+git = "https://github.com/bartbes/love-misc-libs"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries (clone and checkout only); applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At c63b0b6: a git submodule in its tree, and no licence file for the repository as a whole (Grease's rockspec says MIT)."
+
+[[exclude]]
+name = "NPad93"
+git = "https://github.com/MikuAuahDark/NPad93"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries (clone and checkout only); applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At fc0f90c: a git submodule in its tree and no licence file: its README says 'Check each file/folder for license terms', so nvec, NAniTe, NLay, ngrading and Manami each need their own reading."
+
+[[exclude]]
+name = "ecs-lua"
+git = "https://github.com/nidorx/ecs-lua"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 14 (read the code before it runs), applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At c6be4a8: its entry file ECS.lua is one minified line of 27,080 characters (the readable sources are in src/ and ECS_concat.lua, but the file a game requires is the minified build), so what a game would run cannot be reviewed under rule 14. The Roblox-oriented repository also carries 7 binary design files."
+
+[[exclude]]
+name = "colorchanger"
+git = "https://github.com/santoslove/colorchanger"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 14 (read the code before it runs), applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At fb5a49d: its colorchanger.lua line 1 is a 5,755-character minified copy of serpent embedded in the file, which cannot be reviewed (the curated serpent is the readable one); the licence is CC0 with a note that it embeds MIT code."
+
+[[exclude]]
+name = "LOVELi"
+git = "https://github.com/mtanksl/LOVELi"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At fac5bea: it loads its own class files with dofile(\"LOVELi/<class>.lua\"), a path from the game's root folder, so it cannot run from libs/ where JoyrIDE installs libraries (the probe failed with 'cannot open LOVELi/Math.lua' on real LÖVE 11.5 and 12.0); its README says to copy the folder to the game's root."
+
+[[exclude]]
+name = "LikeliHUD"
+git = "https://github.com/LRDPRDX/LikeliHUD"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At a6ff5f6: it requires an external library, `subclass`, from LuaRocks that the repository does not contain (require('subclass') in likelihud/Block.lua failed on real LÖVE 11.5 and 12.0), so a clone is not self-contained; its fonts folder also holds a CC BY-SA 3.0 font."
+
+[[exclude]]
+name = "Shadows"
+git = "https://github.com/matiasah/shadows"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
+facts = "At bc4cd56: its src/shadows/init.lua loads its own files with love.filesystem.load(\"shadows/DPI.lua\"), a path from the game's root folder, so the folder must sit at the root and cannot run from libs/ (the probe failed with 'Could not open file shadows/DPI.lua' on real LÖVE 11.5 and 12.0); its DEMOS folder also holds encoded data."

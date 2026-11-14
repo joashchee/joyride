@@ -8,9 +8,21 @@ love_version = "11.5"
 git = "https://github.com/Yonaba/30log"
 rev = "173f45756d99426d89990388e5d8c8e38b9695b9"
 
+[dependencies.3DreamEngine]
+git = "https://github.com/3dreamengine/3DreamEngine"
+rev = "bdaa095a38be91107647966851eb3dd5379e0e61"
+
 [dependencies.AppleCake]
 git = "https://github.com/EngineerSmith/AppleCake"
 rev = "2d2e2b235ac3a490f0c74f32c536f6e012bfa7af"
+
+[dependencies.Artal]
+git = "https://github.com/EvineDev/Artal"
+rev = "0a8af8c9a376abc992bbea567b6bba8dc5480fbe"
+
+[dependencies.Badr]
+git = "https://github.com/Nabeel20/Badr"
+rev = "e0ce9118f140532a13ccfe4d7522ff78305ca0f7"
 
 [dependencies.Brady]
 git = "https://github.com/davisdude/Brady"
@@ -20,13 +32,33 @@ rev = "6f8f8d34ddc0fde9f017233caca6e68e00a6a766"
 git = "https://github.com/rm-code/Bresenham"
 rev = "fc100c9fc1138d0ee335bded5dec1b4eb68b89fb"
 
+[dependencies.CatUI]
+git = "https://github.com/wilhantian/catui"
+rev = "57f1648e0853e850f431da64bac1ccc33e5509be"
+
 [dependencies.Concord]
 git = "https://github.com/Concord-Studio/Concord"
 rev = "7b8f7b2f0a1090a4b7deb6eeddec9cfbf67544c7"
 
+[dependencies.Editgrid]
+git = "https://github.com/bakpakin/Editgrid"
+rev = "bfce2c425775547685175fba3360863a3346a407"
+
+[dependencies.FPSGraph]
+git = "https://github.com/icrawler/FPSGraph"
+rev = "0a911d9693b8527a503684279b2f3d086a115e8e"
+
+[dependencies.GameStateManager]
+git = "https://github.com/GwyrddGlas/GameStateManager"
+rev = "036e2a6ec0f8a45bae469eb75f896b8bdd99a282"
+
 [dependencies.GamepadGuesser]
 git = "https://github.com/idbrii/love-gamepadguesser"
 rev = "8a4184fe0c0a88ffd2e2f27aef7f63f4747e5880"
+
+[dependencies.GifCat]
+git = "https://github.com/WetDesertRock/GifCat"
+rev = "9422999eccde14a601736421053d30c65f118bf3"
 
 [dependencies.HC]
 git = "https://github.com/vrld/HC"
@@ -44,17 +76,61 @@ rev = "36cccb99846913ece9cdf67f756216f42b13f872"
 git = "https://github.com/Keyslam/Inky"
 rev = "b6dc659a2917aea5c0e3c3611013dd787e74989b"
 
+[dependencies.Kazari]
+git = "https://github.com/MikuAuahDark/Kazari"
+rev = "c46ca2ffe037ac48bf7bbd6c466fe10fa57f8a2f"
+
+[dependencies.KeyedArray]
+git = "https://github.com/KINGTUT10101/KeyedArray"
+rev = "f81428e46410264a58d5056914a030a698018080"
+
+[dependencies.LUA-SNG-Parser]
+git = "https://github.com/GwyrddGlas/LUA-SNG-Parser"
+rev = "a624a50430332dfc0962220e3fe771e16ede79d9"
+
+[dependencies.Lady]
+git = "https://github.com/gvx/Lady"
+rev = "58eb59c101c42fa5beb064a3ae3bde3ec0da7ba2"
+
+[dependencies.Light]
+git = "https://github.com/xiejiangzhi/light"
+rev = "85b453c92230451d4437f82be1cee21e7b038c8e"
+
 [dependencies.Lily]
 git = "https://github.com/MikuAuahDark/lily"
 rev = "1ce5078cb70b4eac35bd8bcfa675ac85d9690282"
+
+[dependencies.LoveDebug]
+git = "https://github.com/flamendless/lovedebug"
+rev = "b11f5f1ca1e3a0b15d74c483011a74e60c35dc18"
+
+[dependencies.LoveFrames]
+git = "https://github.com/linux-man/LoveFrames"
+rev = "3a9d87ff57c8c3ffdde87ab14133ba9e39887149"
+
+[dependencies.LoveKeys]
+git = "https://github.com/SpaceCat-Chan/LoveKeys"
+rev = "79ffbe3779696e119375d23358330277299b85a9"
 
 [dependencies.LoverNet]
 git = "https://github.com/josefnpat/LoverNet"
 rev = "a0acc1df468697fd3a00ffba1ddaa0be28af2d0d"
 
+[dependencies.Lovox]
+git = "https://github.com/Keyslam/Lovox"
+rev = "73678fc76b01a0e182db7983d05c36c2827acaca"
+
+[dependencies.LowerClass]
+git = "https://github.com/DevonPalma/LowerClass"
+rev = "37df2779fddb6b36d3470fc3a796101352c3ed7d"
+
 [dependencies.Lua-star]
 git = "https://github.com/wesleywerner/lua-star"
 rev = "b444e278fc1a481b3235d9acffde6034ce9c20e6"
+
+[dependencies.LuaRequireExtended]
+git = "https://github.com/KINGTUT10101/LuaRequireExtended"
+rev = "b4c128743e8db31d850d59a57290160c96f35dee"
 
 [dependencies.Luafinding]
 git = "https://github.com/GlorifiedPig/Luafinding"
@@ -68,13 +144,49 @@ rev = "963fe5c66de6c0677839a2b7861c2574c6d3faf7"
 git = "https://github.com/adekto/maid64"
 rev = "ea95633209714cce2ee6623b5cceed5e88f122c3"
 
+[dependencies.Menori]
+git = "https://github.com/rozenmad/Menori"
+rev = "2374dc126be2f3816c2e282c3ccf5d78f649f3bd"
+
+[dependencies.NoobHub]
+git = "https://github.com/Overtorment/NoobHub"
+rev = "20eea162b36ddd8769ce4e8f525e1dad14b0d939"
+
+[dependencies.Object-Library]
+git = "https://github.com/Virus01Official/Object-Library"
+rev = "75124aa8e77b344999c22af59fdd07ffb8caf156"
+
 [dependencies.Patchy]
 git = "https://github.com/excessive/patchy"
 rev = "dc42c10425005927c39f5e12e70abcdf51751397"
 
+[dependencies.Piefiller]
+git = "https://github.com/Polynominal/Piefiller"
+rev = "00d7aead71bb9c20183d005aeca43d48f6f769cc"
+
+[dependencies.Runtime-TextureAtlas]
+git = "https://github.com/EngineerSmith/Runtime-TextureAtlas"
+rev = "f992abe9fe3afe2a06fdcc8d433e6e338ef0440e"
+
+[dependencies.SYSL-Text]
+git = "https://github.com/sysl-dev/SYSL-Text"
+rev = "6c9b95047cb8650344e90224cd56bd00c5132d97"
+
+[dependencies.SceneMan]
+git = "https://github.com/KINGTUT10101/SceneMan"
+rev = "e75aa0474eee7cc295853ce8826ac22659679b81"
+
 [dependencies.Ser]
 git = "https://github.com/gvx/Ser"
 rev = "3bea79546bd6b33a26dd628b7f65673dd902856b"
+
+[dependencies.ShaderScan]
+git = "https://github.com/idbrii/love-shaderscan"
+rev = "1c41d9efd9bb8321853d18d8170612672926353f"
+
+[dependencies.ShakeDetectorLua]
+git = "https://github.com/azoyan/ShakeDetectorLua"
+rev = "7ccaa7fd5385cf9417dba96e0856844993e31db2"
 
 [dependencies.Shove]
 git = "https://github.com/Oval-Tutu/shove"
@@ -88,6 +200,14 @@ rev = "e696052474a695b93e8d73731b464d9d208a397a"
 git = "https://github.com/gvx/Smallfolk"
 rev = "314925bc6442025a7f96789c2d256474256dc74b"
 
+[dependencies.Sysl-Pixel]
+git = "https://github.com/sysl-dev/Sysl-Pixel"
+rev = "4ce5746dc9b9ee6adeb7de895e222fc527777101"
+
+[dependencies.TuxRedux]
+git = "https://github.com/KINGTUT10101/TuxRedux"
+rev = "9ee67fc545153ab2a4238f9a6ba90d2c3f3c36ee"
+
 [dependencies.Vivid]
 git = "https://github.com/WetDesertRock/vivid"
 rev = "55cb54578949f74534ab89e75e72a3f013292fda"
@@ -96,9 +216,37 @@ rev = "55cb54578949f74534ab89e75e72a3f013292fda"
 git = "https://github.com/DUznanski/vornmath"
 rev = "dfb359b154132d11bd1b8eff2643c020ff88083b"
 
+[dependencies.Walt]
+git = "https://github.com/davisdude/Walt"
+rev = "8c3b46de0885fe4350bde027f5f45cfc0ffae783"
+
+[dependencies.andross]
+git = "https://github.com/pfirsich/andross"
+rev = "51af527669cc3a70f4f965a8e75a91d3a1141b37"
+
 [dependencies.anim8]
 git = "https://github.com/kikito/anim8"
 rev = "c1c12ec45fde28ffd2d6967675adcb3c3e501fa7"
+
+[dependencies.anim9]
+git = "https://github.com/excessive/anim9"
+rev = "8290f7ed94345c74223ec5149fc094b6ff1f05e5"
+
+[dependencies.arson]
+git = "https://github.com/flamendless/arson.lua"
+rev = "175a6c2a1d7db505342d3371bb106a2404b36d41"
+
+[dependencies.astar]
+git = "https://github.com/xiejiangzhi/astar"
+rev = "068471746b746f0a62c421d13311c5206ec4080b"
+
+[dependencies.astray]
+git = "https://github.com/SiENcE/astray"
+rev = "1a557a8281a85d25767b324dc4a510bb57947609"
+
+[dependencies.bar128-love]
+git = "https://github.com/Nawias/bar128-love"
+rev = "1ddd7a3ac840bfe4834a0293c7eca4e1691e88c1"
 
 [dependencies.baton]
 git = "https://github.com/tesselode/baton"
@@ -120,13 +268,29 @@ rev = "15117c1d786b16249dcd1441a5be9e3244d42767"
 git = "https://github.com/gvx/bitser"
 rev = "454539159112129a92c1970f662249301d61df4e"
 
+[dependencies.bitumbra]
+git = "https://github.com/a13X-B/bitumbra"
+rev = "176e1ed04d4a173b5424383e0d60f4fd65647ddd"
+
 [dependencies.breezefield]
 git = "https://github.com/HDictus/breezefield"
 rev = "01faa2dd8def34aecc7018492f93f5a8e224237a"
 
+[dependencies.brinevector]
+git = "https://github.com/novemberisms/brinevector"
+rev = "10177568d64d59514edf4d8bf1bc88ad544b12fe"
+
+[dependencies.brinevector3D]
+git = "https://github.com/flamendless/brinevector3D"
+rev = "118bef909ad0ab95066b895315aed189c183bd48"
+
 [dependencies.bump]
 git = "https://github.com/kikito/bump.lua"
 rev = "72d6b13dfa525564f6e1a533d71eaa8235a5e96c"
+
+[dependencies.bump-3dpd]
+git = "https://github.com/oniietzschan/bump-3dpd"
+rev = "39c99f153b1830225ee43d83ba0c912b64683b8b"
 
 [dependencies.cargo]
 git = "https://github.com/bjornbytes/cargo"
@@ -135,6 +299,14 @@ rev = "8014bc0ad7d4639c112e5d00fac6c9ac68b0d696"
 [dependencies.cartographer]
 git = "https://github.com/tesselode/cartographer"
 rev = "382e6ff313784e7bdc2e50f0486b0fe6f78a7381"
+
+[dependencies.cdata]
+git = "https://github.com/excessive/cdata"
+rev = "a05da803f659c57e9ce80045e358ada1897fddc0"
+
+[dependencies.chiro]
+git = "https://github.com/bjornbytes/chiro"
+rev = "55e466e6b6a8ae42070e29b4f3b57d02019ede1c"
 
 [dependencies.cimgui-love]
 git = "https://codeberg.org/apicici/cimgui-love"
@@ -152,9 +324,33 @@ rev = "ddb80f48e6a3f7d9b98aa45b6feeb461db3d0c6a"
 git = "https://github.com/kikito/cron.lua"
 rev = "c8899a15fb8547492f4df90d9640711abce29ed0"
 
+[dependencies.debugGraph]
+git = "https://github.com/Mechazawa/Love-Debug-Graph"
+rev = "a5ff0e64dad9e4e6275c490358c7fee05161bc26"
+
+[dependencies.deep]
+git = "https://github.com/Nikaoto/deep"
+rev = "99d4ca9fbf779a4e549e782893ac6f844a456dd4"
+
+[dependencies.delaunay]
+git = "https://github.com/Yonaba/delaunay"
+rev = "a99af3c18dd74b142153067213a03db960bf61ec"
+
 [dependencies.denver]
 git = "https://github.com/superzazu/denver.lua"
 rev = "36fdb278e99de6827427633a905c5a862e0e3913"
+
+[dependencies.draft]
+git = "https://github.com/pelevesque/draft"
+rev = "efcede2e865b6fd1bdf56432d6f41dd09ce63a8f"
+
+[dependencies.evolved]
+git = "https://github.com/BlackMATov/evolved.lua"
+rev = "f8eb1f4cadc3192daf09b0b6b380b7d66fef06d5"
+
+[dependencies.fetch-lua]
+git = "https://github.com/elloramir/fetch-lua"
+rev = "3743005717ea8a7c7bd253333b1bc54078eaf073"
 
 [dependencies.flux]
 git = "https://github.com/rxi/flux"
@@ -168,6 +364,14 @@ rev = "e8e92be6f7919a8516bf1008780cfe8c9cf5932c"
 git = "https://github.com/kikito/gamera"
 rev = "1e5f1b37377145d5d1106db6aed42663ddd0d36d"
 
+[dependencies.gooi]
+git = "https://github.com/gustavostuff/gooi"
+rev = "cf64d0988ca1e7cd51d15810995ce3d449f134ac"
+
+[dependencies.grove]
+git = "https://github.com/FloatingBanana/Grove"
+rev = "a322df9a2bf2302fbeb2d96bdc414afafd9269cb"
+
 [dependencies.hump]
 git = "https://github.com/vrld/hump"
 rev = "08937cc0ecf72d1a964a8de6cd552c5e136bf0d4"
@@ -176,6 +380,10 @@ rev = "08937cc0ecf72d1a964a8de6cd552c5e136bf0d4"
 git = "https://github.com/kikito/i18n.lua"
 rev = "be5a470da5fe8a8eb979761a4c410a392b360779"
 
+[dependencies.ini_parser]
+git = "https://github.com/nobytesgiven/ini_parser"
+rev = "361b679c12bc0ab89d3807fc2a5d900a6ac0a630"
+
 [dependencies.input]
 git = "https://github.com/xiejiangzhi/input"
 rev = "34735ee7f7ce07353033bb25bb213f50cd86c02a"
@@ -183,6 +391,14 @@ rev = "34735ee7f7ce07353033bb25bb213f50cd86c02a"
 [dependencies.inspect]
 git = "https://github.com/kikito/inspect.lua"
 rev = "691eea1fc6346be131e9749150976010f13e84f7"
+
+[dependencies.iqe]
+git = "https://github.com/excessive/iqe"
+rev = "febc5134adc131e2d802374815ee830a5d11fea0"
+
+[dependencies.iqm-exm]
+git = "https://github.com/excessive/iqm-exm"
+rev = "b88492de0f121cdb1877ced3484657c248c3ad93"
 
 [dependencies.jprof]
 git = "https://github.com/pfirsich/jprof"
@@ -204,25 +420,77 @@ rev = "5ccd9b425f2c5363389534c7e12b9df05b18ad8e"
 git = "https://github.com/speakk/lighter"
 rev = "9fb63e07d47c1dfc1866eb2114a32f933150c358"
 
+[dependencies.loaded_dice]
+git = "https://github.com/a13X-B/loaded_dice"
+rev = "7c6225863d3715e49cc9d4a5294826d1a67464df"
+
 [dependencies.log]
 git = "https://github.com/rxi/log.lua"
 rev = "7396ae2ee6d68829aecbc96d0b2ee1e5620c1ed7"
+
+[dependencies.lovanim]
+git = "https://github.com/patrixr/love-animation"
+rev = "bbda141cfe89d1ae2dabb9b86535346bc453ab01"
+
+[dependencies.love-ase]
+git = "https://github.com/elloramir/love-ase"
+rev = "198e6a0037824310bd36a8147c70ad4695f000c5"
+
+[dependencies.love-dialogue]
+git = "https://github.com/Miisan-png/Love-Dialogue"
+rev = "04c898aa3717994817daceed3f092aa6d3b00041"
 
 [dependencies.love-loader]
 git = "https://github.com/kikito/love-loader"
 rev = "659dd23fd8b53142dd45207cf592817795bfaeb4"
 
+[dependencies.love-microphone]
+git = "https://github.com/LPGhatguy/love-microphone"
+rev = "9016116299ccd5404ecc6025c49e72004843ec47"
+
 [dependencies.love-nuklear]
 git = "https://github.com/keharriso/love-nuklear"
 rev = "5336818494a0b80fd2ae3ce2d04c2e1bb9f9d9d3"
+
+[dependencies.love-qrcode]
+git = "https://github.com/Nawias/love-qrcode"
+rev = "ba3d86d29eb0457957313719e1575a36f92de8d5"
+
+[dependencies.love-state-switcher]
+git = "https://github.com/nekromoff/love-state-switcher"
+rev = "55594f9eaca1a5a7576a1794c8b90248d4ce1b00"
+
+[dependencies.love2d-assets-loader]
+git = "https://github.com/Yonaba/love2d-assets-loader"
+rev = "61e67c2611265ac1f92a5697bb67051d71713634"
+
+[dependencies.love2d-lua-websocket]
+git = "https://github.com/flaribbit/love2d-lua-websocket"
+rev = "5a26fb151057b083ea705bee32b71798c7126e5a"
 
 [dependencies.lovebird]
 git = "https://github.com/rxi/lovebird"
 rev = "e84abe7b56a65ccb3ec6288e1955b6d772d41431"
 
+[dependencies.loveblobs]
+git = "https://github.com/zhangf911/loveblobs"
+rev = "e4fad23ddb11091ec5e273c6d6a3901c1c2f18ae"
+
 [dependencies.lovebpm]
 git = "https://github.com/rxi/lovebpm"
 rev = "22f8537083818ebfc2a0788fbec3e991894371f9"
+
+[dependencies.lovector]
+git = "https://github.com/nasso/lovector"
+rev = "869a1e7a8dbd1d443248635ca1fdfc4029f40beb"
+
+[dependencies.lovely-windows]
+git = "https://github.com/flamendless/lovely-windows"
+rev = "41654061ae78864c565128750559cbdda61db95f"
+
+[dependencies.loveprofiler]
+git = "https://github.com/dknight/loveprofiler"
+rev = "bbe0900d18492bfc9a6a585da12e10d9bff5afa5"
 
 [dependencies.lua-discordRPC]
 git = "https://github.com/pfirsich/lua-discordRPC"
@@ -248,9 +516,21 @@ rev = "259b1d0de33061c1eec3b8c9b1e60a9b4fff21e1"
 git = "https://github.com/bluebird75/luaunit"
 rev = "9678c933e71cb26adcdfa6cf1baceb926398eb48"
 
+[dependencies.lue]
+git = "https://github.com/Ulydev/lue"
+rev = "b54bbb1df7c2a2670fcca024698ac805381ccf33"
+
 [dependencies.lume]
 git = "https://github.com/rxi/lume"
 rev = "b539dc74c7957a12722ef9c4a38554b662f10bcc"
+
+[dependencies.lump]
+git = "https://github.com/sixFingers/lump"
+rev = "f98916eb58ddeb63528498047357dc54c6c0483b"
+
+[dependencies.lunatest]
+git = "https://github.com/silentbicycle/lunatest"
+rev = "639bd6c7271e113da5880af92d58dba6f70be4e2"
 
 [dependencies.lurker]
 git = "https://github.com/rxi/lurker"
@@ -272,6 +552,14 @@ rev = "7c41401570dda3300c046ea4ac4e7bcb7a8e4559"
 git = "https://github.com/vrld/moonshine"
 rev = "d39271e0c000e2fedbc2e3ad286b78b5a5146065"
 
+[dependencies.muun]
+git = "https://github.com/megagrump/muun"
+rev = "75fec4a56af282805db41afb0b96f539768bbabd"
+
+[dependencies.narrator]
+git = "https://github.com/astrochili/narrator"
+rev = "a3abcab4e2c37d68a0457e750196ef1a1f57af3d"
+
 [dependencies.nata]
 git = "https://github.com/tesselode/nata"
 rev = "eb9d49bdb32b964be9419f50dfec14e9adb1bcf0"
@@ -284,9 +572,21 @@ rev = "9338e01f623eea385fc38e7d792a3815a647a862"
 git = "https://github.com/joashchee/neumetik-midi"
 rev = "e275a35e4b01f77b1a15d35c251637e9b25fe3a1"
 
+[dependencies.parallax]
+git = "https://github.com/idbrii/love-parallax"
+rev = "897ed04cc14f24ba7f4019415833b4e5fc7092e9"
+
 [dependencies.peachy]
 git = "https://github.com/josh-perry/peachy"
 rev = "1abdebbddb7a0fe8fc6c95326d1bc4c80b1e0d4e"
+
+[dependencies.plan]
+git = "https://github.com/zombrodo/plan"
+rev = "2af607c2c0d80e7c30778a552b1ac8ab1a451cea"
+
+[dependencies.polysec]
+git = "https://github.com/dknight/polysec"
+rev = "40b276c29ec480539f9b79756f8a61ffc1c491ef"
 
 [dependencies.profile]
 git = "https://github.com/2dengine/profile.lua"
@@ -296,6 +596,14 @@ rev = "febbb8ab53555d0290872e01181d259664d492cd"
 git = "https://github.com/Ulydev/push"
 rev = "9c165816a14c868339c3cd0d22eed65c313c8bf8"
 
+[dependencies.pvector]
+git = "https://github.com/automattf/vector.lua"
+rev = "bebf8813d5a41f0b250d416da387095a8fae2160"
+
+[dependencies.reflowprint]
+git = "https://github.com/josefnpat/reflowprint"
+rev = "1bc510618697c278ebd0ce13c14a07bbbae0044e"
+
 [dependencies.resolution_solution]
 git = "https://github.com/grif-on/love2d_resolution_solution"
 rev = "cc922fff0cc36a4c5aabc2eb594b0db156524aec"
@@ -304,9 +612,29 @@ rev = "cc922fff0cc36a4c5aabc2eb594b0db156524aec"
 git = "https://github.com/tesselode/ripple"
 rev = "e18db79b98546a12f560b817bfbc218d08b0fb13"
 
+[dependencies.roomshift]
+git = "https://github.com/mshiplet/roomshift"
+rev = "8d5b20be9fc528249871e25b69ff90b7f9c0fbba"
+
 [dependencies.roomy]
 git = "https://github.com/tesselode/roomy"
 rev = "2574a9cc11d42da4863e58f24c9f984cc2087e33"
+
+[dependencies.rotLove]
+git = "https://github.com/paulofmandown/rotLove"
+rev = "84a0a7d967cbd819a0fc2d17c76f82172cb01fb9"
+
+[dependencies.safeword]
+git = "https://github.com/josefnpat/safeword"
+rev = "b6cd519d0bfbddee2fac63234a23ddc322d2dae1"
+
+[dependencies.scenery]
+git = "https://github.com/paltze/scenery"
+rev = "f53eb633ec1976e4339729be7e3f929d2df80525"
+
+[dependencies.screenmanager]
+git = "https://github.com/rm-code/screenmanager"
+rev = "6bc2f537a9aba88910ef18f71a5246ed6df2a8fd"
 
 [dependencies.semver]
 git = "https://github.com/kikito/semver.lua"
@@ -316,9 +644,25 @@ rev = "42a67e2d2208d39dc240afc00ed29f1f74b37c2b"
 git = "https://github.com/pkulchenko/serpent"
 rev = "d78683597606c6e13a1fed039bc91d86eb8f600f"
 
+[dependencies.shack]
+git = "https://github.com/Ulydev/shack"
+rev = "01504489f1471619160c4ed31d35edb46476ff31"
+
+[dependencies.shard]
+git = "https://github.com/MineGame159/shard"
+rev = "ec6f3969882ee884b246f3bb5e20aa04c5bec3cf"
+
 [dependencies.shash]
 git = "https://github.com/rxi/shash"
 rev = "7e2bbef0193e986bb4e655e18c4e23123e7081d8"
+
+[dependencies.simple-love-lights]
+git = "https://github.com/dylhunn/simple-love-lights"
+rev = "f23b9d81296b48d3658a9db262c845417c7138ad"
+
+[dependencies.skeletor]
+git = "https://github.com/pelevesque/skeletor"
+rev = "00ca889b567f1d814126ec0ec60f571c02aa29bb"
 
 [dependencies.slick]
 git = "https://github.com/erinmaus/slick"
@@ -348,6 +692,14 @@ rev = "69cdf8c7565f518c03967d0243cb54d1ee31da4e"
 git = "https://github.com/vrld/SUIT"
 rev = "17677826030a7270b474c5717af43834d583094c"
 
+[dependencies.sunscreen]
+git = "https://github.com/challacade/sunscreen"
+rev = "e7fc1722dc33f30676a4b94c7b53d503b5806793"
+
+[dependencies.swipe]
+git = "https://github.com/zombrodo/swipe"
+rev = "97f0a606cbfb64d9cb4f3fdd2f7a8b8359f6645a"
+
 [dependencies.tactile]
 git = "https://github.com/tesselode/tactile"
 rev = "904f5c6b9ac2e9916393ead7f216179f46198175"
@@ -368,6 +720,10 @@ rev = "8a3c22e74fb6e97a580c85b60bd857af47fea9a2"
 git = "https://github.com/bjornbytes/trickle"
 rev = "16b4354e45e56c6afcab00a6bf5ea95e942650fb"
 
+[dependencies.turtle]
+git = "https://github.com/arthurealike/turtle.lua"
+rev = "1ed9dad7d5294dbdb625ed6857fc12ef6ba9ab9e"
+
 [dependencies.tween]
 git = "https://github.com/kikito/tween.lua"
 rev = "65d13504e54d85831a752e4aaa47ceba059a5035"
@@ -375,3 +731,7 @@ rev = "65d13504e54d85831a752e4aaa47ceba059a5035"
 [dependencies.xsys]
 git = "https://github.com/stepelu/lua-xsys"
 rev = "aec247aa3a18cdc62338b8eaaec6652fb5127e98"
+
+[dependencies.yalg]
+git = "https://github.com/sasszem/yalg"
+rev = "86885b7f2308f1666351f7846aca508a1a823150"

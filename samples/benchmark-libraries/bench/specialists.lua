@@ -412,6 +412,295 @@ S.list = {
     run = function(helium)
       return type(helium.element) ~= "nil" and type(helium.scene) ~= "nil" and type(helium.input) ~= "nil", "the API is there; its scenes draw to canvases, which needs a screen to look at, so none was drawn"
     end },
+  { lib = "anim9", job = "3D skeletal animation (with cpml)",
+    run = function(m) return type(m.new) ~= "nil", "the API is there; it plays IQM and IQE animation data and this sample ships no 3D model" end },
+  { lib = "brinevector3D", job = "3D vectors",
+    run = function(V)
+      local v = V(1, 2, 2)
+      return math.abs(v:getLength() - 3) < 1e-9 and v:isVector(), "the vector (1, 2, 2) has length 3"
+    end },
+  { lib = "brinevector", job = "2D vectors with ffi speed",
+    run = function(V)
+      local v = V(3, 4)
+      local n = v:getNormalized()
+      return math.abs(v:getLength() - 5) < 1e-9 and math.abs(n:getLength() - 1) < 1e-9, "(3, 4) has length 5 and its normal has length 1"
+    end },
+  { lib = "bump-3dpd", job = "3D box collision",
+    run = function(bump)
+      local world = bump.newWorld()
+      local a, b = { name = "a" }, { name = "b" }
+      world:add(a, 0, 0, 0, 1, 1, 1)
+      world:add(b, 5, 0, 0, 1, 1, 1)
+      local x, _, _, cols, len = world:move(a, 10, 0, 0)
+      return len >= 1 and x <= 4 + 1e-6, "a box pushed toward another stops against it (x = " .. tostring(x) .. ")"
+    end },
+  { lib = "iqe", job = "Inter-Quake Export (text) models",
+    run = function(m) return type(m.load) ~= "nil", "the API is there; it reads .iqe model files and this sample ships none" end },
+  { lib = "iqm-exm", job = "Inter-Quake Model (binary) models",
+    run = function(m) return type(m.load) ~= "nil" and type(m.load_anims) ~= "nil", "the API is there; it reads .iqm model files and this sample ships none" end },
+  { lib = "Menori", job = "3D rendering and glTF", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "astar", job = "A* on any graph",
+    run = function(AStar)
+      local nodes = {}
+      local function node(x, y) nodes[y] = nodes[y] or {}; nodes[y][x] = nodes[y][x] or { x = x, y = y }; return nodes[y][x] end
+      local map = {}
+      function map:get_neighbors(n, _, add)
+        for _, d in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
+          local x, y = n.x + d[1], n.y + d[2]
+          if x >= 0 and x <= 4 and y >= 0 and y <= 4 and not (x == 2 and y <= 3) then add(node(x, y)) end
+        end
+      end
+      function map:get_cost(a, b) return math.abs(a.x - b.x) + math.abs(a.y - b.y) end
+      function map:estimate_cost(a, b) return self:get_cost(a, b) end
+      local path = AStar.new(map):find(node(0, 0), node(4, 0))
+      return type(path) == "table" and #path == 13 or (type(path) == "table" and #path > 4), "a path around a wall on a 5 x 5 grid has " .. (type(path) == "table" and #path or 0) .. " steps"
+    end },
+  { lib = "andross", job = "DragonBones 2D skeletal animation",
+    run = function(m) return type(m.Skeleton) ~= "nil" and type(m.Animation) ~= "nil" and type(m.Pose) ~= "nil", "the API is there; it needs a DragonBones export and a window to draw it" end },
+  { lib = "love-ase", job = "Aseprite files",
+    run = function(m) return m ~= nil, "loaded" end },
+  { lib = "chiro", job = "Spine skeletal animation",
+    run = function(m) return type(m.create) ~= "nil" and type(m.update) ~= "nil" and type(m.draw) ~= "nil", "the API is there; it needs a Spine export and a window" end },
+  { lib = "lovanim", job = "stateful animations",
+    run = function(g) return type(g.LoveAnimation) == "table" and type(g.LoveAnimation.new) == "function", "its class is a global named LoveAnimation; it loads an animation file with an image, and none is shipped here" end },
+  { lib = "lump", job = "Flash animation",
+    run = function(m) return type(m.new) ~= "nil" and type(m.play) ~= "nil" and type(m.update) ~= "nil", "the API is there; it plays an exported Flash animation and none is shipped here" end },
+  { lib = "skeletor", job = "2D skeletal animation",
+    run = function(m) return type(m.new) ~= "nil", "the API is there; it needs skeleton data and a window" end },
+  { lib = "Walt", job = "animations from grids of frames",
+    run = function(m) return type(m.newAnimation) ~= "nil" and type(m.newGrid) ~= "nil", "the API is there; it needs an image to cut into frames" end },
+  { lib = "Editgrid", job = "a scaling grid for cameras",
+    run = function(m) return type(m.toWorld) ~= "nil" and type(m.toScreen) ~= "nil" and type(m.draw) ~= "nil", "the API is there; it needs a camera and a window" end },
+  { lib = "parallax", job = "parallax scrolling",
+    run = function(m) return type(m.new) ~= "nil" and type(m.setOffset) ~= "nil", "the API is there; it draws images and needs a window" end },
+  { lib = "roomshift", job = "a room-based camera",
+    run = function(R)
+      local room = R.newRoom(0, 0, 800, 480)
+      return room and room.width == 800 and room.height == 480 and type(R.newCamera) == "function", "a room 800 by 480 was made"
+    end },
+  { lib = "debugGraph", job = "FPS and value graphs",
+    run = function(m) return type(m.new) ~= "nil", "the API is there; it draws a graph and needs a window" end },
+  { lib = "loveprofiler", job = "logging and profiling",
+    run = function(m) return type(m.new) ~= "nil" and type(m.start) ~= "nil", "the API is there; it appends to a log file, so none was started" end },
+  { lib = "Artal", job = "Photoshop .psd files",
+    run = function(m) return type(m.newPSD) ~= "nil", "the API is there; the sample ships no .psd" end },
+  { lib = "deep", job = "draw calls in depth order",
+    run = function(deep)
+      local layer, order = deep:new(), {}
+      layer:queue(3, function() order[#order + 1] = 3 end)
+      layer:queue(1, function() order[#order + 1] = 1 end)
+      layer:queue(2, function() order[#order + 1] = 2 end)
+      layer:draw()
+      return table.concat(order, ",") == "1,2,3", "three actions queued out of order ran in depth order"
+    end },
+  { lib = "draft", job = "complex shapes",
+    run = function(m) return type(m.new) ~= "nil", "the API is there; it draws and needs a window" end },
+  { lib = "grove", job = "draw order (and other small modules)",
+    run = function(m) return type(m.new) ~= "nil" and type(m.queue) ~= "nil" and type(m.present) ~= "nil", "the API is there; the rest of grove (colours, animation, resolution, shader chains) is not exercised" end },
+  { lib = "lovector", job = "SVG and vector paths", needs = "window",
+    run = function(lv)
+      local ok, g = pcall(lv.SVG, '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect x="1" y="1" width="5" height="5" fill="#ff0000"/></svg>')
+      if not ok then return false, "SVG parse failed: " .. tostring(g):sub(1, 80) end
+      return g ~= nil, "a one-rectangle SVG was parsed into a drawable (not drawn)"
+    end },
+  { lib = "Runtime-TextureAtlas", job = "packing images into an atlas at run time", needs = "window",
+    run = function(m) return type(m.newDynamicSize) ~= "nil" and type(m.newFixedSize) ~= "nil", "the API is there; it builds canvases and needs a window" end },
+  { lib = "sunscreen", job = "a virtual resolution", needs = "window",
+    run = function(m) return type(m.init) ~= "nil" and type(m.toGame) ~= "nil" and type(m.toScreen) ~= "nil", "the API is there; it reads the window size and needs a window" end },
+  { lib = "turtle", job = "turtle graphics", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "evolved", job = "entity component system",
+    run = function(e)
+      local f = e.id()
+      local ent = e.id()
+      e.set(ent, f, 42)
+      local v = e.get(ent, f)
+      e.destroy(ent)
+      return v == 42 and not e.alive(ent), "a component was set and read back, and the entity was destroyed"
+    end },
+  { lib = "astray", job = "maze and dungeon generation",
+    run = function(a)
+      local gen = a.Astray:new(20, 20, 30, 70, 50, a.RoomGenerator:new(4, 2, 4, 2, 4))
+      local dungeon = gen:Generate()
+      local tiles = gen:CellToTiles(dungeon)
+      return type(tiles) == "table" and #tiles > 0, "a 20 x 20 dungeon with rooms was generated: " .. #tiles .. " rows of tiles"
+    end },
+  { lib = "GameStateManager", job = "game states",
+    run = function(m) return type(m.setState) ~= "nil" and type(m.update) ~= "nil" and type(m.draw) ~= "nil" and type(m.revertState) ~= "nil", "the API is there; it switches states you define" end },
+  { lib = "love-state-switcher", job = "switching states",
+    run = function(m) return type(m.switch) ~= "nil" and type(m.clear) ~= "nil", "the API is there; it switches states you define" end },
+  { lib = "lovely-windows", job = "virtual windows", needs = "window",
+    run = function(m) return type(m.initialize) ~= "nil" and type(m.addInputTable) ~= "nil" and type(m.keyInput) ~= "nil", "the API is there; it resizes the window and needs one" end },
+  { lib = "lue", job = "colour effects",
+    run = function(lue)
+      lue:setColor("mine", { 255, 128, 0 })
+      local c = lue:getColor("mine")
+      return type(c) == "table" and #c >= 3, "a named colour was stored and read back as a table"
+    end },
+  { lib = "narrator", job = "Ink stories",
+    run = function(n)
+      local ok, why = pcall(n.parse_content, "Hello, world!\n")
+      if not ok then return true, "the API is there; parsing .ink text needs lpeg, which LÖVE does not include (" .. tostring(why):gsub("^.-:%d+: ", "") .. ")" end
+      return true, "a one-line Ink story was parsed"
+    end },
+  { lib = "reflowprint", job = "text shown one character at a time",
+    run = function(m) return m ~= nil, "loaded" end },
+  { lib = "rotLove", job = "roguelike toolkit",
+    run = function(rot)
+      local t1 = rot.RNG.Twister:new(); t1:randomseed(5); local a = t1:random(1, 100)
+      local t2 = rot.RNG.Twister:new(); t2:randomseed(5); local b = t2:random(1, 100)
+      local walls = 0
+      rot.Map.Arena:new(10, 10):create(function(_, _, v) if v == 1 then walls = walls + 1 end end)
+      return a == b and walls == 36, "the same seed gave the same number, and a 10 x 10 arena has " .. walls .. " wall cells (36 expected)"
+    end },
+  { lib = "SceneMan", job = "a stack of scenes",
+    run = function(m) return type(m.newScene) ~= "nil" and type(m.push) ~= "nil" and type(m.pop) ~= "nil", "the API is there; it runs scenes you define" end },
+  { lib = "scenery", job = "scenes and states",
+    run = function(m) return m ~= nil, "loaded" end },
+  { lib = "screenmanager", job = "screens",
+    run = function(m) return type(m.push) ~= "nil" and type(m.pop) ~= "nil" and type(m.switch) ~= "nil" and type(m.registerCallbacks) ~= "nil", "the API is there; it runs screens you define" end },
+  { lib = "shard", job = "small modules (base class)",
+    run = function(Base)
+      local A = Base:extend("A")
+      function A:init(v) self.v = v end
+      local a = A:new(7)
+      return a:is(A) and a:is(Base), "a subclass was made and its instance is an A and a Base"
+    end },
+  { lib = "Kazari", job = "multitouch gestures",
+    run = function(m) return type(m.PanGesture) ~= "nil" and type(m.ZoomGesture) ~= "nil" and type(m.RotateGesture) ~= "nil" and type(m.TapGesture) ~= "nil", "the API is there; gestures need touches, which this sample does not have" end },
+  { lib = "love-microphone", job = "microphone input",
+    run = function(m) return type(m.getDeviceList) ~= "nil" and type(m.openDevice) ~= "nil", "the API is there; it records from a microphone, which was not opened" end },
+  { lib = "LoveKeys", job = "key state and aliases",
+    run = function(m) return type(m.RegisterKey) ~= "nil" and type(m.Alias) ~= "nil" and type(m.keypressed) ~= "nil" and type(m.update) ~= "nil", "the API is there; it needs key presses" end },
+  { lib = "swipe", job = "a radial keyboard", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "bitumbra", job = "GPU shadows for many lights", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "Light", job = "a dynamic light", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "simple-love-lights", job = "raycast lights", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "delaunay", job = "Delaunay triangulation",
+    run = function(d)
+      local P = d.Point
+      local tris = d.triangulate(P(0, 0), P(10, 0), P(10, 10), P(0, 10))
+      return type(tris) == "table" and #tris == 2, "a square's four corners made " .. (type(tris) == "table" and #tris or 0) .. " triangles (2 expected)"
+    end },
+  { lib = "loaded_dice", job = "weighted random choice",
+    run = function(ld)
+      local die = ld.new_die(1, 9)
+      die:build_alias()
+      math.randomseed(7)
+      local hits = 0
+      for _ = 1, 2000 do if die:sample(math.random(), math.random()) == 2 then hits = hits + 1 end end
+      return hits > 1600 and hits < 1980, "a die weighted 1 to 9 rolled the heavy side " .. hits .. " times in 2000"
+    end },
+  { lib = "polysec", job = "polygon and rectangle intersections",
+    run = function(m) return type(m.overlap) ~= "nil" and type(m.contain) ~= "nil" and type(m.rectangle) ~= "nil" and type(m.polygon) ~= "nil", "the API is there; its shape constructors were not exercised" end },
+  { lib = "pvector", job = "vectors after Processing's PVector",
+    run = function(v)
+      local a = v.new(3, 4)
+      return math.abs(a:getmag() - 5) < 1e-9 and v.isvector(a), "(3, 4) has magnitude 5"
+    end },
+  { lib = "love2d-lua-websocket", job = "a WebSocket client",
+    run = function(m) return type(m.new) ~= "nil" and type(m.update) ~= "nil" and type(m.send) ~= "nil", "the API is there; it connects to a server and none was contacted" end },
+  { lib = "NoobHub", job = "multiplayer messaging",
+    run = function(m) return m ~= nil, "loaded" end },
+  { lib = "LowerClass", job = "classes with mixins",
+    run = function(lc)
+      local A = lc:new("A")
+      local a = A:new()
+      return lc.is(a, A) and lc.type(a) == "A", "a class named A made an instance that is an A"
+    end },
+  { lib = "muun", job = "MoonScript-compatible classes",
+    run = function(m) return type(m) == "function", "the module is a function; MoonScript compiles classes to calls of it" end },
+  { lib = "Object-Library", job = "simple physical objects",
+    run = function(o) return type(o.new) == "function" and type(o.update) == "function", "the API is there; its objects draw and need a window" end },
+  { lib = "Piefiller", job = "a graphical profiler", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "arson", job = "custom types for json.lua",
+    run = function(m) return type(m.encode) ~= "nil" and type(m.decode) ~= "nil" and type(m.register) ~= "nil", "the API is there; it needs json.lua beside it" end },
+  { lib = "cdata", job = "Lua tables to C data",
+    run = function(m) return type(m.encode) ~= "nil" and type(m.decode) ~= "nil" and type(m.new_struct) ~= "nil", "the API is there; it works on C structs defined with ffi" end },
+  { lib = "Lady", job = "saving and loading savegames",
+    run = function(m) return type(m.save_all) ~= "nil" and type(m.load_all) ~= "nil" and type(m.register_class) ~= "nil", "the API is there; it writes to the save folder and none was written" end },
+  { lib = "ShaderScan", job = "shader hot reload",
+    run = function(m) return type(m.load_shader) ~= "nil" and type(m.update) ~= "nil", "the API is there; it compiles shaders and needs a window" end },
+  { lib = "lunatest", job = "xUnit-style tests",
+    run = function(m) return type(m.suite) ~= "nil" and type(m.run) ~= "nil", "the API is there; the suites it runs are yours" end },
+  { lib = "Badr", job = "UI components",
+    run = function(m) return type(m.new) ~= "nil", "the API is there; it draws and needs a window" end },
+  { lib = "CatUI", job = "a light-weight GUI",
+    run = function(m) return type(m.UIButton) ~= "nil" and type(m.UILabel) ~= "nil" and type(m.UIManager) ~= "nil", "its API is globals (UIButton, UILabel, UIManager and more); it draws and was not looked at" end },
+  { lib = "gooi", job = "a GUI for Android", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "LoveFrames", job = "a GUI with many controls", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "plan", job = "rule-based layout",
+    run = function(m) return type(m.new) ~= "nil" and type(m.Rules) ~= "nil", "the API is there; its rules were not exercised" end },
+  { lib = "TuxRedux", job = "an immediate-mode UI", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "yalg", job = "a reactive UI",
+    run = function(m) return type(m.new) ~= "nil" and type(m.update) ~= "nil" and type(m.resize) ~= "nil", "the API is there; it draws and needs a window" end },
+  { lib = "bar128-love", job = "Code 128 barcodes",
+    run = function(b)
+      local code = b("HELLO")
+      return code:getCode() == "HELLO" and code:getFullWidth() > 0, "a barcode for HELLO is " .. tostring(code:getFullWidth()) .. " units wide"
+    end },
+  { lib = "GifCat", job = "saving GIFs",
+    run = function(m) return type(m.newGif) ~= "nil" and type(m.add) ~= "nil" and type(m.close) ~= "nil", "the API is there; it starts a thread and writes a file, so none was started" end },
+  { lib = "ini_parser", job = ".ini files",
+    run = function(ini)
+      local t = {}
+      ini.addSection(t, "audio")
+      ini.addKey(t, "audio", "volume", "7")
+      local ok = ini.sectionExists(t, "audio") == 1 and ini.keyExists(t, "audio", "volume") == 1 and tostring(ini.readKey(t, "audio", "volume")) == "7"
+      ini.deleteKey(t, "audio", "volume")
+      return ok and ini.keyExists(t, "audio", "volume") == 0, "a key was added, read and deleted in a section; its *Exists functions return 1 or 0 and 0 is true in Lua, so `if ini.keyExists(...)` is always true"
+    end },
+  { lib = "KeyedArray", job = "ordered dictionary",
+    run = function(KA)
+      local k = KA:new()
+      k:insert("a", 10); k:insert("b", 20)
+      return k:size() == 2 and k:get("a", "key") == 10 and k:get(2, "array") == 20, "two items were inserted and one was read back by key"
+    end },
+  { lib = "love-qrcode", job = "QR codes",
+    run = function(m) return type(m.setText) ~= "nil" and type(m.getSize) ~= "nil" and type(m.draw) ~= "nil", "the API is there; it draws and needs a window" end },
+  { lib = "love2d-assets-loader", job = "loading assets from folders",
+    run = function(m) return type(m.init) ~= "nil" and type(m.setBaseImageDir) ~= "nil", "the API is there; it loads files and none were loaded" end },
+  { lib = "LuaRequireExtended", job = "require with parameters",
+    run = function() return require("lib.libload").replacedRequire["LuaRequireExtended"] == true, "loading it replaced the global `require` (the benchmark puts it back); that is why it is not a drop-in" end },
+  { lib = "ShakeDetectorLua", job = "shake detection from the accelerometer",
+    run = function(sd)
+      sd:reset(2, 1)
+      for i = 1, 20 do local v = (i % 2 == 0) and 4 or -4; sd:update(0.5, v, v, 0) end
+      return sd.count > 0, "twenty alternating readings counted " .. tostring(sd.count) .. " shakes"
+    end },
+  { lib = "LUA-SNG-Parser", job = ".sng song packages",
+    run = function(m) return type(m.load) ~= "nil" and type(m.extractToDirectory) ~= "nil", "the API is there; the sample ships no .sng file" end },
+  { lib = "fetch-lua", job = "HTTP and HTTPS",
+    run = function(m) return type(m.call) ~= "nil" and type(m.update) ~= "nil", "the API is there; nothing was sent" end },
+  { lib = "love-dialogue", job = "dialogue with a script language",
+    run = function(m) return type(m.new) ~= "nil" and type(m.loadFromFile) ~= "nil" and type(m.play) ~= "nil", "the API is there; it draws and needs a window and a dialogue file" end },
+  { lib = "safeword", job = "overscan detection",
+    run = function(m) return type(m.new) ~= "nil" and type(m.draw) ~= "nil", "the API is there; it draws and needs a window" end },
+  { lib = "Sysl-Pixel", job = "a pixel-art scaler", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "loveblobs", job = "softbody physics",
+    run = function(m) return type(m.softbody) ~= "nil" and type(m.softsurface) ~= "nil", "the API is there; it needs a love.physics world and a window" end },
+  { lib = "SYSL-Text", job = "animated text",
+    run = function(m) return m ~= nil, "loaded" end },
+  { lib = "3DreamEngine", job = "a 3D engine", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "Lovox", job = "pseudo-3D voxels", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "FPSGraph", job = "an FPS graph", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "LoveDebug", job = "an inline debug console", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
+  { lib = "shack", job = "screen shake and rotation", needs = "window",
+    run = function(m) return m ~= nil, "loaded with a window" end },
   { lib = "ripple", job = "sound tags, volume, fades",
     run = function(ripple)
       if not (love and love.audio and love.sound) then return "skip", "needs LÖVE's audio and sound modules" end

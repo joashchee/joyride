@@ -1,0 +1,142 @@
+local libPath = (...):match("(.+)%.[^%.]+$") .. "."
+
+local tux = require (libPath .. "tux")
+
+local loaded = false
+
+function tux.callbacks.load ()
+    if loaded == false then
+        loaded = true
+
+        -- Load and register the default UI components
+        tux.utils.registerComponent (require (libPath .. "components.button"))
+        tux.utils.registerComponent (require (libPath .. "components.label"))
+        tux.utils.registerComponent (require (libPath .. "components.noPressZone"))
+        tux.utils.registerComponent (require (libPath .. "components.checkbox"))
+        tux.utils.registerComponent (require (libPath .. "components.toggle"))
+        tux.utils.registerComponent (require (libPath .. "components.slider"))
+        tux.utils.registerComponent (require (libPath .. "components.singleInput"))
+        tux.utils.registerComponent (require (libPath .. "components.debugBox"))
+    else
+        error ("Tux UI library has already been loaded. Make sure to only call tux.callbacks.load() once.")
+    end
+end
+
+-- This should run BEFORE you show any UI items
+function tux.callbacks.update (dt, mx, my, isDown)
+    assert (loaded == true, "Tux UI library has not been loaded yet. Make sure to call tux.callbacks.load() before calling tux.callbacks.update().")
+
+    if #tux.layoutData.gridStack ~= 0 then
+        local topmostItem = tux.layoutData.gridStack[#tux.layoutData.gridStack]
+
+        if tux.errorForUnclearedStacks == true then
+            error ("Grid stack overflow. Found grid item started at (" .. topmostItem.startx .. ", " .. topmostItem.starty.. "). Make sure you're properly popping values from the stack.")
+        elseif tux.debugMode == true then
+            print ("Grid stack overflow. Found grid item started at (" .. topmostItem.startx .. ", " .. topmostItem.starty.. "). Make sure you're properly popping values from the stack.")
+        end
+    end
+
+    if #tux.layoutData.originStack ~= 1 then
+        local topmostItem = tux.layoutData.originStack[#tux.layoutData.originStack]
+
+        if tux.errorForUnclearedStacks == true then
+            error ("Origin stack overflow. Found origin item started at (" .. topmostItem.x .. ", " .. topmostItem.y.. "). Make sure you're properly popping values from the stack.")
+        elseif tux.debugMode == true then
+            print ("Origin stack overflow. Found origin item started at (" .. topmostItem.x .. ", " .. topmostItem.y.. "). Make sure you're properly popping values from the stack.")
+        end
+    end
+
+    -- Check if font cache should be cleared
+    if tux.fontCacheSize > tux.maxFontsCached then
+        tux.utils.clearCachedFonts ()
+    end
+    
+    tux.cursor.wasDown = tux.cursor.isDown
+    tux.cursor.lastState = tux.cursor.currentState
+    tux.cursor.lastActualState = tux.cursor.currentActualState
+    tux.cursor.lastX = tux.cursor.x
+    tux.cursor.lastY = tux.cursor.y
+    tux.cursor.lastLockedX = tux.cursor.lockedX
+    tux.cursor.lastLockedY = tux.cursor.lockedY
+
+    if isDown == nil then
+        tux.cursor.isDown = love.mouse.isDown (1)
+    else
+        tux.cursor.isDown = isDown
+    end
+
+    if mx == nil or my == nil then
+        tux.cursor.x, tux.cursor.y = love.mouse.getPosition ()
+    else
+        tux.cursor.x, tux.cursor.y = mx, my
+    end
+
+    -- Only update locked cursor position if the mouse isn't held down
+    if tux.cursor.isDown == false then
+        tux.cursor.lockedX = tux.cursor.x
+        tux.cursor.lockedY = tux.cursor.y
+    end
+
+    -- Reset flags
+    tux.cursor.currentState = "normal"
+    tux.cursor.currentActualState = "normal"
+    tux.tooltip.text = ""
+    tux.tooltip.align = "auto"
+end
+
+function tux.callbacks.draw ()
+    local origFont = love.graphics.getFont ()
+
+    -- Render UI items
+    local queue = tux.renderQueue
+    for i = #queue, 1, -1 do
+        local opt = queue[i].opt
+
+        -- Run draw effects
+        if opt.effects ~= nil then
+            for i = 1, #opt.effects do
+                local effect = opt.effects[i]
+
+                -- Effects can either be ad hoc functions or registered effect IDs
+                if tux.effects[effect] ~= nil and tux.effects[effect].draw ~= nil then
+                    tux.effects[effect].draw (tux, opt)
+                elseif effect.draw ~= nil then
+                    effect.draw (tux, opt)
+                end
+            end
+        end
+
+        queue[i].draw (opt)
+        queue[i] = nil
+
+        -- Run post draw effects
+        if opt.effects ~= nil then
+            for i = 1, #opt.effects do
+                local effect = opt.effects[i]
+
+                -- Effects can either be ad hoc functions or registered effect IDs
+                if tux.effects[effect] ~= nil and tux.effects[effect].postDraw ~= nil then
+                    tux.effects[effect].postDraw (tux, opt)
+                elseif effect.postDraw ~= nil then
+                    effect.postDraw (tux, opt)
+                end
+            end
+        end
+    end
+
+    -- Render tooltip
+    tux.core.tooltip ()
+
+    love.graphics.setFont (origFont)
+
+    tux.pressedKey = nil
+    tux.specialPressedKey = nil
+end
+
+function tux.callbacks.textinput (text)
+    tux.pressedKey = text
+end
+
+function tux.callbacks.keypressed (key, scancode, isrepeat)
+    tux.specialPressedKey = key
+end

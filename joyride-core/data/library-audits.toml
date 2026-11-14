@@ -837,3 +837,1659 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 1
 reviewed = "scanned and read: denver (MIT; leaks global sample, math.pow fine on LuaJIT), splashy (MIT; reads the window size at require), LoverNet (zlib; bundled ISC bitser copy with ffi and a love.filesystem.write for its own debug dumps; opens enet host; .xcf logo is art; none run), Inky (MIT; clean, no widgets), Helium (BSD-2-Clause; loader runs loadstring on a file read through love.filesystem, own call only; canvases need a window; required by path libs.Helium); no GPL, AGPL or LGPL file in any tree; luis refused (MIT plus an ML-training ban); cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "anim9"
+rev = "8290f7ed94345c74223ec5149fc094b6ff1f05e5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "brinevector3D"
+rev = "118bef909ad0ab95066b895315aed189c183bd48"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "bump-3dpd"
+rev = "39c99f153b1830225ee43d83ba0c912b64683b8b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "iqe"
+rev = "febc5134adc131e2d802374815ee830a5d11fea0"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 3
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "iqm-exm"
+rev = "b88492de0f121cdb1877ced3484657c248c3ad93"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 4
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Menori"
+rev = "2374dc126be2f3816c2e282c3ccf5d78f649f3bd"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 4
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "3DreamEngine"
+rev = "bdaa095a38be91107647966851eb3dd5379e0e61"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 21
+med = 10
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Lovox"
+rev = "73678fc76b01a0e182db7983d05c36c2827acaca"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "astar"
+rev = "068471746b746f0a62c421d13311c5206ec4080b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "andross"
+rev = "51af527669cc3a70f4f965a8e75a91d3a1141b37"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "love-ase"
+rev = "198e6a0037824310bd36a8147c70ad4695f000c5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "chiro"
+rev = "55e466e6b6a8ae42070e29b4f3b57d02019ede1c"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "lovanim"
+rev = "bbda141cfe89d1ae2dabb9b86535346bc453ab01"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "lump"
+rev = "f98916eb58ddeb63528498047357dc54c6c0483b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "skeletor"
+rev = "00ca889b567f1d814126ec0ec60f571c02aa29bb"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Walt"
+rev = "8c3b46de0885fe4350bde027f5f45cfc0ffae783"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Editgrid"
+rev = "bfce2c425775547685175fba3360863a3346a407"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "parallax"
+rev = "897ed04cc14f24ba7f4019415833b4e5fc7092e9"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "roomshift"
+rev = "8d5b20be9fc528249871e25b69ff90b7f9c0fbba"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "debugGraph"
+rev = "a5ff0e64dad9e4e6275c490358c7fee05161bc26"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "FPSGraph"
+rev = "0a911d9693b8527a503684279b2f3d086a115e8e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LoveDebug"
+rev = "b11f5f1ca1e3a0b15d74c483011a74e60c35dc18"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "loveprofiler"
+rev = "bbe0900d18492bfc9a6a585da12e10d9bff5afa5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Artal"
+rev = "0a8af8c9a376abc992bbea567b6bba8dc5480fbe"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "deep"
+rev = "99d4ca9fbf779a4e549e782893ac6f844a456dd4"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "draft"
+rev = "efcede2e865b6fd1bdf56432d6f41dd09ce63a8f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "grove"
+rev = "a322df9a2bf2302fbeb2d96bdc414afafd9269cb"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "lovector"
+rev = "869a1e7a8dbd1d443248635ca1fdfc4029f40beb"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Runtime-TextureAtlas"
+rev = "f992abe9fe3afe2a06fdcc8d433e6e338ef0440e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "sunscreen"
+rev = "e7fc1722dc33f30676a4b94c7b53d503b5806793"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "turtle.lua"
+rev = "1ed9dad7d5294dbdb625ed6857fc12ef6ba9ab9e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "evolved.lua"
+rev = "f8eb1f4cadc3192daf09b0b6b380b7d66fef06d5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 5
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "astray"
+rev = "1a557a8281a85d25767b324dc4a510bb57947609"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "GameStateManager"
+rev = "036e2a6ec0f8a45bae469eb75f896b8bdd99a282"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "love-state-switcher"
+rev = "55594f9eaca1a5a7576a1794c8b90248d4ce1b00"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "lovely-windows"
+rev = "41654061ae78864c565128750559cbdda61db95f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "lue"
+rev = "b54bbb1df7c2a2670fcca024698ac805381ccf33"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "narrator"
+rev = "a3abcab4e2c37d68a0457e750196ef1a1f57af3d"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 5
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "reflowprint"
+rev = "1bc510618697c278ebd0ce13c14a07bbbae0044e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "rotLove"
+rev = "84a0a7d967cbd819a0fc2d17c76f82172cb01fb9"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "SceneMan"
+rev = "e75aa0474eee7cc295853ce8826ac22659679b81"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "scenery"
+rev = "f53eb633ec1976e4339729be7e3f929d2df80525"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "screenmanager"
+rev = "6bc2f537a9aba88910ef18f71a5246ed6df2a8fd"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "shack"
+rev = "01504489f1471619160c4ed31d35edb46476ff31"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "shard"
+rev = "ec6f3969882ee884b246f3bb5e20aa04c5bec3cf"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Kazari"
+rev = "c46ca2ffe037ac48bf7bbd6c466fe10fa57f8a2f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "love-microphone"
+rev = "9016116299ccd5404ecc6025c49e72004843ec47"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 7
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LoveKeys"
+rev = "79ffbe3779696e119375d23358330277299b85a9"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 5
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "swipe"
+rev = "97f0a606cbfb64d9cb4f3fdd2f7a8b8359f6645a"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "bitumbra"
+rev = "176e1ed04d4a173b5424383e0d60f4fd65647ddd"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Light"
+rev = "85b453c92230451d4437f82be1cee21e7b038c8e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Shadows"
+rev = "bc4cd567d5558e67fe21a9745f6a65f9fb4b7be4"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 3
+med = 12
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "simple-love-lights"
+rev = "f23b9d81296b48d3658a9db262c845417c7138ad"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "brinevector"
+rev = "10177568d64d59514edf4d8bf1bc88ad544b12fe"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "delaunay"
+rev = "a99af3c18dd74b142153067213a03db960bf61ec"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 3
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "loaded_dice"
+rev = "7c6225863d3715e49cc9d4a5294826d1a67464df"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "polysec"
+rev = "40b276c29ec480539f9b79756f8a61ffc1c491ef"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "vector.lua"
+rev = "bebf8813d5a41f0b250d416da387095a8fae2160"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "love2d-lua-websocket"
+rev = "5a26fb151057b083ea705bee32b71798c7126e5a"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "NoobHub"
+rev = "20eea162b36ddd8769ce4e8f525e1dad14b0d939"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 3
+med = 4
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LowerClass"
+rev = "37df2779fddb6b36d3470fc3a796101352c3ed7d"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "muun"
+rev = "75fec4a56af282805db41afb0b96f539768bbabd"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Object-Library"
+rev = "75124aa8e77b344999c22af59fdd07ffb8caf156"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Piefiller"
+rev = "00d7aead71bb9c20183d005aeca43d48f6f769cc"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "arson"
+rev = "175a6c2a1d7db505342d3371bb106a2404b36d41"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "cdata"
+rev = "a05da803f659c57e9ce80045e358ada1897fddc0"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Lady"
+rev = "58eb59c101c42fa5beb064a3ae3bde3ec0da7ba2"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 4
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "ShaderScan"
+rev = "1c41d9efd9bb8321853d18d8170612672926353f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "lunatest"
+rev = "639bd6c7271e113da5880af92d58dba6f70be4e2"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Badr"
+rev = "e0ce9118f140532a13ccfe4d7522ff78305ca0f7"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "CatUI"
+rev = "57f1648e0853e850f431da64bac1ccc33e5509be"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "gooi"
+rev = "cf64d0988ca1e7cd51d15810995ce3d449f134ac"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LoveFrames"
+rev = "3a9d87ff57c8c3ffdde87ab14133ba9e39887149"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 6
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LOVELi"
+rev = "fac5bea7fa9bec988e8f71e3e588100ec7bd5917"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 3
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "plan"
+rev = "2af607c2c0d80e7c30778a552b1ac8ab1a451cea"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "TuxRedux"
+rev = "9ee67fc545153ab2a4238f9a6ba90d2c3f3c36ee"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "yalg"
+rev = "86885b7f2308f1666351f7846aca508a1a823150"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "bar128-love"
+rev = "1ddd7a3ac840bfe4834a0293c7eca4e1691e88c1"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "GifCat"
+rev = "9422999eccde14a601736421053d30c65f118bf3"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "ini_parser"
+rev = "361b679c12bc0ab89d3807fc2a5d900a6ac0a630"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "KeyedArray"
+rev = "f81428e46410264a58d5056914a030a698018080"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "love-qrcode"
+rev = "ba3d86d29eb0457957313719e1575a36f92de8d5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "love2d-assets-loader"
+rev = "61e67c2611265ac1f92a5697bb67051d71713634"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LuaRequireExtended"
+rev = "b4c128743e8db31d850d59a57290160c96f35dee"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "ShakeDetectorLua"
+rev = "7ccaa7fd5385cf9417dba96e0856844993e31db2"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LUA-SNG-Parser"
+rev = "a624a50430332dfc0962220e3fe771e16ede79d9"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 3
+med = 9
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "fetch-lua"
+rev = "3743005717ea8a7c7bd253333b1bc54078eaf073"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 6
+med = 5
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "love-dialogue"
+rev = "04c898aa3717994817daceed3f092aa6d3b00041"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LikeliHUD"
+rev = "a6ff5f6a228f509a44d65bb013c1fa188de5919b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "safeword"
+rev = "b6cd519d0bfbddee2fac63234a23ddc322d2dae1"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Sysl-Pixel"
+rev = "4ce5746dc9b9ee6adeb7de895e222fc527777101"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "loveblobs"
+rev = "e4fad23ddb11091ec5e273c6d6a3901c1c2f18ae"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "SYSL-Text"
+rev = "6c9b95047cb8650344e90224cd56bd00c5132d97"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "awesome-love2d batch (93 libraries): scanned all, read every HIGH and MED finding. ffi only for speed or system bindings (brinevector, brinevector3D, iqm-exm, cdata, Artal, 3DreamEngine mesh data, love-microphone OpenAL, Menori's ffi alias, fetch-lua's curl and wininet); os.execute only a mkdir -p built from the output path (LUA-SNG-Parser) and in test or builder scripts that are never run (narrator test/run.lua, yalg builder.lua); loadstring and load only on the library's own generated code, the developer console (LoveDebug), restricted-environment saves and dialogue (Lady, love-dialogue); binaries and symlinks are demo art, models and examples inside the repositories (ecs-lua and colorchanger refused: minified code); no GPL, AGPL or LGPL file in any kept tree; licences read from README or rockspec for Menori, LikeliHUD, love-dialogue, NoobHub; cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "anim9"
+rev = "8290f7ed94345c74223ec5149fc094b6ff1f05e5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "brinevector3D"
+rev = "118bef909ad0ab95066b895315aed189c183bd48"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "bump-3dpd"
+rev = "39c99f153b1830225ee43d83ba0c912b64683b8b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "iqe"
+rev = "febc5134adc131e2d802374815ee830a5d11fea0"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 3
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "iqm-exm"
+rev = "b88492de0f121cdb1877ced3484657c248c3ad93"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 4
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Menori"
+rev = "2374dc126be2f3816c2e282c3ccf5d78f649f3bd"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 4
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "3DreamEngine"
+rev = "bdaa095a38be91107647966851eb3dd5379e0e61"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 21
+med = 10
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Lovox"
+rev = "73678fc76b01a0e182db7983d05c36c2827acaca"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "astar"
+rev = "068471746b746f0a62c421d13311c5206ec4080b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "andross"
+rev = "51af527669cc3a70f4f965a8e75a91d3a1141b37"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "love-ase"
+rev = "198e6a0037824310bd36a8147c70ad4695f000c5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "chiro"
+rev = "55e466e6b6a8ae42070e29b4f3b57d02019ede1c"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "lovanim"
+rev = "bbda141cfe89d1ae2dabb9b86535346bc453ab01"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "lump"
+rev = "f98916eb58ddeb63528498047357dc54c6c0483b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "skeletor"
+rev = "00ca889b567f1d814126ec0ec60f571c02aa29bb"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Walt"
+rev = "8c3b46de0885fe4350bde027f5f45cfc0ffae783"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Editgrid"
+rev = "bfce2c425775547685175fba3360863a3346a407"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "parallax"
+rev = "897ed04cc14f24ba7f4019415833b4e5fc7092e9"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "roomshift"
+rev = "8d5b20be9fc528249871e25b69ff90b7f9c0fbba"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "debugGraph"
+rev = "a5ff0e64dad9e4e6275c490358c7fee05161bc26"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "FPSGraph"
+rev = "0a911d9693b8527a503684279b2f3d086a115e8e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "LoveDebug"
+rev = "b11f5f1ca1e3a0b15d74c483011a74e60c35dc18"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "loveprofiler"
+rev = "bbe0900d18492bfc9a6a585da12e10d9bff5afa5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Artal"
+rev = "0a8af8c9a376abc992bbea567b6bba8dc5480fbe"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "deep"
+rev = "99d4ca9fbf779a4e549e782893ac6f844a456dd4"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "draft"
+rev = "efcede2e865b6fd1bdf56432d6f41dd09ce63a8f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "grove"
+rev = "a322df9a2bf2302fbeb2d96bdc414afafd9269cb"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "lovector"
+rev = "869a1e7a8dbd1d443248635ca1fdfc4029f40beb"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Runtime-TextureAtlas"
+rev = "f992abe9fe3afe2a06fdcc8d433e6e338ef0440e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "sunscreen"
+rev = "e7fc1722dc33f30676a4b94c7b53d503b5806793"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "turtle"
+rev = "1ed9dad7d5294dbdb625ed6857fc12ef6ba9ab9e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "evolved"
+rev = "f8eb1f4cadc3192daf09b0b6b380b7d66fef06d5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 5
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "astray"
+rev = "1a557a8281a85d25767b324dc4a510bb57947609"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "GameStateManager"
+rev = "036e2a6ec0f8a45bae469eb75f896b8bdd99a282"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "love-state-switcher"
+rev = "55594f9eaca1a5a7576a1794c8b90248d4ce1b00"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "lovely-windows"
+rev = "41654061ae78864c565128750559cbdda61db95f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "lue"
+rev = "b54bbb1df7c2a2670fcca024698ac805381ccf33"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "narrator"
+rev = "a3abcab4e2c37d68a0457e750196ef1a1f57af3d"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 5
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "reflowprint"
+rev = "1bc510618697c278ebd0ce13c14a07bbbae0044e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "rotLove"
+rev = "84a0a7d967cbd819a0fc2d17c76f82172cb01fb9"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "SceneMan"
+rev = "e75aa0474eee7cc295853ce8826ac22659679b81"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "scenery"
+rev = "f53eb633ec1976e4339729be7e3f929d2df80525"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "screenmanager"
+rev = "6bc2f537a9aba88910ef18f71a5246ed6df2a8fd"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "shack"
+rev = "01504489f1471619160c4ed31d35edb46476ff31"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "shard"
+rev = "ec6f3969882ee884b246f3bb5e20aa04c5bec3cf"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Kazari"
+rev = "c46ca2ffe037ac48bf7bbd6c466fe10fa57f8a2f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "love-microphone"
+rev = "9016116299ccd5404ecc6025c49e72004843ec47"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 7
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "LoveKeys"
+rev = "79ffbe3779696e119375d23358330277299b85a9"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 5
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "swipe"
+rev = "97f0a606cbfb64d9cb4f3fdd2f7a8b8359f6645a"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "bitumbra"
+rev = "176e1ed04d4a173b5424383e0d60f4fd65647ddd"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Light"
+rev = "85b453c92230451d4437f82be1cee21e7b038c8e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Shadows"
+rev = "bc4cd567d5558e67fe21a9745f6a65f9fb4b7be4"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 3
+med = 12
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "simple-love-lights"
+rev = "f23b9d81296b48d3658a9db262c845417c7138ad"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "brinevector"
+rev = "10177568d64d59514edf4d8bf1bc88ad544b12fe"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "delaunay"
+rev = "a99af3c18dd74b142153067213a03db960bf61ec"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 3
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "loaded_dice"
+rev = "7c6225863d3715e49cc9d4a5294826d1a67464df"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "polysec"
+rev = "40b276c29ec480539f9b79756f8a61ffc1c491ef"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "pvector"
+rev = "bebf8813d5a41f0b250d416da387095a8fae2160"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "love2d-lua-websocket"
+rev = "5a26fb151057b083ea705bee32b71798c7126e5a"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "NoobHub"
+rev = "20eea162b36ddd8769ce4e8f525e1dad14b0d939"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 3
+med = 4
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "LowerClass"
+rev = "37df2779fddb6b36d3470fc3a796101352c3ed7d"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "muun"
+rev = "75fec4a56af282805db41afb0b96f539768bbabd"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Object-Library"
+rev = "75124aa8e77b344999c22af59fdd07ffb8caf156"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Piefiller"
+rev = "00d7aead71bb9c20183d005aeca43d48f6f769cc"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "arson"
+rev = "175a6c2a1d7db505342d3371bb106a2404b36d41"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "cdata"
+rev = "a05da803f659c57e9ce80045e358ada1897fddc0"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Lady"
+rev = "58eb59c101c42fa5beb064a3ae3bde3ec0da7ba2"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 4
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "ShaderScan"
+rev = "1c41d9efd9bb8321853d18d8170612672926353f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "lunatest"
+rev = "639bd6c7271e113da5880af92d58dba6f70be4e2"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Badr"
+rev = "e0ce9118f140532a13ccfe4d7522ff78305ca0f7"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "CatUI"
+rev = "57f1648e0853e850f431da64bac1ccc33e5509be"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "gooi"
+rev = "cf64d0988ca1e7cd51d15810995ce3d449f134ac"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "LoveFrames"
+rev = "3a9d87ff57c8c3ffdde87ab14133ba9e39887149"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 6
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "plan"
+rev = "2af607c2c0d80e7c30778a552b1ac8ab1a451cea"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "TuxRedux"
+rev = "9ee67fc545153ab2a4238f9a6ba90d2c3f3c36ee"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "yalg"
+rev = "86885b7f2308f1666351f7846aca508a1a823150"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 1
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "bar128-love"
+rev = "1ddd7a3ac840bfe4834a0293c7eca4e1691e88c1"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "GifCat"
+rev = "9422999eccde14a601736421053d30c65f118bf3"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "ini_parser"
+rev = "361b679c12bc0ab89d3807fc2a5d900a6ac0a630"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "KeyedArray"
+rev = "f81428e46410264a58d5056914a030a698018080"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "love-qrcode"
+rev = "ba3d86d29eb0457957313719e1575a36f92de8d5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "love2d-assets-loader"
+rev = "61e67c2611265ac1f92a5697bb67051d71713634"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "LuaRequireExtended"
+rev = "b4c128743e8db31d850d59a57290160c96f35dee"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "ShakeDetectorLua"
+rev = "7ccaa7fd5385cf9417dba96e0856844993e31db2"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "LUA-SNG-Parser"
+rev = "a624a50430332dfc0962220e3fe771e16ede79d9"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 3
+med = 9
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "fetch-lua"
+rev = "3743005717ea8a7c7bd253333b1bc54078eaf073"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 6
+med = 5
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "love-dialogue"
+rev = "04c898aa3717994817daceed3f092aa6d3b00041"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "safeword"
+rev = "b6cd519d0bfbddee2fac63234a23ddc322d2dae1"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Sysl-Pixel"
+rev = "4ce5746dc9b9ee6adeb7de895e222fc527777101"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 1
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "loveblobs"
+rev = "e4fad23ddb11091ec5e273c6d6a3901c1c2f18ae"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "SYSL-Text"
+rev = "6c9b95047cb8650344e90224cd56bd00c5132d97"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 2
+reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"

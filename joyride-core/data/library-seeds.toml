@@ -655,3 +655,586 @@ git = "https://github.com/qeffects/helium"
 module = "helium"
 caution = "Require it as `libs.Helium` (its path from the game's folder): the repository root is the library and it requires its own files by the name it was loaded with, so `require \"helium\"` cannot find them. Needs a window (it makes canvases and reads the screen size when it loads). `helium.loader` runs a file it reads with `loadstring`: point it only at files you ship. A global `HELIUM_CONFIG` changes its settings, and its `PURE_G` option makes a global `HeliumLoader`."
 summary = "A retained UI framework with hooks, layouts and a scene graph."
+
+[[library]]
+name = "anim9"
+git = "https://github.com/excessive/anim9"
+module = "anim9"
+caution = "Needs cpml (also in the list): add both."
+summary = "3D skeletal animation for IQM and IQE models."
+
+[[library]]
+name = "brinevector3D"
+git = "https://github.com/flamendless/brinevector3D"
+module = "brinevector3D"
+caution = "Uses LuaJIT's ffi for speed and falls back to plain tables where ffi is missing."
+summary = "3D vectors with LuaJIT ffi speed (falls back to tables)."
+
+[[library]]
+name = "bump-3dpd"
+git = "https://github.com/oniietzschan/bump-3dpd"
+module = "bump-3dpd"
+caution = "The repository holds an .odg diagram: delete it before shipping."
+summary = "3D collision detection for axis-aligned boxes (bump.lua in three dimensions)."
+
+[[library]]
+name = "iqe"
+git = "https://github.com/excessive/iqe"
+module = "iqe"
+caution = "Its exporter writes files through love.filesystem, only when you call it."
+summary = "Loads Inter-Quake Export (text) 3D models."
+
+[[library]]
+name = "iqm-exm"
+git = "https://github.com/excessive/iqm-exm"
+module = "iqm-exm"
+caution = "Reads binary models with LuaJIT's ffi."
+summary = "Loads Inter-Quake Model (binary) 3D models."
+
+[[library]]
+name = "Menori"
+git = "https://github.com/rozenmad/Menori"
+module = "menori"
+licence = "MIT"   # README states MIT under License; no licence file
+caution = "The examples folder holds glTF models of several MB: delete it before shipping. Licence: its README says MIT (no licence file)."
+summary = "3D rendering: scenes, cameras, glTF models, materials and lights."
+
+[[library]]
+name = "3DreamEngine"
+git = "https://github.com/3dreamengine/3DreamEngine"
+module = "3DreamEngine"
+display = true   # it uses love.graphics while it loads
+caution = "A large engine (416 Lua files, about 14 MB with examples): delete `examples` before shipping. It writes screenshots and a shaderErrored.glsl through love.filesystem, opens the screenshot folder in the file manager, and uses ffi for mesh data."
+summary = "A 3D engine with PBR materials, lights, shadows, animations and many model formats."
+
+[[library]]
+name = "Lovox"
+git = "https://github.com/Keyslam/Lovox"
+module = "lovox"
+caution = "The repository holds sample .vox models and demo art in its root: delete them before shipping."
+summary = "Pseudo-3D: draw voxel models as stacks of slices."
+
+[[library]]
+name = "astar"
+git = "https://github.com/xiejiangzhi/astar"
+module = "astar"
+summary = "A* for any map (grid, points, meshes, infinite) with path costs."
+
+[[library]]
+name = "andross"
+git = "https://github.com/pfirsich/andross"
+module = "andross"
+caution = "The repository holds a 2.8 MB .blend and demo media: delete them before shipping."
+summary = "2D skeletal animation (DragonBones) with a LÖVE backend."
+
+[[library]]
+name = "love-ase"
+git = "https://github.com/elloramir/love-ase"
+module = "love-ase"
+summary = "Loads Aseprite (.ase) files directly, without JSON."
+
+[[library]]
+name = "chiro"
+git = "https://github.com/bjornbytes/chiro"
+module = "chiro"
+summary = "A wrapper around Spine skeletal animation."
+
+[[library]]
+name = "lovanim"
+git = "https://github.com/patrixr/love-animation"
+module = "animation"
+summary = "A minimal stateful animation library."
+
+[[library]]
+name = "lump"
+git = "https://github.com/sixFingers/lump"
+module = "lump"
+summary = "Plays Adobe Flash animations."
+
+[[library]]
+name = "skeletor"
+git = "https://github.com/pelevesque/skeletor"
+module = "skeletor.skeletor"
+summary = "2D skeletal animation."
+
+[[library]]
+name = "Walt"
+git = "https://github.com/davisdude/Walt"
+module = "animator"
+caution = "One file in its examples folder is a symbolic link to the library file."
+summary = "An animation library with frame lists and keys."
+
+[[library]]
+name = "Editgrid"
+git = "https://github.com/bakpakin/Editgrid"
+module = "editgrid"
+summary = "A scaling grid that works with gamera and hump cameras."
+
+[[library]]
+name = "parallax"
+git = "https://github.com/idbrii/love-parallax"
+module = "parallax"
+summary = "Parallax scrolling for any camera system, with tiled backgrounds."
+
+[[library]]
+name = "roomshift"
+git = "https://github.com/mshiplet/roomshift"
+module = "roomshift"
+summary = "A room-based camera with smooth transitions."
+
+[[library]]
+name = "debugGraph"
+git = "https://github.com/Mechazawa/Love-Debug-Graph"
+module = "debugGraph"
+summary = "A small object-oriented FPS and value graph."
+
+[[library]]
+name = "FPSGraph"
+git = "https://github.com/icrawler/FPSGraph"
+module = "FPSGraph"
+summary = "A small FPS graph."
+
+[[library]]
+name = "LoveDebug"
+git = "https://github.com/flamendless/lovedebug"
+module = "lovedebug"
+caution = "Its console runs what you type with `loadstring`: it is a developer tool, so turn it off in a release."
+summary = "An inline console-like debugger."
+
+[[library]]
+name = "loveprofiler"
+git = "https://github.com/dknight/loveprofiler"
+module = "loveprofiler"
+caution = "Appends its log with `io.open` to the path in its config, not through love.filesystem: set the path to a folder you can write."
+summary = "A very simple logger and profiler."
+
+[[library]]
+name = "Artal"
+git = "https://github.com/EvineDev/Artal"
+module = "artal"
+caution = "Uses ffi for byte work; the repository holds a sample .psd (77 KB): delete it before shipping."
+summary = "Parses Photoshop (.psd) files."
+
+[[library]]
+name = "deep"
+git = "https://github.com/Nikaoto/deep"
+module = "deep"
+summary = "Adds a Z axis: queue draw calls and run them in depth order."
+
+[[library]]
+name = "draft"
+git = "https://github.com/pelevesque/draft"
+module = "draft"
+summary = "Draws complex shapes (polygons, stars, arcs and more)."
+
+[[library]]
+name = "grove"
+git = "https://github.com/FloatingBanana/Grove"
+module = "grove.draworder"
+summary = "A collection of small modules: draw order, colours, animation, resolution, shader chains."
+
+[[library]]
+name = "lovector"
+git = "https://github.com/nasso/lovector"
+module = "lovector"
+caution = "It compiles Lua source that it generates itself from vector paths (loadstring), never from your files."
+summary = "Vector graphics: paths, strokes, paints and SVG."
+
+[[library]]
+name = "Runtime-TextureAtlas"
+git = "https://github.com/EngineerSmith/Runtime-TextureAtlas"
+module = "Runtime-TextureAtlas"
+summary = "Packs images into a texture atlas at run time."
+
+[[library]]
+name = "sunscreen"
+git = "https://github.com/challacade/sunscreen"
+module = "sunscreen"
+summary = "A small virtual-resolution helper."
+
+[[library]]
+name = "turtle"
+git = "https://github.com/arthurealike/turtle.lua"
+module = "turtle.turtle"
+paths = "turtle"   # turtle/turtle.lua requires its sibling as the bare name `vector`
+summary = "Turtle graphics."
+
+[[library]]
+name = "evolved"
+git = "https://github.com/BlackMATov/evolved.lua"
+module = "evolved"
+summary = "An entity component system with chunks, queries and observers."
+
+[[library]]
+name = "astray"
+git = "https://github.com/SiENcE/astray"
+module = "astray"
+caution = "Bundles middleclass (MIT) beside its own zlib code."
+summary = "Maze, room and dungeon generation."
+
+[[library]]
+name = "GameStateManager"
+git = "https://github.com/GwyrddGlas/GameStateManager"
+module = "gamestateManager"
+summary = "A lightweight game state manager."
+
+[[library]]
+name = "love-state-switcher"
+git = "https://github.com/nekromoff/love-state-switcher"
+module = "stateswitcher"
+summary = "A state switcher class."
+
+[[library]]
+name = "lovely-windows"
+git = "https://github.com/flamendless/lovely-windows"
+module = "lovely-windows"
+summary = "Virtual windows inside the game screen."
+
+[[library]]
+name = "lue"
+git = "https://github.com/Ulydev/lue"
+module = "lue"
+summary = "Hue colour effects."
+
+[[library]]
+name = "narrator"
+git = "https://github.com/astrochili/narrator"
+module = "narrator.narrator"
+caution = "Parsing Ink text (`parse_content`, `parse_file`) needs lpeg, which LÖVE does not include: use books parsed ahead of time (it can store a parsed book as a Lua file)."
+summary = "An Ink narrative scripting language parser and runtime."
+
+[[library]]
+name = "reflowprint"
+git = "https://github.com/josefnpat/reflowprint"
+module = "reflowprint"
+summary = "Text aligned and shown one character at a time."
+
+[[library]]
+name = "rotLove"
+git = "https://github.com/paulofmandown/rotLove"
+module = "rot"
+paths = "src"
+summary = "A roguelike toolkit: maps, FOV, pathfinding, scheduling and noise (a port of rot.js)."
+
+[[library]]
+name = "SceneMan"
+git = "https://github.com/KINGTUT10101/SceneMan"
+module = "sceneMan"
+summary = "A scene manager that keeps a stack, so several scenes can run at once."
+
+[[library]]
+name = "scenery"
+git = "https://github.com/paltze/scenery"
+module = "scenery"
+summary = "A dead simple scene and state manager."
+
+[[library]]
+name = "screenmanager"
+git = "https://github.com/rm-code/screenmanager"
+module = "ScreenManager"
+summary = "Screens and states for LÖVE."
+
+[[library]]
+name = "shack"
+git = "https://github.com/Ulydev/shack"
+module = "shack"
+summary = "Screen shake, rotation and other screen effects."
+
+[[library]]
+name = "shard"
+git = "https://github.com/MineGame159/shard"
+module = "shard.base"
+caution = "`shard.locale` loads a locale file with `dofile` (a locale file is Lua): ship only your own."
+summary = "A collection of small modules: signals, timers, locale, spritesheets."
+
+[[library]]
+name = "Kazari"
+git = "https://github.com/MikuAuahDark/Kazari"
+module = "Kazari"
+summary = "Multitouch gestures: pan, zoom, rotate, tap."
+
+[[library]]
+name = "love-microphone"
+git = "https://github.com/LPGhatguy/love-microphone"
+module = "love-microphone"
+caution = "Calls OpenAL by ffi (the system library on Windows); a microphone needs the operating system's permission on mobile and on macOS."
+summary = "Microphone input as queueable sources."
+
+[[library]]
+name = "LoveKeys"
+git = "https://github.com/SpaceCat-Chan/LoveKeys"
+module = "LoveKeys"
+summary = "Input handling that remembers key state for you."
+
+[[library]]
+name = "swipe"
+git = "https://github.com/zombrodo/swipe"
+module = "swipe"
+summary = "A radial keyboard."
+
+[[library]]
+name = "bitumbra"
+git = "https://github.com/a13X-B/bitumbra"
+module = "bitumbra"
+display = true   # it uses love.graphics while it loads
+summary = "GPU-accelerated 2D shadows for many lights."
+
+[[library]]
+name = "Light"
+git = "https://github.com/xiejiangzhi/light"
+module = "light"
+display = true   # it uses love.graphics while it loads
+summary = "A simple dynamic light."
+
+[[library]]
+name = "simple-love-lights"
+git = "https://github.com/dylhunn/simple-love-lights"
+module = "lights"
+summary = "A very simple raycasting light."
+
+[[library]]
+name = "brinevector"
+git = "https://github.com/novemberisms/brinevector"
+module = "brinevector"
+caution = "Uses LuaJIT's ffi for speed and falls back to plain tables where ffi is missing."
+summary = "A 2D vector library with LuaJIT ffi speed."
+
+[[library]]
+name = "delaunay"
+git = "https://github.com/Yonaba/delaunay"
+module = "delaunay"
+summary = "Delaunay triangulation of points."
+
+[[library]]
+name = "loaded_dice"
+git = "https://github.com/a13X-B/loaded_dice"
+module = "loaded_dice"
+summary = "Weighted random choices (Walker-Vose alias method), for loot tables."
+
+[[library]]
+name = "polysec"
+git = "https://github.com/dknight/polysec"
+module = "polysec"
+summary = "Polygon and rectangle intersection tests."
+
+[[library]]
+name = "pvector"
+git = "https://github.com/automattf/vector.lua"
+module = "vector"
+summary = "A vector library after Processing's PVector."
+
+[[library]]
+name = "love2d-lua-websocket"
+git = "https://github.com/flaribbit/love2d-lua-websocket"
+module = "websocket"
+caution = "Opens a TCP connection to the address you give, through LuaSocket."
+summary = "An event-driven WebSocket client."
+
+[[library]]
+name = "NoobHub"
+git = "https://github.com/Overtorment/NoobHub"
+module = "noobhub"
+licence = "WTFPL"   # README links WTFPL; no licence file
+paths = "client/lua-corona"
+caution = "The client connects by TCP (LuaSocket) to a NoobHub server you run (Node.js, in its `server` folder). Licence: WTFPL (its README links it). Three of its client files are symbolic links."
+summary = "Multiplayer messaging through a NoobHub server."
+
+[[library]]
+name = "LowerClass"
+git = "https://github.com/DevonPalma/LowerClass"
+module = "LowerClass.LowerClass"
+summary = "Classes in the style of middleclass, with mixins."
+
+[[library]]
+name = "muun"
+git = "https://github.com/megagrump/muun"
+module = "muun"
+summary = "A MoonScript-compatible class library."
+
+[[library]]
+name = "Object-Library"
+git = "https://github.com/Virus01Official/Object-Library"
+module = "ObjectLibrary"
+paths = "src"
+summary = "Simple objects for LÖVE."
+
+[[library]]
+name = "Piefiller"
+git = "https://github.com/Polynominal/Piefiller"
+module = "piefiller"
+caution = "Its export writes a file named Profile in the save folder and opens that folder in the file manager."
+summary = "A graphical profiler."
+
+[[library]]
+name = "arson"
+git = "https://github.com/flamendless/arson.lua"
+module = "arson"
+summary = "Registers custom data types for json.lua."
+
+[[library]]
+name = "cdata"
+git = "https://github.com/excessive/cdata"
+module = "cdata"
+caution = "Converts tables to and from C data with LuaJIT's ffi (LuaJIT only)."
+summary = "Serialises between Lua data and C data with LuaJIT's ffi."
+
+[[library]]
+name = "Lady"
+git = "https://github.com/gvx/Lady"
+module = "lady"
+caution = "A savegame is run as Lua with a restricted environment when it loads: load only your own saves."
+summary = "Saves and loads savegames, built on Ser."
+
+[[library]]
+name = "ShaderScan"
+git = "https://github.com/idbrii/love-shaderscan"
+module = "shaderscan"
+summary = "Shader hot reload, includes and better error messages."
+
+[[library]]
+name = "lunatest"
+git = "https://github.com/silentbicycle/lunatest"
+module = "lunatest"
+summary = "xUnit-style unit testing with random tests."
+
+[[library]]
+name = "Badr"
+git = "https://github.com/Nabeel20/Badr"
+module = "badr"
+summary = "A small syntax for composing UI components."
+
+[[library]]
+name = "CatUI"
+git = "https://github.com/wilhantian/catui"
+module = "catui"
+summary = "A light-weight GUI."
+
+[[library]]
+name = "gooi"
+git = "https://github.com/gustavostuff/gooi"
+module = "gooi"
+summary = "A GUI aimed at Android, with buttons, sliders and dialogs."
+
+[[library]]
+name = "LoveFrames"
+git = "https://github.com/linux-man/LoveFrames"
+module = "loveframes"
+caution = "A large GUI with its own bundled middleclass, tween and utf8 modules (MIT); its demo folder is not needed in a game."
+summary = "A GUI with many controls and skins (an 11.2 fork)."
+
+[[library]]
+name = "plan"
+git = "https://github.com/zombrodo/plan"
+module = "plan"
+summary = "Rule-based layout."
+
+[[library]]
+name = "TuxRedux"
+git = "https://github.com/KINGTUT10101/TuxRedux"
+module = "tux"
+summary = "An immediate-mode UI inspired by SUIT."
+
+[[library]]
+name = "yalg"
+git = "https://github.com/sasszem/yalg"
+module = "GUI"
+caution = "Its `builder.lua` is a bundler that runs `git` and writes `bundle.lua`: never run it, and delete it before shipping."
+summary = "A very simple reactive UI for quick UIs."
+
+[[library]]
+name = "bar128-love"
+git = "https://github.com/Nawias/bar128-love"
+module = "bar128"
+summary = "Draws Code 128 barcodes."
+
+[[library]]
+name = "GifCat"
+git = "https://github.com/WetDesertRock/GifCat"
+module = "gifcat"
+caution = "Starts a thread from its own file by the name it was required as: require it as `gifcat` with its folder on the path. Saves the GIF through love.filesystem."
+summary = "Saves GIFs from LÖVE."
+
+[[library]]
+name = "ini_parser"
+git = "https://github.com/nobytesgiven/ini_parser"
+module = "ini"
+caution = "Its `sectionExists` and `keyExists` return 1 or 0, and 0 is true in Lua: compare with `== 1`, never use them as a plain condition."
+summary = "An .ini configuration parser."
+
+[[library]]
+name = "KeyedArray"
+git = "https://github.com/KINGTUT10101/KeyedArray"
+module = "keyedArray"
+summary = "An ordered dictionary: items by position or key."
+
+[[library]]
+name = "love-qrcode"
+git = "https://github.com/Nawias/love-qrcode"
+module = "love-qrcode"
+summary = "Draws QR codes."
+
+[[library]]
+name = "love2d-assets-loader"
+git = "https://github.com/Yonaba/love2d-assets-loader"
+module = "Loader.loader"
+summary = "Loads assets from folders."
+
+[[library]]
+name = "LuaRequireExtended"
+git = "https://github.com/KINGTUT10101/LuaRequireExtended"
+module = "requireExt"
+caution = "Loading it replaces the global `require` for the whole program, and rewrites `package.loaded` entries into tables: every library's `require` is affected. Use it only if you accept that."
+summary = "Require files with parameters and several return values."
+
+[[library]]
+name = "ShakeDetectorLua"
+git = "https://github.com/azoyan/ShakeDetectorLua"
+module = "shakeDetector"
+summary = "Detects a shake of the device from the accelerometer."
+
+[[library]]
+name = "LUA-SNG-Parser"
+git = "https://github.com/GwyrddGlas/LUA-SNG-Parser"
+module = "sng"
+caution = "Extracting a song package writes files and, when LÖVE's own folder creation fails, runs `os.execute('mkdir -p ...')` built from the output path: never pass it a path from an untrusted source."
+summary = "Reads .sng song package files."
+
+[[library]]
+name = "fetch-lua"
+git = "https://github.com/elloramir/fetch-lua"
+module = "fetch"
+caution = "HTTP through libcurl by ffi on Linux, WinINet on Windows and LuaSocket elsewhere, on a thread. On Linux it needs the system libcurl."
+summary = "HTTP and HTTPS requests with LuaJIT."
+
+[[library]]
+name = "love-dialogue"
+git = "https://github.com/Miisan-png/Love-Dialogue"
+module = "LoveDialogue.LoveDialogue"
+licence = "MIT"   # README states MIT License; no licence file
+caution = "Dialogue conditions and statements are run as Lua (with a restricted environment): use only dialogue files you ship. Licence: its README says MIT (no licence file)."
+summary = "Dialogue with its own scripting language."
+
+[[library]]
+name = "safeword"
+git = "https://github.com/josefnpat/safeword"
+module = "safeword"
+summary = "Detects overscan."
+
+[[library]]
+name = "Sysl-Pixel"
+git = "https://github.com/sysl-dev/Sysl-Pixel"
+module = "pixel"
+summary = "A pixel-art scaler for graphics, positions, screenshots and shaders."
+
+[[library]]
+name = "loveblobs"
+git = "https://github.com/zhangf911/loveblobs"
+module = "loveblobs"
+summary = "Softbody physics."
+
+[[library]]
+name = "SYSL-Text"
+git = "https://github.com/sysl-dev/SYSL-Text"
+module = "slog-text"
+paths = "example/library"   # the library lives in example/library of its repository
+summary = "Text animation and wrapping with tags."
