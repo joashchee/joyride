@@ -196,6 +196,29 @@ function L.withPath(name, fn)
   return a, b
 end
 
+-- A compiled library can abort the whole program (a C assert, a segfault) and nothing in Lua can catch that. Before a cell that runs one,
+-- its key is written to a marker file in the save folder; a run that comes back and finds the marker knows that cell took the program down
+-- last time, and reports it instead of running it again.
+L.MARKER = "benchmark-crash.txt"
+L.crashed = {}
+
+--- Call once at start: remembers (and clears) the cell a previous run was in when it died.
+function L.recoverCrash()
+  if not (love and love.filesystem and love.filesystem.getInfo and love.filesystem.getInfo(L.MARKER)) then return end
+  local key = love.filesystem.read(L.MARKER)
+  love.filesystem.remove(L.MARKER)
+  if key and key ~= "" then L.crashed[key] = true end
+end
+
+--- Runs fn under a marker when the library is a compiled one (L.binaries). Returns fn's results.
+function L.guard(name, key, fn)
+  if not (L.binaries[name] and love and love.filesystem and love.filesystem.write) then return fn() end
+  love.filesystem.write(L.MARKER, key)
+  local a, b = fn()
+  love.filesystem.remove(L.MARKER)
+  return a, b
+end
+
 --- Forget what was loaded (a test, or a re-run).
 function L.reset()
   for name, r in pairs(L.loaded) do

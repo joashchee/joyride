@@ -23,6 +23,12 @@ local function installMocks(w, h)
     print = noop, draw = noop,
   }
   for _, name in ipairs({ "setFont", "setColor", "rectangle", "clear", "push", "pop", "translate", "scale", "setBackgroundColor" }) do love.graphics[name] = noop end
+  -- Anything else the compiled GUI libraries ask of drawing is a no-op; the font is a userdata (they insist on one).
+  setmetatable(love.graphics, { __index = function() return noop end })
+  local font = newproxy(true)
+  getmetatable(font).__index = { typeOf = function(_, t) return t == "Font" or t == "Object" end, getWidth = function(_, str) return 8 * #tostring(str) end,
+    getHeight = function() return 16 end, getBaseline = function() return 12 end, getLineHeight = function() return 1 end }
+  love.graphics.getFont = function() return font end
   love.window = { getMode = function() return w, h, {} end, getDesktopDimensions = function() return 1920, 1080 end, isOpen = function() return false end }
   love.keyboard = { isDown = function() return false end, setKeyRepeat = noop }
   love.mouse = { getPosition = function() return 0, 0 end, isDown = function() return false end }
@@ -152,6 +158,33 @@ function T.run(core)
   check(contains(md, "### Classes (OOP)") and contains(md, "**Overall**"), "the Markdown tables")
   press("escape")
   check(s.page == "home", "Back from the report")
+
+  -- ---- a compiled GUI (when tools/build-binaries.sh has been run): its frames are driven the way the benchmark drives them. nuklear aborts
+  -- the whole program (a C assert) when a frame is not ended with draw, which once took the windowed run down.
+  local nk = core.libload.load("love-nuklear")
+  if nk.status == "PASS" then
+    local gui = require("bench.groups.gui")
+    for _, row in ipairs(gui.rows) do
+      if row.impl.nuklear and (row.id == "frame" or row.id == "speed") then
+        local ok, err = pcall(function()
+          local r = row.impl.nuklear(nk.mod)
+          if type(r) == "function" then for _ = 1, 5 do r() end end
+        end)
+        check(ok, "nuklear " .. row.id .. " survives repeated frames: " .. tostring(err))
+      end
+    end
+  end
+
+  -- ---- a cell that took the program down is remembered and not run again
+  -- (skipped where the save folder cannot be written, as on LÖVE 12.0 in a sandbox)
+  if love.filesystem.write(core.libload.MARKER, "gui/speed/nuklear") then
+    core.libload.recoverCrash()
+    check(core.libload.crashed["gui/speed/nuklear"] and not love.filesystem.getInfo(core.libload.MARKER), "a crash marker is read once and cleared")
+    local g = require("bench.groups.gui")
+    local cell = require("bench.runner").cell(g, g.rows[4], { id = "nuklear", lib = "love-nuklear" }, { window = true })
+    check(cell.status == "FAIL" and contains(cell.note, "aborted"), "that cell is reported, not run")
+    core.libload.crashed = {}
+  end
 
   -- ---- quit needs Back twice
   local quit = false

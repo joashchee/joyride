@@ -68,7 +68,9 @@ cellNow = function(group, row, m, env)
     if not ok or v == nil then return H.cell("FAIL", "the library has no " .. m.id) end
     obj = v
   end
-  return libload.withPath(m.lib, function() return H.run(row, impl, obj) end)
+  local key = group.id .. "/" .. row.id .. "/" .. m.id
+  if libload.crashed[key] then return H.cell("FAIL", "aborted the whole program last time it ran (a C assert inside the library): skipped now") end
+  return libload.guard(m.lib, key, function() return libload.withPath(m.lib, function() return H.run(row, impl, obj) end) end)
 end
 
 --- The rows of a group with the cost rows after its own.

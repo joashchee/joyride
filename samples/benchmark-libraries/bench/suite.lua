@@ -54,7 +54,11 @@ function Suite.steps(results, env, only)
       local cell
       if r.status == "SKIP" then cell = { status = "SKIP", note = r.detail }
       elseif r.status == "FAIL" then cell = { status = "FAIL", note = "did not load: " .. r.detail }
-      else cell = libload.withPath(p.spec.lib, function() return specialists.run(p.spec, r.mod, env) end) end
+      else
+        local key = "specialists/" .. p.spec.lib
+        if libload.crashed[key] then cell = { status = "FAIL", note = "aborted the whole program last time it ran (a C assert inside the library): skipped now" }
+        else cell = libload.guard(p.spec.lib, key, function() return libload.withPath(p.spec.lib, function() return specialists.run(p.spec, r.mod, env) end) end) end
+      end
       results.specialists[p.spec.lib] = cell
     else
       local gr = results.groups[p.g.id]

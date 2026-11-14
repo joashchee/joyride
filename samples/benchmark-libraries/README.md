@@ -53,12 +53,14 @@ Tables: `results/macos-11.5.md`; reports: `results/macos-11.5.txt`, `results/mac
 
 `sh tools/build-binaries.sh` builds, from source and universal (arm64 and x86_64), **love-nuklear** (a C module), **cimgui** (Dear ImGui 1.92 by CMake) and Discord's **discord-rpc**, into `bin/` (git-ignored: a binary is per platform). With them, nuklear and discord-rpc load and discord-rpc starts and stops (checked on LÖVE 11.5 and 12.0); cimgui loads its binary and then needs a window. Without them those libraries are `SKIP`, as before. macOS only so far; Linux and Windows need the same three builds. luasteam is not built (Steamworks SDK).
 
+A compiled library can abort the whole program (nuklear does, if a frame is not ended with `draw`) and Lua cannot catch that, so before each such cell the benchmark writes a marker to the save folder; if the program dies there, the next start reports that cell as having aborted the program and skips it.
+
 ## Run it
 
 - In JoyrIDE: **Samples… > Benchmark Libraries**, then **Run**. Comparisons that draw (the immediate-mode GUIs, anim8, moonshine, g3d, push, peachy, sti) only run with a window.
 - With a LÖVE on the command line: `love samples/benchmark-libraries`.
 - Without a window: `love samples/benchmark-libraries --report` runs everything that needs no screen, prints the report, saves it and the Markdown tables (`benchmark-libraries-<platform>-<LÖVE version>.txt` and `.md`, in the save folder; the paths go to stderr) and exits 1 only if a library that should load did not. A comparison cell that comes out wrong is a *result*, shown as `INFO`, not a failure.
-- Without a GPU: `love samples/benchmark-libraries --selftest` drives every screen against mocks (1089 checks).
+- Without a GPU: `love samples/benchmark-libraries --selftest` drives every screen against mocks (1093 checks).
 - Plain LuaJIT: `luajit tests/unit.lua` (2300 checks: the harness, the ratings, every group's shape, what each library does).
 
 Auto-Port may flag `ffi` use in nativefs, luajit-request and the other FFI libraries for the web: they are skipped there on purpose (the web profile has no FFI).

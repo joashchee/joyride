@@ -45,6 +45,7 @@ function C.init(_, s)
   s.shim = package.loaded["_jr_shim"]
   s.platform = platform.detect(C.environment())
   C.refresh(s)
+  libload.recoverCrash()
   s.ratings = ratings.new(ratings.loveStore())
   s.ratings:load()
   return s

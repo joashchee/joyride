@@ -87,7 +87,7 @@ return {
         nuklear = function() return "skip", "its mouse is not simulated by this benchmark" end,
         cimgui = function() return "skip", "its mouse is not simulated by this benchmark" end,
       } },
-    { id = "speed", label = "100 buttons", kind = "speed", unit = "widgets/s", units = 100, about = "Lay out and update 100 buttons (not drawn).",
+    { id = "speed", label = "100 buttons", kind = "speed", unit = "widgets/s", units = 100, about = "Lay out and update 100 buttons (nuklear must also draw: that is how its frame ends).",
       expect = function(v) return v == 100, v end,
       impl = {
         suit = function(suit) return function()
@@ -113,6 +113,7 @@ return {
             for _ = 1, 100 do ui:button("x"); n = n + 1 end
           end
           ui:windowEnd(); ui:frameEnd()
+          ui:draw()   -- a nuklear frame is only over after draw: a second frame without it aborts the program (a C assert)
           return n
         end end,
         cimgui = function(imgui) return function()
