@@ -16,6 +16,8 @@ const BENCHMARKS: &str = include_str!("../data/library-benchmarks.json");
 /// One record per audited pinned commit (`scripts/audit-libraries.py --stamp`).
 #[cfg(test)]
 const AUDITS: &str = include_str!("../data/library-audits.toml");
+/// Libraries the maintainer excluded for good (`data/library-exclusions.toml`).
+pub const EXCLUSIONS: &str = include_str!("../data/library-exclusions.toml");
 
 /// What is known about a library on one LÖVE version.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -336,6 +338,31 @@ mod tests {
             let a = audits.audit.iter().find(|a| a.name == e.name && a.rev == e.rev);
             assert!(a.is_some(), "{} at {} has no audit: run `python3 -I scripts/audit-libraries.py --stamp \"<what you reviewed>\" {}`", e.name, e.rev, e.name);
             assert!(a.unwrap().reviewed.trim().len() >= 12, "{}: the audit says nothing about what was reviewed", e.name);
+        }
+    }
+
+    /// An excluded library is never in the curated list, by name or by git address.
+    #[test]
+    fn excluded_libraries_are_not_in_the_list() {
+        #[derive(Deserialize)]
+        struct Ex {
+            name: String,
+            git: String,
+            decided: String,
+        }
+        #[derive(Deserialize)]
+        struct Exs {
+            #[serde(default)]
+            exclude: Vec<Ex>,
+        }
+        let ex: Exs = toml::from_str(EXCLUSIONS).expect("library-exclusions.toml is valid");
+        assert!(!ex.exclude.is_empty());
+        let norm = |g: &str| g.trim_end_matches('/').trim_end_matches(".git").to_lowercase();
+        for x in &ex.exclude {
+            assert!(!x.decided.is_empty());
+            for e in &Library::bundled().entries {
+                assert!(!e.name.eq_ignore_ascii_case(&x.name) && norm(&e.git) != norm(&x.git), "{} is excluded (library-exclusions.toml) and must not be curated", x.name);
+            }
         }
     }
 

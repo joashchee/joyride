@@ -1,0 +1,11 @@
+# Libraries that are never added to JoyrIDE's curated list. A test fails if one is in libraries.toml, and
+# `curate_libraries` refuses a seed that names one (by name or by git address). To lift an exclusion, the
+# maintainer deletes its entry here; nothing else does.
+
+[[exclude]]
+name = "windfield"
+git = "https://github.com/a327ex/windfield"
+decided = "2026-11-14"
+by = "the maintainer"
+# The facts as read, so the decision can be understood later (not the reason it was made).
+facts = "A Box2D wrapper by SSYGEN. MIT, but only as a header in windfield/init.lua (no LICENSE file; the README says \"you can do whatever you want with this\"). No commit since 2018-04-06."
