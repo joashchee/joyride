@@ -104,6 +104,10 @@ pub struct Entry {
     pub caution: Option<String>,
     /// One line of what the benchmark found: its scores against the libraries it was compared with, its cost, what it got wrong.
     pub benchmark: Option<String>,
+    /// One of the person's own (added from a project's offer): not audited, not measured.
+    pub custom: bool,
+    /// For one of the person's own: the folder name of the project it was found in.
+    pub found_in: Option<String>,
     loads_11_5: Badge,
     loads_12_0: Badge,
 }
@@ -138,7 +142,15 @@ impl Entry {
 
     /// The `love.toml` dependency that installs exactly this commit.
     pub fn dependency(&self) -> Dependency {
-        Dependency { git: self.git.clone(), tag: None, rev: Some(self.rev.clone()), branch: None }
+        // A curated entry always has its commit. One of the person's own may have only a tag, or only an address (its default branch).
+        let rev = (!self.rev.is_empty()).then(|| self.rev.clone());
+        let tag = if rev.is_none() { self.tag.clone() } else { None };
+        Dependency { git: self.git.clone(), tag, rev, branch: None }
+    }
+
+    /// Whether adding it to a project has anything to fetch: a library the person's project had vendored with no address cannot be.
+    pub fn installable(&self) -> bool {
+        !self.git.is_empty()
     }
 
     /// Fails to load on `v`: should not be offered as working there.
@@ -196,9 +208,36 @@ impl Library {
         let entries = raw
             .library
             .into_iter()
-            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, caution: r.caution, benchmark: None, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
+            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, caution: r.caution, benchmark: None, custom: false, found_in: None, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
             .collect();
         Ok(Library { entries })
+    }
+
+    /// The list with the person's own libraries after the curated ones. A name the curated list has is never replaced.
+    pub fn with_custom(mut self, custom: &[crate::detect::Custom]) -> Library {
+        for c in custom {
+            if self.entries.iter().any(|e| e.name.eq_ignore_ascii_case(&c.name)) {
+                continue;
+            }
+            self.entries.push(Entry {
+                name: c.name.clone(),
+                git: c.git.clone().unwrap_or_default(),
+                rev: c.rev.clone().unwrap_or_default(),
+                tag: c.tag.clone(),
+                licence: c.licence.clone(),
+                module: c.module.clone(),
+                summary: c.summary.clone(),
+                kind: Kind::Lua,
+                native: None,
+                caution: Some(format!("Added from {}. Not audited, not measured: it is not part of JoyrIDE's curated list. Read its code before you run it.", c.found_in)),
+                benchmark: None,
+                custom: true,
+                found_in: Some(c.found_in.clone()),
+                loads_11_5: Badge::Unmeasured,
+                loads_12_0: Badge::Unmeasured,
+            });
+        }
+        self
     }
 
     pub fn get(&self, name: &str) -> Option<&Entry> {
@@ -222,7 +261,10 @@ impl Library {
     /// Adds `name` to the manifest, pinned to the curated commit. A library
     /// already listed is left as the person has it.
     pub fn add_to(&self, m: &mut Manifest, name: &str) -> Result<()> {
-        let e = self.get(name).ok_or_else(|| crate::Error::Msg(format!("`{name}` is not in the curated list")))?;
+        let e = self.get(name).ok_or_else(|| crate::Error::Msg(format!("`{name}` is not in the list")))?;
+        if !e.installable() {
+            return err(format!("{} has no source address to fetch from (it was found vendored in {}): add its git address to love.toml by hand", e.name, e.found_in.as_deref().unwrap_or("a project")));
+        }
         let v = LoveVersion::parse(&m.project.love_version);
         if let Some(v) = v {
             if e.known_broken_on(v) {

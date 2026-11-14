@@ -147,10 +147,46 @@ export interface LibraryView {
   caution: string | null;
   /** What the Benchmark Libraries sample measured for it. */
   benchmark: string | null;
+  /** One of your own, added from a project's offer: not audited, not measured. */
+  custom: boolean;
+  /** Whether adding it has an address to fetch from. */
+  installable: boolean;
 }
 export const libraryList = (query: string) => invoke<LibraryView[]>("library_list", { query });
 export const libraryAdd = (name: string, query: string) => invoke<LibraryView[]>("library_add", { name, query });
 export const libraryRemove = (name: string, query: string) => invoke<LibraryView[]>("library_remove", { name, query });
+export const libraryCustomRemove = (name: string, query: string) => invoke<LibraryView[]>("library_custom_remove", { name, query });
+
+/** A library a project uses that JoyrIDE's list does not have. */
+export interface FoundLibrary {
+  name: string;
+  module: string;
+  how: string[];
+  path: string | null;
+  git: string | null;
+  rev: string | null;
+  tag: string | null;
+  licence: string | null;
+  version: string | null;
+  summary: string | null;
+  required: boolean;
+  missing: boolean;
+}
+export interface LibraryOffer {
+  project: string;
+  /** Libraries the project uses that are already in the list. */
+  used: { name: string; how: string; installed: boolean }[];
+  /** Not in the list: offered. */
+  new: FoundLibrary[];
+  /** Required but provided by nothing in the project: shown, never offered. */
+  unresolved: string[];
+  /** Left out because you said not to ask again. */
+  hidden: number;
+}
+/** Reads the open project's files and says which libraries it uses that the list does not have. `force` includes the ones you dismissed. */
+export const librariesDetect = (force: boolean) => invoke<LibraryOffer>("libraries_detect", { force });
+export const librariesOfferAdd = (names: string[]) => invoke<number>("libraries_offer_add", { names });
+export const librariesOfferDismiss = (names: string[]) => invoke<void>("libraries_offer_dismiss", { names });
 
 export interface SampleInfo {
   id: string;

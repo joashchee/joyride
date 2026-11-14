@@ -117,6 +117,7 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
   duplicate finding), `import.rs` (plan, then apply with confirmed
   licences), `kind.rs`. `cargo test --offline --manifest-path
   asset-core/Cargo.toml`.
+- `joyride-core/src/detect.rs`: the libraries a project uses (files only), matched with the list; the person's own libraries (`Custom`) and dismissed offers live in app-data, never in a project. A library found in a project is never added to `data/libraries.toml` without rule 14's audit.
 - `joyride-core/`: the other Tauri-free crate, one module per spec area:
   `manifest`/`pkg` (love.toml, installer), `toolchain` (versions, signed
   manifest, `.luarc.json`), `lua`/`scan`/`lint` (lexer, auto-porter analysis,

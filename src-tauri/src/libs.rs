@@ -3,12 +3,14 @@
 //! happens off the UI thread and only when the person clicks Add.
 
 use crate::project::Project;
+use joyride_core::detect::{self, Detection};
 use joyride_core::library::Library;
 use joyride_core::manifest::Manifest;
 use joyride_core::{pkg, toolchain};
 use serde::Serialize;
 use std::path::Path;
-use tauri::State;
+use std::path::PathBuf;
+use tauri::{AppHandle, Manager, State};
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -31,16 +33,35 @@ pub struct LibraryView {
     caution: Option<String>,
     /// What the Benchmark Libraries sample measured for it (scores against what it was compared with, cost, findings).
     benchmark: Option<String>,
+    /// One of the person's own, added from a project: not audited, not measured.
+    custom: bool,
+    /// Whether adding it has an address to fetch from.
+    installable: bool,
 }
 
-fn views(root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
+/// Where the person's own libraries are kept: the app-data folder, never a project.
+fn custom_file(app: &AppHandle) -> Result<PathBuf, String> {
+    app.path().app_data_dir().map(|d| d.join("custom-libraries.json")).map_err(|e| e.to_string())
+}
+
+fn offers_file(app: &AppHandle) -> Result<PathBuf, String> {
+    app.path().app_data_dir().map(|d| d.join("library-offers.json")).map_err(|e| e.to_string())
+}
+
+/// JoyrIDE's list and the person's own after it.
+fn library(app: &AppHandle) -> Library {
+    let custom = custom_file(app).map(|f| detect::load_custom(&f)).unwrap_or_default();
+    Library::bundled().with_custom(&custom)
+}
+
+fn views(app: &AppHandle, root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
     let v = toolchain::project_love_version(root).map_err(|e| e.to_string())?;
     let installed: Vec<String> = std::fs::read_to_string(root.join("love.toml"))
         .ok()
         .and_then(|t| Manifest::parse(&t).ok())
         .map(|m| m.dependencies.keys().cloned().collect())
         .unwrap_or_default();
-    let lib = Library::bundled();
+    let lib = library(app);
     Ok(lib
         .search(query, None)
         .into_iter()
@@ -58,34 +79,101 @@ fn views(root: &Path, query: &str) -> Result<Vec<LibraryView>, String> {
             native: e.native.clone(),
             caution: e.caution.clone(),
             benchmark: e.benchmark.clone(),
+            custom: e.custom,
+            installable: e.installable(),
         })
         .collect())
 }
 
 #[tauri::command]
-pub fn library_list(project: State<Project>, query: String) -> Result<Vec<LibraryView>, String> {
-    views(&project.root()?, &query)
+pub fn library_list(app: AppHandle, project: State<Project>, query: String) -> Result<Vec<LibraryView>, String> {
+    views(&app, &project.root()?, &query)
 }
 
 /// Installs a curated library at its pinned commit; returns the fresh list.
 #[tauri::command]
-pub async fn library_add(project: State<'_, Project>, name: String, query: String) -> Result<Vec<LibraryView>, String> {
+pub async fn library_add(app: AppHandle, project: State<'_, Project>, name: String, query: String) -> Result<Vec<LibraryView>, String> {
     let root = project.root()?;
     tauri::async_runtime::spawn_blocking(move || {
-        pkg::add_library(&root, &Library::bundled(), &name).map_err(|e| e.to_string())?;
-        views(&root, &query)
+        pkg::add_library(&root, &library(&app), &name).map_err(|e| e.to_string())?;
+        views(&app, &root, &query)
     })
     .await
     .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-pub async fn library_remove(project: State<'_, Project>, name: String, query: String) -> Result<Vec<LibraryView>, String> {
+pub async fn library_remove(app: AppHandle, project: State<'_, Project>, name: String, query: String) -> Result<Vec<LibraryView>, String> {
     let root = project.root()?;
     tauri::async_runtime::spawn_blocking(move || {
         pkg::remove_library(&root, &name).map_err(|e| e.to_string())?;
-        views(&root, &query)
+        views(&app, &root, &query)
     })
     .await
     .map_err(|e| e.to_string())?
+}
+
+/// Takes one of the person's own libraries out of the list (it does not touch any project).
+#[tauri::command]
+pub fn library_custom_remove(app: AppHandle, project: State<Project>, name: String, query: String) -> Result<Vec<LibraryView>, String> {
+    detect::remove_custom(&custom_file(&app)?, &name).map_err(|e| e.to_string())?;
+    views(&app, &project.root()?, &query)
+}
+
+// ---- finding the libraries a project uses ---------------------------------------------------------------------------------------
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OfferView {
+    /// The project folder's name.
+    project: String,
+    #[serde(flatten)]
+    found: Detection,
+    /// How many were left out because the person said not to ask again.
+    hidden: usize,
+}
+
+fn project_key(root: &Path) -> String {
+    root.to_string_lossy().into_owned()
+}
+
+fn project_name(root: &Path) -> String {
+    root.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()
+}
+
+/// Reads the open project's files (nothing is run, nothing fetched) and says which libraries it uses that the list does not have.
+/// `force` shows the ones the person asked not to hear about again.
+#[tauri::command]
+pub async fn libraries_detect(app: AppHandle, project: State<'_, Project>, force: bool) -> Result<OfferView, String> {
+    let root = project.root()?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let mut d = detect::detect(&root, &library(&app)).map_err(|e| e.to_string())?;
+        let skipped = if force { Vec::new() } else { offers_file(&app).map(|f| detect::load_dismissed(&f, &project_key(&root))).unwrap_or_default() };
+        let before = d.new.len();
+        d.new.retain(|f| !skipped.contains(&f.name));
+        Ok(OfferView { project: project_name(&root), hidden: before - d.new.len(), found: d })
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+/// Adds the named libraries (found again now, so only what is really in the project) to the person's own list.
+#[tauri::command]
+pub async fn libraries_offer_add(app: AppHandle, project: State<'_, Project>, names: Vec<String>) -> Result<usize, String> {
+    let root = project.root()?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let d = detect::detect(&root, &library(&app)).map_err(|e| e.to_string())?;
+        let chosen: Vec<_> = d.new.into_iter().filter(|f| names.contains(&f.name)).collect();
+        detect::add_custom(&custom_file(&app)?, &chosen, &project_name(&root)).map_err(|e| e.to_string())?;
+        Ok(chosen.len())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+/// "Do not ask again for these" in this project.
+#[tauri::command]
+pub fn libraries_offer_dismiss(app: AppHandle, project: State<Project>, names: Vec<String>) -> Result<(), String> {
+    let root = project.root()?;
+    detect::dismiss(&offers_file(&app)?, &project_key(&root), &names).map_err(|e| e.to_string())
 }

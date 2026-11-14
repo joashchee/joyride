@@ -8,6 +8,7 @@ import NameBox from "./components/NameBox";
 import Search from "./components/Search";
 import ExportPanel from "./components/ExportPanel";
 import Libraries from "./components/Libraries";
+import LibraryOffer from "./components/LibraryOffer";
 import Games from "./components/Games";
 import Samples from "./components/Samples";
 import AssetLibrary from "./components/AssetLibrary";
@@ -18,7 +19,7 @@ import Settings from "./components/Settings";
 import { currentFit } from "./lib/editorfit";
 import { installSnap } from "./lib/windowsnap";
 import { onChoice } from "./lib/codefonts";
-import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
+import { projectListing, chooseFolder, librariesDetect, type LibraryOffer as Offer, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
@@ -48,6 +49,7 @@ export default function App() {
   const [docsOpen, setDocsOpen] = useState(false);
   const [docsKey, setDocsKey] = useState(0);
   const [libsOpen, setLibsOpen] = useState(false);
+  const [offer, setOffer] = useState<Offer | null>(null);
   const [gamesOpen, setGamesOpen] = useState(false);
   const [samplesOpen, setSamplesOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
@@ -184,8 +186,27 @@ export default function App() {
       setDirty(new Set());
       setNotice(l.truncated ? "This project has more files than the tree shows." : null);
       if (l.hasMain) void openFile("main.lua");
+      void checkLibraries(false);
     } catch (e) {
       fail(e);
+    }
+  };
+
+  /** Looks (in files only) for libraries the open project uses that Libraries does not have, and offers them. `force` also shows the
+   *  ones you said not to ask about again, and says so when there is nothing. */
+  const checkLibraries = async (force: boolean) => {
+    if (!inTauri) return;
+    try {
+      const o = await librariesDetect(force);
+      if (o.new.length > 0) {
+        setOffer(o);
+        setLibsOpen(false);
+      } else {
+        setOffer(null);
+        if (force) setNotice(o.used.length > 0 ? `Every library this project uses is already in Libraries (${o.used.map((u) => u.name).join(", ")}).` : "This project does not use any library that Libraries does not have.");
+      }
+    } catch (e) {
+      if (force) fail(e);
     }
   };
 
@@ -430,7 +451,19 @@ export default function App() {
             }}
           />
         )}
-        {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
+        {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} onScan={() => void checkLibraries(true)} />}
+        {offer && project && (
+          <LibraryOffer
+            offer={offer}
+            onClose={() => setOffer(null)}
+            onAdded={(n) => {
+              setOffer(null);
+              setNotice(`${n} ${n === 1 ? "library" : "libraries"} added to Libraries (your own list).`);
+              setLibsOpen(true);
+            }}
+            onOpenLibraries={() => setLibsOpen(true)}
+          />
+        )}
         {ghOpen && project && <GitHub onClose={() => setGhOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} onOpen={(f, l) => void openAt(f, l)} />}
         {portOpen && project && <AutoPort onClose={() => setPortOpen(false)} onOpen={(f, l) => void openAt(f, l)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {exporting && project && <ExportPanel onClose={() => setExporting(false)} />}

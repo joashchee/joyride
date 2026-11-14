@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { libraryAdd, libraryList, libraryRemove, type LibraryView } from "../lib/backend";
+import { libraryAdd, libraryCustomRemove, libraryList, libraryRemove, type LibraryView } from "../lib/backend";
 import Panel from "./Panel";
 
 /** The curated libraries (Lua, and C libraries through FFI or as native modules): search, add at the pinned commit, remove. Adding needs git and the network, only when clicked. */
-export default function Libraries(props: { onClose: () => void; onChanged: () => void }) {
+export default function Libraries(props: { onClose: () => void; onChanged: () => void; onScan: () => void }) {
   const [q, setQ] = useState("");
   const [libs, setLibs] = useState<LibraryView[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -32,20 +32,38 @@ export default function Libraries(props: { onClose: () => void; onChanged: () =>
     }
   };
 
+  const forget = async (l: LibraryView) => {
+    setBusy(l.name);
+    setErr(null);
+    try {
+      setLibs(await libraryCustomRemove(l.name, q));
+    } catch (e) {
+      setErr(String(e));
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <Panel title="Libraries" kind="panel-libraries" onClose={props.onClose}>
       <div className="panel-bar">
         <input aria-label="Search libraries" placeholder="Search" value={q} onChange={(e) => setQ(e.target.value)} spellCheck={false} autoFocus />
+        <button onClick={props.onScan} title="Read this project's files for libraries that are not in this list">Find in this project</button>
       </div>
       {err && <pre role="alert" className="panel-error">{err}</pre>}
       <ul className="libraries-list">
         {libs?.map((l) => (
           <li key={l.name}>
-            <button disabled={busy !== null || (l.broken && !l.installed)} onClick={() => void act(l)} aria-label={`${l.installed ? "Remove" : "Add"} ${l.name}`}>
+            <button disabled={busy !== null || (l.broken && !l.installed) || (!l.installable && !l.installed)} onClick={() => void act(l)} aria-label={`${l.installed ? "Remove" : "Add"} ${l.name}`}>
               {busy === l.name ? "…" : l.installed ? "Remove" : "Add"}
             </button>
+            {l.custom && (
+              <button disabled={busy !== null || l.installed} onClick={() => void forget(l)} aria-label={`Remove ${l.name} from your own list`} title="Forget it: takes it out of this list, and changes no project">
+                Forget
+              </button>
+            )}
             <div className="lib-main">
-              <strong>{l.name}</strong> <span className="lib-meta">{l.version} · {l.licence} · {l.kind}</span>
+              <strong>{l.name}</strong> <span className="lib-meta">{l.version} · {l.licence} · {l.kind}{l.custom ? " · yours" : ""}</span>
               <div>{l.summary}</div>
               {l.native && <div className="lib-meta">Needs: {l.native}</div>}
               {l.caution && <div className="lib-meta lib-broken">Caution: {l.caution}</div>}

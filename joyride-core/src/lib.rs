@@ -27,6 +27,7 @@
 pub mod android;
 pub mod apple_mobile;
 pub mod compat;
+pub mod detect;
 pub mod docs;
 pub mod editor;
 pub mod export;
