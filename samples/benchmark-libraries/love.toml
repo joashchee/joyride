@@ -36,9 +36,21 @@ rev = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
 git = "https://github.com/hsluv/hsluv-lua"
 rev = "be26eba8c76f41ab8de274d99c102f00162db91c"
 
+[dependencies.Helium]
+git = "https://github.com/qeffects/helium"
+rev = "36cccb99846913ece9cdf67f756216f42b13f872"
+
+[dependencies.Inky]
+git = "https://github.com/Keyslam/Inky"
+rev = "b6dc659a2917aea5c0e3c3611013dd787e74989b"
+
 [dependencies.Lily]
 git = "https://github.com/MikuAuahDark/lily"
 rev = "1ce5078cb70b4eac35bd8bcfa675ac85d9690282"
+
+[dependencies.LoverNet]
+git = "https://github.com/josefnpat/LoverNet"
+rev = "a0acc1df468697fd3a00ffba1ddaa0be28af2d0d"
 
 [dependencies.Lua-star]
 git = "https://github.com/wesleywerner/lua-star"
@@ -139,6 +151,10 @@ rev = "ddb80f48e6a3f7d9b98aa45b6feeb461db3d0c6a"
 [dependencies.cron]
 git = "https://github.com/kikito/cron.lua"
 rev = "c8899a15fb8547492f4df90d9640711abce29ed0"
+
+[dependencies.denver]
+git = "https://github.com/superzazu/denver.lua"
+rev = "36fdb278e99de6827427633a905c5a862e0e3913"
 
 [dependencies.flux]
 git = "https://github.com/rxi/flux"
@@ -315,6 +331,10 @@ rev = "dee7bde320ef3ccaa82ba98b473aa44f4c8c7802"
 [dependencies.sock]
 git = "https://github.com/camchenry/sock.lua"
 rev = "7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
+
+[dependencies.splashy]
+git = "https://github.com/videah/splashy"
+rev = "e40e19ec591dcae5758f37fead76b173f359b9b3"
 
 [dependencies.sqlua]
 git = "https://github.com/handrake/sqlua"

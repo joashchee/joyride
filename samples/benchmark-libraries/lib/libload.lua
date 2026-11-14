@@ -18,11 +18,11 @@ L.deps = { lurker = { "lume" }, ["lua-ljsqlite3"] = { "xsys" } }
 -- Libraries that start threads when they are required: skipped where the platform has none (the web).
 L.needsThreads = { Lily = true }
 
-L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true, lighter = true }
+L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true, lighter = true, splashy = true, Helium = true }
 
 -- Libraries whose own name for themselves matters: g3d finds its shader from the module name it was required by (`libs.g3d.g3d` ->
 -- `libs/g3d/g3d/g3d.vert`), so it must be required by its path from the game's root, not as `g3d`.
-L.moduleFor = { g3d = "libs.g3d.g3d" }
+L.moduleFor = { g3d = "libs.g3d.g3d", Helium = "libs.Helium" }
 
 -- A library that is known not to load on a LÖVE major version, and why: a finding about the library, not a failure of this project.
 -- (Checked against the real LÖVE binaries; the report says INFO, not FAIL.)

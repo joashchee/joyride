@@ -49,10 +49,28 @@ spec = "rev=be26eba8c76f41ab8de274d99c102f00162db91c"
 commit = "be26eba8c76f41ab8de274d99c102f00162db91c"
 
 [[package]]
+name = "Helium"
+git = "https://github.com/qeffects/helium"
+spec = "rev=36cccb99846913ece9cdf67f756216f42b13f872"
+commit = "36cccb99846913ece9cdf67f756216f42b13f872"
+
+[[package]]
+name = "Inky"
+git = "https://github.com/Keyslam/Inky"
+spec = "rev=b6dc659a2917aea5c0e3c3611013dd787e74989b"
+commit = "b6dc659a2917aea5c0e3c3611013dd787e74989b"
+
+[[package]]
 name = "Lily"
 git = "https://github.com/MikuAuahDark/lily"
 spec = "rev=1ce5078cb70b4eac35bd8bcfa675ac85d9690282"
 commit = "1ce5078cb70b4eac35bd8bcfa675ac85d9690282"
+
+[[package]]
+name = "LoverNet"
+git = "https://github.com/josefnpat/LoverNet"
+spec = "rev=a0acc1df468697fd3a00ffba1ddaa0be28af2d0d"
+commit = "a0acc1df468697fd3a00ffba1ddaa0be28af2d0d"
 
 [[package]]
 name = "Lua-star"
@@ -203,6 +221,12 @@ name = "cron"
 git = "https://github.com/kikito/cron.lua"
 spec = "rev=c8899a15fb8547492f4df90d9640711abce29ed0"
 commit = "c8899a15fb8547492f4df90d9640711abce29ed0"
+
+[[package]]
+name = "denver"
+git = "https://github.com/superzazu/denver.lua"
+spec = "rev=36fdb278e99de6827427633a905c5a862e0e3913"
+commit = "36fdb278e99de6827427633a905c5a862e0e3913"
 
 [[package]]
 name = "flux"
@@ -467,6 +491,12 @@ name = "sock"
 git = "https://github.com/camchenry/sock.lua"
 spec = "rev=7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
 commit = "7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
+
+[[package]]
+name = "splashy"
+git = "https://github.com/videah/splashy"
+spec = "rev=e40e19ec591dcae5758f37fead76b173f359b9b3"
+commit = "e40e19ec591dcae5758f37fead76b173f359b9b3"
 
 [[package]]
 name = "sqlua"

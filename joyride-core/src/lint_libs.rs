@@ -24,6 +24,7 @@ const WRONG_REQUIRE: &[(&str, &[&str], &str, &str)] = &[
     ("AppleCake", &["AppleCake", "applecake"], "libs.AppleCake", "it finds its thread.lua from the name it was required by"),
     ("Lily", &["lily"], "lily_single", "lily.lua looks for lily_thread.lua from the name it was required by; lily_single has the thread code inside"),
     ("serpent", &["serpent"], "libs.serpent.src.serpent", "its only file is src/serpent.lua"),
+    ("Helium", &["helium"], "libs.Helium", "the repository root is the library and it requires its own files by the name it was loaded with"),
     ("cimgui-love", &["cimgui", "cimgui-love"], "libs.cimgui-love.src", "the Lua side of cimgui-love is its src folder"),
 ];
 

@@ -23,3 +23,10 @@ git = "https://github.com/wqferr/slicy"
 decided = "2026-11-14"
 by = "CLAUDE.md rule 2 (no GPL dependencies), applied when asked to add it; the maintainer may lift it by deleting this entry"
 facts = "A 9-slice library by wqferr, 1b63884 (2022-05-29). Its LICENSE is the full GNU GPL version 3 (674 lines) and nothing else in the repository states another licence. Patchy (MIT) is the curated 9-patch library."
+
+[[exclude]]
+name = "luis"
+git = "https://github.com/SiENcE/luis"
+decided = "2026-11-15"
+by = "applied when asked to add all the remaining libraries; the maintainer may lift it by deleting this entry"
+facts = "A retained UI system by Florian Fischer, df9b601. Its LICENSE is 'MIT License with Additional Terms': the MIT text plus 'This software, or any derivative works thereof, may not be used, in whole or in part, for the purpose of training, fine-tuning, or improving machine learning models or artificial intelligence systems' (the README repeats it). That is a field-of-use restriction, so it is not the MIT licence and not an open-source licence by the usual definitions, and no ruling exists for it (CLAUDE.md rule 2 covers GPL, AGPL, LGPL, and MPL-2.0 is allowed). The Benchmark sample would vendor it inside an MIT repository. The rest is clean: no GPL file, fonts CC0, OFL and Apache-2.0, 5.9 MB with themes and fonts."

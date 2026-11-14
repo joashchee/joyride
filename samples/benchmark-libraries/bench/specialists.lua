@@ -357,6 +357,61 @@ S.list = {
     end },
   { lib = "Patchy", job = "9-patch images",
     run = function(patchy) return type(patchy.load) == "function" and type(patchy.import) == "function", "the API is there; no .9.png is shipped with this sample, so none was loaded or drawn" end },
+  { lib = "denver", job = "generated sound waves and note names",
+    run = function(denver)
+      if not (love and love.sound and love.audio) then return "skip", "needs LÖVE's audio and sound modules" end
+      local a4, a5 = denver.noteToFrequency("A4"), denver.noteToFrequency("A5")
+      local source = denver.get({ waveform = "sinus", frequency = "A4", length = 0.01 })
+      local square = denver.get({ waveform = "square", frequency = 220, length = 0.01 }, 0.5)
+      local leaked = rawget(_G, "sample") ~= nil
+      rawset(_G, "sample", nil)
+      return math.abs(a4 - 440) < 1e-6 and math.abs(a5 - 880) < 1e-6 and source ~= nil and square ~= nil, "A4 is 440 Hz and A5 880 Hz; a sine and a square wave (a hundredth of a second) became sources" .. (leaked and "; it left a global named `sample` behind (cleared here)" or "")
+    end },
+  { lib = "splashy", job = "a splash screen sequence", needs = "window",
+    run = function(splashy)
+      local done = false
+      local logo = { getWidth = function() return 64 end, getHeight = function() return 32 end }
+      splashy.addSplash(logo, 0.1)
+      splashy.addSplash(logo, 0.1)
+      splashy.onComplete(function() done = true end)
+      for _ = 1, 100 do splashy.update(0.05) end
+      return done and splashy.finished, "two splashes faded in and out and the completion callback ran; nothing was drawn"
+    end },
+  { lib = "LoverNet", job = "client and server over ENet",
+    run = function(lovernet)
+      local ok, enet = pcall(require, "enet")
+      if not ok then return "skip", "LÖVE's enet module is not here" end
+      local server, why = lovernet.new({ type = lovernet.mode.server, port = 19871, log = function() end })
+      if not server then return "skip", "could not open a local port: " .. tostring(why) end
+      local client = lovernet.new({ type = lovernet.mode.client, ip = "127.0.0.1", port = 19871, log = function() end })
+      local connected = false
+      for _ = 1, 100 do
+        server:update(0.1); client:update(0.1)
+        if client:isConnectedToServer() then connected = true; break end
+        if love and love.timer and love.timer.sleep then love.timer.sleep(0.005) end
+      end
+      client:disconnect(); server:disconnect()
+      return connected, connected and "a server and a client in this process met over the loopback" or "the client never connected to the server on 127.0.0.1"
+    end },
+  { lib = "Inky", job = "retained UI elements and a pointer",
+    run = function(Inky)
+      local clicks = 0
+      local Button = Inky.defineElement(function(self)
+        self:onPointer("release", function() clicks = clicks + 1 end)
+        return function() end
+      end)
+      local scene = Inky.scene()
+      local pointer = Inky.pointer(scene)
+      local button = Button(scene)
+      pointer:setPosition(20, 20)
+      scene:beginFrame(); button:render(10, 10, 100, 30); scene:finishFrame()
+      pointer:raise("release")
+      return clicks == 1, "a button defined, placed and released under the pointer counted one click"
+    end },
+  { lib = "Helium", job = "retained UI framework", needs = "window",
+    run = function(helium)
+      return type(helium.element) ~= "nil" and type(helium.scene) ~= "nil" and type(helium.input) ~= "nil", "the API is there; its scenes draw to canvases, which needs a screen to look at, so none was drawn"
+    end },
   { lib = "ripple", job = "sound tags, volume, fades",
     run = function(ripple)
       if not (love and love.audio and love.sound) then return "skip", "needs LÖVE's audio and sound modules" end

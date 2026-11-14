@@ -792,3 +792,48 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 11
 reviewed = "scan clean; read slick/init.lua: it loads its modules inside a coroutine with a private global environment (setfenv(0) on that coroutine only) so its requires resolve from its own folder, no change to the game's globals; no ffi, process, network or file writes in the library (the shell scripts and demo are not run); MPL-2.0 text in LICENSE and embedded in slick/meta/init.lua (its Secondary License definition names the GNU licences: not a GPL licence); demo/LICENSE is MIT for the demo only; caution recorded; nothing run before this stamp"
+
+[[audit]]
+name = "denver"
+rev = "36fdb278e99de6827427633a905c5a862e0e3913"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: denver (MIT; leaks global sample, math.pow fine on LuaJIT), splashy (MIT; reads the window size at require), LoverNet (zlib; bundled ISC bitser copy with ffi and a love.filesystem.write for its own debug dumps; opens enet host; .xcf logo is art; none run), Inky (MIT; clean, no widgets), Helium (BSD-2-Clause; loader runs loadstring on a file read through love.filesystem, own call only; canvases need a window; required by path libs.Helium); no GPL, AGPL or LGPL file in any tree; luis refused (MIT plus an ML-training ban); cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "splashy"
+rev = "e40e19ec591dcae5758f37fead76b173f359b9b3"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: denver (MIT; leaks global sample, math.pow fine on LuaJIT), splashy (MIT; reads the window size at require), LoverNet (zlib; bundled ISC bitser copy with ffi and a love.filesystem.write for its own debug dumps; opens enet host; .xcf logo is art; none run), Inky (MIT; clean, no widgets), Helium (BSD-2-Clause; loader runs loadstring on a file read through love.filesystem, own call only; canvases need a window; required by path libs.Helium); no GPL, AGPL or LGPL file in any tree; luis refused (MIT plus an ML-training ban); cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "LoverNet"
+rev = "a0acc1df468697fd3a00ffba1ddaa0be28af2d0d"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 2
+med = 2
+reviewed = "scanned and read: denver (MIT; leaks global sample, math.pow fine on LuaJIT), splashy (MIT; reads the window size at require), LoverNet (zlib; bundled ISC bitser copy with ffi and a love.filesystem.write for its own debug dumps; opens enet host; .xcf logo is art; none run), Inky (MIT; clean, no widgets), Helium (BSD-2-Clause; loader runs loadstring on a file read through love.filesystem, own call only; canvases need a window; required by path libs.Helium); no GPL, AGPL or LGPL file in any tree; luis refused (MIT plus an ML-training ban); cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Inky"
+rev = "b6dc659a2917aea5c0e3c3611013dd787e74989b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "scanned and read: denver (MIT; leaks global sample, math.pow fine on LuaJIT), splashy (MIT; reads the window size at require), LoverNet (zlib; bundled ISC bitser copy with ffi and a love.filesystem.write for its own debug dumps; opens enet host; .xcf logo is art; none run), Inky (MIT; clean, no widgets), Helium (BSD-2-Clause; loader runs loadstring on a file read through love.filesystem, own call only; canvases need a window; required by path libs.Helium); no GPL, AGPL or LGPL file in any tree; luis refused (MIT plus an ML-training ban); cautions recorded; nothing run before this stamp"
+
+[[audit]]
+name = "Helium"
+rev = "36cccb99846913ece9cdf67f756216f42b13f872"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "scanned and read: denver (MIT; leaks global sample, math.pow fine on LuaJIT), splashy (MIT; reads the window size at require), LoverNet (zlib; bundled ISC bitser copy with ffi and a love.filesystem.write for its own debug dumps; opens enet host; .xcf logo is art; none run), Inky (MIT; clean, no widgets), Helium (BSD-2-Clause; loader runs loadstring on a file read through love.filesystem, own call only; canvases need a window; required by path libs.Helium); no GPL, AGPL or LGPL file in any tree; luis refused (MIT plus an ML-training ban); cautions recorded; nothing run before this stamp"
