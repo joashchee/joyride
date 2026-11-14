@@ -17,8 +17,9 @@ LIST = os.path.join(PROJECT, "..", "..", "joyride-core", "data", "libraries.toml
 DROP_DIRS = {".git", ".github", ".gitlab", "docs", "doc", "documentation", "img", "images", "image", "screenshots", "media", "spec", "specs", "test", "tests", "rockspecs",
              "examples", "example", "demo", "demos", "samples", "sample", "benchmark", "benchmarks", "bin", "build", "dist", "scripts", "tools", "luasteam-examples"}
 # Per library: more to leave out. luasteam's repository carries Valve's Steamworks SDK (Valve's own agreement: never redistributed here), and
-# its generator and type stubs are build tools; cimgui-love's C parser is a build tool for regenerating its bindings.
-EXTRA_DROP = {"luasteam": {"sdk", "generator", "luals"}, "cimgui-love": {"cparser"}}
+# its generator and type stubs are build tools; cimgui-love's C parser is a build tool for regenerating its bindings; neumetik-midi's
+# Rust source (built by tools/build-binaries.sh from its repository) is not needed to run the Lua binding.
+EXTRA_DROP = {"luasteam": {"sdk", "generator", "luals"}, "cimgui-love": {"cparser"}, "neumetik-midi": {"src", "capi"}}
 DROP_FILES = {"cimgui-love": {"generator.lua"}}
 DROP_EXT = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".ogg", ".wav", ".mp3", ".flac", ".mid", ".ttf", ".otf", ".woff", ".woff2", ".ico", ".icns", ".psd", ".xcf", ".zip", ".gz",
             ".dll", ".so", ".dylib", ".a", ".lib", ".exe", ".o", ".obj", ".mtl", ".pdf", ".rockspec", ".yml", ".yaml", ".sh", ".bat", ".ps1", ".cpp", ".cc", ".c", ".h", ".hpp", ".cmake", ".mk"}

@@ -267,3 +267,14 @@ name = "moonshine"
 git = "https://github.com/vrld/moonshine"
 module = "moonshine"
 summary = "Post-processing shader effects you chain: blur, CRT, glow, grain, scanlines, vignette and more."
+
+# Added 2026-11-14: ansiapps' own MIDI synthesizer (also vendored into JoyrIDE for file previews). Audited before it is pinned.
+[[library]]
+name = "neumetik-midi"
+git = "https://github.com/joashchee/neumetik-midi"
+module = "bindings.love.neumetik_midi"
+kind = "ffi"
+pin = "head"   # no release tags; the repository is a synced copy of the library, and each sync is a commit
+caution = "Require it as `libs.neumetik-midi.bindings.love.neumetik_midi`. Its native library has to be built for each platform you ship (desktop, Android, PortMaster); it cannot run in the web build, and on iOS the library must be embedded in the app."
+native = "Needs its shared library (libneumetik_midi.dylib, libneumetik_midi.so or neumetik_midi.dll), built from capi/ with cargo build --release (Rust, no dependencies; about 0.5 MB), kept beside the game or in its save folder. No SoundFont is needed: it synthesizes every instrument itself, and plays a SoundFont or DLS bank too if you load one."
+summary = "General MIDI and GS music with no SoundFont: a small synthesizer you feed a .mid file and play through a LÖVE queueable source (loops, fades, seeking, muted channels, live notes), or through a SoundFont or DLS bank you give it."

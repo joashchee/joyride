@@ -9,5 +9,5 @@ love = love or {
   handlers = {}, _stub = true,
   timer = { getTime = function() return os.clock() end },
   system = { getOS = function() return "OS X" end },
-  filesystem = {}, getVersion = function() return 11, 5, 0, "Mysterious Mysteries" end,
+  filesystem = { getSourceBaseDirectory = function() return "." end, getSaveDirectory = function() return "/tmp" end, getSource = function() return "." end }, getVersion = function() return 11, 5, 0, "Mysterious Mysteries" end,
 }

@@ -70,13 +70,14 @@ end
 
 -- The compiled parts, built by tools/build-binaries.sh into bin/ beside the game (never in the repository).
 local OS_FILES = {
-  ["OS X"] = { nuklear = "nuklear.so", cimgui = "cimgui.dylib", discord = "libdiscord-rpc.dylib" },
+  ["OS X"] = { nuklear = "nuklear.so", cimgui = "cimgui.dylib", discord = "libdiscord-rpc.dylib", neumetik = "libneumetik_midi.dylib" },
 }
 -- `preload`: a shared library the Lua side opens by its bare name, which is first opened by full path so the bare name then resolves.
 L.binaries = {
   ["love-nuklear"] = { key = "nuklear" },
   ["cimgui-love"] = { key = "cimgui" },
   ["lua-discordRPC"] = { key = "discord", preload = true },
+  ["neumetik-midi"] = { key = "neumetik", preload = true },
 }
 
 --- The folder holding the compiled parts: bin/ in the game's own folder (a C module cannot be opened from inside a .love file).

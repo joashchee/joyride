@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# Builds the Neumetik MIDI GDExtension: godot-cpp (as a git submodule or
+# folder beside this file) and libneumetik_midi.a, linked into one library.
+#   cargo build --release --manifest-path ../../capi/Cargo.toml [--target ...]
+#   scons platform=<macos|windows|linux> target=template_release
+import os
+
+env = SConscript("godot-cpp/SConstruct")
+
+capi = os.path.abspath("../../capi")
+env.Append(CPPPATH=["src/", os.path.join(capi, "include")])
+# The static library cargo builds, for the platform scons builds for.
+rust_targets = {
+    "macos": None,
+    "linux": None,
+    "windows": "x86_64-pc-windows-msvc",
+}
+target = ARGUMENTS.get("rust_target", rust_targets.get(env["platform"]))
+release = os.path.join(capi, "target", target, "release") if target else os.path.join(capi, "target", "release")
+env.Append(LIBPATH=[release], LIBS=["neumetik_midi"])
+if env["platform"] == "windows":
+    env.Append(LIBS=["ws2_32", "userenv", "ntdll", "bcrypt", "advapi32"])
+elif env["platform"] == "linux":
+    env.Append(LIBS=["pthread", "dl", "m"])
+
+sources = Glob("src/*.cpp")
+out = "project/addons/neumetik_midi/bin/libneumetik_godot{}{}".format(env["suffix"], env["SHLIBSUFFIX"])
+if env["platform"] == "macos":
+    out = "project/addons/neumetik_midi/bin/libneumetik_godot.{}.{}.framework/libneumetik_godot.{}.{}".format(
+        env["platform"], env["target"], env["platform"], env["target"])
+library = env.SharedLibrary(out, source=sources)
+Default(library)

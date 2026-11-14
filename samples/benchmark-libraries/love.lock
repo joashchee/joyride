@@ -175,6 +175,12 @@ spec = "rev=9338e01f623eea385fc38e7d792a3815a647a862"
 commit = "9338e01f623eea385fc38e7d792a3815a647a862"
 
 [[package]]
+name = "neumetik-midi"
+git = "https://github.com/joashchee/neumetik-midi"
+spec = "rev=e275a35e4b01f77b1a15d35c251637e9b25fe3a1"
+commit = "e275a35e4b01f77b1a15d35c251637e9b25fe3a1"
+
+[[package]]
 name = "peachy"
 git = "https://github.com/josh-perry/peachy"
 spec = "rev=1abdebbddb7a0fe8fc6c95326d1bc4c80b1e0d4e"

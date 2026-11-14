@@ -351,3 +351,12 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 1
 reviewed = "2026-11-14 reviewed: no secrets, no binaries, no network, no hidden code; loadstring in serialisers and JSON or class helpers, a log file in log, debug hooks in profile.lua, a socket clock in batteries, author contacts in file headers are all expected for what each does"
+
+[[audit]]
+name = "neumetik-midi"
+rev = "e275a35e4b01f77b1a15d35c251637e9b25fe3a1"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "2026-11-14 reviewed: Rust crate has no dependencies and no build script; no network or process use, std::env and std::fs only inside tests; capi's 53 unsafe blocks are FFI pointer boundaries with null checks; the Lua binding only ffi.loads its own library; demo, examples and scripts are not installed or run; no binaries, secrets or personal data"

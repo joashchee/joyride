@@ -142,7 +142,7 @@ do
     names[e.name] = true
     check(e.module and e.rev and #e.rev == 40, e.name .. " has a module and a pinned commit")
   end
-  eq(#libload.entries, 39, "all 39 curated libraries are in the catalogue")
+  eq(#libload.entries, 40, "all 40 curated libraries are in the catalogue")
   local lock = io.open("love.lock"):read("*a")
   for _, e in ipairs(libload.entries) do
     check(lock:find('commit = "' .. e.rev .. '"', 1, true), e.name .. " is locked at its pinned commit in love.lock")
@@ -235,6 +235,9 @@ do
   -- the stand-alone checks
   eq(results.specialists["tiny-ecs"].status, "PASS", "tiny-ecs does its job")
   eq(results.specialists["semver"].status, "PASS", "semver does its job")
+  -- its compiled library is built by tools/build-binaries.sh (git-ignored): the check runs where it was built and is SKIP where it was not
+  local built = io.open("bin/libneumetik_midi.dylib") ~= nil
+  eq(results.specialists["neumetik-midi"].status, built and "PASS" or "SKIP", "neumetik-midi synthesizes a song where its library is built")
   eq(results.specialists["anim8"].status, "SKIP", "anim8 needs a window")
   eq(results.specialists["luasteam"].status, "SKIP", "luasteam is compiled")
   -- a library that prints when required is quiet and counted

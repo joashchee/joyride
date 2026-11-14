@@ -113,6 +113,27 @@ S.list = {
       love.filesystem.remove("nativefs-probe.txt")
       return okw and text == "joyride benchmark", "a file written, read back and removed by its full path in the save folder"
     end },
+  { lib = "neumetik-midi", job = "MIDI music with no SoundFont",
+    run = function(nm)
+      -- A one-note song made here (a General MIDI piano playing middle C for one beat), so the check needs no file and no bank.
+      local function chunk(tag, body) return tag .. string.char(0, 0, math.floor(#body / 256), #body % 256) end
+      local track = string.char(0x00, 0xC0, 0x00, 0x00, 0x90, 60, 100, 0x83, 0x60, 0x80, 60, 64, 0x00, 0xFF, 0x2F, 0x00)
+      local smf = "MThd" .. string.char(0, 0, 0, 6, 0, 0, 0, 1, 0x01, 0xE0) .. "MTrk" .. string.char(0, 0, 0, #track) .. track
+      local ffi = require("ffi")
+      local p = nm.player(44100)
+      local ok, why = p:load(smf)
+      if not ok then return false, "refused a valid MIDI file: " .. tostring(why) end
+      p:play()
+      local frames = 4410
+      local buf = ffi.new("float[?]", frames * 2)
+      local peak = 0
+      for _ = 1, 10 do
+        p:renderF32(buf, frames)
+        for j = 0, frames * 2 - 1 do local a = math.abs(buf[j]); if a > peak then peak = a end end
+      end
+      local bankOk = p:loadSoundBank("not a soundfont")   -- a SoundFont or DLS bank is accepted; anything else is refused, not crashed on
+      return peak > 0.01 and not bankOk, ("a one-note song was synthesized, peak %.2f, with no bank; a non-bank was refused. Loading a real SoundFont was tried by hand (GeneralUser GS, 30 MB, 13 ms), none is shipped here"):format(peak)
+    end },
   { lib = "semver", job = "version numbers",
     run = function(semver)
       local a, b = semver("1.2.3"), semver("1.10.0")

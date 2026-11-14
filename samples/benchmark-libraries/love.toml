@@ -120,6 +120,10 @@ rev = "d39271e0c000e2fedbc2e3ad286b78b5a5146065"
 git = "https://github.com/EngineerSmith/nativefs"
 rev = "9338e01f623eea385fc38e7d792a3815a647a862"
 
+[dependencies.neumetik-midi]
+git = "https://github.com/joashchee/neumetik-midi"
+rev = "e275a35e4b01f77b1a15d35c251637e9b25fe3a1"
+
 [dependencies.peachy]
 git = "https://github.com/josh-perry/peachy"
 rev = "1abdebbddb7a0fe8fc6c95326d1bc4c80b1e0d4e"

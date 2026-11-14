@@ -1,0 +1,11 @@
+[configuration]
+entry_symbol = "neumetik_midi_init"
+compatibility_minimum = "4.1"
+
+[libraries]
+macos.debug = "res://addons/neumetik_midi/bin/libneumetik_godot.macos.template_debug.framework"
+macos.release = "res://addons/neumetik_midi/bin/libneumetik_godot.macos.template_release.framework"
+windows.debug.x86_64 = "res://addons/neumetik_midi/bin/libneumetik_godot.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/neumetik_midi/bin/libneumetik_godot.windows.template_release.x86_64.dll"
+linux.debug.x86_64 = "res://addons/neumetik_midi/bin/libneumetik_godot.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://addons/neumetik_midi/bin/libneumetik_godot.linux.template_release.x86_64.so"

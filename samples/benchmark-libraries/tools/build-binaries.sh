@@ -8,9 +8,11 @@
 #   cimgui.dylib        cimgui from cimgui-love's pinned commit (Dear ImGui 1.92, docking), by CMake
 #   libdiscord-rpc.dylib  Discord's discord-rpc (archived upstream, MIT) by CMake; its install name is made the bare file name so the
 #                       library's own `ffi.load("discord-rpc")` finds it once lib/libload.lua has loaded it by full path
+#   libneumetik_midi.dylib  neumetik-midi's C API (capi/, Rust with no dependencies) at the commit libraries.toml pins, by cargo for both
+#                       Apple targets and joined with lipo; its install name is made the bare file name, as for discord-rpc
 #   luasteam            NOT built: it needs Valve's Steamworks SDK, which needs a Steamworks partner login and may not be redistributed
 #
-# Needs: git, cmake, a C and C++ compiler, LuaJIT's headers (Homebrew: /opt/homebrew/include/luajit-2.1). Network: github.com, codeberg.org.
+# Needs: git, cmake, a C and C++ compiler, Rust with the two Apple targets (for neumetik-midi), LuaJIT's headers (Homebrew: /opt/homebrew/include/luajit-2.1). Network: github.com, codeberg.org.
 # Everything is universal (arm64 and x86_64). Nothing from the cloned repositories is run.
 set -eu
 HERE=$(cd "$(dirname "$0")/.." && pwd)
@@ -48,5 +50,14 @@ cmake --build "$WORK/discord-rpc/build" -j8 --target discord-rpc >/dev/null
 cp "$WORK/discord-rpc/build/src/libdiscord-rpc.dylib" "$OUT/libdiscord-rpc.dylib"
 install_name_tool -id libdiscord-rpc.dylib "$OUT/libdiscord-rpc.dylib" 2>/dev/null || true
 sign "$OUT/libdiscord-rpc.dylib"
+
+echo "== neumetik-midi"
+clone https://github.com/joashchee/neumetik-midi "$WORK/neumetik-midi" "$(rev neumetik-midi)"
+for t in aarch64-apple-darwin x86_64-apple-darwin; do
+  cargo build --quiet --release --manifest-path "$WORK/neumetik-midi/capi/Cargo.toml" --target "$t"
+done
+lipo -create -output "$OUT/libneumetik_midi.dylib" "$WORK"/neumetik-midi/capi/target/aarch64-apple-darwin/release/libneumetik_midi.dylib "$WORK"/neumetik-midi/capi/target/x86_64-apple-darwin/release/libneumetik_midi.dylib
+install_name_tool -id libneumetik_midi.dylib "$OUT/libneumetik_midi.dylib" 2>/dev/null || true
+sign "$OUT/libneumetik_midi.dylib"
 
 ls -l "$OUT"

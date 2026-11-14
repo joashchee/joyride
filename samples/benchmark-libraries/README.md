@@ -6,7 +6,7 @@ It is the library counterpart of the IO Checker: the same 48 by 25 text-mode scr
 
 ## What it compares
 
-All 39 curated libraries are in `libs/`, each at its pinned commit (`love.toml`, `love.lock`; `tools/vendor-libs.py` rebuilds them from `joyride-core/data/libraries.toml` and drops docs, pictures, tests and compiled files). The ones that overlap are compared with the same task, written the way each library wants:
+All 40 curated libraries are in `libs/`, each at its pinned commit (`love.toml`, `love.lock`; `tools/vendor-libs.py` rebuilds them from `joyride-core/data/libraries.toml` and drops docs, pictures, tests and compiled files). The ones that overlap are compared with the same task, written the way each library wants:
 
 | Comparison | Libraries | What is rated (features, then speed or size) |
 |---|---|---|
