@@ -25,6 +25,8 @@ local function costCell(row, m, env)
   local r = memberLoad(nil, m, env)
   if r.status == "SKIP" then return H.cell("SKIP", r.detail) end
   if r.status == "FAIL" then return H.cell("FAIL", r.detail) end
+  -- A compiled module has no Lua to count (nuklear): not zero lines, but nothing to compare.
+  if row.field == "loc" and (r.entry.loc or 0) == 0 then return H.cell("SKIP", "compiled code: no Lua source to count") end
   local v
   if row.field == "loc" then v = r.entry.loc elseif row.field == "ms" then v = r.ms else v = r.kb end
   return H.cell("PASS", "whole library", v, row.unit)

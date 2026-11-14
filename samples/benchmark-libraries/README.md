@@ -41,7 +41,7 @@ The libraries with nothing to compare against (tiny-ecs, anim8, peachy, sti, bat
 
 ## Findings from the first run (macOS, LÖVE 11.5 and 12.0)
 
-Tables: `results/macos-11.5.md`; reports: `results/macos-11.5.txt`, `results/macos-12.0.txt`. No window, on battery, in a sandbox: indicative only. A few things the libraries do at their pinned commits (pinned by the tests, so an update shows):
+Tables: `results/macos-11.5.md`; reports: `results/macos-11.5.txt`, `results/macos-12.0.txt` (no window, in a sandbox) and `results/macos-11.5-window.txt` / `.md` (the maintainer's run on a Mac with a window, with the compiled libraries built: the immediate-mode GUIs, anim8, moonshine and push all ran, no FAIL; suit's click rows work after the fixes). On battery: indicative only. The compiled GUIs are fast because their work happens in C (cimgui: 2.6M widgets/s against suit's 0.6M), so their speed is not comparable with the Lua ones; nuklear has no Lua lines to count, so it is left out of the code-size row from now on (the saved run predates that and rates it 5). A few things the libraries do at their pinned commits (pinned by the tests, so an update shows):
 
 - tween.lua loses the sibling fields of a nested table when a tween ends (`pos.y` is gone after tweening `pos.x`).
 - json and lume.serialize lose digits (`1/3` comes back as `0.33333333333333`) and refuse cycles; json also refuses `inf` and mixed keys; binser keeps all of them.
