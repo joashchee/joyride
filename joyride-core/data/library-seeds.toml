@@ -346,3 +346,12 @@ git = "https://github.com/pkulchenko/serpent"
 module = "src.serpent"
 caution = "Require it as `libs.serpent.src.serpent`: its only file is src/serpent.lua. Writing is slow: the benchmark saved a 200-unit crowd 30 to 90 times a second, against thousands for bitser and binser (loading is fast). `serpent.load` runs the saved text as Lua but with no globals and no function calls unless you pass `safe = false`: never do that for a file you did not write, and treat even the safe mode as a convenience, not a security boundary."
 summary = "Lua serializer and pretty printer: dump a table as Lua source (with comments, sorting, cycles), and read it back."
+
+[[library]]
+name = "sqlua"
+git = "https://github.com/handrake/sqlua"
+module = "sqlua"
+kind = "ffi"
+caution = "Measured on the pinned commit: integers come back as 64-bit cdata (7LL), equal to 7 and fine in sums, but not a table key (t[row.id] misses) and not a Lua number for JSON or tostring; a real BLOB reads as nil, and text is cut at its first NUL byte; booleans cannot be bound (an error); integers above 2^53 are stored as floats; only the first statement of an `execute` runs (\"CREATE ...; INSERT ...\" silently runs just the CREATE); `close` twice calls sqlite3_close on a freed handle. Statements are cached by their exact SQL for the life of the connection. Require raises if the SQLite library cannot be found. Build SQL with parameters, never by joining text."
+native = "Needs the SQLite 3 shared library, found by ffi.load(\"sqlite3\") when it is required: macOS has one in the system; for Windows ship sqlite3.dll beside the game, and for Linux, Android and iOS ship libsqlite3 (the sqlite.org amalgamation builds one; public domain)."
+summary = "SQLite 3 through LuaJIT's FFI: connect to a file or memory, run SQL with positional and named parameters, read rows as tables."

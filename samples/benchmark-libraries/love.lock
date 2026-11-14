@@ -271,6 +271,12 @@ spec = "rev=7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
 commit = "7ed0d50d9421fbb11781805fb8eeabd9d0e181cf"
 
 [[package]]
+name = "sqlua"
+git = "https://github.com/handrake/sqlua"
+spec = "rev=6dd9444da02a6cd46e36b1452c010c6943a95856"
+commit = "6dd9444da02a6cd46e36b1452c010c6943a95856"
+
+[[package]]
 name = "sti"
 git = "https://github.com/karai17/Simple-Tiled-Implementation"
 spec = "rev=69cdf8c7565f518c03967d0243cb54d1ee31da4e"

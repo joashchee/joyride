@@ -91,6 +91,20 @@ S.list = {
       if not ok then return false, "indexing the folder raised: " .. tostring(got):sub(1, 90) end
       return got == "hi", "a .txt file read by indexing its name"
     end },
+  { lib = "sqlua", job = "SQLite databases",
+    run = function(sqlua)
+      local db = sqlua.connect(":memory:")
+      db:execute("CREATE TABLE score (name TEXT, points INTEGER, ratio REAL)")
+      db:execute("INSERT INTO score VALUES (?, ?, ?)", { "Ada", 10, 0.5 })
+      db:execute("INSERT INTO score VALUES (:name, :points, :ratio)", { name = "Bo", points = 7, ratio = 1.25 })
+      local rows = db:execute("SELECT name, points, ratio FROM score ORDER BY points DESC")
+      local _, changed = db:execute("UPDATE score SET points = points + 1 WHERE name = ?", { "Bo" })
+      local n = 0
+      for _ in db:rows("SELECT * FROM score") do n = n + 1 end
+      db:close()
+      local ok = #rows == 2 and rows[1].name == "Ada" and rows[1].points == 10 and rows[2].ratio == 1.25 and changed == 1 and n == 2
+      return ok, "positional and named parameters, rows as tables, a row count; integers come back as 64-bit cdata (equal to 10, not a table key)"
+    end },
   { lib = "ripple", job = "sound tags, volume, fades",
     run = function(ripple)
       if not (love and love.audio and love.sound) then return "skip", "needs LÖVE's audio and sound modules" end

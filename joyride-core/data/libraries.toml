@@ -563,3 +563,17 @@ caution = "Require it as `libs.serpent.src.serpent`: its only file is src/serpen
 summary = "Lua serializer and pretty printer: dump a table as Lua source (with comments, sorting, cycles), and read it back."
 loads_11_5 = "loads"
 loads_12_0 = "loads"
+
+[[library]]
+name = "sqlua"
+git = "https://github.com/handrake/sqlua"
+rev = "6dd9444da02a6cd46e36b1452c010c6943a95856"
+tag = "v0.1-3"
+licence = "MIT"
+module = "sqlua"
+kind = "ffi"
+native = "Needs the SQLite 3 shared library, found by ffi.load(\"sqlite3\") when it is required: macOS has one in the system; for Windows ship sqlite3.dll beside the game, and for Linux, Android and iOS ship libsqlite3 (the sqlite.org amalgamation builds one; public domain)."
+caution = "Measured on the pinned commit: integers come back as 64-bit cdata (7LL), equal to 7 and fine in sums, but not a table key (t[row.id] misses) and not a Lua number for JSON or tostring; a real BLOB reads as nil, and text is cut at its first NUL byte; booleans cannot be bound (an error); integers above 2^53 are stored as floats; only the first statement of an `execute` runs (\"CREATE ...; INSERT ...\" silently runs just the CREATE); `close` twice calls sqlite3_close on a freed handle. Statements are cached by their exact SQL for the life of the connection. Require raises if the SQLite library cannot be found. Build SQL with parameters, never by joining text."
+summary = "SQLite 3 through LuaJIT's FFI: connect to a file or memory, run SQL with positional and named parameters, read rows as tables."
+loads_11_5 = "unmeasured"
+loads_12_0 = "unmeasured"
