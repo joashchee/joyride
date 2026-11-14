@@ -102,6 +102,8 @@ pub fn run() {
             samples::sample_list,
             soundfonts::soundfont_list,
             soundfonts::soundfont_choose,
+            soundfonts::soundfont_plan,
+            soundfonts::soundfont_use,
             samples::sample_copy,
             run::run_project,
             run::stop_project,

@@ -206,6 +206,27 @@ export interface SoundChoice {
 export const soundfontList = () => (inTauri ? invoke<SoundChoice>("soundfont_list") : Promise.resolve(null));
 export const soundfontChoose = (id: string) => invoke<SoundChoice>("soundfont_choose", { id });
 
+export interface SoundfontWarning {
+  /** `blocker` (nothing will be added), `warning` or `info`. */
+  level: "blocker" | "warning" | "info";
+  text: string;
+}
+export interface SoundfontPlan {
+  id: string;
+  name: string;
+  dest: string;
+  licenceDest: string;
+  warnings: SoundfontWarning[];
+  blocked: boolean;
+  alreadyThere: boolean;
+  /** The Lua that plays a song through the bank once it is in the project. */
+  snippet: string;
+}
+/** What adding a bundled SoundFont to the open project would do, and what to know first. Nothing is written. */
+export const soundfontPlan = (id: string) => invoke<SoundfontPlan>("soundfont_plan", { id });
+/** Copies it into the open project with its licence and records it; refused if the plan has a blocker. */
+export const soundfontUse = (id: string) => invoke<SoundfontPlan>("soundfont_use", { id });
+
 export interface SampleInfo {
   id: string;
   name: string;

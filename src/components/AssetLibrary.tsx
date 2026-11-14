@@ -11,6 +11,7 @@ import {
   type ImportReportView,
 } from "../lib/backend";
 import Panel from "./Panel";
+import ShippedSoundfonts from "./ShippedSoundfonts";
 
 export const LICENCES: { id: string; label: string }[] = [
   { id: "CC0-1.0", label: "CC0 (public domain)" },
@@ -388,15 +389,16 @@ function Import(props: { onImported: () => void }) {
 }
 
 export default function AssetLibrary(props: { hasProject: boolean; onClose: () => void; onAdded: (path: string) => void }) {
-  const [tab, setTab] = useState<"browse" | "import">("browse");
+  const [tab, setTab] = useState<"browse" | "import" | "shipped">("browse");
   const [rev, setRev] = useState(0);
   return (
     <Panel title="Asset library" kind="panel-assets" onClose={props.onClose}>
       <div className="panel-bar" role="tablist" aria-label="Asset library">
         <button role="tab" aria-selected={tab === "browse"} onClick={() => setTab("browse")}>{tab === "browse" ? "[Library]" : " Library "}</button>
         <button role="tab" aria-selected={tab === "import"} onClick={() => setTab("import")} disabled={!props.hasProject} title={props.hasProject ? "" : "Open a project first"}>{tab === "import" ? "[Import from this project]" : " Import from this project "}</button>
+        <button role="tab" aria-selected={tab === "shipped"} onClick={() => setTab("shipped")}>{tab === "shipped" ? "[SoundFonts]" : " SoundFonts "}</button>
       </div>
-      {tab === "browse" ? <Browse key={rev} hasProject={props.hasProject} onAdded={props.onAdded} /> : <Import onImported={() => setRev((r) => r + 1)} />}
+      {tab === "browse" ? <Browse key={rev} hasProject={props.hasProject} onAdded={props.onAdded} /> : tab === "import" ? <Import onImported={() => setRev((r) => r + 1)} /> : <ShippedSoundfonts hasProject={props.hasProject} onAdded={props.onAdded} />}
     </Panel>
   );
 }
