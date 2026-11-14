@@ -1,0 +1,2 @@
+# SDL game controller mappings: guid,name,mappings,platform. This one is for a made-up pad, so the file is valid and harmless.
+030000004a6f79726964652000000001,Joyride IO Checker Virtual Pad,a:b0,b:b1,x:b2,y:b3,back:b6,start:b7,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a2,righty:a3,platform:Mac OS X,

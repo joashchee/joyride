@@ -1,0 +1,17 @@
+{
+  "name": "IO Checker",
+  "version": "1.0.0",
+  "checks": [
+    "input",
+    "video",
+    "sound",
+    "storage",
+    "system",
+    "assets"
+  ],
+  "limits": {
+    "fps": 55,
+    "lateFramePercent": 1
+  },
+  "unicode": "Löve ♥ 日本語"
+}

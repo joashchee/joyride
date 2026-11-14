@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "JoyrIDE",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "identifier": "com.ansiapps.joyride",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -28,7 +28,7 @@
     "active": true,
     "targets": "all",
     "category": "DeveloperTool",
-    "resources": ["resources/toolchains/**/*"],
+    "resources": ["resources/toolchains/**/*", "../samples/**/*"],
     "copyright": "ansiapps. MIT license.",
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico", "icons/icon.png"],
     "macOS": { "hardenedRuntime": true }

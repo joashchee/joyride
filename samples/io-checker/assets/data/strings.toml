@@ -1,0 +1,8 @@
+# TOML strings, as a localisation file would hold them.
+[en]
+title = "IO Checker"
+bye = "Goodbye"
+
+[fr]
+title = "Vérificateur E/S"
+bye = "Au revoir"

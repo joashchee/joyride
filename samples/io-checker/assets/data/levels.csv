@@ -1,0 +1,4 @@
+id,name,tiles,seed
+1,Meadow,grass;stone,io-checker-1
+2,Lake,water;sand,io-checker-2
+3,"Ridge, high",stone;stone,io-checker-3

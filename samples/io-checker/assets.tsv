@@ -1,0 +1,48 @@
+# path	kind	licence	author	source	recipe	note
+assets/archives/pack.zip	archive	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	stored zip of two small text files, fixed date	
+assets/audio/fasttracker2.xm	audio	MIT	r3i6nos contributors	r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)	copied from music/trackers/fasttracker2.xm	
+assets/audio/impulsetracker.it	audio	MIT	r3i6nos contributors	r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)	copied from music/trackers/impulsetracker.it	
+assets/audio/jingle.flac	audio	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	music-composer 1.2.0 jingle {"kind":"win","key":"C","scale":"major"} seed io-checker, then flac	
+assets/audio/jingle.mp3	audio	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	music-composer 1.2.0 jingle {"kind":"win","key":"C","scale":"major"} seed io-checker, then lame 96 kbps	
+assets/audio/jingle.ogg	audio	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	music-composer 1.2.0 jingle {"kind":"win","key":"C","scale":"major"} seed io-checker, then ffmpeg native Vorbis	
+assets/audio/jingle.wav	audio	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	music-composer 1.2.0 jingle {"kind":"win","key":"C","scale":"major"} seed io-checker, rendered at 22050 Hz	
+assets/audio/protracker.mod	audio	MIT	r3i6nos contributors	r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)	copied from music/trackers/protracker.mod	
+assets/audio/screamtracker.s3m	audio	MIT	r3i6nos contributors	r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)	copied from music/trackers/screamtracker.s3m	
+assets/audio/theme.mid	audio	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	music-composer 1.2.0 song {"form":"loop","key":"A","scale":"minor"} seed io-checker	
+assets/data/config.json	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	written by hand for the IO Checker	
+assets/data/gamecontrollerdb.txt	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	written by hand for the IO Checker	
+assets/data/levels.csv	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	written by hand for the IO Checker	
+assets/data/map.tmx	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	Tiled map using tiles.tsx	
+assets/data/notes.txt	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	written by hand for the IO Checker	
+assets/data/strings.toml	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	written by hand for the IO Checker	
+assets/data/tiles.tsx	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	Tiled tileset for images/tiles.png	
+assets/data/walk.clip.json	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	sprite-animator 0.3.1 walk {} (the exact animator-clip JSON)	
+assets/data/world.ldtk	data	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	LDtk world with one empty level	
+assets/fonts/SourceCodePro-Regular.otf	font	OFL-1.1	Adobe (Source Code Pro)	https://github.com/adobe-fonts/source-code-pro	copied unmodified from tools/third-party/	Source Code Pro, Copyright Adobe, SIL Open Font License 1.1 (LICENSE-source-code-pro.txt)
+assets/fonts/corpus.ttc	font	MIT	r3i6nos contributors	r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)	copied from fonts/corpus.ttc	
+assets/fonts/corpus.ttf	font	MIT	r3i6nos contributors	r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)	copied from fonts/corpus.ttf	
+assets/fonts/hex-imagefont.png	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	a 3x5 hex font drawn in make-assets.mjs; glyphs 0123456789ABCDEF.:-+ and a space, magenta separators	ImageFont strip
+assets/fonts/vga-bmfont.fnt	font	CC-BY-SA-4.0	VileR (The Ultimate Oldschool PC Font Pack)	https://int10h.org/oldschool-pc-fonts/	BMFont descriptor for vga-bmfont.png (CP437 cells mapped to Unicode)	IBM VGA 8x16 by VileR, CC BY-SA 4.0
+assets/fonts/vga-bmfont.png	image	CC-BY-SA-4.0	VileR (The Ultimate Oldschool PC Font Pack)	https://int10h.org/oldschool-pc-fonts/	copied unmodified from src/vendor/art-sprites/docs/fonts/ibm-vga-8x16.png	BMFont page: the VGA glyph atlas; IBM VGA 8x16 by VileR, CC BY-SA 4.0
+assets/fonts/vga.woff	font	CC-BY-SA-4.0	VileR (The Ultimate Oldschool PC Font Pack)	https://int10h.org/oldschool-pc-fonts/	copied unmodified from public/fonts/ansiapps/	IBM VGA 8x16 by VileR, CC BY-SA 4.0
+assets/images/hero-walk.png	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	art-sprites 1.31.1 character {"loadout":"rogue"} clip walk (4 frames, 8 fps) scale 4	
+assets/images/hero.bmp	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	magick hero.png -background #202030 -alpha remove -type TrueColor -define bmp:format=bmp3 hero.bmp	
+assets/images/hero.hdr	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	magick hero.png -resize 25% -define hdr:format=rgbe hero.hdr	
+assets/images/hero.jpg	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	magick hero.png -background #202030 -alpha remove -quality 82 -sampling-factor 4:2:0 -strip hero.jpg	
+assets/images/hero.png	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	art-sprites 1.31.1 character {"loadout":"rogue"} frame 0 scale 6	
+assets/images/hero.qoi	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	magick hero.png hero.qoi	LÖVE 12.0 only: LÖVE 11.5 refuses QOI
+assets/images/hero.tga	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	magick hero.png -compress none hero.tga	
+assets/images/hero.webp	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	magick hero.png -define webp:lossless=true hero.webp	LÖVE 12.0 only: LÖVE 11.5 refuses WebP
+assets/images/tiles.png	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	art-sprites 1.31.1 tile seeds grass,stone,water,sand scale 4	
+assets/lib/hello.luac	script	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	luajit -b -s (LuaJIT bytecode; refused by standard Lua and by builds with a different LuaJIT)	bytecode is tied to the LuaJIT build that wrote it
+assets/lib/json.lua	script	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	written by hand for the IO Checker	
+assets/shaders/tint.glsl	shader	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	written by hand for the IO Checker	
+assets/textures/astc4.astc	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	hand-built ASTC, 4x4 blocks, one block	LÖVE reads the header and the block; a GPU may still refuse to draw the format
+assets/textures/bc1.dds	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	hand-built DDS, BC1 (DXT1), 4x4, one block	LÖVE reads the header and the block; a GPU may still refuse to draw the format
+assets/textures/bc3.dds	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	hand-built DDS, BC3 (DXT5), 4x4, one block	LÖVE reads the header and the block; a GPU may still refuse to draw the format
+assets/textures/bc7.dds	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	hand-built DDS, BC7 (DX10 header), 4x4, one block	LÖVE reads the header and the block; a GPU may still refuse to draw the format
+assets/textures/etc1.pkm	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	hand-built PKM, ETC1, 4x4, one block	LÖVE reads the header and the block; a GPU may still refuse to draw the format
+assets/textures/etc2.ktx	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	hand-built KTX 1, ETC2 RGBA8, 4x4, one block	LÖVE reads the header and the block; a GPU may still refuse to draw the format
+assets/textures/pvrtc.pvr	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	hand-built PVR 3, PVRTC 4bpp RGBA, 8x8, one level	LÖVE reads the header and the block; a GPU may still refuse to draw the format
+assets/textures/scanline.exr	image	CC0-1.0	JoyrIDE	samples/io-checker/tools/make-assets.mjs	hand-built OpenEXR, scanline, uncompressed, HALF RGB, 2x1	a tiled EXR aborts LÖVE; this one is scanline
+assets/video/clip.ogv	video	MIT	r3i6nos contributors	r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)	copied from video/clip.ogv	

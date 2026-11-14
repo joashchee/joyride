@@ -1,0 +1,5 @@
+[project]
+name = "IO Checker"
+bundle_id = "dev.joyride.iochecker"
+version = "1.0.0"
+love_version = "11.5"

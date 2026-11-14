@@ -16,6 +16,7 @@ mod project;
 mod fonts;
 mod preview;
 mod run;
+mod samples;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -92,6 +93,8 @@ pub fn run() {
             fonts::font_add,
             preview::preview_file,
             preview::preview_video_frames,
+            samples::sample_list,
+            samples::sample_copy,
             run::run_project,
             run::stop_project,
             lsp::lsp_start,

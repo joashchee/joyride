@@ -103,6 +103,7 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
 - `src/ansiapps-theme.css`, `src/lib/theme.ts` (the palette), `src/lib/grid.ts`,
   `src/monaco-theme.ts` (the editor's two palettes), `components/Panel.tsx`
   (a framed window): the text-mode UI, `docs/text-mode-ui.md`.
+- `samples/`: whole projects that ship with the app (`joyride-core/src/samples.rs` copies one to the app-data folder; `Samples…` in the toolbar). `samples/io-checker/` detects the platform and checks its I/O and every asset type (README there; `joyride-core/tests/io_checker_sample.rs`). Its assets are made by `tools/make-assets.mjs`; `asset-core/examples/sample_assets_toml.rs` writes the licence record. Regenerate both when an asset changes or the licence test fails.
 - `src/vendor/`: Painter, Composer, Animator (MIT; `scripts/vendor-sync.sh`).
 - `ogv/`: Ogg Theora probe and frame decoder over `vendor/xiph/` (`cargo test --offline --manifest-path ogv/Cargo.toml`).
 - `vendor/xiph/`: libogg and libtheora's decoder (BSD-3-Clause, unmodified; `scripts/vendor-xiph.sh`).

@@ -1,0 +1,123 @@
+{
+ "format": "animator-clip",
+ "version": 1,
+ "id": "walk",
+ "kind": "walk",
+ "fps": 8,
+ "loop": true,
+ "holds": [
+  1,
+  1,
+  1,
+  1
+ ],
+ "frames": [
+  {
+   "dx": 0,
+   "dy": 0,
+   "lean": 0,
+   "head": 0,
+   "squat": 0,
+   "lift": 0,
+   "drag": 2,
+   "sway": 1,
+   "legs": [
+    -2,
+    2
+   ],
+   "arm": "down",
+   "weapon": "up",
+   "air": 0
+  },
+  {
+   "dx": 0,
+   "dy": -1,
+   "lean": 0,
+   "head": 0,
+   "squat": 0,
+   "lift": 0,
+   "drag": 0,
+   "sway": 0,
+   "legs": [
+    0,
+    0
+   ],
+   "arm": "down",
+   "weapon": "up",
+   "air": 0
+  },
+  {
+   "dx": 0,
+   "dy": 0,
+   "lean": 0,
+   "head": 0,
+   "squat": 0,
+   "lift": 0,
+   "drag": 1,
+   "sway": -1,
+   "legs": [
+    2,
+    -2
+   ],
+   "arm": "down",
+   "weapon": "up",
+   "air": 0
+  },
+  {
+   "dx": 0,
+   "dy": -1,
+   "lean": 0,
+   "head": 0,
+   "squat": 0,
+   "lift": 0,
+   "drag": 0,
+   "sway": 0,
+   "legs": [
+    0,
+    0
+   ],
+   "arm": "down",
+   "weapon": "up",
+   "air": 0
+  }
+ ],
+ "events": [
+  {
+   "frame": 0,
+   "name": "step"
+  },
+  {
+   "frame": 2,
+   "name": "step"
+  }
+ ],
+ "reduced": [
+  {
+   "dx": 0,
+   "dy": 0,
+   "lean": 0,
+   "head": 0,
+   "squat": 0,
+   "lift": 0,
+   "drag": 0,
+   "sway": 0,
+   "legs": [
+    0,
+    0
+   ],
+   "arm": "down",
+   "weapon": "up",
+   "air": 0
+  }
+ ],
+ "spec": {
+  "recipe": "walk",
+  "params": {
+   "stride": 2,
+   "bounce": 1,
+   "fps": 8,
+   "wobble": 0,
+   "seed": "walk"
+  }
+ }
+}

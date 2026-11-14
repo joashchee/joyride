@@ -73,6 +73,22 @@ menus) are light-gray windows with black text and a green highlight and a
 hard shadow. Monaco keeps its own scrolling and text metrics; the grid
 check does not measure inside it.
 
+### The editor's own font (Settings)
+
+The one place the VGA font is not required: a person may pick a coding font for the editor in Settings (`src/lib/codefonts.ts`; the
+maintainer's decision, 2026-11-14). Everything else stays VGA on the 8 by 16 grid. The default is still VGA. Offered: JetBrains Mono,
+Source Code Pro, Hack, IBM Plex Mono, Inconsolata, Fira Code (ligatures off), Intel One Mono, DejaVu Sans Mono, and Spleen, a pixel font
+in five cell sizes (6x12 to 32x64). All Regular, unmodified, licence beside each in `public/fonts/code/licences/`, listed in `NOTICE`.
+
+- **Sizes are only the clean ones.** A vector font is offered at the pixel sizes where its character advance is within a quarter of a
+  device pixel of whole, and Monaco is given the letter-spacing that makes it exactly whole (so columns do not drift); line height is whole
+  device pixels. A pixel font is offered at whole multiples of the size it was drawn for. Laptop sizes are the small ones (10 to 16),
+  desktop 17 to 24, large displays above that; Spleen's cells reach 32 by 64.
+- **The window snaps.** When a resize ends (and when the font or size changes), the window moves by whole shell cells (8 by 16) to the
+  nearest size where the editor's text area is whole characters wide and whole lines tall (`src/lib/snap.ts`, `windowsnap.ts`). Not when
+  maximized or full screen, with no editor on screen, or when no nearby size lines up; two nudges at most, so it cannot fight the layout.
+- `node scripts/check-code-fonts.ts` reads each file's own metrics and licence; `node scripts/check-snap.ts` checks the sums.
+
 ## What to remember when adding UI
 
 - **Whole cells**: every width, padding, margin and gap a multiple of 8px

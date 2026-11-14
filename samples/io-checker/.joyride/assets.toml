@@ -1,0 +1,377 @@
+# Written by JoyrIDE: the library assets this project uses and their licences.
+
+[[asset]]
+path = "assets/archives/pack.zip"
+hash = "3f27787e7e74b2c0ff7eca69f01491cf758b145cbf0cae07bf68a3c22cdd419f"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/audio/fasttracker2.xm"
+hash = "e3b3bfc3c303159763e09c545423ca362e0ef4874d986809ce3884ec6ec7c8d1"
+licence = "MIT"
+confirmed = true
+author = "r3i6nos contributors"
+source = "r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)"
+
+[[asset]]
+path = "assets/audio/impulsetracker.it"
+hash = "bcb0583da2ec6a24a51a91f5cea6f0e8026af10017bd840c9712ec3fe3f97d71"
+licence = "MIT"
+confirmed = true
+author = "r3i6nos contributors"
+source = "r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)"
+
+[[asset]]
+path = "assets/audio/jingle.flac"
+hash = "866d30c54df15c6ab7d2e9be49d5a0783560d6e8577228b08c7cd433476b516d"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/audio/jingle.mp3"
+hash = "fe7774ce18be3658fce19e4050f42e384ddfd7fab5282c9936cfae2cc11b88fb"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/audio/jingle.ogg"
+hash = "39fe97828135cc3ff0940631467f62cf21ffa0ecf8b05e023dba654103dd321b"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/audio/jingle.wav"
+hash = "084c680515edc4600bf825af2ac9fb4ea67fd598737cf942b1a6cb0c2fe0b6d3"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/audio/protracker.mod"
+hash = "f71f1768ac2c3c3aa10905ad19869d6723150632404d1328046f7da22255e417"
+licence = "MIT"
+confirmed = true
+author = "r3i6nos contributors"
+source = "r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)"
+
+[[asset]]
+path = "assets/audio/screamtracker.s3m"
+hash = "06c15af3701f145de588d921122962ba685a5f7565ff4e719edf6c5bf8e738c7"
+licence = "MIT"
+confirmed = true
+author = "r3i6nos contributors"
+source = "r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)"
+
+[[asset]]
+path = "assets/audio/theme.mid"
+hash = "46a0596c7cb69f267d8a8e1afd932ad4535be91aaa0d66043f5343d378784c61"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/config.json"
+hash = "2f39e17dc44e8d2d11df3920a38696258d675868fcceb0c15dea16e2cd4ccc27"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/gamecontrollerdb.txt"
+hash = "dc42225ed1d4304fa6efb62f9342a02d81c77f6ed669ebff08be620a986828b0"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/levels.csv"
+hash = "009a27543b3e4332dcec809f765c9ed46b50e6da99d350336c5946055823ac1e"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/map.tmx"
+hash = "6e158f574e9e1e4dc43ab2a56063fad5656f6490c8eaf44ae8488a70c6227839"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/notes.txt"
+hash = "de8f2ccb306385d23de7d18ccf51884beadce88671d1a6b3b930791f01826a83"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/strings.toml"
+hash = "fdd42ea3fcb9d40764399efed4ad2e1fd45e68e02f40395a086c51c7dafe1ef5"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/tiles.tsx"
+hash = "0fe4018ea657edaedee1f8e1a26b4f3cc9d80df7dbcba94fdb1ef24144141f6c"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/walk.clip.json"
+hash = "07d474fea4d6b3252afaf114280ce9baa08712016c67950a210da69288313dae"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/data/world.ldtk"
+hash = "3348393a37c7ba2aa60132ae8094510c68308de7c0aeda3eac53875546124d5e"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/fonts/SourceCodePro-Regular.otf"
+hash = "94d18c6a90a35d45ade3d95662234788746031109563e8b587eb7c18531e9614"
+licence = "OFL-1.1"
+confirmed = true
+author = "Adobe (Source Code Pro)"
+source = "https://github.com/adobe-fonts/source-code-pro"
+
+[[asset]]
+path = "assets/fonts/corpus.ttc"
+hash = "40d3ac1a25d40808e8b157058658c2684100356e9f8a22046d49429ad49cccf8"
+licence = "MIT"
+confirmed = true
+author = "r3i6nos contributors"
+source = "r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)"
+
+[[asset]]
+path = "assets/fonts/corpus.ttf"
+hash = "bd8f477f21f101efb5e3cf7caac223250a3d9997158db6abee78a12e762f87f4"
+licence = "MIT"
+confirmed = true
+author = "r3i6nos contributors"
+source = "r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)"
+
+[[asset]]
+path = "assets/fonts/hex-imagefont.png"
+hash = "e2f385bf81ac1ef32fb638fdf8ce1fb6bba32fd125dcce2dc60b893542bad494"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/fonts/vga-bmfont.fnt"
+hash = "796a9cd73d5343768924e26a3f446a5b05ef9ae406e1cabf4c67f3c1597e64f3"
+licence = "CC-BY-SA-4.0"
+confirmed = true
+author = "VileR (The Ultimate Oldschool PC Font Pack)"
+source = "https://int10h.org/oldschool-pc-fonts/"
+
+[[asset]]
+path = "assets/fonts/vga-bmfont.png"
+hash = "8ae60502726dadda9e97ccd47efa20e97c9af74c350af463131edd81376ccffe"
+licence = "CC-BY-SA-4.0"
+confirmed = true
+author = "VileR (The Ultimate Oldschool PC Font Pack)"
+source = "https://int10h.org/oldschool-pc-fonts/"
+
+[[asset]]
+path = "assets/fonts/vga.woff"
+hash = "ec1ceffba1d3dd885b59b15aa1c48d8c94b3356d9ea3c5865c0ed8970fb84a50"
+licence = "CC-BY-SA-4.0"
+confirmed = true
+author = "VileR (The Ultimate Oldschool PC Font Pack)"
+source = "https://int10h.org/oldschool-pc-fonts/"
+
+[[asset]]
+path = "assets/images/hero-walk.png"
+hash = "9e69bfe0725c67a2169396e80a06c6bfd0e39fec40907a8be3089ff03da6153c"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/images/hero.bmp"
+hash = "2721f0160a135cb0581b9e4bb18e8df0a646f648c64cf55474a6b8d4b12efc78"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/images/hero.hdr"
+hash = "9a2f0a44da03e0f78fe466695765b81064b515f9e75bf667bfccc22ae87451e3"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/images/hero.jpg"
+hash = "99f32d4f762c98c8acb7cf1f94d9867f49ac9fa31ccadbef5e0c2248b9c0ceca"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/images/hero.png"
+hash = "33c051a22d05cb3c83457937f391e82503ae300bb4f74ac737dbef12f572803e"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/images/hero.qoi"
+hash = "adae0a83647a3c0d8135d788b42893d0a84c7913a8ed9483bcba49b4116dc07c"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/images/hero.tga"
+hash = "c8cd1ca9b2bdd8ed0fcbdbdbe11e20633be56a345fdaa20ec079f1dd43018861"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/images/hero.webp"
+hash = "176e697f004cb93e90d0ee6c73b21422a85d2b30bc7e03f06c937eb33fda912c"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/images/tiles.png"
+hash = "a08aab8556bed1c930a0e14f04debe73f6a7d723c4157f5667406f742541c476"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/lib/hello.luac"
+hash = "bad4f094770fa5c09421035cf2ef51f5d2285fe0c392ca20e5cb3a6eb579b8d9"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/lib/json.lua"
+hash = "dc131472677022ca4ffc0d4eea49cd5e2b826cb3c1a0c9cbbee431aced5bd676"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/shaders/tint.glsl"
+hash = "535d3dbad4edb6caf88481ed505312354bc927b9961fae2f76920315835873c2"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/textures/astc4.astc"
+hash = "2e27dec82423468099241d992bc5de0f1c0e92241359e712f96ce362259c256c"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/textures/bc1.dds"
+hash = "7f5fd42902cbe9aaa0071084a78834fdcfa74ea115d0ce8ed75c8223c9d08d53"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/textures/bc3.dds"
+hash = "16c7f2c0748f545f4a38e7297dca7cf7c8ae232dcb0fdf8dcd90eef26d537a99"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/textures/bc7.dds"
+hash = "6474d8f89472eea2d3b5dfe008c5009530283bab1eda51dd628f55715684fbe6"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/textures/etc1.pkm"
+hash = "a064e396759caeaa9651bebbd349550427dc7234b14343bf576243b6d2370d64"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/textures/etc2.ktx"
+hash = "9d5814d511f5643413070ff51e0155d50608e97c89667f89cbc174f3999ce2a9"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/textures/pvrtc.pvr"
+hash = "19ac31ebd73222667b73b85e40ef733c7c53153a2441350dc85f1b84fc222051"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/textures/scanline.exr"
+hash = "f52ea0c8ba7192f4c5c1e829daf5b5f72a410b58122c5a4c4877a541fefb8c70"
+licence = "CC0-1.0"
+confirmed = true
+author = "JoyrIDE"
+source = "samples/io-checker/tools/make-assets.mjs"
+
+[[asset]]
+path = "assets/video/clip.ogv"
+hash = "3234bcc182fba4afc44f99f31fd0c7e87914e18957d2be004965ffd5165d27e5"
+licence = "MIT"
+confirmed = true
+author = "r3i6nos contributors"
+source = "r3i6nos corpus/files (made in code: Neumetik, Composer, scripts/corpus_formats.py)"

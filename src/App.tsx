@@ -9,11 +9,15 @@ import Search from "./components/Search";
 import ExportPanel from "./components/ExportPanel";
 import Libraries from "./components/Libraries";
 import Games from "./components/Games";
+import Samples from "./components/Samples";
 import AssetLibrary from "./components/AssetLibrary";
 import Docs from "./components/Docs";
 import AutoPort from "./components/AutoPort";
 import GitHub from "./components/GitHub";
 import Settings from "./components/Settings";
+import { currentFit } from "./lib/editorfit";
+import { installSnap } from "./lib/windowsnap";
+import { onChoice } from "./lib/codefonts";
 import { projectListing, chooseFolder, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
@@ -45,10 +49,28 @@ export default function App() {
   const [docsKey, setDocsKey] = useState(0);
   const [libsOpen, setLibsOpen] = useState(false);
   const [gamesOpen, setGamesOpen] = useState(false);
+  const [samplesOpen, setSamplesOpen] = useState(false);
   const [assetsOpen, setAssetsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [fontOpen, setFontOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Resizing the window ends on a size that fits the editor's font (whole characters, whole lines); so does changing the font.
+  useEffect(() => {
+    let snapper: { now: () => void; stop: () => void } | null = null;
+    let off = () => {};
+    let gone = false;
+    void installSnap(currentFit).then((s) => {
+      if (gone) return s.stop();
+      snapper = s;
+      off = onChoice(() => s.now());
+    });
+    return () => {
+      gone = true;
+      off();
+      snapper?.stop();
+    };
+  }, []);
   const [findKey, setFindKey] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [asking, setAsking] = useState<null | { kind: "file" | "dir" | "rename"; label: string; initial: string }>(null);
@@ -369,6 +391,7 @@ export default function App() {
           <button onClick={() => setDocsOpen((x) => !x)} aria-expanded={docsOpen} title="LÖVE reference (Cmd+Shift+D)">Reference…</button>
           <button onClick={() => setLibsOpen((x) => !x)} disabled={!project} aria-expanded={libsOpen}>Libraries…</button>
           <button onClick={() => setGamesOpen((x) => !x)} aria-expanded={gamesOpen}>Games…</button>
+          <button onClick={() => setSamplesOpen((x) => !x)} aria-expanded={samplesOpen}>Samples…</button>
           <button onClick={() => setAssetsOpen((x) => !x)} aria-expanded={assetsOpen}>Assets…</button>
           <button onClick={() => setFontOpen((x) => !x)} disabled={!project} aria-expanded={fontOpen}>Add Font…</button>
           <button onClick={() => setGhOpen((x) => !x)} disabled={!project} aria-expanded={ghOpen}>GitHub…</button>
@@ -398,6 +421,15 @@ export default function App() {
           />
         )}
         {gamesOpen && <Games onClose={() => setGamesOpen(false)} />}
+        {samplesOpen && (
+          <Samples
+            onClose={() => setSamplesOpen(false)}
+            onOpen={(dir) => {
+              setSamplesOpen(false);
+              void openDir(dir);
+            }}
+          />
+        )}
         {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}
         {ghOpen && project && <GitHub onClose={() => setGhOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} onOpen={(f, l) => void openAt(f, l)} />}
         {portOpen && project && <AutoPort onClose={() => setPortOpen(false)} onOpen={(f, l) => void openAt(f, l)} onChanged={() => void projectListing().then(setProject).catch(fail)} />}

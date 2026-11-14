@@ -1,0 +1,2 @@
+Plain text, read with love.filesystem.read and shown by the Assets page.
+A second line, with an accent: café.

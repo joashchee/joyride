@@ -37,7 +37,7 @@ checksum = "d3fb67a6e08acf24fdeccbac2cb6ac4305825bd1f117462e0e6f2f193345ad56"
 
 [[package]]
 name = "asset-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "blake3",
  "image",
@@ -490,7 +490,7 @@ checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
 
 [[package]]
 name = "joyride-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "asset-core",
  "blake3",

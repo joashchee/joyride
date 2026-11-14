@@ -43,6 +43,7 @@ pub mod overlay;
 pub mod pipeline;
 pub mod pkg;
 pub mod runner;
+pub mod samples;
 pub mod scan;
 pub mod shim;
 pub mod simulator;

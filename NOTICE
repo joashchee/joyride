@@ -38,3 +38,24 @@ third-party licence ships in the app (scripts/license-scan.py).
   Neumetik repository stays proprietary apart from `midi/`). Standard library
   only. It includes the Organya editor's waveforms and drum samples (BSD,
   `vendor/neumetik/synth/data/organya/LICENSE`).
+- The IO Checker sample (`samples/io-checker/`): its code is MIT like the rest. Its assets are
+  listed one by one, with licence, author, source and recipe, in `samples/io-checker/assets.tsv`
+  (and as the Asset Library's record in `.joyride/assets.toml`): most are CC0-1.0, made by
+  Painter, Composer and Animator and by hand; the tracker modules, the Theora clip and three tiny
+  test fonts are MIT, copied from the r3i6nos corpus (the same owner); and the IBM VGA 8x16 font
+  (`assets/fonts/vga.woff`, unmodified, with its licence in `LICENSE-vga-font.txt`) and the BMFont
+  page made from Painter's atlas of it (unmodified) are CC BY-SA 4.0 by VileR.
+  Also `assets/fonts/SourceCodePro-Regular.otf`: Source Code Pro by Adobe, SIL OFL 1.1, unmodified
+  (Reserved Font Name 'Source'), licence in `samples/io-checker/LICENSE-source-code-pro.txt`.
+- Coding fonts offered in Settings, each Regular and unmodified, as its project published it,
+  with its licence in `public/fonts/code/licences/` and credited in Settings
+  (`scripts/check-code-fonts.ts` checks each file and licence):
+  JetBrains Mono (The JetBrains Mono Project Authors, OFL-1.1);
+  Source Code Pro (Adobe, OFL-1.1, Reserved Font Name "Source");
+  Hack (Source Foundry Authors, MIT, from DejaVu and Bitstream Vera);
+  IBM Plex Mono (IBM Corp., OFL-1.1, Reserved Font Name "Plex");
+  Inconsolata (The Inconsolata Project Authors, OFL-1.1);
+  Fira Code (The Fira Code Project Authors, OFL-1.1);
+  Intel One Mono (The Intel One Mono Project Authors, OFL-1.1, Reserved Font Name "Intel");
+  DejaVu Sans Mono (Bitstream Inc., DejaVu changes public domain, Bitstream Vera licence);
+  Spleen in five cell sizes (Frederic Cambus, BSD-2-Clause).

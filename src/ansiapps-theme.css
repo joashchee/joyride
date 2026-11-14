@@ -425,6 +425,8 @@ label { cursor: pointer; }
 .swatch-chips { display: inline-flex; margin-left: auto; }
 .chip { display: inline-block; width: 16px; height: 16px; }
 .credit { color: var(--muted); }
+.font-size-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.panel-settings { max-height: 480px; max-height: min(480px, round(down, 80vh, 16px)); }
 fieldset:disabled .swatch-row { color: var(--r-disabled); cursor: default; }
 
 /* ---- The console: a black DOS prompt ---- */

@@ -6,6 +6,9 @@ import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 import { defineThemes, TEXT_MODE_OPTIONS, themeId } from "../monaco-theme";
 import { currentAppearance, onAppearance } from "../lib/theme";
+import { editorFont, fontById, loadChoice, loadFont, onChoice, type CodeChoice } from "../lib/codefonts";
+import type { Fit } from "../lib/snap";
+import { setFitProvider } from "../lib/editorfit";
 
 // Monaco's own web worker, bundled: nothing is fetched from a CDN (CLAUDE.md
 // rule 1). Lua needs no language worker; `lua-language-server` is reached
@@ -53,6 +56,41 @@ function scheduleLint(path: string, model: monaco.editor.ITextModel) {
 
 /** The editor on screen, if any, for the Reference panel's Insert. */
 let liveEditor: monaco.editor.IStandaloneCodeEditor | null = null;
+
+/** Puts the chosen coding font on the editor: loads its file, then sets the family, size, line height and the letter-spacing nudge
+ *  that make each character a whole number of device pixels, and has Monaco measure again. */
+async function applyFont(editor: monaco.editor.IStandaloneCodeEditor, choice: CodeChoice) {
+  const font = fontById(choice.id);
+  try {
+    if (font) await loadFont(font);
+    else await document.fonts.load('16px "ansiapps VGA"');
+  } catch {
+    // the file would not load: Monaco falls back to the next family in the list
+  }
+  const f = editorFont(choice, window.devicePixelRatio || 1);
+  editor.updateOptions({ fontFamily: f.fontFamily, fontSize: f.fontSize, lineHeight: f.lineHeight, letterSpacing: f.letterSpacing, fontLigatures: f.fontLigatures });
+  monaco.editor.remeasureFonts();
+}
+
+/** What the window needs to know to fit the editor's font: the text area and the cell, in whole device pixels. Null with no editor on screen. */
+export function editorFit(): Fit | null {
+  const e = liveEditor;
+  if (!e || !e.getModel()) return null;
+  const l = e.getLayoutInfo();
+  if (l.width <= 0 || l.height <= 0) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const O = monaco.editor.EditorOption;
+  return {
+    contentW: Math.round(l.contentWidth * dpr),
+    contentH: Math.round((l.height - l.horizontalScrollbarHeight) * dpr),
+    cellW: Math.round(e.getOption(O.fontInfo).typicalHalfwidthCharacterWidth * dpr),
+    cellH: Math.round(e.getOption(O.lineHeight) * dpr),
+    stepW: Math.round(8 * dpr),
+    stepH: Math.round(16 * dpr),
+  };
+}
+
+setFitProvider(() => editorFit());
 
 /** Inserts a snippet (Monaco syntax: `${1:name}`, `$0`) at the cursor and focuses the editor.
  *  False when no file is open in the editor. */
@@ -105,7 +143,8 @@ export default function Editor(props: {
     });
     // Monaco measures the font when it is created: if the VGA font was not in
     // yet, measure again once it is, so the cells are exactly 8 by 16.
-    void document.fonts.load('16px "ansiapps VGA"').then(() => monaco.editor.remeasureFonts());
+    void applyFont(editor, loadChoice());
+    const offFont = onChoice((c) => void applyFont(editor, c));
     ed.current = editor;
     liveEditor = editor;
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, async () => {
@@ -165,6 +204,7 @@ export default function Editor(props: {
     const offPalette = onAppearance((a) => monaco.editor.setTheme(themeId(a)));
     return () => {
       offPalette();
+      offFont();
       formatter?.dispose();
       colors?.dispose();
       sub.dispose();

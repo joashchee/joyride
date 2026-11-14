@@ -144,6 +144,15 @@ export const libraryList = (query: string) => invoke<LibraryView[]>("library_lis
 export const libraryAdd = (name: string, query: string) => invoke<LibraryView[]>("library_add", { name, query });
 export const libraryRemove = (name: string, query: string) => invoke<LibraryView[]>("library_remove", { name, query });
 
+export interface SampleInfo {
+  id: string;
+  name: string;
+  summary: string;
+}
+/** The sample projects that ship with the app (a copy is made in the app-data folder before one is opened). */
+export const sampleList = () => (inTauri ? invoke<SampleInfo[]>("sample_list") : Promise.resolve([] as SampleInfo[]));
+export const sampleCopy = (id: string, fresh: boolean) => invoke<string>("sample_copy", { id, fresh });
+
 export interface DocFound {
   name: string;
   kind: string;
