@@ -1,5 +1,6 @@
 -- Finding a way across a grid. jumper knows grids and has several algorithms (A*, Dijkstra, jump point search); batteries.pathfind is one
--- general A* over any graph: you supply the neighbours.
+-- general A* over any graph: you supply the neighbours; lua-star and Luafinding are small A* modules that ask you whether a cell is open
+-- (lua-star can be told to move in four directions only, Luafinding always moves in eight).
 
 local H = require("bench.harness")
 
@@ -34,6 +35,22 @@ local function crowdMap()
     rows[y] = table.concat(r)
   end
   return rows
+end
+
+local function openFn(rows) return function(x, y) return rows[y] ~= nil and rows[y]:sub(x, x) == "." end end
+
+-- lua-star: positions are tables with x and y, the result is the list of cells including the start (so steps = #path - 1), or false.
+local function luastarPath(ls, rows, sx, sy, gx, gy, noDiagonal)
+  local p = ls:find(#rows[1], #rows, { x = sx, y = sy }, { x = gx, y = gy }, openFn(rows), false, noDiagonal)
+  return p and (#p - 1) or nil
+end
+
+-- Luafinding: positions are vectors (its own), the result is the list of cells including the start, or nil. It always moves in eight directions.
+local function luafindingPath(mods, rows, sx, sy, gx, gy)
+  local open = openFn(rows)
+  local f = mods.LF(mods.Vector(sx, sy), mods.Vector(gx, gy), function(v) return open(v.x, v.y) end)
+  local p = f:GetPath()
+  return p and (#p - 1) or nil
 end
 
 local function jumperPath(mods, rows, mode, algo, sx, sy, gx, gy)
@@ -74,6 +91,8 @@ return {
   members = {
     { id = "jumper", short = "jumper", lib = "jumper", get = function(P, req) return { Pathfinder = P, Grid = req("jumper.grid") } end },
     { id = "batteries.pathfind", short = "pathf", lib = "batteries", get = function(b) return b.pathfind end },
+    { id = "lua-star", short = "lstar", lib = "Lua-star" },
+    { id = "luafinding", short = "lfind", lib = "Luafinding", get = function(LF, req) return { LF = LF, Vector = req("vector") } end },
   },
   rows = {
     { id = "shortest", label = "Shortest path", kind = "feature", about = "Across the zigzag room from the top left to the bottom right: as many steps as a breadth-first search finds.",
@@ -90,6 +109,18 @@ return {
           local steps = batteriesPath(pf, ROOM, 1, 1, w, h)
           return steps == want, ("%s steps, expected %s"):format(tostring(steps), tostring(want))
         end,
+        ["lua-star"] = function(ls)
+          local m, w, h = parse(ROOM)
+          local want = bfs(m, w, h, 1, 1, w, h)
+          local steps = luastarPath(ls, ROOM, 1, 1, w, h, true)
+          return steps == want, ("%s steps, expected %s (told to move in four directions)"):format(tostring(steps), tostring(want))
+        end,
+        luafinding = function(mods)
+          local m, w, h = parse(ROOM)
+          local want = bfs(m, w, h, 1, 1, w, h)
+          local steps = luafindingPath(mods, ROOM, 1, 1, w, h)
+          return steps == want, ("%s steps, expected %s: it always moves in eight directions, there is no four-way mode"):format(tostring(steps), tostring(want))
+        end,
       } },
     { id = "none", label = "No way across", kind = "feature", about = "A wall from top to bottom: no path, and no error.",
       impl = {
@@ -98,6 +129,8 @@ return {
           local steps = batteriesPath(pf, WALLED, 1, 1, 8, 4)
           return steps == nil or steps == false
         end,
+        ["lua-star"] = function(ls) return luastarPath(ls, WALLED, 1, 1, 8, 4, true) == nil end,
+        luafinding = function(mods) return luafindingPath(mods, WALLED, 1, 1, 8, 4) == nil end,
       } },
     { id = "diagonal", label = "Diagonal moves", kind = "feature", about = "Eight-way movement across an open 5 by 5 room: 4 diagonal steps, not 8 square ones.",
       impl = {
@@ -123,6 +156,14 @@ return {
             heuristic = function(n) local x, y = xy(n); return math.sqrt((5 - x) ^ 2 + (5 - y) ^ 2) end })
           return path and #path - 1 == 4, "you write the neighbour list yourself"
         end,
+        ["lua-star"] = function(ls)
+          local rows = { ".....", ".....", ".....", ".....", "....." }
+          return luastarPath(ls, rows, 1, 1, 5, 5, false) == 4
+        end,
+        luafinding = function(mods)
+          local rows = { ".....", ".....", ".....", ".....", "....." }
+          return luafindingPath(mods, rows, 1, 1, 5, 5) == 4
+        end,
       } },
     { id = "cost", label = "Terrain costs", kind = "feature", about = "Mud (cost 5) in the short way round makes the long way (cost 1) cheaper: the path avoids the mud.",
       impl = {
@@ -133,6 +174,8 @@ return {
           local steps = batteriesPath(pf, rows, 1, 2, 3, 2, function(x, y) return (x == 2 and y == 2) and 5 or 1 end)
           return steps == 4, ("%s steps (a straight line is 2 steps through the mud)"):format(tostring(steps))
         end,
+        ["lua-star"] = false,
+        luafinding = false,
       } },
     { id = "jps", label = "Jump point search", kind = "feature", about = "A faster algorithm for open grids, picked by name.",
       impl = {
@@ -142,12 +185,16 @@ return {
           return len ~= nil and len >= 7 and len < 9
         end,
         ["batteries.pathfind"] = false,
+        ["lua-star"] = false,
+        luafinding = false,
       } },
     { id = "maze", label = "40 by 40 maze", kind = "speed", unit = "paths/s", units = 1, about = "Corner to corner across a seeded 40 by 40 grid with one wall in five.",
       expect = function(n) return n ~= nil and n > 0, n end,
       impl = {
         jumper = function(mods) local rows = crowdMap(); return function() return (jumperPath(mods, rows, "ORTHOGONAL", "ASTAR", 1, 1, 40, 40)) end end,
         ["batteries.pathfind"] = function(pf) local rows = crowdMap(); return function() return (batteriesPath(pf, rows, 1, 1, 40, 40)) end end,
+        ["lua-star"] = function(ls) local rows = crowdMap(); return function() return luastarPath(ls, rows, 1, 1, 40, 40, true) end end,
+        luafinding = function(mods) local rows = crowdMap(); return function() return luafindingPath(mods, rows, 1, 1, 40, 40) end end,
       } },
   },
 }

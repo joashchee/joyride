@@ -159,6 +159,32 @@ S.list = {
       input.init_state()
       return first and later and rel and seq == true, "pressed once then held, released, a two-key sequence; a frame only advances when push_state runs (bind_callbacks arranges that)"
     end },
+  { lib = "jprof", job = "profiling zones and saving a profile",
+    run = function()
+      if not (love and love.filesystem) then return "skip", "needs LÖVE's filesystem module" end
+      -- jprof does nothing unless PROF_CAPTURE is true when it is required, so it is required again with the switch on.
+      local before = package.loaded["jprof"]
+      package.loaded["jprof"] = nil
+      PROF_CAPTURE = true
+      local ok, prof = pcall(require, "jprof")
+      PROF_CAPTURE = nil
+      package.loaded["jprof"] = before
+      if not ok then return false, "required with PROF_CAPTURE: " .. tostring(prof):sub(1, 90) end
+      local file = "jprof-benchmark.prof"
+      prof.push("frame"); prof.push("work")
+      local s = 0; for i = 1, 20000 do s = s + i end
+      prof.pop("work"); prof.pop("frame")
+      local printed = print
+      print = function() end
+      local wrote, werr = pcall(prof.write, file)
+      print = printed
+      local info = love.filesystem.getInfo(file)
+      love.filesystem.remove(file)
+      if not wrote and tostring(werr):find("permission denied", 1, true) then return "skip", "the save folder cannot be written in this run (LÖVE 12.0's, in a sandbox): the write was not tried" end
+      if not wrote then return false, "write raised: " .. tostring(werr):sub(1, 110) end
+      if not (info and info.size > 0) then return false, "write returned but no profile file was saved" end
+      return true, "two nested zones saved to a profile file (it is a no-op unless PROF_CAPTURE is set before it is required); the viewer was not run"
+    end },
   { lib = "lighter", job = "2D lights and shadows", needs = "window",
     run = function(Lighter)
       local l = Lighter()

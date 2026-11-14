@@ -513,3 +513,30 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 0
 reviewed = "read the scan (clean) and input.lua's 373 lines, ran it with a stubbed love.timer: no files, network or dynamic code; it wraps love callbacks and love.draw only when bind_callbacks is called; frame advance depends on push_state; MIT LICENSE file"
+
+[[audit]]
+name = "Lua-star"
+rev = "b444e278fc1a481b3235d9acffde6034ce9c20e6"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the scans and the sources: Lua-star (src/lua-star.lua, pure Lua), Luafinding (src/ heap, vector and luafinding; its love-example/profile.lua uses debug.sethook, example only), jprof (jprof.lua 199 lines read: no-op unless PROF_CAPTURE, connect() is an outbound TCP client to localhost:1338, write() saves via love.filesystem; the network thread and viewer are the repo's main.lua, not the library; bundled lua-MessagePack is MIT/X11 by its own header); MIT LICENSE files in all three; cautions recorded"
+
+[[audit]]
+name = "Luafinding"
+rev = "674501e83151a9cf2d3657aa67db2b0c2bf2901b"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the scans and the sources: Lua-star (src/lua-star.lua, pure Lua), Luafinding (src/ heap, vector and luafinding; its love-example/profile.lua uses debug.sethook, example only), jprof (jprof.lua 199 lines read: no-op unless PROF_CAPTURE, connect() is an outbound TCP client to localhost:1338, write() saves via love.filesystem; the network thread and viewer are the repo's main.lua, not the library; bundled lua-MessagePack is MIT/X11 by its own header); MIT LICENSE files in all three; cautions recorded"
+
+[[audit]]
+name = "jprof"
+rev = "b7a86f7b31f167d1377bc28fff29dbd9e58f29f0"
+date = "2026-11-14"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 8
+reviewed = "read the scans and the sources: Lua-star (src/lua-star.lua, pure Lua), Luafinding (src/ heap, vector and luafinding; its love-example/profile.lua uses debug.sethook, example only), jprof (jprof.lua 199 lines read: no-op unless PROF_CAPTURE, connect() is an outbound TCP client to localhost:1338, write() saves via love.filesystem; the network thread and viewer are the repo's main.lua, not the library; bundled lua-MessagePack is MIT/X11 by its own header); MIT LICENSE files in all three; cautions recorded"

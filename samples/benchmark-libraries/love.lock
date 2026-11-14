@@ -13,6 +13,18 @@ spec = "rev=92a51492f323ec5360f56bed0aebac30dbbd52ac"
 commit = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
 
 [[package]]
+name = "Lua-star"
+git = "https://github.com/wesleywerner/lua-star"
+spec = "rev=b444e278fc1a481b3235d9acffde6034ce9c20e6"
+commit = "b444e278fc1a481b3235d9acffde6034ce9c20e6"
+
+[[package]]
+name = "Luafinding"
+git = "https://github.com/GlorifiedPig/Luafinding"
+spec = "rev=674501e83151a9cf2d3657aa67db2b0c2bf2901b"
+commit = "674501e83151a9cf2d3657aa67db2b0c2bf2901b"
+
+[[package]]
 name = "Patchy"
 git = "https://github.com/excessive/patchy"
 spec = "rev=dc42c10425005927c39f5e12e70abcdf51751397"
@@ -131,6 +143,12 @@ name = "inspect"
 git = "https://github.com/kikito/inspect.lua"
 spec = "rev=691eea1fc6346be131e9749150976010f13e84f7"
 commit = "691eea1fc6346be131e9749150976010f13e84f7"
+
+[[package]]
+name = "jprof"
+git = "https://github.com/pfirsich/jprof"
+spec = "rev=b7a86f7b31f167d1377bc28fff29dbd9e58f29f0"
+commit = "b7a86f7b31f167d1377bc28fff29dbd9e58f29f0"
 
 [[package]]
 name = "json"

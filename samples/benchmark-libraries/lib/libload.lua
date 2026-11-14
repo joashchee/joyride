@@ -44,6 +44,9 @@ local function roots(name, plain)
   for _, n in ipairs(names) do
     t[#t + 1] = L.root .. "/" .. n .. "/?.lua"
     t[#t + 1] = L.root .. "/" .. n .. "/?/init.lua"
+    -- Folders inside the library whose files require each other by bare name (Luafinding's src/): the curated entry's `paths`.
+    local entry = L.by[n]
+    for p in ((entry and entry.paths) or ""):gmatch("[^;]+") do t[#t + 1] = L.root .. "/" .. n .. "/" .. p:match("^%s*(.-)%s*$") .. "/?.lua" end
   end
   t[#t + 1] = L.root .. "/?.lua"
   t[#t + 1] = L.root .. "/?/init.lua"
@@ -180,9 +183,17 @@ function L.require(name, module)
   local saved = getPath()
   setPath(roots(name))
   local off = cpathOn()
+  local e = L.by[name]
+  local before = {}
+  for k in pairs(package.loaded) do before[k] = true end
   local ok, mod = pcall(require, module)
   off()
   setPath(saved)
+  -- As when a library loads: a bare helper name (Luafinding's `vector`) is forgotten once its module is in hand, so one library's helper
+  -- never answers another's require.
+  for k in pairs(package.loaded) do
+    if not before[k] and not (e and owns(e, k)) and not runtime(k) then package.loaded[k] = nil end
+  end
   if not ok then error(mod, 0) end
   return mod
 end

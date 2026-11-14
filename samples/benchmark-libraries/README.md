@@ -6,7 +6,7 @@ It is the library counterpart of the IO Checker: the same 48 by 25 text-mode scr
 
 ## What it compares
 
-All 57 curated libraries are in `libs/`, each at its pinned commit (`love.toml`, `love.lock`; `tools/vendor-libs.py` rebuilds them from `joyride-core/data/libraries.toml` and drops docs, pictures, tests and compiled files). The ones that overlap are compared with the same task, written the way each library wants:
+All 60 curated libraries are in `libs/`, each at its pinned commit (`love.toml`, `love.lock`; `tools/vendor-libs.py` rebuilds them from `joyride-core/data/libraries.toml` and drops docs, pictures, tests and compiled files). The ones that overlap are compared with the same task, written the way each library wants:
 
 | Comparison | Libraries | What is rated (features, then speed or size) |
 |---|---|---|
@@ -22,7 +22,7 @@ All 57 curated libraries are in `libs/`, each at its pinned commit (`love.toml`,
 | Serialising tables | binser, bitser, serpent, lume, json | Round trip; 1 and "1" apart; Full precision; inf and -inf; Cycles; Binary strings; Output size; Save speed; Load speed |
 | Printing tables | inspect, batteries.pretty | Nested table; Stable key order; Cycles; Metatables; Depth limit; Print 200 units |
 | Collision | bump, HC, intersect | Box vs box; Circle vs circle; Point in box; Polygon; Push apart; No tunnelling; Ray cast; Find all overlaps |
-| Pathfinding | jumper, batteries.pathfind | Shortest path; No way across; Diagonal moves; Terrain costs; Jump point search; 40 by 40 maze |
+| Pathfinding | jumper, batteries.pathfind, lua-star, luafinding | Shortest path; No way across; Diagonal moves; Terrain costs; Jump point search; 40 by 40 maze |
 | Cameras | gamera, hump.camera | Screen centre; Zoom; Rotate; There and back; World bounds; Follow a target; 10000 conversions |
 | Assertions and tests | lust, batteries.assert, luaunit | Equal passes; Failure says why; Type check; Compare tables; Describe / it; Before / after; 10000 checks |
 | Timing and profiling | profile, batteries.measure | Time a function; Which function; Memory used; Mean, min, max; Cost of measuring |

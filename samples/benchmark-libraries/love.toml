@@ -12,6 +12,14 @@ rev = "7b8f7b2f0a1090a4b7deb6eeddec9cfbf67544c7"
 git = "https://github.com/vrld/HC"
 rev = "92a51492f323ec5360f56bed0aebac30dbbd52ac"
 
+[dependencies.Lua-star]
+git = "https://github.com/wesleywerner/lua-star"
+rev = "b444e278fc1a481b3235d9acffde6034ce9c20e6"
+
+[dependencies.Luafinding]
+git = "https://github.com/GlorifiedPig/Luafinding"
+rev = "674501e83151a9cf2d3657aa67db2b0c2bf2901b"
+
 [dependencies.Patchy]
 git = "https://github.com/excessive/patchy"
 rev = "dc42c10425005927c39f5e12e70abcdf51751397"
@@ -91,6 +99,10 @@ rev = "34735ee7f7ce07353033bb25bb213f50cd86c02a"
 [dependencies.inspect]
 git = "https://github.com/kikito/inspect.lua"
 rev = "691eea1fc6346be131e9749150976010f13e84f7"
+
+[dependencies.jprof]
+git = "https://github.com/pfirsich/jprof"
+rev = "b7a86f7b31f167d1377bc28fff29dbd9e58f29f0"
 
 [dependencies.json]
 git = "https://github.com/rxi/json.lua"

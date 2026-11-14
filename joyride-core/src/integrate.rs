@@ -38,7 +38,12 @@ pub fn path_templates(e: &Entry) -> Vec<String> {
         return Vec::new();
     }
     let n = &e.name;
-    vec!["libs/?.lua".into(), "libs/?/init.lua".into(), format!("libs/{n}/?.lua"), format!("libs/{n}/?/init.lua")]
+    let mut t = vec!["libs/?.lua".to_string(), "libs/?/init.lua".into(), format!("libs/{n}/?.lua"), format!("libs/{n}/?/init.lua")];
+    // Folders inside the library whose files require each other by bare name (Luafinding's src/).
+    for p in &e.paths {
+        t.push(format!("libs/{n}/{p}/?.lua"));
+    }
+    t
 }
 
 /// The line that adds `entry`'s templates to LÖVE's require path.
@@ -316,6 +321,18 @@ mod tests {
 
     fn main_of(d: &tempfile::TempDir) -> String {
         std::fs::read_to_string(d.path().join("main.lua")).unwrap()
+    }
+
+    #[test]
+    fn a_library_whose_files_require_each_other_by_bare_name_gets_its_folder_on_the_path() {
+        let lib = Library::bundled();
+        let e = lib.get("Luafinding").unwrap();
+        assert_eq!(e.paths, ["src"]);
+        let l = line_for(e).unwrap();
+        assert!(l.text.contains(";libs/Luafinding/src/?.lua\")"), "{}", l.text);
+        assert!(l.text.contains("libs/Luafinding/?.lua"), "the usual templates stay: {}", l.text);
+        // Most libraries have none.
+        assert!(lib.get("bump").unwrap().paths.is_empty());
     }
 
     #[test]

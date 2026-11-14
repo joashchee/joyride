@@ -61,7 +61,7 @@ fn newest_tag(repo: &Path) -> Option<String> {
 
 /// Requires `module` from `repo` on this LÖVE, headless (runs the library's
 /// code). Returns "loads", "needs-display" or "fails: <message>".
-fn probe(love: &Path, repo: &Path, name: &str, module: &str, others: &[String]) -> String {
+fn probe(love: &Path, repo: &Path, name: &str, module: &str, others: &[String], paths: &[&str]) -> String {
     let d = tempfile::tempdir().unwrap();
     // The repository appears as `<dir>/<name>`, as it does in a project's libs/ folder, so a library whose
     // init.lua sits at its root (`require "batteries"`) loads; the repo itself stays on the path for flat ones.
@@ -72,8 +72,9 @@ fn probe(love: &Path, repo: &Path, name: &str, module: &str, others: &[String]) 
     std::fs::write(
         d.path().join("main.lua"),
         format!(
-            "package.path = {mt:?} .. '/?.lua;' .. {mt:?} .. '/?/init.lua;' .. {p:?} .. '/?.lua;' .. {p:?} .. '/?/init.lua;' .. {p:?} .. '/lib/?.lua;' .. package.path\nfunction love.load()\n  local ok, err = pcall(require, {m:?})\n  print('CURATE', ok and 'loads' or ('fails: ' .. tostring(err):gsub('\\n.*', '')))\n  love.event.quit(0)\nend\n",
+            "package.path = {mt:?} .. '/?.lua;' .. {mt:?} .. '/?/init.lua;' .. {p:?} .. '/?.lua;' .. {p:?} .. '/?/init.lua;' .. {p:?} .. '/lib/?.lua;'{extra} .. package.path\nfunction love.load()\n  local ok, err = pcall(require, {m:?})\n  print('CURATE', ok and 'loads' or ('fails: ' .. tostring(err):gsub('\\n.*', '')))\n  love.event.quit(0)\nend\n",
             p = repo.display().to_string(),
+            extra = paths.iter().map(|x| format!(" .. {:?} .. '/{x}/?.lua;'", repo.display().to_string())).collect::<String>(),
             mt = mount.display().to_string(),
             m = module
         ),
@@ -141,6 +142,8 @@ fn main() {
         let kind = lib.get("kind").and_then(|k| k.as_str()).unwrap_or("lua");
         let native = lib.get("native").and_then(|k| k.as_str());
         let caution = lib.get("caution").and_then(|k| k.as_str());
+        let paths = lib.get("paths").and_then(|k| k.as_str());
+        let extra_paths: Vec<&str> = paths.map(|p| p.split(';').map(str::trim).filter(|x| !x.is_empty()).collect()).unwrap_or_default();
         let dir = work.path().join(name);
         eprint!("{name}: ");
         if let Err(e) = git(&["clone", "--quiet", url, dir.to_str().unwrap()], None) {
@@ -191,7 +194,7 @@ fn main() {
             })
             .unwrap_or_else(|| "unknown".into());
         // Native libraries cannot load without their binary, so they are never probed.
-        let (a, b) = if probing && kind == "lua" { (probe(l11.as_ref().unwrap(), &dir, name, module, &all_names), probe(l12.as_ref().unwrap(), &dir, name, module, &all_names)) } else { ("unmeasured".to_string(), "unmeasured".to_string()) };
+        let (a, b) = if probing && kind == "lua" { (probe(l11.as_ref().unwrap(), &dir, name, module, &all_names, &extra_paths), probe(l12.as_ref().unwrap(), &dir, name, module, &all_names, &extra_paths)) } else { ("unmeasured".to_string(), "unmeasured".to_string()) };
         eprintln!("{} {} {} | 11.5 {a} | 12.0 {b}", tag.as_deref().unwrap_or("(no tag)"), &rev[..7], spdx);
         let mut block = format!("\n[[library]]\nname = {name:?}\ngit = {url:?}\nrev = {rev:?}\n");
         if let Some(t) = tag {
@@ -203,6 +206,9 @@ fn main() {
         }
         if let Some(n) = native {
             block.push_str(&format!("native = {n:?}\n"));
+        }
+        if let Some(p) = paths {
+            block.push_str(&format!("paths = {p:?}\n"));
         }
         if let Some(c) = caution {
             block.push_str(&format!("caution = {c:?}\n"));

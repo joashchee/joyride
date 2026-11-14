@@ -104,6 +104,8 @@ pub struct Entry {
     pub native: Option<String>,
     /// A warning to read before adding it (a development tool that opens a port, say).
     pub caution: Option<String>,
+    /// Folders inside the library to add to the require path as well (a library whose files require each other by bare name, from its `src/`).
+    pub paths: Vec<String>,
     /// One line of what the benchmark found: its scores against the libraries it was compared with, its cost, what it got wrong.
     pub benchmark: Option<String>,
     /// One of the person's own (added from a project's offer): not audited, not measured.
@@ -132,6 +134,8 @@ struct RawEntry {
     kind: Option<String>,
     native: Option<String>,
     caution: Option<String>,
+    /// `;`-separated folders inside the library (see `Entry::paths`).
+    paths: Option<String>,
     loads_11_5: String,
     loads_12_0: String,
 }
@@ -210,7 +214,7 @@ impl Library {
         let entries = raw
             .library
             .into_iter()
-            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, caution: r.caution, benchmark: None, custom: false, found_in: None, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
+            .map(|r| Entry { name: r.name, git: r.git, rev: r.rev, tag: r.tag, licence: r.licence, module: r.module, summary: r.summary, kind: Kind::parse(r.kind.as_deref()), native: r.native, caution: r.caution, paths: r.paths.as_deref().map(|p| p.split(';').map(str::trim).filter(|x| !x.is_empty()).map(String::from).collect()).unwrap_or_default(), benchmark: None, custom: false, found_in: None, loads_11_5: Badge::parse(&r.loads_11_5), loads_12_0: Badge::parse(&r.loads_12_0) })
             .collect();
         Ok(Library { entries })
     }
@@ -232,6 +236,7 @@ impl Library {
                 kind: Kind::Lua,
                 native: None,
                 caution: Some(format!("Added from {}. Not audited, not measured: it is not part of JoyrIDE's curated list. Read its code before you run it.", c.found_in)),
+                paths: Vec::new(),
                 benchmark: None,
                 custom: true,
                 found_in: Some(c.found_in.clone()),

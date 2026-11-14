@@ -121,7 +121,7 @@ function T.run(core)
   s.sel.home = #core.suite.groups + 2; press("return")
   check(s.page == "libraries", "the libraries page")
   t = screenText()
-  check(contains(t, "57 libraries"), "counts the libraries")
+  check(contains(t, "60 libraries"), "counts the libraries")
   for i = 1, #core.libload.entries do
     s.sel.libraries = i
     t = screenText()

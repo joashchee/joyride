@@ -645,3 +645,38 @@ caution = "A frame advances only when push_state runs, which bind_callbacks arra
 summary = "Input handler: keyboard, mouse and gamepad as one state, with held-down delay and interval, pressed and released this frame, key sequences and a history."
 loads_11_5 = "loads"
 loads_12_0 = "loads"
+
+[[library]]
+name = "Lua-star"
+git = "https://github.com/wesleywerner/lua-star"
+rev = "b444e278fc1a481b3235d9acffde6034ce9c20e6"
+licence = "MIT"
+module = "lua-star"
+paths = "src"
+caution = "Slow on large grids: the benchmark found a 40 by 40 maze at 15 to 50 paths a second, against thousands for Luafinding and jumper (so not for a path every frame across a big map). `find` returns false when there is no path; positions are tables with x and y; pass `true` as the last argument to forbid diagonal moves."
+summary = "A* pathfinding on a grid in pure Lua: give it the map's size and a function that says which cells are blocked."
+loads_11_5 = "loads"
+loads_12_0 = "loads"
+
+[[library]]
+name = "Luafinding"
+git = "https://github.com/GlorifiedPig/Luafinding"
+rev = "674501e83151a9cf2d3657aa67db2b0c2bf2901b"
+licence = "MIT"
+module = "luafinding"
+paths = "src"
+caution = "Its files require each other as \"vector\" and \"heap\", so adding it puts libs/Luafinding/src on the require path, and those two generic names then resolve to its files unless your game has its own vector.lua or heap.lua at its root (those win). Use another library's vector under a different name, not as \"vector\"."
+summary = "Class-based A* pathfinding in pure Lua: positions, a map of passable cells, a path from one to the other."
+loads_11_5 = "loads"
+loads_12_0 = "loads"
+
+[[library]]
+name = "jprof"
+git = "https://github.com/pfirsich/jprof"
+rev = "b7a86f7b31f167d1377bc28fff29dbd9e58f29f0"
+licence = "MIT"
+module = "jprof"
+caution = "Does nothing unless the global PROF_CAPTURE is true when it is required (set it first, or every call is a no-op; that is the release-build switch). It sets a global named _prefix, and briefly swaps package.loaded[\"MessagePack\"] while loading its own copy (lua-MessagePack, MIT/X11, in the same folder). `prof.connect()` sends the profile over plain TCP to localhost:1338 (needs luasocket, which LÖVE bundles); the viewer is the rest of the repository (main.lua and networkThread.lua), whose server listens on all interfaces: run it only on a network you trust. `prof.write` saves into LÖVE's save folder. It saves with love.filesystem.newFile, which LÖVE 12.0 deprecated (renamed openFile): it warns there, and its saving was not measured on 12.0."
+summary = "Profiler for LÖVE: mark zones with push and pop, save a profile of the frames, and open it in jprof's own viewer."
+loads_11_5 = "loads"
+loads_12_0 = "loads"

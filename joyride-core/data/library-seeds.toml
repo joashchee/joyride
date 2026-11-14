@@ -3,6 +3,8 @@
 # licence, then writes libraries.toml. With `-- --probe` it also requires each
 # on real LÖVE 11.5 and 12.0 headless (that runs the library's code: opt-in).
 # module = what to `require` after the repo is on the Lua path.
+# paths = "src;lib2" (optional): folders inside the repository to put on the require path too, for a library whose files require each
+#   other by bare name (Luafinding's src/). The probe, the installer's main.lua line and the Benchmark sample all add them.
 
 [[library]]
 name = "hump"
@@ -403,3 +405,29 @@ module = "input"
 pin = "head"   # no release tags
 caution = "A frame advances only when push_state runs, which bind_callbacks arranges by wrapping love.draw (and the input callbacks) when it is called: call it once, in love.load, after love.draw exists. If love.draw is defined or replaced afterwards, or push_state is never called, pressed and released stay true forever. It reads love.timer when required (do not disable that module), and calling bind_callbacks twice wraps the callbacks twice."
 summary = "Input handler: keyboard, mouse and gamepad as one state, with held-down delay and interval, pressed and released this frame, key sequences and a history."
+
+[[library]]
+name = "Lua-star"
+git = "https://github.com/wesleywerner/lua-star"
+module = "lua-star"
+paths = "src"   # its only file is src/lua-star.lua
+caution = "Slow on large grids: the benchmark found a 40 by 40 maze at 15 to 50 paths a second, against thousands for Luafinding and jumper (so not for a path every frame across a big map). `find` returns false when there is no path; positions are tables with x and y; pass `true` as the last argument to forbid diagonal moves."
+pin = "head"   # no release tags
+summary = "A* pathfinding on a grid in pure Lua: give it the map's size and a function that says which cells are blocked."
+
+[[library]]
+name = "Luafinding"
+git = "https://github.com/GlorifiedPig/Luafinding"
+module = "luafinding"
+paths = "src"   # luafinding.lua requires "vector" and "heap" by bare name, from its own src/
+caution = "Its files require each other as \"vector\" and \"heap\", so adding it puts libs/Luafinding/src on the require path, and those two generic names then resolve to its files unless your game has its own vector.lua or heap.lua at its root (those win). Use another library's vector under a different name, not as \"vector\"."
+pin = "head"   # no release tags
+summary = "Class-based A* pathfinding in pure Lua: positions, a map of passable cells, a path from one to the other."
+
+[[library]]
+name = "jprof"
+git = "https://github.com/pfirsich/jprof"
+module = "jprof"
+pin = "head"   # no release tags
+caution = "Does nothing unless the global PROF_CAPTURE is true when it is required (set it first, or every call is a no-op; that is the release-build switch). It sets a global named _prefix, and briefly swaps package.loaded[\"MessagePack\"] while loading its own copy (lua-MessagePack, MIT/X11, in the same folder). `prof.connect()` sends the profile over plain TCP to localhost:1338 (needs luasocket, which LÖVE bundles); the viewer is the rest of the repository (main.lua and networkThread.lua), whose server listens on all interfaces: run it only on a network you trust. `prof.write` saves into LÖVE's save folder. It saves with love.filesystem.newFile, which LÖVE 12.0 deprecated (renamed openFile): it warns there, and its saving was not measured on 12.0."
+summary = "Profiler for LÖVE: mark zones with push and pop, save a profile of the frames, and open it in jprof's own viewer."

@@ -137,8 +137,8 @@ def main():
     out = ["-- Written by tools/vendor-libs.py from joyride-core/data/libraries.toml. Do not edit.", "return {"]
     for e in es:
         lo, by, fi = size(e["name"])
-        out.append("  { name = %s, loc = %d, bytes = %d, files = %d, module = %s, kind = %s, licence = %s, rev = %s, tag = %s, summary = %s, native = %s }," % (
-            q(e["name"]), lo, by, fi, q(e["module"]), q(e.get("kind", "lua")), q(e.get("licence", "?")), q(e["rev"]), q(e["tag"]) if "tag" in e else "nil", q(e.get("summary", "")), q(e["native"]) if "native" in e else "nil"))
+        out.append("  { name = %s, loc = %d, bytes = %d, files = %d, module = %s, kind = %s, licence = %s, rev = %s, tag = %s, summary = %s, native = %s, paths = %s }," % (
+            q(e["name"]), lo, by, fi, q(e["module"]), q(e.get("kind", "lua")), q(e.get("licence", "?")), q(e["rev"]), q(e["tag"]) if "tag" in e else "nil", q(e.get("summary", "")), q(e["native"]) if "native" in e else "nil", q(e["paths"]) if "paths" in e else "nil"))
     out.append("}")
     open(os.path.join(PROJECT, "lib", "catalog.lua"), "w", encoding="utf-8").write("\n".join(out) + "\n")
     print("wrote love.toml, love.lock and lib/catalog.lua")
