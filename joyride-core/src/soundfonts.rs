@@ -1,7 +1,7 @@
 //! The General MIDI SoundFonts that ship with JoyrIDE, and which one the person has chosen for MIDI to sound like.
 //!
 //! The list is fixed here and the files are in `src-tauri/resources/soundfonts/` (each with its licence). The choice is a short id kept in
-//! the app-data folder; "builtin" is the synthesizer's own sound, which needs no bank. A person's input is only ever matched against this
+//! the app-data folder; "builtin" is the synthesizer's own sound, which needs no bank, and [`DEFAULT`] is what nothing chosen means. A person's input is only ever matched against this
 //! list, never used as a path.
 
 use crate::{err, Result};
@@ -9,6 +9,9 @@ use std::path::{Path, PathBuf};
 
 /// The id of the choice that uses no bank: Neumetik's own synthesized instruments.
 pub const BUILTIN: &str = "builtin";
+
+/// What MIDI sounds like until the person chooses (2026-11-14, chosen by the maintainer after listening to all four).
+pub const DEFAULT: &str = "pocketsongs";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Bundled {
@@ -72,11 +75,11 @@ pub fn path(dir: &Path, id: &str) -> Option<PathBuf> {
     p.is_file().then_some(p)
 }
 
-/// The id kept in `file`, if it is one in the list; otherwise the built-in sound.
+/// The id kept in `file`, if it is one in the list; otherwise [`DEFAULT`] (nothing chosen yet, or a file that names something else).
 pub fn load_choice(file: &Path) -> String {
     let text = std::fs::read_to_string(file).unwrap_or_default();
     let id = text.trim();
-    if id == BUILTIN || get(id).is_some() { id.to_string() } else { BUILTIN.to_string() }
+    if id == BUILTIN || get(id).is_some() { id.to_string() } else { DEFAULT.to_string() }
 }
 
 pub fn save_choice(file: &Path, id: &str) -> Result<()> {
@@ -121,15 +124,16 @@ mod tests {
     fn a_choice_is_an_id_from_the_list_and_nothing_else() {
         let d = tempfile::tempdir().unwrap();
         let f = d.path().join("soundfont.txt");
-        assert_eq!(load_choice(&f), BUILTIN, "nothing chosen is the built-in sound");
-        save_choice(&f, "pocketsongs").unwrap();
-        assert_eq!(load_choice(&f), "pocketsongs");
+        assert_eq!(load_choice(&f), DEFAULT, "nothing chosen is the default");
+        assert!(get(DEFAULT).is_some(), "the default is a bundled bank");
+        save_choice(&f, "p800").unwrap();
+        assert_eq!(load_choice(&f), "p800");
         save_choice(&f, BUILTIN).unwrap();
-        assert_eq!(load_choice(&f), BUILTIN);
+        assert_eq!(load_choice(&f), BUILTIN, "choosing the built-in sound is remembered, not turned back into the default");
         assert!(save_choice(&f, "../../etc/passwd").is_err());
         assert!(save_choice(&f, "").is_err());
         std::fs::write(&f, "../../etc/passwd").unwrap();
-        assert_eq!(load_choice(&f), BUILTIN, "a file that names anything else is ignored");
+        assert_eq!(load_choice(&f), DEFAULT, "a file that names anything else is ignored");
         assert!(path(&dir(), "p800").is_some() && path(&dir(), "../x").is_none() && path(&dir(), BUILTIN).is_none());
     }
 }

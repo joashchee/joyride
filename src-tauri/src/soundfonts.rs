@@ -31,7 +31,7 @@ pub fn resources(app: &AppHandle) -> PathBuf {
 /// The chosen bank, loaded (or the cached one). `None` for the built-in sound, or if the file cannot be read: the preview then plays
 /// as it always did.
 pub fn current(app: &AppHandle) -> Option<Sound> {
-    let id = choice_file(app).map(|f| list::load_choice(&f)).unwrap_or_else(|_| BUILTIN.into());
+    let id = choice_file(app).map(|f| list::load_choice(&f)).unwrap_or_else(|_| list::DEFAULT.into());
     let b = list::get(&id)?;
     let cache = app.state::<SoundfontCache>();
     let mut g = cache.0.lock().ok()?;
@@ -74,7 +74,7 @@ fn view(app: &AppHandle) -> Result<SoundView, String> {
         licence: "MIT".into(),
         author: "ansiapps (Neumetik)".into(),
         size: 0,
-        summary: "Every instrument synthesized as it plays: no SoundFont, nothing to load. The way MIDI has always sounded here.".into(),
+        summary: "Every instrument synthesized as it plays: no SoundFont, nothing to load. How MIDI sounded here before the SoundFonts.".into(),
         available: true,
     }];
     for b in list::BUNDLED {

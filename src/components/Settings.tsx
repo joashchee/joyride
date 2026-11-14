@@ -73,7 +73,7 @@ export default function Settings(props: { onClose: () => void }) {
               </span>
             </label>
           ))}
-          <span className="lib-meta">Used when a MIDI file is previewed (select the file again to hear the change). The SoundFonts ship with JoyrIDE; their licences are beside them.</span>
+          <span className="lib-meta">Used when a MIDI file is previewed (select the file again to hear the change). PocketSongsGM is the default. The SoundFonts ship with JoyrIDE; their licences are beside them.</span>
           {soundErr && <span role="alert" className="panel-error">{soundErr}</span>}
         </fieldset>
       )}
