@@ -541,3 +541,9 @@ fieldset:disabled .swatch-row { color: var(--r-disabled); cursor: default; }
 .licence-choices button { text-align: left; }
 .licence-choices button.selected { background: var(--r-select); color: var(--r-ink); }
 .panel-font label { margin-top: 16px; }
+
+/* A line JoyrIDE inserted into the code (a library's require path in main.lua): a colour bar in the gutter, one cell wide, on the left.
+   It goes the moment the line is touched. */
+.monaco-editor .joyride-inserted {
+  box-shadow: inset 8px 0 0 var(--dos-lightgreen);
+}

@@ -135,10 +135,14 @@ pub struct LintItem {
 /// The LÖVE lints (`joyride_core::lint`) for one file's text, calibrated to
 /// the project's LÖVE version. Fast (a lexer pass), so it runs inline.
 #[tauri::command]
-pub fn lint_lua(state: State<Project>, path: String, text: String) -> Result<Vec<LintItem>, String> {
+pub fn lint_lua(app: AppHandle, state: State<Project>, path: String, text: String) -> Result<Vec<LintItem>, String> {
     let root = state.root()?;
     let v = joyride_core::toolchain::project_love_version(&root).map_err(msg)?;
-    Ok(joyride_core::lint::lint(&text, &path, v)
+    // The LÖVE lints, then the ones that know the project's libraries (a require that cannot work, a call a library gets wrong, a typo).
+    let mut all = joyride_core::lint::lint(&text, &path, v);
+    all.extend(joyride_core::lint_libs::lint(&root, &text, &crate::libs::library(&app), v));
+    all.sort_by_key(|d| d.line);
+    Ok(all
         .into_iter()
         .map(|d| LintItem {
             line: d.line,

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor/editor/editor.api.js";
 import "../monaco-setup";
-import { colorLiterals, colorText, formatLua, inTauri, lintLua } from "../lib/backend";
+import { colorLiterals, colorText, formatLua, inTauri, integrateClear, integrateMarks, lintLua } from "../lib/backend";
 import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 import { defineThemes, TEXT_MODE_OPTIONS, themeId } from "../monaco-theme";
@@ -20,8 +20,69 @@ import { setFitProvider } from "../lib/editorfit";
 interface Doc {
   model: monaco.editor.ITextModel;
   saved: number;
+  /** The lines JoyrIDE inserted that are still as it wrote them: decoration id to the mark's id and the line's text. */
+  marks?: Map<string, { id: string; text: string }>;
+  /** A change JoyrIDE itself is making (a reload from disk): not the person touching a line. */
+  reloading?: boolean;
 }
 const docs = new Map<string, Doc>();
+
+/** Shows where JoyrIDE inserted code: a colour bar in the gutter on each such line, with a note on hover. */
+async function applyMarks(path: string, doc: Doc) {
+  if (!inTauri || !path.endsWith(".lua")) return;
+  try {
+    const ms = await integrateMarks(path, doc.model.getValue());
+    if (doc.model.isDisposed()) return;
+    const good = ms.filter((m) => m.line >= 1 && m.line <= doc.model.getLineCount());
+    const ids = doc.model.deltaDecorations(
+      [...(doc.marks?.keys() ?? [])],
+      good.map((m) => ({
+        range: new monaco.Range(m.line, 1, m.line, 1),
+        options: {
+          isWholeLine: true,
+          linesDecorationsClassName: "joyride-inserted",
+          hoverMessage: { value: m.note },
+          stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+        },
+      })),
+    );
+    doc.marks = new Map(ids.map((id, i) => [id, { id: good[i].id, text: doc.model.getLineContent(good[i].line) }]));
+  } catch {
+    /* no project, or nothing was inserted: no marks */
+  }
+}
+
+/** A line the person touched is theirs: its bar goes, and JoyrIDE is told so it never marks, re-adds or removes it. */
+function touchMarks(doc: Doc) {
+  if (!doc.marks?.size || doc.reloading) return;
+  const gone: string[] = [];
+  for (const [deco, m] of doc.marks) {
+    const r = doc.model.getDecorationRange(deco);
+    if (!r || doc.model.getLineContent(r.startLineNumber) !== m.text) {
+      gone.push(deco);
+      void integrateClear(m.id).catch(() => undefined);
+    }
+  }
+  if (gone.length) {
+    doc.model.deltaDecorations(gone, []);
+    for (const g of gone) doc.marks.delete(g);
+  }
+}
+
+/** The file changed on disk under an open, unedited tab (JoyrIDE added or removed a library's line): show the new text, keep the history,
+ *  and mark what JoyrIDE inserted. */
+export async function reloadDoc(path: string, text: string) {
+  const d = docs.get(path);
+  if (!d || d.model.getValue() === text) {
+    if (d) await applyMarks(path, d);
+    return;
+  }
+  d.reloading = true;
+  d.model.pushEditOperations([], [{ range: d.model.getFullModelRange(), text }], () => null);
+  d.saved = d.model.getAlternativeVersionId();
+  d.reloading = false;
+  await applyMarks(path, d);
+}
 
 let lintTimer: ReturnType<typeof setTimeout> | undefined;
 /** JoyrIDE's own LÖVE lints (version-calibrated) as markers, a moment after typing stops. */
@@ -160,6 +221,7 @@ export default function Editor(props: {
       const m = editor.getModel();
       const path = m && [...docs].find(([, d]) => d.model === m)?.[0];
       if (path) {
+        touchMarks(docs.get(path)!);
         cb.current.onDirty(path, m.getAlternativeVersionId() !== docs.get(path)!.saved);
         scheduleLint(path, m);
       }
@@ -223,6 +285,7 @@ export default function Editor(props: {
       if (lang === "lua" && uri) trackModel(model);
       d = { model, saved: model.getAlternativeVersionId() };
       docs.set(props.path, d);
+      void applyMarks(props.path, d);
     }
     ed.current?.setModel(d.model);
     scheduleLint(props.path, d.model);

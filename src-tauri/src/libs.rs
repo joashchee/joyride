@@ -49,7 +49,7 @@ fn offers_file(app: &AppHandle) -> Result<PathBuf, String> {
 }
 
 /// JoyrIDE's list and the person's own after it.
-fn library(app: &AppHandle) -> Library {
+pub(crate) fn library(app: &AppHandle) -> Library {
     let custom = custom_file(app).map(|f| detect::load_custom(&f)).unwrap_or_default();
     Library::bundled().with_custom(&custom)
 }
@@ -90,27 +90,72 @@ pub fn library_list(app: AppHandle, project: State<Project>, query: String) -> R
     views(&app, &project.root()?, &query)
 }
 
-/// Installs a curated library at its pinned commit; returns the fresh list.
+/// What adding or removing a library did: the list, and what JoyrIDE did to `main.lua` for it.
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LibraryChange {
+    libraries: Vec<LibraryView>,
+    /// The lines inserted into or removed from `main.lua` (empty when `integrate` was off).
+    synced: joyride_core::integrate::Synced,
+    /// The integration could not be done (the library itself was).
+    integrate_error: Option<String>,
+}
+
+fn change(app: &AppHandle, root: &Path, query: &str, integrate: bool) -> Result<LibraryChange, String> {
+    let libraries = views(app, root, query)?;
+    let (synced, integrate_error) = if integrate {
+        match joyride_core::integrate::sync(root, &library(app)) {
+            Ok(s) => (s, None),
+            Err(e) => (Default::default(), Some(e.to_string())),
+        }
+    } else {
+        (Default::default(), None)
+    };
+    Ok(LibraryChange { libraries, synced, integrate_error })
+}
+
+/// Installs a curated library at its pinned commit and (when `integrate`) adds the line that lets `require` find it to `main.lua`.
+/// `integrate` is off when `main.lua` has unsaved edits in the editor: the shell never writes under them.
 #[tauri::command]
-pub async fn library_add(app: AppHandle, project: State<'_, Project>, name: String, query: String) -> Result<Vec<LibraryView>, String> {
+pub async fn library_add(app: AppHandle, project: State<'_, Project>, name: String, query: String, integrate: bool) -> Result<LibraryChange, String> {
     let root = project.root()?;
     tauri::async_runtime::spawn_blocking(move || {
         pkg::add_library(&root, &library(&app), &name).map_err(|e| e.to_string())?;
-        views(&app, &root, &query)
+        change(&app, &root, &query, integrate)
     })
     .await
     .map_err(|e| e.to_string())?
 }
 
+/// Removes a library, and the line JoyrIDE inserted for it if it is still as JoyrIDE wrote it.
 #[tauri::command]
-pub async fn library_remove(app: AppHandle, project: State<'_, Project>, name: String, query: String) -> Result<Vec<LibraryView>, String> {
+pub async fn library_remove(app: AppHandle, project: State<'_, Project>, name: String, query: String, integrate: bool) -> Result<LibraryChange, String> {
     let root = project.root()?;
     tauri::async_runtime::spawn_blocking(move || {
         pkg::remove_library(&root, &name).map_err(|e| e.to_string())?;
-        views(&app, &root, &query)
+        change(&app, &root, &query, integrate)
     })
     .await
     .map_err(|e| e.to_string())?
+}
+
+/// Brings `main.lua` in line with the project's libraries (for a project whose libraries were added before, or while `main.lua` had unsaved edits).
+#[tauri::command]
+pub async fn integrate_sync(app: AppHandle, project: State<'_, Project>) -> Result<joyride_core::integrate::Synced, String> {
+    let root = project.root()?;
+    tauri::async_runtime::spawn_blocking(move || joyride_core::integrate::sync(&root, &library(&app)).map_err(|e| e.to_string())).await.map_err(|e| e.to_string())?
+}
+
+/// The lines of `path` that JoyrIDE inserted and that are still untouched in `text` (what the editor holds).
+#[tauri::command]
+pub fn integrate_marks(project: State<Project>, path: String, text: String) -> Result<Vec<joyride_core::integrate::Mark>, String> {
+    joyride_core::integrate::marks(&project.root()?, &path, &text).map_err(|e| e.to_string())
+}
+
+/// The person touched an inserted line: it is theirs from now on.
+#[tauri::command]
+pub fn integrate_clear(project: State<Project>, id: String) -> Result<(), String> {
+    joyride_core::integrate::clear(&project.root()?, &id).map_err(|e| e.to_string())
 }
 
 /// Takes one of the person's own libraries out of the list (it does not touch any project).

@@ -148,12 +148,22 @@ impl Drop for Server {
 /// project needs no `.luarc.json` of ours (the user's source is never
 /// mutated; a `.luarc.json` the project has still wins, as LuaLS reads it).
 pub fn settings(love_types: Option<&Path>) -> serde_json::Value {
+    settings_with(love_types, None)
+}
+
+/// [`settings`], with the project's require path (`integrate::runtime_path`) so `require "bump"` resolves in `libs/` the way it does when the
+/// game runs, and the language server sees into the library for completion, hover and the checks on calls.
+pub fn settings_with(love_types: Option<&Path>, runtime_path: Option<Vec<String>>) -> serde_json::Value {
     let mut lib = Vec::new();
     if let Some(t) = love_types {
         lib.push(t.to_string_lossy().into_owned());
     }
+    let mut runtime = serde_json::json!({ "version": "LuaJIT" });
+    if let Some(p) = runtime_path {
+        runtime["path"] = serde_json::json!(p);
+    }
     serde_json::json!({
-        "runtime": { "version": "LuaJIT" },
+        "runtime": runtime,
         "diagnostics": { "globals": ["love"] },
         "workspace": { "library": lib, "checkThirdParty": false },
         "telemetry": { "enable": false },
@@ -202,6 +212,14 @@ mod tests {
     fn uris_escape_what_they_must() {
         assert_eq!(path_to_uri(Path::new("/Users/a b/Löve#1/main.lua")), "file:///Users/a%20b/L%C3%B6ve%231/main.lua");
         assert_eq!(path_to_uri(Path::new("C:\\g\\main.lua")), "file:///C:/g/main.lua");
+    }
+
+    #[test]
+    fn settings_can_carry_the_projects_require_path() {
+        let s = settings_with(None, Some(vec!["?.lua".into(), "libs/bump/?.lua".into()]));
+        assert_eq!(s["runtime"]["path"], serde_json::json!(["?.lua", "libs/bump/?.lua"]));
+        assert_eq!(s["runtime"]["version"], "LuaJIT");
+        assert!(settings(None)["runtime"].get("path").is_none(), "the plain settings are as they were");
     }
 
     #[test]

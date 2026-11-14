@@ -82,9 +82,11 @@ pub fn lsp_stop(lsp: State<Lsp>) {
 
 /// What the server asks for with `workspace/configuration`.
 #[tauri::command]
-pub fn lsp_settings(app: AppHandle) -> serde_json::Value {
+pub fn lsp_settings(app: AppHandle, project: tauri::State<crate::project::Project>) -> serde_json::Value {
     let bundled = crate::bundled_toolchains(&app);
-    lsp::settings(lsp::find_love_types(bundled.as_deref()).as_deref())
+    // The project's own require path, so the server finds what `main.lua` makes the game find.
+    let path = project.root().ok().map(|root| joyride_core::integrate::runtime_path(&root, &crate::libs::library(&app)));
+    lsp::settings_with(lsp::find_love_types(bundled.as_deref()).as_deref(), path)
 }
 
 /// The open project's `file://` URI, so the editor can name its models

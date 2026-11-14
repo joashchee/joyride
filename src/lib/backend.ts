@@ -153,8 +153,34 @@ export interface LibraryView {
   installable: boolean;
 }
 export const libraryList = (query: string) => invoke<LibraryView[]>("library_list", { query });
-export const libraryAdd = (name: string, query: string) => invoke<LibraryView[]>("library_add", { name, query });
-export const libraryRemove = (name: string, query: string) => invoke<LibraryView[]>("library_remove", { name, query });
+/** What JoyrIDE did to main.lua for a library: the lines it inserted or took out. */
+export interface Synced {
+  added: string[];
+  removed: string[];
+  /** A removed library's line you had touched: left where it is. */
+  kept: string[];
+  /** main.lua did not exist and was made. */
+  created: boolean;
+}
+export interface LibraryChange {
+  libraries: LibraryView[];
+  synced: Synced;
+  /** The require-path line could not be done (the library itself was added or removed). */
+  integrateError: string | null;
+}
+/** `integrate` is false when main.lua has unsaved edits in the editor: JoyrIDE never writes under them. */
+export const libraryAdd = (name: string, query: string, integrate: boolean) => invoke<LibraryChange>("library_add", { name, query, integrate });
+export const libraryRemove = (name: string, query: string, integrate: boolean) => invoke<LibraryChange>("library_remove", { name, query, integrate });
+/** Brings main.lua in line with the project's libraries. */
+export const integrateSync = () => invoke<Synced>("integrate_sync");
+/** A line JoyrIDE inserted and that is still untouched. */
+export interface InsertedMark {
+  id: string;
+  line: number;
+  note: string;
+}
+export const integrateMarks = (path: string, text: string) => invoke<InsertedMark[]>("integrate_marks", { path, text });
+export const integrateClear = (id: string) => invoke<void>("integrate_clear", { id });
 export const libraryCustomRemove = (name: string, query: string) => invoke<LibraryView[]>("library_custom_remove", { name, query });
 
 /** A library a project uses that JoyrIDE's list does not have. */

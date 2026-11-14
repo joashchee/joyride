@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { libraryAdd, libraryCustomRemove, libraryList, libraryRemove, type LibraryView } from "../lib/backend";
+import { integrateSync, libraryAdd, libraryCustomRemove, libraryList, libraryRemove, type LibraryChange, type LibraryView } from "../lib/backend";
 import Panel from "./Panel";
 
 /** The curated libraries (Lua, and C libraries through FFI or as native modules): search, add at the pinned commit, remove. Adding needs git and the network, only when clicked. */
-export default function Libraries(props: { onClose: () => void; onChanged: () => void; onScan: () => void }) {
+export default function Libraries(props: { onClose: () => void; onChanged: (c?: LibraryChange) => void; onScan: () => void; mainDirty: boolean }) {
   const [q, setQ] = useState("");
   const [libs, setLibs] = useState<LibraryView[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -23,8 +23,24 @@ export default function Libraries(props: { onClose: () => void; onChanged: () =>
     setBusy(l.name);
     setErr(null);
     try {
-      setLibs(await (l.installed ? libraryRemove : libraryAdd)(l.name, q));
-      props.onChanged();
+      // main.lua with unsaved edits is never written under: the line is left for the Integrate button once it is saved.
+      const c = await (l.installed ? libraryRemove : libraryAdd)(l.name, q, !props.mainDirty);
+      setLibs(c.libraries);
+      if (c.integrateError) setErr(`The library was ${l.installed ? "removed" : "added"}, but main.lua could not be updated: ${c.integrateError}`);
+      props.onChanged(c);
+    } catch (e) {
+      setErr(String(e));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const integrate = async () => {
+    setBusy("integrate");
+    setErr(null);
+    try {
+      const s = await integrateSync();
+      props.onChanged({ libraries: libs ?? [], synced: s, integrateError: null });
     } catch (e) {
       setErr(String(e));
     } finally {
@@ -49,6 +65,7 @@ export default function Libraries(props: { onClose: () => void; onChanged: () =>
       <div className="panel-bar">
         <input aria-label="Search libraries" placeholder="Search" value={q} onChange={(e) => setQ(e.target.value)} spellCheck={false} autoFocus />
         <button onClick={props.onScan} title="Read this project's files for libraries that are not in this list">Find in this project</button>
+        <button disabled={props.mainDirty || busy !== null} onClick={() => void integrate()} title={props.mainDirty ? "Save main.lua first: it has unsaved changes" : "Add or remove the require-path lines JoyrIDE keeps in main.lua for this project's libraries"}>Integrate</button>
       </div>
       {err && <pre role="alert" className="panel-error">{err}</pre>}
       <ul className="libraries-list">

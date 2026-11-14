@@ -19,12 +19,13 @@ import Settings from "./components/Settings";
 import { currentFit } from "./lib/editorfit";
 import { installSnap } from "./lib/windowsnap";
 import { onChoice } from "./lib/codefonts";
-import { projectListing, chooseFolder, librariesDetect, type LibraryOffer as Offer, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
+import { projectListing, chooseFolder, librariesDetect, type LibraryChange, type LibraryOffer as Offer, coreInfo, lastProject, inTauri, createDir, createFile, deletePath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
 const lsp = () => import("./lib/lsp");
 const closeDoc = (p: string) => import("./components/Editor").then((m) => m.closeDoc(p));
+const reloadDoc = (p: string, t: string) => import("./components/Editor").then((m) => m.reloadDoc(p, t));
 
 // What the first screen needs, in order. Heavy things (Monaco, the language
 // server, toolchain checks) load after the editor is usable, not here.
@@ -190,6 +191,29 @@ export default function App() {
     } catch (e) {
       fail(e);
     }
+  };
+
+  /** A library was added or removed, or the integration ran: refresh the tree, show what JoyrIDE did to main.lua (the open tab is
+   *  reloaded, with a bar on the lines JoyrIDE inserted), and say what was done or left. */
+  const libraryChanged = async (c?: LibraryChange) => {
+    void projectListing().then(setProject).catch(fail);
+    if (!c) return;
+    const s = c.synced;
+    if (s.added.length || s.removed.length || s.created) {
+      try {
+        const text = await readFile("main.lua");
+        setTexts((t) => (t["main.lua"] !== undefined ? { ...t, "main.lua": text } : t));
+        await reloadDoc("main.lua", text);
+      } catch {
+        /* main.lua is not open or not readable: the tree shows it */
+      }
+    }
+    const bits: string[] = [];
+    if (s.added.length) bits.push(`main.lua got the line that lets require find ${s.added.join(", ")} (a coloured bar marks it in the margin; edit the line and the bar goes)`);
+    if (s.removed.length) bits.push(`took out the line for ${s.removed.join(", ")}`);
+    if (s.kept.length) bits.push(`left the line for ${s.kept.join(", ")} in main.lua: you changed it`);
+    if (dirty.has("main.lua")) bits.push("main.lua has unsaved changes, so JoyrIDE did not touch it: save it, then press Integrate in Libraries");
+    if (bits.length) setNotice(bits.join("; ") + ".");
   };
 
   /** Looks (in files only) for libraries the open project uses that Libraries does not have, and offers them. `force` also shows the
@@ -451,7 +475,7 @@ export default function App() {
             }}
           />
         )}
-        {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={() => void projectListing().then(setProject).catch(fail)} onScan={() => void checkLibraries(true)} />}
+        {libsOpen && project && <Libraries onClose={() => setLibsOpen(false)} onChanged={(c) => void libraryChanged(c)} onScan={() => void checkLibraries(true)} mainDirty={dirty.has("main.lua")} />}
         {offer && project && (
           <LibraryOffer
             offer={offer}

@@ -97,6 +97,16 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
     result out until it is run again. `python3 -I scripts/ingest-benchmark.py
     --check` and the `every_library_has_benchmark_results...` test fail on
     missing data. Update `README.md` findings, `ROADMAP.md` and `CHANGELOG.md`.
+16. **Code JoyrIDE inserts into the user's files is always shown** (decided
+    2026-11-14). Any line JoyrIDE writes into a source file of the person's
+    (today: the require-path line per library in `main.lua`,
+    `joyride-core/src/integrate.rs`) is recorded in `.joyride/inserted.json`
+    and the editor marks it with a colour bar in the left margin
+    (`.joyride-inserted`, `Editor.tsx`). The bar goes the moment the person
+    touches that line, the line is then theirs (never marked, re-added,
+    rewritten or removed with its library), and nothing is inserted into a
+    file with unsaved edits. A new kind of inserted code uses the same record
+    and the same bar; it never writes silently.
 11. **Asset licences are confirmed before use** (`docs/asset-library.md`):
     nothing is imported, added to a project or exported with an unknown
     licence unless the user overrides and says why. Imports never copy
@@ -117,6 +127,7 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
   duplicate finding), `import.rs` (plan, then apply with confirmed
   licences), `kind.rs`. `cargo test --offline --manifest-path
   asset-core/Cargo.toml`.
+- `joyride-core/src/integrate.rs`: the lines JoyrIDE inserts into `main.lua` for a project's libraries and the record that lets the editor bar them (rule 16); `lint_libs.rs`: the lints that know the libraries (a `require` that cannot work, measured pitfalls, near-miss names); both read the library list, and the language server gets the same require path (`lsp::settings_with`).
 - `joyride-core/src/detect.rs`: the libraries a project uses (files only), matched with the list; the person's own libraries (`Custom`) and dismissed offers live in app-data, never in a project. A library found in a project is never added to `data/libraries.toml` without rule 14's audit.
 - `joyride-core/`: the other Tauri-free crate, one module per spec area:
   `manifest`/`pkg` (love.toml, installer), `toolchain` (versions, signed
