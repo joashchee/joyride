@@ -9,7 +9,7 @@ submodules, and without documentation, tests, pictures and sound (a library's so
 The two native libraries (luasteam, love-nuklear) and cimgui-love carry compiled code or SDK files: their Lua side only is kept.
 Run it again after libraries.toml changes; a library already at its commit is left alone.
 """
-import os, re, shutil, subprocess, sys, tempfile
+import glob, os, re, shutil, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.dirname(HERE)
@@ -21,8 +21,13 @@ DROP_DIRS = {".git", ".vscode", ".idea", ".github", ".gitlab", "docs", "doc", "d
 # Rust source (built by tools/build-binaries.sh from its repository) is not needed to run the Lua binding.
 EXTRA_DROP = {"luasteam": {"sdk", "generator", "luals"}, "cimgui-love": {"cparser"}, "neumetik-midi": {"src", "capi"}, "serpent": {"t", "misc"}}
 DROP_FILES = {"cimgui-love": {"generator.lua"}}
-# A file a library loads when it is required, so it stays although its folder or type is dropped (lighter creates its default light from this image).
-KEEP_FILES = {"lighter": ("media/default_light.png",)}
+# Files a library loads when it is required or set up, so they stay although their type is dropped (the entries are paths from the
+# repository's root; `*` and `**` work). lighter creates its default light from the image; LoveFrames registers its three skins when it loads
+# and stops with "Could not find an image directory for skin" without their pictures (48 small PNGs, 34 KB); 3DreamEngine loads its sky
+# model (objects/sky.obj, 62 KB) when it loads and stops without it. All are files of the library's own repository, under its licence.
+# lovr-ui2d's font (DejaVuSansMono.ttf, 335 KB) is not kept: the repository states no licence for it (its LICENSE covers the code), so
+# lovr-ui2d's own check reports the missing font until a person confirms the licence (CLAUDE.md rule 11).
+KEEP_FILES = {"lighter": ("media/default_light.png",), "LoveFrames": ("loveframes/skins/*/images/**/*.png",), "3DreamEngine": ("3DreamEngine/objects/sky.obj",)}
 DROP_EXT = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".ogg", ".wav", ".mp3", ".flac", ".mid", ".ttf", ".otf", ".woff", ".woff2", ".ico", ".icns", ".psd", ".xcf", ".zip", ".gz",
             ".dll", ".so", ".dylib", ".a", ".lib", ".exe", ".o", ".obj", ".mtl", ".pdf", ".rockspec", ".yml", ".yaml", ".sh", ".bat", ".ps1", ".cpp", ".cc", ".c", ".h", ".hpp", ".cmake", ".mk"}
 
@@ -88,10 +93,14 @@ def vendor(e, libs):
                 out = os.path.normpath(os.path.join(dest, rel, f))
                 os.makedirs(os.path.dirname(out), exist_ok=True)
                 shutil.copy2(p, out)
-        for rel_keep in KEEP_FILES.get(e["name"], ()):
-            out = os.path.join(dest, rel_keep)
-            os.makedirs(os.path.dirname(out), exist_ok=True)
-            shutil.copy2(os.path.join(src, rel_keep), out)
+        for pattern in KEEP_FILES.get(e["name"], ()):
+            hits = [h for h in glob.glob(os.path.join(src, pattern), recursive=True) if os.path.isfile(h) and not os.path.islink(h)]
+            if not hits:
+                raise RuntimeError(f"{e['name']}: no file matches the kept path {pattern} (did the repository move it?)")
+            for h in hits:
+                out = os.path.join(dest, os.path.relpath(h, src))
+                os.makedirs(os.path.dirname(out), exist_ok=True)
+                shutil.copy2(h, out)
         open(mark, "w").write(e["rev"] + "\n")
         return "vendored"
     finally:
