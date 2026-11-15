@@ -20,7 +20,7 @@ L.needsThreads = { Lily = true }
 L.replacedRequire = {}
 L.previous = {}   -- results from before a reset: a library that defines ffi types cannot be required twice, so its first result stands
 
-L.windowLibs = { g3d = true, push = true, Slab = true, ["cimgui-love"] = true, lighter = true, splashy = true, Helium = true, ["3DreamEngine"] = true, bitumbra = true, Light = true, LoveFrames = true, gooi = true, ["Runtime-TextureAtlas"] = true }
+L.windowLibs = { prod_ui = true, g3d = true, push = true, Slab = true, ["cimgui-love"] = true, lighter = true, splashy = true, Helium = true, ["3DreamEngine"] = true, bitumbra = true, Light = true, LoveFrames = true, gooi = true, ["Runtime-TextureAtlas"] = true }
 
 -- Libraries whose own name for themselves matters: g3d finds its shader from the module name it was required by (`libs.g3d.g3d` ->
 -- `libs/g3d/g3d/g3d.vert`), so it must be required by its path from the game's root, not as `g3d`.

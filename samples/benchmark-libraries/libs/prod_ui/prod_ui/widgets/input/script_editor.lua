@@ -1,0 +1,564 @@
+-- A more advanced multi-line text input widget, with a column for line numbers (TODO) and a faint highlight for the
+-- current line.
+
+--[[
+
+ vp3          vp1
+ ╔══╗ ╔════════════════════╗
+ ┌──┬────────────────────────┬─┐
+ │ 1│ ...................... │^│
+ │ 2│ .The quick brown fox . ├─┤
+ │ 3│ .jumps over the lazy . │ │
+ │ 4│ .dog.|               . │ │
+ │ 5│ .                    . │ │
+ │ 6│ .                    . │ │
+ │ 7│ .                    . │ │
+ │ 8│ .                    . ├─┤
+ │ 9│ ...................... │v│  ═══╗
+ ├─┬┴──────────────────────┬─┼─┤     ╠═ Optional scroll bars
+ │<│                       │>│ │  ═══╝
+ └─┴───────────────────────┴─┴─┘
+
+--]]
+
+
+local context = select(1, ...)
+
+
+-- LÖVE Supplemental
+local utf8 = require("utf8") -- (Lua 5.3+)
+
+
+-- ProdUI
+local editFuncM = context:getLua("shared/line_ed/m/edit_func_m")
+local editWid = context:getLua("shared/line_ed/edit_wid")
+local editWidM = context:getLua("shared/line_ed/m/edit_wid_m")
+local lineEdM = context:getLua("shared/line_ed/m/line_ed_m")
+local uiAssert = require(context.conf.prod_ui_req .. "ui_assert")
+local uiDummy = require(context.conf.prod_ui_req .. "ui_dummy")
+local uiGraphics = require(context.conf.prod_ui_req .. "ui_graphics")
+local uiScale = require(context.conf.prod_ui_req .. "ui_scale")
+local uiSchema = require(context.conf.prod_ui_req .. "ui_schema")
+local uiTable = require(context.conf.prod_ui_req .. "ui_table")
+local uiTheme = require(context.conf.prod_ui_req .. "ui_theme")
+local wcInputM = context:getLua("shared/wc/wc_input_m")
+local wcScrollBar = context:getLua("shared/wc/wc_scroll_bar")
+local widShared = context:getLua("core/wid_shared")
+
+
+local def = {
+	skin_id = "text_script1",
+	renderThimble = uiDummy.func
+}
+
+
+wcInputM.setupDef(def)
+
+
+widShared.scrollSetMethods(def)
+wcScrollBar.setupDef(def)
+def.impl_scroll_bar = context:getLua("shared/impl_scroll_bar1")
+def.pop_up_proto = wcInputM.pop_up_proto
+
+
+local _nm_illuminate_mode = uiTable.newNamedMapV("IlluminateMode", "never", "always", "no-highlight")
+
+
+function def:setIlluminateCurrentLine(mode)
+	uiAssert.namedMap(1, mode, _nm_illuminate_mode)
+
+	self.illuminate_current_line = mode
+
+	return self
+end
+
+
+function def:getIlluminationMode()
+	return self.illuminate_current_line
+end
+
+
+function def:setLineNumberColumn(enabled)
+	enabled = not not enabled
+	if self.LE_lnc_show ~= enabled then
+		self.LE_lnc_show = enabled
+		self:reshape()
+		self:scrollClampViewport() -- TODO: why is this needed while word wrap is active?
+	end
+
+	return self
+end
+
+
+function def:getLineNumberColumn()
+	return self.LE_lnc_show
+end
+
+
+function def:evt_initialize()
+	self.visible = true
+	self.allow_hover = true
+	self.thimble_mode = 1
+
+	widShared.setupViewports(self, 4)
+	widShared.setupScroll(self, -1, -1)
+	widShared.setupDoc(self)
+
+	self.press_busy = false
+
+	-- State flags (WIP)
+	self.enabled = true
+
+	wcInputM.setupInstance(self, "script", true)
+
+	self.illuminate_current_line = "always"
+
+	self.last_line_digits = 0
+
+	self:skinSetRefs()
+	self:skinInstall()
+end
+
+
+function def:evt_getGrowAxisLength(x_axis, cross_length)
+	if not x_axis then
+		return self.skin.default_height, true
+	end
+end
+
+
+function def:evt_reshapePre()
+	-- Viewport #1 is the scrollable region.
+	-- Viewport #2 includes margins and excludes borders.
+	-- Viewport #3 is the column of line numbers, when active.
+	-- Viewport #4 is the scissor-box region for text (cutting out the line number column)
+
+	local skin = self.skin
+	local vp, vp2, vp3, vp4 = self.vp, self.vp2, self.vp3, self.vp4
+
+	vp:set(0, 0, self.w, self.h)
+	vp:reduceT(skin.box.border)
+
+	wcScrollBar.arrangeScrollBars(self)
+
+	-- 'Okay-to-click' rectangle.
+	vp:copy(vp2)
+
+	if not self.LE_lnc_show then
+		vp3:set(0, 0, 0, 0)
+		self.last_line_digits = 0
+	else
+		local lnc_width = editWidM.getLineNumberColumnWidth(self)
+		self.last_line_digits = editWidM.getLineNumberColumnDigitCount(self)
+		vp:splitLeft(vp3, lnc_width)
+	end
+
+	-- scissor-box for text area
+	vp:copy(vp4)
+
+	vp:reduceT(skin.box.margin)
+
+	editWidM.updateDuringReshape(self)
+
+	self:scrollClampViewport()
+	wcScrollBar.updateScrollState(self)
+
+	return true
+end
+
+
+function def:LE_textChanged()
+	if self.LE_lnc_show then
+		local digs = editWidM.getLineNumberColumnDigitCount(self)
+		if self.last_line_digits ~= digs then
+			self:reshape()
+			return true
+		end
+	end
+end
+
+
+function def:evt_pointerHover(targ, mx, my, dx, dy)
+	if self == targ then
+		mx, my = self:getRelativePosition(mx, my)
+
+		wcScrollBar.widgetProcessHover(self, mx, my)
+
+		if self.vp2:pointOverlap(mx, my) then
+			self.cursor_hover = self.skin.cursor_on
+		else
+			self.cursor_hover = nil
+		end
+	end
+end
+
+
+function def:evt_pointerHoverOff(targ, mx, my, dx, dy)
+	if self == targ then
+		wcScrollBar.widgetClearHover(self)
+
+		self.cursor_hover = nil
+	end
+end
+
+
+function def:evt_pointerPress(targ, x, y, button, istouch, presses)
+	if self == targ
+	and self.enabled
+	and button == context.mouse_pressed_button
+	then
+		local had_thimble1_before = self == context.thimble1
+		if button <= 3 then
+			self:tryTakeThimble1()
+		end
+
+		local mx, my = self:getRelativePosition(x, y)
+		local handled = false
+
+		-- Check for pressing on scroll bar components.
+		if button == 1 then
+			local fixed_step = context.settings.wimp.navigation.scroll_button_click
+
+			handled = wcScrollBar.widgetScrollPress(self, x, y, fixed_step)
+		end
+
+		-- Successful mouse interaction with scroll bars should break any existing click-sequence.
+		if handled then
+			context:forceClickSequence(false, button, 1)
+
+		elseif self.vp2:pointOverlap(mx, my) then
+			-- Propagation is halted when a context menu is created.
+			if wcInputM.mousePressLogic(self, button, mx, my, had_thimble1_before) then
+				return true
+			end
+		end
+	end
+
+	-- Allow propagation so that the root widget can destroy pop-up menus.
+end
+
+
+function def:evt_pointerPressRepeat(targ, x, y, button, istouch, reps)
+	if self == targ then
+		if button == 1 and button == context.mouse_pressed_button then
+			local fixed_step = context.settings.wimp.navigation.scroll_button_hold
+
+			wcScrollBar.widgetScrollPressRepeat(self, x, y, fixed_step)
+		end
+	end
+end
+
+
+function def:evt_pointerUnpress(targ, x, y, button, istouch, presses)
+	if self == targ then
+		if button == 1 and button == context.mouse_pressed_button then
+			wcScrollBar.widgetClearPress(self)
+
+			self.press_busy = false
+		end
+	end
+end
+
+
+function def:evt_pointerWheel(targ, x, y)
+	if self == targ then
+		if widShared.checkScrollWheelScroll(self, x, y) then
+			return true
+		end
+	end
+end
+
+
+function def:evt_thimbleTopTake(targ)
+	if self == targ then
+		love.keyboard.setTextInput(true)
+	end
+end
+
+
+function def:evt_thimbleTopRelease(targ)
+	if self == targ then
+		love.keyboard.setTextInput(false)
+	end
+end
+
+
+function def:evt_thimble1Take(targ)
+	if self == targ then
+		wcInputM.thimble1Take(self)
+	end
+end
+
+
+function def:evt_thimble1Release(targ)
+	if self == targ then
+		wcInputM.thimble1Release(self)
+	end
+end
+
+
+function def:evt_textInput(targ, text)
+	if self == targ then
+		wcInputM.textInputLogic(self, text)
+	end
+end
+
+
+function def:evt_keyPressed(targ, key, scancode, isrepeat, hot_key, hot_scan)
+	if self == targ then
+		return wcInputM.keyPressLogic(self, key, scancode, isrepeat, hot_key, hot_scan)
+	end
+end
+
+
+function def:evt_update(dt)
+	editWid.updateCaretBlink(self, dt)
+
+	local scr_x_old, scr_y_old = self.scr_x, self.scr_y
+	local do_update
+
+	if self.press_busy == "text-drag" then
+		if wcInputM.mouseDragLogic(self) then
+			do_update = true
+		end
+		if widShared.dragToScroll(self, dt) then
+			do_update = true
+		end
+	end
+
+	if wcScrollBar.press_busy_codes[self.press_busy] then
+		if context.mouse_pressed_ticks > 1 then
+			local mx, my = self:getRelativePosition(context.mouse_x, context.mouse_y)
+			local button_step = 350 -- XXX style/config
+			wcScrollBar.widgetDragLogic(self, mx, my, button_step*dt)
+		end
+	end
+
+	self:scrollUpdate(dt)
+
+	-- Force a cache update if the external scroll position is different.
+	if scr_x_old ~= self.scr_x or scr_y_old ~= self.scr_y then
+		do_update = true
+	end
+
+	-- update scroll bar registers and thumb position
+	wcScrollBar.updateScrollBarShapes(self)
+	wcScrollBar.updateScrollState(self)
+
+	if do_update then
+		editWidM.generalUpdate(self, true, false, false, true, true, false)
+	end
+end
+
+
+function def:evt_destroy(targ)
+	if self == targ then
+		-- Destroy pop-up menu if it exists in reference to this widget.
+		local root = self:nodeGetRoot()
+		if root.pop_up_menu and root.pop_up_menu.wid_ref == self then
+			root:destroyPopUp("concluded")
+		end
+
+		widShared.removeViewports(self, 2)
+	end
+end
+
+
+local themeAssert = context:getLua("core/res/theme_assert")
+
+
+local md_res = uiSchema.newKeysX {
+	color_body = uiAssert.loveColorTuple,
+	color_current_line_illuminate = uiAssert.loveColorTuple,
+	color_highlight = uiAssert.loveColorTuple,
+	color_highlight_active = uiAssert.loveColorTuple,
+	color_text = uiAssert.loveColorTuple,
+	color_readonly = uiAssert.loveColorTuple,
+	color_ghost_text = uiAssert.loveColorTuple,
+	color_caret_insert = uiAssert.loveColorTuple,
+	color_caret_insert_not_focused = uiAssert.loveColorTuple,
+	color_caret_replace = uiAssert.loveColorTuple,
+	color_caret_replace_not_focused = uiAssert.loveColorTuple,
+	color_margin = uiAssert.loveColorTuple,
+	color_margin_line_numbers = uiAssert.loveColorTuple
+}
+
+
+def.default_skinner = {
+	validate = uiSchema.newKeysX {
+		skinner_id = {uiAssert.type, "string"},
+
+		box = themeAssert.path.box,
+		data_scroll = themeAssert.path.scrollBarData,
+		scr_style = themeAssert.path.scrollBarStyle,
+		font = themeAssert.path.font,
+		font_ghost = themeAssert.path.font,
+		ghost_mode = {uiAssert.namedMap, editWid._nm_ghost_mode},
+
+		-- TODO: probably better to specify a default number of visible lines.
+		default_height = {uiAssert.numberGe, 0}, -- unscaled
+
+		cursor_on = {uiAssert.types, "nil", "string"},
+		paragraph_pad = {uiAssert.integerGe, 0},
+
+		-- 'lnc_' == parameters for the line number column.
+
+		-- Reserve at least this many digits worth of space.
+		lnc_reserved = {uiAssert.integerGe, 0},
+
+		-- Left, right column padding
+		lnc_x1 = {uiAssert.integerGe, 0},
+		lnc_x2 = {uiAssert.integerGe, 0},
+
+		lnc_color_body = uiAssert.loveColorTuple,
+		lnc_color_text = uiAssert.loveColorTuple,
+
+		res_readwrite = md_res,
+		res_readonly = md_res
+	},
+
+
+	transform = function(scale, skin)
+		uiScale.fieldInteger(scale, skin, "lnc_x1")
+		uiScale.fieldInteger(scale, skin, "lnc_x2")
+	end,
+
+
+	install = function(self, skinner, skin)
+		uiTheme.skinnerCopyMethods(self, skinner)
+		self.LE:setFont(skin.font)
+		if self.LE_text_batch then
+			self.LE_text_batch:setFont(skin.font)
+		end
+		self.LE:setParagraphPadding(skin.paragraph_pad)
+		self.LE_lnc_digit_w = skin.font:getWidth("0")
+
+		-- Update the scroll bar style
+		wcScrollBar.refreshScrollBars(self)
+	end,
+
+
+	remove = function(self, skinner, skin)
+		uiTheme.skinnerClearData(self)
+		self.LE:setFont()
+	end,
+
+
+	--refresh = function(self, skinner, skin)
+	--update = function(self, skinner, skin, dt)
+
+
+	render = function(self, ox, oy)
+		local skin = self.skin
+		local vp, vp2, vp3, vp4 = self.vp, self.vp2, self.vp3, self.vp4
+		local LE = self.LE
+		local lines = LE.lines
+		local font = LE.font
+
+		local res = self.LE_allow_input and skin.res_readwrite or skin.res_readonly
+		local has_thimble = self == context.thimble1
+
+		local scx, scy, scw, sch = love.graphics.getScissor()
+		uiGraphics.intersectScissor(
+			ox + self.x + vp2.x,
+			oy + self.y + vp2.y,
+			vp2.w,
+			vp2.h
+		)
+
+		-- Draw background body
+		love.graphics.setColor(res.color_body)
+		-- TODO: replace with a texture slice.
+		love.graphics.rectangle("fill", 0, 0, self.w, self.h)
+
+		-- ^ Variant with less overdraw?
+		--love.graphics.rectangle("fill", vp2.x, vp2.y, vp2.w, vp2.h)
+
+		-- Draw current paragraph illumination, if applicable.
+		if self.illuminate_current_line == "always"
+		or (self.illuminate_current_line == "no-highlight" and not LE:isHighlighted())
+		then
+			love.graphics.setColor(res.color_current_line_illuminate)
+			local paragraph = LE.paragraphs[LE.dcp]
+			local para_y = paragraph[1].y
+
+			local last_sub = paragraph[#paragraph]
+			local para_h = last_sub.y + last_sub.h - para_y
+
+			love.graphics.rectangle("fill", vp2.x, -self.scr_y + para_y, vp2.w, para_h)
+		end
+
+		-- Draw line number column, if active.
+		if self.LE_lnc_show then
+			love.graphics.setColor(skin.lnc_color_body)
+			-- TODO: use a stretched pixel texture
+			love.graphics.rectangle("fill", vp3.x, vp3.y, vp3.w, vp3.h)
+
+			love.graphics.setColor(skin.lnc_color_text)
+			love.graphics.setFont(skin.font)
+
+			local n_digits = editWidM.getLineNumberColumnDigitCount(self)
+			local digits_w = n_digits * self.LE_lnc_digit_w
+
+			love.graphics.push("all")
+
+			--love.graphics.translate(self.LE_align_ox - self.scr_x, -self.scr_y)
+			love.graphics.translate(0, -self.scr_y)
+
+			for i = self.LE_vis_para1, self.LE_vis_para2 do
+				local paragraph = LE.paragraphs[i]
+				local sub_line = paragraph[1]
+				local str = tostring(i)
+				local str_w = font:getWidth(str)
+
+				-- (right alignment, without the risk of love.graphics.printf's wrapping)
+				local xx = skin.lnc_x1 + digits_w - str_w
+
+				love.graphics.print(tostring(i), vp3.x + xx, sub_line.y)
+			end
+
+			love.graphics.pop()
+		end
+
+
+		love.graphics.push("all")
+
+		uiGraphics.intersectScissor(
+			ox + self.x + vp4.x,
+			oy + self.y + vp4.y,
+			vp4.w,
+			vp4.h
+		)
+
+		-- Translate into core region, with scrolling offsets applied.
+		love.graphics.translate(self.LE_align_ox - self.scr_x, -self.scr_y)
+
+		-- Text editor component.
+		local is_ghost_text = wcInputM.shouldShowGhostText(self)
+		local font, col_text
+		if is_ghost_text then
+			font = skin.font_ghost
+			col_text = res.color_ghost_text
+		else
+			font = self.LE.font
+			col_text = res.color_text
+		end
+		local col_highlight = (self:hasAnyThimble() and context.window_focus) and res.color_highlight_active or res.color_highlight
+		local col_caret
+		if context.window_focus then
+			col_caret = self.LE_replace_mode and res.color_caret_replace or res.color_caret_insert
+		else
+			col_caret = self.LE_replace_mode and res.color_caret_replace_not_focused or res.color_caret_insert_not_focused
+		end
+		wcInputM.draw(self, is_ghost_text, font, col_highlight, col_text, col_caret)
+
+		love.graphics.pop()
+
+		uiGraphics.setScissor(scx, scy, scw, sch)
+
+		wcScrollBar.drawScrollBarsHV(self, skin.data_scroll)
+	end,
+}
+
+
+return def

@@ -869,6 +869,33 @@ S.list = {
       UI2D.Init("love")
       return UI2D.GetFontSize() == 14 and type(UI2D.Button) == "function" and type(UI2D.Begin) == "function", "initialised with the default font size 14; no window was laid out or drawn"
     end },
+  { lib = "wave", job = "sound manager with beat tracking",
+    run = function(wave)
+      return type(wave.newSource) == "function", "the API is there; no sound was played (this sample ships no audio file for it, and its last commit is from 2018)"
+    end },
+  { lib = "telescope", job = "BDD-style tests",
+    run = function(t)
+      local ctx = t.load_contexts(function()
+        context("arithmetic", function()
+          test("adds", function() assert_equal(2, 1 + 1) end)
+          test("breaks", function() assert_equal(3, 1 + 1) end)
+        end)
+      end)
+      local res = t.run(ctx, {})
+      local pass, fail = 0, 0
+      for _, r in pairs(res) do
+        if r.status_code == t.status_codes.pass then pass = pass + 1 elseif r.status_code == t.status_codes.fail then fail = fail + 1 end
+      end
+      return pass == 1 and fail == 1, "a context with one passing and one failing test was loaded from a function and run: 1 passed, 1 failed"
+    end },
+  { lib = "prod_ui", job = "user interface library (unfinished)", needs = "window",
+    run = function(ui)
+      return type(ui.load) ~= "nil" and type(ui.context) ~= "nil", "the API is there; its contexts need a window and a loaded theme, so no widget was made or drawn"
+    end },
+  { lib = "Lua-Opus", job = "Ogg Opus streaming",
+    run = function(op)
+      return type(op.newSource) == "function", "the API is there; no .opus file was decoded (needs the opus and ogg shared libraries beside the game)"
+    end },
 }
 
 --- Run one specialist's check. Returns a cell: { status, note, ms }.

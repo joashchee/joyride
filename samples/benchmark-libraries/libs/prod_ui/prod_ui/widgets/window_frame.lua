@@ -1,0 +1,1306 @@
+local context = select(1, ...)
+
+
+local pMath = require(context.conf.prod_ui_req .. "lib.p_math")
+local uiAssert = require(context.conf.prod_ui_req .. "ui_assert")
+local uiDummy = require(context.conf.prod_ui_req .. "ui_dummy")
+local uiGraphics = require(context.conf.prod_ui_req .. "ui_graphics")
+local uiScale = require(context.conf.prod_ui_req .. "ui_scale")
+local uiSchema = require(context.conf.prod_ui_req .. "ui_schema")
+local uiTable = require(context.conf.prod_ui_req .. "ui_table")
+local uiTheme = require(context.conf.prod_ui_req .. "ui_theme")
+local wcContainer = context:getLua("shared/wc/wc_container")
+local wcScrollBar = context:getLua("shared/wc/wc_scroll_bar")
+local wcUiFrame = context:getLua("shared/wc/wc_ui_frame")
+local wcWindowFrame = context:getLua("shared/wc/wc_window_frame")
+local widLayout = context:getLua("core/wid_layout")
+local widShared = context:getLua("core/wid_shared")
+local widShortcut = context:getLua("core/wid_shortcut")
+
+
+local _lerp = pMath.lerp
+local _viewport_keys = context:getLua("core/wid/viewport_keys")
+
+
+local _nm_header_sizes = uiTable.newNamedMapV("HeaderSize", "small", "normal", "large")
+local _nm_header_button_side = uiTable.newNamedMapV("HeaderButtonSide", "left", "right")
+
+
+local def = {
+	skin_id = "window_frame1",
+
+	trickle = {},
+
+	user_callbacks = uiTable.newLutV(
+		"cb_fileDropped", -- forwarded by root
+		"cb_directoryDropped" -- forwarded by root
+	)
+}
+
+
+-- Widget:cb_fileDropped(file)
+def.cb_fileDropped = uiDummy.func
+
+
+-- Widget:cb_fileDirectoryDropped(path)
+def.cb_directoryDropped = uiDummy.func
+
+
+wcScrollBar.setupDef(def)
+def.impl_scroll_bar = context:getLua("shared/impl_scroll_bar1")
+
+
+wcContainer.setupMethods(def)
+
+
+wcUiFrame.definitionSetup(def)
+
+
+widLayout.setupContainerDef(def)
+widShared.scrollSetMethods(def)
+
+
+widShortcut.setupDef(def)
+widShortcut.setupDefList(def)
+
+
+def.center = widShared.centerInParent
+def.wid_maximize = widShared.wid_maximize
+def.wid_unmaximize = widShared.wid_unmaximize
+--def.wid_patchPressed = frame_wid_patchPressed
+
+
+local function _newSensor(id)
+	return {x=0, y=0, w=0, h=0, enabled=false, id=id}
+end
+
+
+-- We need to catch mouse hover+press events that occur in the frame's resize area.
+function def:ui_evaluateHover(mx, my, os_x, os_y)
+	local wx, wy = self.x + os_x, self.y + os_y
+	local rp = not self.maximized and self.allow_resize and self.skin.sensor_resize_pad or 0
+	return mx >= wx - rp and my >= wy - rp and mx < wx + self.w + rp and my < wy + self.h + rp
+end
+
+
+function def:ui_evaluatePress(mx, my, os_x, os_y, button, istouch, presses)
+	local wx, wy, ww, wh = self.x + os_x, self.y + os_y, self.w, self.h
+	local rp = not self.maximized and self.allow_resize and self.skin.sensor_resize_pad or 0
+	-- in frame + padding area
+	if mx >= wx - rp and my >= wy - rp and mx < wx + ww + rp and my < wy + wh + rp then
+		-- just in frame
+		if mx >= wx and my >= wy and mx < wx + ww and my < wy + wh then
+			return true
+		-- just in padding area: allow clicking through the resize sensor with mouse buttons
+		-- 2, 3, etc.
+		else
+			return button == 1
+		end
+	end
+end
+
+
+function def:setHeaderVisible(enabled)
+	if uiTable.set(self, "header_visible", not not enabled) then
+		local sx, sy = self:scrollGetXY()
+		self:reshape()
+		self:scrollHV(sx, sy, true)
+	end
+
+	return self
+end
+
+
+function def:getHeaderVisible()
+	return self.header_visible
+end
+
+
+function def:setHeaderSize(size)
+	size = size or "normal"
+	uiAssert.namedMap(1, size, _nm_header_sizes)
+
+	if uiTable.set(self, "header_size", size) then
+		local sx, sy = self:scrollGetXY()
+		self:reshape()
+		self:scrollHV(sx, sy, true)
+	end
+
+	return self
+end
+
+
+function def:getHeaderSize()
+	return self.header_size
+end
+
+
+-- (Resizable by the user.)
+function def:setResizable(enabled)
+	self.allow_resize = not not enabled
+	self.b_max.enabled = self.allow_resize and self.allow_maximize and true or false
+
+	return self
+end
+
+
+function def:getResizable()
+	return self.allow_resize
+end
+
+
+function def:setDraggable(enabled)
+	self.allow_drag_move = not not enabled
+
+	return self
+end
+
+
+function def:getDraggable()
+	return self.allow_drag_move
+end
+
+
+function def:setCloseControlVisibility(visible)
+	if uiTable.set(self, "header_show_close_button", not not visible) then
+		self:reshape()
+	end
+
+	return self
+end
+
+
+function def:getCloseControlVisibility()
+	return self.header_show_close_button
+end
+
+
+function def:setMaximizeControlVisibility(visible)
+	if uiTable.set(self, "header_show_max_button", not not visible) then
+		self:reshape()
+	end
+
+	return self
+end
+
+
+function def:getMaximizeControlVisibility()
+	return self.header_show_max_button
+end
+
+
+function def:setCloseEnabled(enabled)
+	self.allow_close = not not enabled
+	self.b_close.enabled = self.allow_close
+
+	return self
+end
+
+
+function def:getCloseEnabled()
+	return self.allow_close
+end
+
+
+function def:setMaximizeEnabled(enabled)
+	self.allow_maximize = not not enabled
+	self.b_max.enabled = self.allow_resize and self.allow_maximize and true or false
+
+	return self
+end
+
+
+function def:getMaximizeEnabled()
+	return self.allow_maximize
+end
+
+
+function def:setWindowViewLevel(view_level)
+	if not wcUiFrame.view_levels[view_level] then
+		error("invalid view level.")
+	end
+
+	self.view_level = view_level
+	self.sort_id = wcUiFrame.view_levels[view_level]
+	context.root:sortG2()
+
+	return self
+end
+
+
+function def:getWindowViewLevel()
+	return self.view_level
+end
+
+
+function def:setFrameTitle(text)
+	uiAssert.type(1, text, "string", "nil")
+
+	self.header_text = text
+	-- TODO: reshape?
+
+	return self
+end
+
+
+function def:getFrameTitle()
+	return self.header_text
+end
+
+
+function def:setHeaderButtonSide(side)
+	uiAssert.namedMap(1, side, _nm_header_button_side)
+
+	if uiTable.set(self, "header_button_side", side) then
+		self:reshape()
+	end
+
+	return self
+end
+
+
+function def:getHeaderButtonSide()
+	return self.header_button_side
+end
+
+
+function def:bringWindowToFront()
+	self:reorder(math.huge)
+	context.root:sortG2()
+
+	return self
+end
+
+
+function def:_refreshWorkspaceState()
+	-- Become active
+	if not self.workspace or self.workspace == context.root.workspace then
+		local assign = not self.frame_hidden
+		self.visible = assign
+		self.allow_hover = assign
+		self.sort_id = wcUiFrame.view_levels[self.view_level]
+		self:reshape()
+	-- Become inactive
+	else
+		self.visible = false
+		self.allow_hover = false
+		self.sort_id = 1
+	end
+
+	return self
+end
+
+
+function def:setFrameWorkspace(workspace)
+	workspace = workspace or false
+
+	if workspace and workspace.frame_type ~= "workspace" then
+		error("argument #1: expected a Workspace widget.")
+	end
+
+	self.workspace = workspace
+
+	wcUiFrame.assertFrameBlockWorkspaces(self)
+
+	self:_refreshWorkspaceState()
+	context.root:sortG2()
+
+	return self
+end
+
+
+local function getCursorCode(a_x, a_y)
+	return (a_y == 0 and a_x ~= 0) and "sizewe" -- -
+	or (a_y ~= 0 and a_x == 0) and "sizens" -- |
+	or ((a_y == 1 and a_x == 1) or (a_y == -1 and a_x == -1)) and "sizenwse" -- \
+	or ((a_y == -1 and a_x == 1) or (a_y == 1 and a_x == -1)) and "sizenesw" -- /
+	or false -- unknown
+end
+
+
+local function _initiateResizeMode(self, axis_x, axis_y)
+	if axis_x == 0 and axis_y == 0 then
+		error("invalid resize mode (0, 0).")
+	end
+
+	self.press_busy = "resize"
+	self.adjust_axis_x = axis_x
+	self.adjust_axis_y = axis_y
+
+	local ax, ay = self:getAbsolutePosition()
+	local mx, my = context.mouse_x, context.mouse_y
+
+	-- Track mouse offsets for a less jarring transition to resize mode.
+	self.adjust_ox = axis_x < 0 and ax - mx or axis_x > 0 and ax + self.w - mx or 0
+	self.adjust_oy = axis_y < 0 and ay - my or axis_y > 0 and ay + self.h - my or 0
+
+	--print("adjust_ox", self.adjust_ox, "adjust_oy", self.adjust_oy)
+
+	return self
+end
+
+
+--[===[
+-- TODO: Very, very, very old fragment.
+
+--- Controls what happens when the container has both scroll bars active and the user clicks
+-- on the square patch where the bars meet.
+local function frame_wid_patchPressed(self, x, y, button, istouch, presses)
+	-- XXX doesn't set the resize cursor. Maybe the core resize action would be better handled by a
+	-- separate resize sensor.
+
+	if button == 1 then
+		local content = self:findTag("frame_content")
+		if not content then
+			return
+		end
+		if self.allow_resize then
+			if content.press_busy then
+				return
+			end
+
+			local ax, ay = content:getAbsolutePosition()
+			local mx, my = x - ax, y - ay
+
+			-- [XXX 14] support scroll bars on left or top side of container
+			if content.scr_h and content.scr_h.active and content.scr_v and content.scr_v.active
+			and mx >= content.vp.x + content.vp.w and my >= content.vp.y + content.vp.h then
+				_initiateResizeMode(self, 1, 1)
+			end
+		end
+	end
+end
+--]===]
+
+
+function def:setFrameBlock(target)
+	uiAssert.type(1, target, "table")
+
+	if not target.frame_type or (target.frame_type ~= "window" and target.frame_type ~= "workspace") then
+		error("target must be a UI Frame of type 'window' or 'workspace'.")
+
+	-- You can chain blocked frames together, but only one frame may block another frame at a time.
+	elseif target.ref_block_next then
+		error("target frame already has a blocking reference set (target.ref_block_next).")
+
+	elseif self.ref_block_prev then
+		error("this frame already has a blocking reference set (self.ref_block_prev).")
+	end
+
+	self.ref_block_prev = target
+	target.ref_block_next = self
+
+	return self
+end
+
+
+function def:popFrameBlock()
+	-- Frame-blocking state must be popped last-to-first.
+	if self.ref_block_next then
+		error("this frame still has a blocking reference (self.ref_block_next).")
+
+	elseif not self.ref_block_prev then
+		error("no blocking target frame to clear (self.ref_block_prev).")
+	end
+
+	local target = self.ref_block_prev
+	self.ref_block_prev = false
+	target.ref_block_next = false
+
+	return target
+end
+
+
+function def:closeFrame(force)
+	-- XXX fortify against calls during update-lock
+	--print("self.allow_close", self.allow_close, "force", force)
+	if self.allow_close or force then
+		self:destroy()
+		return true
+	end
+
+	return false
+end
+
+
+function def:evt_initialize(_root_pass, unselectable, view_level)
+	uiAssert.calledByRoot(self.parent, _root_pass, "use 'Root:newWindowFrame()' to create new Window Frame widgets")
+
+	-- UI Frame
+	self.frame_type = "window"
+	wcUiFrame.instanceSetup(self, unselectable)
+	self.view_level = view_level or "normal"
+	self.sort_id = wcUiFrame.view_levels[self.view_level]
+
+	-- If associated with a Workspace, a Window Frame is only active if that Workspace is also active.
+	-- Window Frames associated with the root are always active.
+	self.workspace = false
+
+	self.visible = true
+	self.allow_hover = true
+
+	self.allow_close = true
+	self.allow_drag_move = true
+	self.allow_maximize = true -- depends on 'allow_resize' being true
+	self.allow_resize = true
+	self.header_visible = true
+	self.header_button_side = "right" -- "left", "right"
+	self.header_show_close_button = true
+	self.header_show_max_button = true
+	self.header_text = ""
+	self.header_size = "normal" -- _nm_header_sizes
+
+	self.scroll_range_mode = "zero"
+
+	self.min_w = 0
+	self.min_h = 0
+	self.max_w = math.huge
+	self.max_h = math.huge
+
+	widShared.setupDoc(self)
+	widShared.setupScroll(self, -1, -1)
+	widShared.setupViewports(self, 6)
+
+	widLayout.setupLayoutList(self)
+	self:layoutSetBase("viewport")
+
+	wcContainer.setupSashState(self)
+	widShortcut.setupInstanceList(self)
+
+	self.hover_zone = false -- false, "button-close", "button-size"
+	self.mouse_in_resize_zone = false
+
+	-- Helps with double-clicks on the frame header.
+	self.cseq_header = false
+
+	-- Set true to draw a red box around the frame's resize area.
+	--self.DEBUG_show_resize_range
+
+	self.press_busy = false -- false, "drag", "resize", "button-close", "button-size", "sash"
+
+	self.b_close = _newSensor("button-close")
+	self.b_max = _newSensor("button-size")
+
+	-- Valid while resizing. (0,0) is an error.
+	self.adjust_axis_x = 0 -- -1, 0, 1
+	self.adjust_axis_y = 0 -- -1, 0, 1
+
+	-- Offsets from mouse when resizing.
+	self.adjust_ox = 0
+	self.adjust_oy = 0
+
+	-- Used when unmaximizing as a result of dragging.
+	self.adjust_mouse_orig_a_x = 0
+	self.adjust_mouse_orig_a_y = 0
+
+	self.maximized = false
+	self.maxim_x = 0
+	self.maxim_y = 0
+	self.maxim_w = 128
+	self.maxim_h = 128
+
+	-- Set true to allow dragging the Window Frame by clicking on its body
+	--self.allow_body_drag = false
+
+	-- Used to position frame relative to pointer when dragging.
+	self.drag_ox = 0
+	self.drag_oy = 0
+
+	-- Potentially shortened version of 'text' for display.
+	self.header_text_disp = ""
+
+	-- Text offsetting
+	self.header_text_ox = 0
+	self.header_text_oy = 0
+
+	self.needs_update = true
+
+	-- Frame-blocking widget links.
+	self.ref_block_prev = false
+	self.ref_block_next = false
+
+	self:skinSetRefs()
+	self:skinInstall()
+end
+
+
+def.trickle.evt_pointerHoverOn = wcUiFrame.logic_tricklePointerHoverOn
+
+
+local function _getCursorAxisInfo(self, mx, my)
+	local vp3 = self.vp3
+	-- Check that (mx,my) is outside of Viewport #3 before calling.
+	local diag = self.skin.sensor_resize_diagonal
+	local axis_x = mx < vp3.x + diag and -1 or mx >= vp3.x + vp3.w - diag and 1 or 0
+	local axis_y = my < vp3.y + diag and -1 or my >= vp3.y + vp3.h - diag and 1 or 0
+
+	return axis_x, axis_y
+end
+
+
+local function _pointInSensor(sen, x, y)
+	return x >= sen.x and x < sen.x + sen.w and y >= sen.y and y < sen.y + sen.h
+end
+
+
+function def.trickle:evt_pointerHover(targ, mouse_x, mouse_y, mouse_dx, mouse_dy)
+	if self == targ then
+		local mx, my = self:getRelativePosition(mouse_x, mouse_y)
+		-- Because this widget accepts hover events outside of its boundaries (for resizing), we need to confirm
+		-- that the mouse cursor actually is within the Window Frame area before checking scroll bar hover.
+		if mx >= self.x and my >= self.y and mx < self.x + self.w and my < self.y + self.h then
+			wcScrollBar.widgetProcessHover(self, mx, my)
+		end
+
+		if mx >= 0 and mx < self.w and my >= 0 and my < self.h then
+			self.hover_zone = self.header_show_close_button and _pointInSensor(self.b_close, mx, my) and "button-close"
+				or self.header_show_max_button and _pointInSensor(self.b_max, mx, my) and "button-size"
+				or false
+		else
+			self.hover_zone = false
+		end
+
+		-- Resize sensors
+		if not self.maximized
+		and self.allow_resize
+		and not self.vp3:pointOverlap(mx, my)
+		then
+			local axis_x, axis_y = _getCursorAxisInfo(self, mx, my)
+			if not (axis_x == 0 and axis_y == 0) then
+				self.mouse_in_resize_zone = true
+				self.cursor_hover = getCursorCode(axis_x, axis_y)
+			end
+		else
+			if self.mouse_in_resize_zone then
+				self.mouse_in_resize_zone = false
+				self.cursor_hover = nil
+			end
+		end
+	end
+
+	if not self.mouse_in_resize_zone
+	and not self.hover_zone
+	and wcContainer.sashHoverLogic(self, mouse_x, mouse_y)
+	then
+		return true
+	end
+end
+
+
+function def:evt_pointerHoverOff(targ, mouse_x, mouse_y, mouse_dx, mouse_dy)
+	if self == targ then
+		wcScrollBar.widgetClearHover(self)
+
+		self.hover_zone = false
+		self.mouse_in_resize_zone = false
+		self.cursor_hover = nil
+	end
+end
+
+
+def.evt_thimble1Take = wcUiFrame.logic_thimble1Take
+def.trickle.evt_keyPressed = wcUiFrame.logic_trickleKeyPressed
+def.trickle.evt_textInput = wcUiFrame.logic_trickleTextInput
+def.trickle.evt_pointerPress = wcUiFrame.logic_tricklePointerPress
+
+
+function def:evt_pointerPress(targ, x, y, button, istouch, presses)
+	if wcUiFrame.pointerPressLogicFirst(self) then
+		return
+	end
+
+	if self == targ then
+		local mx, my = self:getRelativePosition(x, y)
+		local handled = false
+
+		if button == 1 and context.mouse_pressed_button == button then
+			-- Check for pressing on scroll bar components.
+			-- Since this widget can accept mouse events that are out of bounds, we must
+			-- perform an additional intersection check.
+			if mx >= 0 and my >= 0 and mx < self.w and my < self.h then
+				local fixed_step = context.settings.wimp.navigation.scroll_button_click
+				handled = wcScrollBar.widgetScrollPress(self, x, y, fixed_step)
+			end
+
+			if not handled and self.header_visible then
+				if self.hover_zone == "button-close" then
+					self.press_busy = self.allow_close and "button-close" or "button-disabled"
+					self.cseq_header = false
+					handled = true
+
+				elseif self.hover_zone == "button-size" then
+					self.press_busy = (self.allow_resize and self.allow_maximize) and "button-size" or "button-disabled"
+					self.cseq_header = false
+					handled = true
+
+				elseif not self.vp5:pointOverlap(mx, my) then
+					self.cseq_header = false
+
+				else
+					handled = true
+
+					-- Maximize
+					if self.allow_resize
+					and self.allow_maximize
+					and self.cseq_header
+					and context.cseq_button == 1
+					and context.cseq_presses % 2 == 0
+					then
+						if self.wid_maximize and self.wid_unmaximize then
+							if not self.maximized then
+								self:wid_maximize()
+							else
+								self:wid_unmaximize()
+							end
+
+							self:reshape()
+						end
+
+					elseif self.allow_drag_move then
+						-- Drag (reposition) action
+						self.press_busy = "drag"
+
+						self.drag_ox, self.drag_oy = -mx, -my
+
+						self.adjust_mouse_orig_a_x = x
+						self.adjust_mouse_orig_a_y = y
+
+						self.drag_dc_fix_x = x
+						self.drag_dc_fix_y = y
+					end
+
+					self.cseq_header = true
+				end
+			end
+		end
+
+		-- We did not interact with the header or scroll bars.
+		if not handled then
+			-- If the pointer is within Viewport #2, then have the Window Frame try to take thimble1.
+			if self.vp2:pointOverlap(mx, my) then
+				self:tryTakeThimble1()
+
+			-- Outside of viewport #3: treat as a resize action.
+			elseif self.allow_resize
+			and not self.vp3:pointOverlap(mx, my)
+			then
+				local axis_x, axis_y = _getCursorAxisInfo(self, mx, my)
+				if not (axis_x == 0 and axis_y == 0) then
+					_initiateResizeMode(self, axis_x, axis_y)
+				end
+			end
+		end
+	end
+
+	-- TODO: Figure out what to do with this stuff.
+	--[=[
+	-- Callback for when the user clicks on the scroll dead-patch.
+	if self.wid_patchPressed and self:wid_patchPressed(x, y, button, istouch, presses) then
+		-- ...
+
+	-- Dragging can also be started by clicking on the Window Frame body if 'allow_body_drag' is true.
+	elseif self.allow_body_drag then
+		self.press_busy = "drag"
+		self.adjust_mouse_orig_a_x = x
+		self.adjust_mouse_orig_a_y = y
+		--self:captureFocus()
+	end
+	--]=]
+end
+
+
+def.evt_pointerPressRepeat = wcUiFrame.logic_pointerPressRepeat
+
+
+function def.trickle:evt_pointerDrag(targ, mouse_x, mouse_y, mouse_dx, mouse_dy)
+	if self == targ then
+		if self.press_busy == "resize" then
+			wcWindowFrame.mouseMovedResize(self, self.adjust_axis_x, self.adjust_axis_y, mouse_x, mouse_y, mouse_dx, mouse_dy)
+
+		elseif self.press_busy == "drag" then
+			wcWindowFrame.mouseMovedDrag(self, mouse_x, mouse_y, mouse_dx, mouse_dy)
+		end
+	end
+
+	if wcContainer.sashDragLogic(self, mouse_x, mouse_y) then
+		return true
+	end
+end
+
+
+function def.trickle:evt_pointerUnpress(targ, x, y, button, istouch, presses)
+	if self == targ then
+		if button == 1 and context.mouse_pressed_button == button then
+			if self.press_busy == "resize" or self.press_busy == "drag" then
+				-- Hack: clamp frame to parent. This isn't handled while resizing because the
+				-- width and height can go haywire when resizing against the bounds of the
+				-- screen.
+				local bx1, by1, bx2, by2 = self:calculateWindowPlacementBoundaries()
+				widShared.keepInBoundsExtended(self, self.parent.vp, bx1, by1, bx2, by2)
+
+			elseif x >= self.x and y >= self.y and x < self.x + self.w and y < self.y + self.h then
+				local mx, my = self:getRelativePosition(x, y)
+				if self.press_busy == "button-close" and _pointInSensor(self.b_close, mx, my) then
+					self:destroy()
+
+				elseif self.press_busy == "button-size"
+				and self.allow_resize
+				and _pointInSensor(self.b_max, mx, my)
+				then
+					if self.wid_maximize and self.wid_unmaximize then
+						if not self.maximized then
+							self:wid_maximize()
+						else
+							self:wid_unmaximize()
+						end
+
+						self:reshape()
+					end
+
+				elseif self.press_busy == "button-disabled" then
+					self.cseq_header = false
+				end
+			end
+
+			wcScrollBar.widgetClearPress(self)
+			self.press_busy = false
+		end
+	end
+
+	if wcContainer.sashUnpressLogic(self) then
+		return true
+	end
+end
+
+
+def.trickle.evt_pointerWheel = wcUiFrame.logic_tricklePointerWheel
+def.evt_pointerWheel = wcUiFrame.logic_pointerWheel
+
+
+local function _getHeaderSkinTable(self)
+	local skin = self.skin
+	local h_size = self.header_size
+	return h_size == "small" and skin.res_small or h_size == "large" and skin.res_large or skin.res_normal
+end
+
+
+function def:evt_update(dt)
+	dt = math.min(dt, 1.0)
+
+	if wcScrollBar.press_busy_codes[self.press_busy] then
+		local mx, my = self:getRelativePosition(context.mouse_x, context.mouse_y)
+		local button_step = 350 -- [XXX 6] style/config
+		wcScrollBar.widgetDragLogic(self, mx, my, button_step*dt)
+	end
+
+	self:scrollUpdate(dt)
+	wcScrollBar.updateScrollState(self)
+	wcScrollBar.updateScrollBarShapes(self)
+
+	if self.needs_update then
+		local skin = self.skin
+		local vp3, vp6 = self.vp3, self.vp6
+		local res = _getHeaderSkinTable(self)
+		local font = res.header_font
+
+		-- Refresh the text string. Shorten to the first line feed, if applicable.
+		self.header_text_disp = self.header_text and string.match(self.header_text, "^([^\n]*)\n*") or ""
+
+		-- align text
+		-- [XXX 12] Centered text can be cut off by the control buttons.
+		local text_w = font:getWidth(self.header_text_disp)
+		local text_h = font:getHeight()
+
+		self.header_text_ox = math.floor(0.5 + _lerp(vp3.x, vp3.x + vp3.w - text_w, skin.header_text_align_x))
+
+		if self.header_button_side == "right" and self.header_text_ox + text_w >= vp6.w then
+			self.header_text_ox = vp6.w - text_w
+
+		elseif self.header_button_side == "left" and self.header_text_ox < vp6.x then
+			self.header_text_ox = vp6.x
+		end
+
+		self.header_text_ox = math.max(0, self.header_text_ox)
+		self.header_text_oy = math.floor(0.5 + _lerp(vp6.y, vp6.y + vp6.h - text_h, skin.header_text_align_y))
+
+		self.needs_update = false
+	end
+
+	--print(self.scr_fx, self.scr_fy)
+end
+
+
+local function _measureButtonShortenPort(self, sensor, skin, res, right, w, h)
+	local bx, by, bw, bh
+	local vp6 = self.vp6
+	by = math.floor(0.5 + _lerp(vp6.y, vp6.y + vp6.h - h, res.button_align_y))
+	bw = w
+	bh = h
+
+	if right then
+		bx = vp6.x + vp6.w - w
+	else -- left
+		bx = vp6.x
+		vp6.x = vp6.x + w + res.button_pad_w
+	end
+	vp6.w = math.max(0, vp6.w - w - res.button_pad_w)
+
+	sensor.x, sensor.y, sensor.w, sensor.h = bx, by, bw, bh
+end
+
+
+function def:calculateWindowPlacementBoundaries()
+	local scale = context.scale
+	local bound = context.settings.wimp.window_frame.out_of_bounds_limit
+
+	-- Allow the Window Frame to be moved partially out of bounds, but not
+	-- so much that the mouse wouldn't be able to drag it back.
+
+	local header_h = self.vp5.h
+	local bound_y1
+	if self.header_visible then
+		bound_y1 = -self.h + math.max(4, math.floor(header_h/4))
+	else
+		bound_y1 = -bound
+	end
+
+	bound = math.floor(bound * scale)
+
+	return -bound, bound_y1, -bound, -bound
+end
+
+
+function def:evt_reshapePre()
+	--print("window_frame: evt_reshapePre")
+
+	-- Viewport #1 is the main content viewport.
+	-- Viewport #2 separates embedded controls (scroll bars, header bar, etc.) from the content.
+	-- self.w, self.h, excluding viewport #3, is the outer frame border. This area is considered an inward extension
+	-- of the invisible resize zone surrounding the frame.
+	-- Viewport #3, excluding #4, is the inner frame border. This area does nothing when clicked.
+	-- Viewport #4 is the area for all other elements.
+	-- Viewport #5 is the header area.
+	-- Viewport #6 is a subsection of the header area for rendering the frame title.
+
+	local skin = self.skin
+	local vp, vp2, vp3, vp4, vp5, vp6 = self.vp, self.vp2, self.vp3, self.vp4, self.vp5, self.vp6
+	local res = _getHeaderSkinTable(self)
+
+	-- (parent should be the WIMP root widget.)
+	local parent = self.parent
+
+	-- Refit if maximized and parent dimensions changed.
+	if self.maximized then
+		local pvp = parent.vp
+		self.x = pvp.x
+		self.y = pvp.y
+		if self.w ~= pvp.w or self.h ~= pvp.h then
+			self.w = pvp.w
+			self.h = pvp.h
+		end
+	end
+
+	self.w = math.max(self.min_w, math.min(self.w, self.max_w))
+	self.h = math.max(self.min_h, math.min(self.h, self.max_h))
+
+	vp3:set(0, 0, self.w, self.h)
+	vp3:reduceT(skin.box.border)
+	vp3:copy(vp4)
+	vp4:reduceT(skin.box.margin)
+
+	-- Update sensor enabled state
+	self.b_close.enabled = self.allow_close
+	self.b_max.enabled = self.allow_resize and self.allow_maximize and true or false
+
+	-- Header setup
+	if not self.header_visible then
+		vp5:set(0, 0, 0, 0)
+		vp6:set(0, 0, 0, 0)
+	else
+		vp5.h = res.header_h
+
+		local vp_fit = widShared.getViewportFromIndex(self, res.viewport_fit)
+		local vx, vy, vw, vh = widShared.getViewportXYWH(self, vp_fit)
+		vp5.x, vp5.y, vp5.w = vx, vy, vw
+
+		vp5:copy(vp6)
+
+		local button_h = math.min(res.button_h, vp5.h)
+		local right = self.header_button_side == "right"
+
+		-- The first bit of padding for buttons
+		if self.header_show_close_button or self.header_show_max_button then
+			vp6.w = vp6.w - res.button_pad_w
+			if not right then
+				vp6.x = vp6.x + res.button_pad_w
+			end
+		end
+
+		if self.header_show_close_button then
+			_measureButtonShortenPort(self, self.b_close, skin, res, right, res.button_w, button_h)
+		end
+
+		if self.header_show_max_button then
+			_measureButtonShortenPort(self, self.b_max, skin, res, right, res.button_w, button_h)
+		end
+	end
+
+	self.needs_update = true
+
+	-- The rest
+	vp4:copy(vp)
+
+	vp.y = vp.y + vp5.h
+	vp.h = vp.h - vp5.h
+
+	vp:reduceT(skin.box.border2)
+
+	wcScrollBar.arrangeScrollBars(self)
+
+	vp:copy(vp2)
+	vp2:reduceT(skin.box.margin2)
+
+	widShared.setClipScissorToViewport(self, vp2)
+	widShared.setClipHoverToViewport(self, vp2)
+
+	-- Hacky way of not interfering with the user resizing the frame. Call keepInBounds* before exiting the resize mode.
+	if self.press_busy ~= "resize" then
+		-- (Needs to happen after shaping the header bar, as the header height factors into the default bounds.)
+		local bx1, by1, bx2, by2 = self:calculateWindowPlacementBoundaries()
+		widShared.keepInBoundsExtended(self, parent.vp, bx1, by1, bx2, by2)
+	end
+
+	widLayout.resetLayoutSpace(self)
+end
+
+
+function def:evt_reshapePost()
+	--print("window_frame: evt_reshapePost")
+
+	widShared.updateDoc(self)
+
+	self:scrollClampViewport()
+	wcScrollBar.updateScrollBarShapes(self)
+	wcScrollBar.updateScrollState(self)
+end
+
+
+function def:evt_destroy(targ)
+	if self == targ then
+		-- Clean up any existing frame-blocking connection. Note that this function will raise an error if another frame
+		-- is still blocking this frame.
+		if self.ref_block_prev then
+			local target = self:popFrameBlock()
+
+			-- Clean up the target's focus a bit.
+			--[[
+			local root = self:nodeGetRoot()
+			root:setSelectedFrame(target, true)
+
+			target:reorder(math.huge)
+			target.parent:sortChildren()
+
+			wcUiFrame.tryUnbankingThimble1(target)
+			--]]
+		end
+
+		-- Clean up modal level, if applicable.
+		local root = self:nodeGetRoot()
+		if self == root.modals[#root.modals] then
+			root:clearModalFrame(self)
+		end
+
+		widShared.removeViewports(self, 6)
+	end
+end
+
+
+local function _getHeaderSensorResource(self, btn, res)
+	return not btn.enabled and res.res_btn_disabled
+		or self.press_busy == btn.id and res.res_btn_pressed
+		or self.hover_zone == btn.id and res.res_btn_hover
+		or res.res_btn_idle
+end
+
+
+local themeAssert = context:getLua("core/res/theme_assert")
+
+
+local md_res_selection = uiSchema.newKeysX {
+	col_header_fill = uiAssert.loveColorTuple,
+	col_header_text = uiAssert.loveColorTuple
+}
+
+
+local md_res_btn_close = uiSchema.newKeysX {
+	graphic = themeAssert.path.quad
+}
+
+
+local md_res_btn_size = uiSchema.newKeysX {
+	graphic = themeAssert.path.quad,
+	graphic_max = themeAssert.path.quad,
+	graphic_unmax = themeAssert.path.quad
+}
+
+
+local md_res_btn_state = uiSchema.newKeysX {
+	slice = themeAssert.path.slice,
+	color_body = uiAssert.loveColorTuple,
+	color_quad = uiAssert.loveColorTuple,
+	label_ox = uiAssert.integer,
+	label_oy = uiAssert.integer
+}
+
+
+local md_res = uiSchema.newKeysX {
+	-- Which rectangle to use for fitting the header.
+	-- false: 'self.w', 'self.h'
+	-- number: a corresponding viewport.
+	viewport_fit = {uiAssert.oneOf, false, 1, 2, 3, 4, 5, 6, 7, 8},
+
+	header_box = themeAssert.path.box,
+	header_slc_body = themeAssert.path.slice,
+	header_font = themeAssert.path.font,
+	header_h = {uiAssert.integerGe, 0},
+	button_pad_w = {uiAssert.integerGe, 0},
+	button_w = {uiAssert.integerGe, 0},
+	button_h = {uiAssert.integerGe, 0},
+
+	-- From 0 (top) to 1 (bottom)
+	button_align_y = {uiAssert.numberRange, 0.0, 1.0},
+
+	res_selected = md_res_selection,
+	res_unselected = md_res_selection,
+
+	btn_close = md_res_btn_close,
+	btn_size = md_res_btn_size,
+
+	res_btn_idle = md_res_btn_state,
+	res_btn_hover = md_res_btn_state,
+	res_btn_pressed = md_res_btn_state,
+	res_btn_disabled = md_res_btn_state
+}
+
+
+def.default_skinner = {
+	validate = uiSchema.newKeysX {
+		skinner_id = {uiAssert.type, "string"},
+
+		box = themeAssert.path.box,
+		data_scroll = themeAssert.path.scrollBarData,
+		scr_style = themeAssert.path.scrollBarStyle,
+
+		-- Padding when scrolling to put a widget into view.
+		in_view_pad_x = {uiAssert.integerGe, 0},
+		in_view_pad_y = {uiAssert.integerGe, 0},
+
+		slc_body = themeAssert.path.slice,
+		slc_shadow = themeAssert.path.slice,
+
+		header_text_align_x = {uiAssert.numberRange, 0.0, 1.0},
+		header_text_align_y = {uiAssert.numberRange, 0.0, 1.0},
+
+		-- How many pixels to extend / pad resize sensors.
+		sensor_resize_pad = {uiAssert.integerGe, 0},
+
+		-- How much to extend the diagonal parts of the resize area.
+		sensor_resize_diagonal = {uiAssert.integerGe, 0},
+
+		-- How far to allow resizing a widget outside the bounds of its parent.
+		-- Used to prevent stretching frames too far outside the LÖVE application window.
+		frame_outbound_limit = {uiAssert.integerGe, 0},
+
+		shadow_extrude = {uiAssert.integerGe, 0},
+
+		-- Alignment of textures within control sensors
+		-- 0.0: left, 0.5: middle, 1.0: right
+		sensor_tex_align_x = {uiAssert.numberRange, 0.0, 1.0},
+
+		-- 0.0: top, 0.5: middle, 1.0: bottom
+		sensor_tex_align_y = {uiAssert.numberRange, 0.0, 1.0},
+
+		color_body = uiAssert.loveColorTuple,
+		color_shadow = uiAssert.loveColorTuple,
+
+		res_normal = md_res,
+		res_small = md_res,
+		res_large = md_res
+	},
+
+
+	transform = function(scale, skin)
+		uiScale.fieldInteger(scale, skin, "in_view_pad_x")
+		uiScale.fieldInteger(scale, skin, "in_view_pad_y")
+		uiScale.fieldInteger(scale, skin, "sensor_resize_pad")
+		--uiScale.fieldInteger(scale, skin, "shadow_extrude")
+
+		local function _changeResBtnState(scale, res)
+			uiScale.fieldInteger(scale, res, "label_ox")
+			uiScale.fieldInteger(scale, res, "label_oy")
+		end
+
+		local function _changeResTopLevel(scale, res)
+			uiScale.fieldInteger(scale, res, "header_h")
+			uiScale.fieldInteger(scale, res, "button_pad_w")
+			uiScale.fieldInteger(scale, res, "button_w")
+			uiScale.fieldInteger(scale, res, "button_h")
+
+			_changeResBtnState(scale, res.res_btn_idle)
+			_changeResBtnState(scale, res.res_btn_hover)
+			_changeResBtnState(scale, res.res_btn_pressed)
+			_changeResBtnState(scale, res.res_btn_disabled)
+		end
+
+		_changeResTopLevel(scale, skin.res_normal)
+		_changeResTopLevel(scale, skin.res_small)
+		_changeResTopLevel(scale, skin.res_large)
+	end,
+
+
+	install = function(self, skinner, skin)
+		uiTheme.skinnerCopyMethods(self, skinner)
+		-- Update the scroll bar style
+		wcScrollBar.refreshScrollBars(self)
+	end,
+
+
+	remove = function(self, skinner, skin)
+		uiTheme.skinnerClearData(self)
+	end,
+
+
+	render = function(self, ox, oy)
+		local skin = self.skin
+		local root = context.root
+
+		love.graphics.push("all")
+
+		-- Window shadow
+		local render_shadow = context.settings.wimp.window_frame.render_shadow
+		if render_shadow == "all" or render_shadow == "active" and self == root.selected_frame then
+			love.graphics.setColor(skin.color_shadow)
+			uiGraphics.drawSlice(skin.slc_shadow,
+				-skin.shadow_extrude,
+				-skin.shadow_extrude,
+				self.w + skin.shadow_extrude * 2,
+				self.h + skin.shadow_extrude * 2
+			)
+		end
+
+		uiGraphics.intersectScissor(ox + self.x, oy + self.y, self.w, self.h)
+
+		-- Window body
+		love.graphics.setColor(skin.color_body)
+		uiGraphics.drawSlice(skin.slc_body, 0, 0, self.w, self.h)
+
+		-- Window header
+		if self.header_visible then
+			local vp5, vp6 = self.vp5, self.vp6
+			local res = _getHeaderSkinTable(self)
+			local res2 = root.selected_frame == self and res.res_selected or res.res_unselected
+			local slc_header_body = res.header_slc_body
+			love.graphics.setColor(res2.col_header_fill)
+			uiGraphics.drawSlice(slc_header_body, vp5.x, vp5.y, vp5.w, vp5.h)
+
+			if self.header_text then
+				local font = res.header_font
+
+				love.graphics.setColor(res2.col_header_text)
+				love.graphics.setFont(font)
+
+				local sx, sy, sw, sh = love.graphics.getScissor()
+				uiGraphics.intersectScissor(ox + self.x + vp6.x, oy + self.y + vp6.y, vp6.w, vp6.h)
+
+				love.graphics.print(self.header_text_disp, self.header_text_ox, self.header_text_oy)
+
+				uiGraphics.setScissor(sx, sy, sw, sh)
+			end
+
+			-- Header buttons
+			local sx, sy, sw, sh = love.graphics.getScissor()
+			uiGraphics.intersectScissor(ox + self.x + vp5.x, oy + self.y + vp5.y, vp5.w, vp5.h)
+
+			if self.header_show_close_button then
+				local b_close = self.b_close
+				local res_b = _getHeaderSensorResource(self, b_close, res)
+
+				love.graphics.setColor(res_b.color_body)
+				uiGraphics.drawSlice(res_b.slice, b_close.x, b_close.y, b_close.w, b_close.h)
+				love.graphics.setColor(res_b.color_quad)
+
+				local graphic = res.btn_close.graphic
+				local _, _, qw, qh = graphic.quad:getViewport()
+
+				local box_x = math.floor(0.5 + _lerp(b_close.x, b_close.x + b_close.w - graphic.w, skin.sensor_tex_align_x))
+				local box_y = math.floor(0.5 + _lerp(b_close.y, b_close.y + b_close.h - graphic.h, skin.sensor_tex_align_y))
+
+				uiGraphics.quadXYWH(
+					res.btn_close.graphic,
+					box_x + res_b.label_ox,
+					box_y + res_b.label_oy,
+					qw, qh)
+			end
+
+			if self.header_show_max_button then
+				local b_max = self.b_max
+				local btn_size = res.btn_size
+				local res_b = _getHeaderSensorResource(self, b_max, res)
+
+				love.graphics.setColor(res_b.color_body)
+				uiGraphics.drawSlice(res_b.slice, b_max.x, b_max.y, b_max.w, b_max.h)
+				love.graphics.setColor(res_b.color_quad)
+
+				local graphic = self.maximized and btn_size.graphic_unmax or btn_size.graphic_max
+
+				local _, _, qw, qh = graphic.quad:getViewport()
+
+				local box_x = math.floor(0.5 + _lerp(b_max.x, b_max.x + b_max.w - graphic.w, skin.sensor_tex_align_x))
+				local box_y = math.floor(0.5 + _lerp(b_max.y, b_max.y + b_max.h - graphic.h, skin.sensor_tex_align_y))
+
+				uiGraphics.quadXYWH(
+					graphic,
+					box_x + res_b.label_ox,
+					box_y + res_b.label_oy,
+					qw, qh)
+			end
+
+			uiGraphics.setScissor(sx, sy, sw, sh)
+		end
+
+		love.graphics.pop()
+
+		if self.DEBUG_show_resize_range then
+			local rp = skin.sensor_resize_pad
+			love.graphics.push("all")
+
+			love.graphics.setScissor()
+			love.graphics.setColor(0.8, 0.1, 0.2, 0.8)
+
+			love.graphics.setLineWidth(1)
+			love.graphics.setLineJoin("miter")
+			love.graphics.setLineStyle("rough")
+
+			love.graphics.rectangle("line", 0.5 - rp, 0.5 - rp, self.w + rp*2 - 1, self.h + rp*2 - 1)
+
+			love.graphics.pop()
+		end
+	end,
+
+	renderLast = function(self, ox, oy)
+		love.graphics.push("all")
+
+		uiGraphics.intersectScissor(ox + self.x, oy + self.y, self.w, self.h)
+
+		wcContainer.renderSashes(self)
+
+		wcScrollBar.drawScrollBarsHV(self, self.skin.data_scroll)
+		love.graphics.pop()
+	end,
+
+	-- Don't highlight when holding the UI thimble.
+	renderThimble = uiDummy.func
+}
+
+
+return def

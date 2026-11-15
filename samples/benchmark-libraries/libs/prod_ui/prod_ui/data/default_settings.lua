@@ -1,0 +1,162 @@
+--[[
+The default application-wide configuration for ProdUI.
+--]]
+
+return {
+	wimp = {
+		key_bindings = {
+			close_window_frame = "C+w",
+		},
+
+		navigation = {
+			-- Scroll animation parameters. See: widShared.scrollTargetUpdate()
+			scroll_snap = 1,
+			scroll_speed_min = 800,
+			scroll_speed_mul = 8.0,
+
+			-- Pixels to scroll in WIMP widgets when pressing the arrow keys,
+			-- in the general case when there are no better measurements available.
+			key_scroll_h = 32,
+			key_scroll_v = 32,
+
+			-- Pixels to scroll per one discrete click of the scroll bar buttons.
+			scroll_button_click = 24,
+
+			-- Pixels to scroll per repeat-action while pressing and holding
+			-- down a scroll bar button.
+			scroll_button_hold = 24,
+
+			-- Pixels to scroll per one discrete mouse-wheel motion event.
+			-- XXX: SDL3 / LÖVE 12 is changing this to distance scrolled.
+			-- XXX: for now, this is also used with horizontal wheel movement. As of
+			-- this writing, I don't have a mouse with a horizontal wheel.
+			mouse_wheel_move_size_v = 64,
+			mouse_wheel_move_size_h = 64,
+
+			-- How many "cells" in a widget to scroll per mouse-wheel motion event.
+			mouse_wheel_move_rows = 4,
+			mouse_wheel_move_cols = 4,
+
+			-- Drag scroll rate (per frame: mouse_distance * mouse_drag_speed * delta_time).
+			mouse_drag_speed = 4,
+
+			-- Accelarates drag speed when the mouse is at the edge of the application window.
+			drag_edge_enabled = true,
+			drag_edge_size = 4,
+			drag_edge_accel = 350,
+			drag_edge_accel_max = 1600,
+			drag_edge_decay = 3200,
+
+			-- How much of a "page" to jump when pressing pageup or pagedown in a
+			-- menu. 1.0 is one whole span of the viewport, 0.5 is half, etc.
+			page_viewport_factor = 1.0,
+		},
+
+		menu_bar = {
+			-- Draw underlines for key mnemonics: "never", "idle", "alt", "always"
+			-- idle: only when there are no pop-up menus.
+			-- alt: only when 1) there are no pop-up menus and 2) the user is holding the alt key.
+			draw_underlines = "alt",
+		},
+
+		pop_up_menu = {
+			-- When clicking outside of a pop-up menu, this stops the user from clicking
+			-- any other widget that is behind the base menu.
+			-- May prevent accidental clicks, though some people (ahem) hate it.
+			block_1st_click_out = false,
+
+			-- Draw underlines for key mnemonics: "never", "thimble", "always"
+			-- thimble: only when this pop-up menu has thimble2 (input focus).
+			draw_underlines = "thimble"
+		},
+
+		window_frame = {
+			-- "all", "active", or "never".
+			render_shadow = "all",
+
+			-- Claw back any out-of-bounds window frames by this amount of (scaled) pixels.
+			-- (When a Window Frame has a visible header, the top boundary is based on the
+			-- header height rather than this number.)
+			out_of_bounds_limit = 48
+		},
+
+		text_input = {
+			--[[
+			NOTE: holding control prevents love.textinput from firing, but holding alt does not.
+			--]]
+
+			-- TODO: MacOS shortcuts.
+
+			commands = {
+				{"caret-left", "+left"},
+				{"caret-left-highlight", "S+left"},
+
+				{"caret-right", "+right"},
+				{"caret-right-highlight", "S+right"},
+
+				{"caret-jump-left", "C+left"},
+				{"caret-jump-left-highlight", "CS+left"},
+
+				{"caret-jump-right", "C+right"},
+				{"caret-jump-right-highlight", "CS+right"},
+
+				{"caret-first", "C+home"},
+				{"caret-first-highlight", "CS+home"},
+
+				{"caret-last", "C+end"},
+				{"caret-last-highlight", "CS+end"},
+
+				{"caret-line-first", "+home"},
+				{"caret-line-first-highlight", "S+home"},
+
+				{"caret-line-last", "+end"},
+				{"caret-line-last-highlight", "S+end"},
+
+				{"caret-step-up", "+up"},
+				{"caret-step-up-highlight", "S+up"},
+
+				{"caret-step-down", "+down"},
+				{"caret-step-down-highlight", "S+down"},
+
+				{"caret-step-up-core-line", "C+up"},
+				{"caret-step-up-core-line-highlight", "CS+up"},
+
+				{"caret-step-down-core-line", "C+down"},
+				{"caret-step-down-core-line-highlight", "CS+down"},
+
+				{"caret-page-up", "+pageup"},
+				{"caret-page-up-highlight", "S+pageup"},
+
+				{"caret-page-down", "+pagedown"},
+				{"caret-page-down-highlight", "S+pagedown"},
+
+				{"shift-lines-up", "A+up"},
+				{"shift-lines-down", "A+down"},
+
+				{"backspace", "+backspace", "S+backspace"},
+				{"delete", "+delete"},
+				{"delete-highlighted"},
+				{"delete-group", "C+delete"},
+				{"delete-line", "C+d"},
+				{"delete-all"},
+				{"backspace-group", "C+backspace"},
+				{"delete-caret-to-line-end", "CS+delete"},
+				{"backspace-caret-to-line-start", "CS+backspace"},
+
+				{"type-tab", "+tab"},
+				{"type-untab", "S+tab"},
+				{"type-line-feed", "S+return", "S+kpenter"},
+				{"type-line-feed-with-auto-indent", "+return", "+kpenter"},
+
+				{"toggle-replace-mode", "+insert"},
+				{"select-all", "C+a"},
+				{"select-current-word"},
+				{"cut", "C+x", "S+delete"},
+				{"copy", "C+c"},
+				{"paste", "C+v"},
+				{"undo", "C+z"},
+				{"redo", "C+y", "CS+z"},
+			},
+		}
+	}
+}

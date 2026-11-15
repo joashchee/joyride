@@ -1,0 +1,571 @@
+--[[
+A stepper button.
+
+
+Horizontal layout:
+
+            vp1
+    ╔══════════════════╗
+    ║                  ║
+
+┌───┬──────────────────┬───┐
+│ < │  Selection Text  │ > │
+└───┴──────────────────┴───┘
+
+║   ║                  ║   ║
+╚═══╝                  ╚═══╝
+ vp2                    vp3
+
+
+
+Vertical layout:
+
+          ┌───────┐  ══╗
+          │   ^   │    ║ vp2
+     ╔══  ├───────┤  ══╝
+     ║    │       │
+ vp1 ║    │ Text  │
+     ║    │       │
+     ╚══  ├───────┤  ══╗
+          │   v   │    ║ vp3
+          └───────┘  ══╝
+--]]
+
+
+local context = select(1, ...)
+
+
+local uiAssert = require(context.conf.prod_ui_req .. "ui_assert")
+local uiDummy = require(context.conf.prod_ui_req .. "ui_dummy")
+local uiGraphics = require(context.conf.prod_ui_req .. "ui_graphics")
+local uiScale = require(context.conf.prod_ui_req .. "ui_scale")
+local uiSchema = require(context.conf.prod_ui_req .. "ui_schema")
+local uiTable = require(context.conf.prod_ui_req .. "ui_table")
+local uiTheme = require(context.conf.prod_ui_req .. "ui_theme")
+local wcButton = context:getLua("shared/wc/wc_button")
+local wcLabel = context:getLua("shared/wc/wc_label")
+local wcMenu = context:getLua("shared/wc/wc_menu")
+local widShared = context:getLua("core/wid_shared")
+
+
+local def = {
+	skin_id = "stepper1",
+
+	user_callbacks = uiTable.newLutV(
+		"cb_select",
+		"cb_buttonAction",
+		"cb_buttonAction2",
+		"cb_buttonAction3"
+	)
+}
+
+
+wcMenu.attachMenuMethods(def)
+def.movePrev = wcMenu.widgetMovePrev
+def.moveNext = wcMenu.widgetMoveNext
+
+
+def.setEnabled = wcButton.setEnabled
+
+
+wcLabel.setupDef(def)
+
+
+-- Widget:cb_select(item, item_i)
+-- Called when the stepper value changes.
+-- @param item The selected item, or nil if nothing is selected.
+-- @param item_i The item's index, or 0 if nothing is selected.
+-- @param The current index.
+def.cb_select = uiDummy.func
+
+-- NOTE: The primary button action is activated by keyboard input only. Click-activated
+-- secondary and tertiary actions do not consider the location of the mouse cursor.
+
+-- Widget:cb_buttonAction()
+def.cb_buttonAction = uiDummy.func
+
+-- Widget:cb_buttonAction2()
+def.cb_buttonAction2 = uiDummy.func
+
+-- Widget:cb_buttonAction3()
+def.cb_buttonAction3 = uiDummy.func
+
+
+local function _updateTextLabel(self)
+	local item = self:menuGetSelectedItem()
+
+	self:setLabelMode("single")
+	if not item then
+		self:setLabelText("")
+	else
+		local label_text = item.text or ""
+		self:setLabelText(label_text)
+	end
+end
+
+
+function def:setOrientation(orientation)
+	local old_orientation = self.vertical
+
+	if orientation == "horizontal" then
+		self.vertical = false
+
+	elseif orientation == "vertical" then
+		self.vertical = true
+
+	else
+		error("invalid orientation: " .. tostring(orientation))
+	end
+
+	if old_orientation ~= self.vertical then
+		self:reshape()
+	end
+end
+
+
+function def:getOrientation()
+	return self.vertical and "vertical" or "horizontal"
+end
+
+
+def.evt_pointerHoverOn = wcButton.evt_pointerHoverOn
+def.evt_pointerHoverOff = wcButton.evt_pointerHoverOff
+def.evt_thimbleAction = wcButton.evt_thimbleAction
+def.evt_thimbleAction2 = wcButton.evt_thimbleAction2
+
+
+function def:addItem(text, pos)
+	uiAssert.type(1, text, "string")
+	uiAssert.integerEval(2, pos, "number")
+
+	local items = self.MN_items
+	local old_len = #items
+
+	local item = {}
+
+	item.selectable = true
+	item.marked = false -- multi-select
+
+	item.text = text
+
+	pos = pos or #items + 1
+
+	if pos < 1 or pos > #items + 1 then
+		error("position is out of range")
+	end
+
+	table.insert(items, pos, item)
+
+	if old_len == 0 then
+		wcMenu.trySelectIfNothingSelected(self)
+		_updateTextLabel(self)
+	else
+		wcMenu.addItemIndexCleanup(self, pos)
+	end
+
+	return item
+end
+
+
+function def:removeItem(item_t)
+	uiAssert.type(1, item_t, "table")
+
+	local item_i = self:menuGetItemIndex(item_t)
+
+	local removed_item = self:removeItemByIndex(item_i)
+
+	return removed_item
+end
+
+
+function def:removeItemByIndex(item_i)
+	uiAssert.numberNotNan(1, item_i)
+
+	local items = self.MN_items
+
+	local removing_current = (item_i == self.MN_index)
+
+	local removed_item = items[item_i]
+	if not removed_item then
+		error("no item to remove at index: " .. tostring(item_i))
+	end
+
+	table.remove(items, item_i)
+
+	wcMenu.removeItemIndexCleanup(self, item_i)
+
+	if removing_current then
+		_updateTextLabel(self)
+	end
+
+	return removed_item
+end
+
+
+function def:setSelection(item_t)
+	uiAssert.type(1, item_t, "table")
+
+	local item_i = self:menuGetItemIndex(item_t)
+	self:setSelectionByIndex(item_i)
+end
+
+
+function def:setSelectionByIndex(item_i)
+	uiAssert.integerGe(1, item_i, 0)
+
+	local old_index = self.MN_index
+	self:menuSetSelectedIndex(item_i)
+	if old_index ~= self.MN_index then
+		_updateTextLabel(self)
+		self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+	end
+end
+
+
+function def:evt_initialize()
+	self.visible = true
+	self.allow_hover = true
+	self.thimble_mode = 1
+
+	widShared.setupViewports(self, 3)
+
+	wcLabel.setupInstance(self)
+
+	wcMenu.setup(self)
+
+	self.MN_wrap_selection = true
+
+	-- State flags
+	self.enabled = true
+	self.hovered = false
+	self.pressed = false
+
+	-- Stepper orientation. Controls placement of the buttons and the quad graphics
+	-- used (left/right or up/down).
+	self.vertical = false
+
+	-- Which button is currently pressed, if any.
+	self.b_pressing = false -- false, "prev", "next"
+
+	-- Enabled state for the 'prev' and 'next' buttons.
+	self.b_prev_enabled = true
+	self.b_next_enabled = true
+
+	self:skinSetRefs()
+	self:skinInstall()
+
+	self.cursor_press = self.skin.cursor_press
+end
+
+
+function def:evt_getGrowAxisLength(x_axis, cross_length)
+	if not x_axis then
+		return self.skin.default_height, true
+	end
+end
+
+
+function def:evt_reshapePre()
+	-- Viewport #1 is the label bounding box.
+	-- Viewport #2 is the "prev" button component.
+	-- Viewport #3 is the "next" button component.
+
+	local skin = self.skin
+	local vp, vp2, vp3 = self.vp, self.vp2, self.vp3
+
+	vp:set(0, 0, self.w, self.h)
+
+	if self.vertical then
+		vp:split(vp2, "top", skin.prev_spacing)
+		vp:split(vp3, "bottom", skin.next_spacing)
+	else
+		vp:split(vp2, "left", skin.prev_spacing)
+		vp:split(vp3, "right", skin.next_spacing)
+	end
+
+	vp:reduceT(skin.box.border)
+	vp:reduceT(skin.box.margin)
+
+	--_updateTextLabel(self)
+	wcLabel.reshapeLabel(self)
+
+	return true
+end
+
+
+function def:evt_pointerPress(targ, x, y, button, istouch, presses)
+	if self == targ then
+		if self.enabled then
+			if button == context.mouse_pressed_button then
+				if button <= 3 then
+					self:tryTakeThimble1()
+				end
+
+				if button == 1 then
+					self.pressed = true
+
+					x, y = self:getRelativePosition(x, y)
+
+					if self.b_prev_enabled and self.vp2:pointOverlap(x, y) then
+						self.b_pressing = "prev"
+						self:menuSetPrev(1, true)
+						self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+						_updateTextLabel(self)
+
+
+					elseif self.b_next_enabled and self.vp3:pointOverlap(x, y) then
+
+						self.b_pressing = "next"
+						self:menuSetNext(1, true)
+						self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+						_updateTextLabel(self)
+					end
+
+				elseif button == 2 then
+					-- Instant second action.
+					self:cb_buttonAction2()
+
+				elseif button == 3 then
+					-- Instant tertiary action.
+					self:cb_buttonAction3()
+				end
+			end
+		end
+	end
+end
+
+
+function def:evt_pointerPressRepeat(targ, x, y, button, istouch, reps)
+	if self == targ then
+		if self.enabled then
+			if button == context.mouse_pressed_button then
+				if button == 1 then
+					x, y = self:getRelativePosition(x, y)
+
+					if self.b_pressing == "prev" and self.vp2:pointOverlap(x, y) then
+						self:menuSetPrev(1, true)
+						self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+						_updateTextLabel(self)
+
+					elseif self.b_pressing == "next" and self.vp3:pointOverlap(x, y) then
+						self:menuSetNext(1, true)
+						self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+						_updateTextLabel(self)
+					end
+				end
+			end
+		end
+	end
+end
+
+
+function def:evt_pointerUnpress(targ, x, y, button, istouch, presses)
+	if self == targ then
+		if self.enabled then
+			if button == context.mouse_pressed_button then
+				if button == 1 then
+					self.pressed = false
+
+					self.b_pressing = false
+				end
+			end
+		end
+	end
+end
+
+
+function def:evt_keyPressed(targ, key, scancode, isrepeat)
+	if self == targ then
+		if self.enabled then
+			local key_prev, key_next
+			if self.vertical then
+				key_prev, key_next = "up", "down"
+			else
+				key_prev, key_next = "left", "right"
+			end
+
+			if self.b_prev_enabled and (scancode == key_prev) then
+				self:menuSetPrev(1, true)
+				self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+				_updateTextLabel(self)
+
+			elseif self.b_next_enabled and (scancode == key_next) then
+				self:menuSetNext(1, true)
+				self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+				_updateTextLabel(self)
+			end
+		end
+	end
+end
+
+
+function def:evt_pointerWheel(targ, x, y)
+	if self == targ then
+		if self.enabled then
+			if self.b_prev_enabled and y > 0 then
+				self:menuSetPrev(1, true)
+				self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+				_updateTextLabel(self)
+
+			elseif self.b_next_enabled and y < 0 then
+				self:menuSetNext(1, true)
+				self:cb_select(self.MN_items[self.MN_index], self.MN_index)
+				_updateTextLabel(self)
+			end
+		end
+	end
+end
+
+
+function def:evt_destroy(targ)
+	if self == targ then
+		widShared.removeViewports(self, 3)
+	end
+end
+
+
+local themeAssert = context:getLua("core/res/theme_assert")
+
+
+local md_res = uiSchema.newKeysX {
+	sl_body = themeAssert.path.slice,
+	sl_button = themeAssert.path.slice,
+	sl_button_up = themeAssert.path.slice,
+
+	tq_left = themeAssert.path.quad,
+	tq_right = themeAssert.path.quad,
+	tq_up = themeAssert.path.quad,
+	tq_down = themeAssert.path.quad,
+
+	color_body = uiAssert.loveColorTuple,
+	color_label = uiAssert.loveColorTuple,
+
+	button_ox = uiAssert.integer,
+	button_oy = uiAssert.integer,
+}
+
+
+def.default_skinner = {
+	validate = uiSchema.newKeysX {
+		skinner_id = {uiAssert.type, "string"},
+
+		box = themeAssert.path.box,
+		tq_px = themeAssert.path.quad,
+
+		default_height = {uiAssert.numberGe, 0}, -- unscaled
+
+		-- Cursor IDs for hover and press states.
+		cursor_on = {uiAssert.types, "nil", "string"},
+		cursor_press = {uiAssert.types, "nil", "string"},
+
+		label_defaults = themeAssert.models.default_label_settings,
+
+		-- Alignment of the 'prev' and 'next' arrow (or plus/minus, etc.) graphics within Viewports #2 and #3.
+		gfx_prev_align_x = {uiAssert.oneOf, "left", "center", "right"},
+		gfx_prev_align_y = {uiAssert.oneOf, "top", "middle", "bottom"},
+		gfx_next_align_x = {uiAssert.oneOf, "left", "center", "right"},
+		gfx_next_align_y = {uiAssert.oneOf, "top", "middle", "bottom"},
+
+		-- How much space to assign the next+prev buttons when not using "overlay" placement.
+		prev_spacing = {uiAssert.integerGe, 0},
+		next_spacing = {uiAssert.integerGe, 0},
+
+		-- Arrow quad mappings:
+		--
+		-- Orientation    Prev   Next
+		-- ---------------------------
+		-- Horizontal     left   right
+		-- Vertical       up     down
+
+		res_idle = md_res,
+		res_hovered = md_res,
+		res_pressed = md_res,
+		res_disabled = md_res
+	},
+
+
+	transform = function(scale, skin)
+		uiScale.fieldInteger(scale, skin, "prev_spacing")
+		uiScale.fieldInteger(scale, skin, "next_spacing")
+
+		local function _changeRes(scale, res)
+			uiScale.fieldInteger(scale, res, "button_ox")
+			uiScale.fieldInteger(scale, res, "button_oy")
+		end
+
+		_changeRes(scale, skin.res_idle)
+		_changeRes(scale, skin.res_hovered)
+		_changeRes(scale, skin.res_pressed)
+		_changeRes(scale, skin.res_disabled)
+	end,
+
+
+	install = function(self, skinner, skin)
+		uiTheme.skinnerCopyMethods(self, skinner)
+		wcLabel.refreshFontObject(self.label, skin)
+	end,
+
+
+	remove = function(self, skinner, skin)
+		uiTheme.skinnerClearData(self)
+		wcLabel.removeFontObject(self.label)
+	end,
+
+
+	--refresh = function (self, skinner, skin)
+	--update = function(self, skinner, skin, dt)
+
+
+	render = function(self, ox, oy)
+		local label = self.label
+		local skin = self.skin
+		local vp2, vp3 = self.vp2, self.vp3
+		local res = uiTheme.pickButtonResource(self, skin)
+
+		local sl_body = res.sl_body
+		local sl_button
+
+		love.graphics.setColor(res.color_body)
+		uiGraphics.drawSlice(sl_body, 0, 0, self.w, self.h)
+
+		local tq_prev, tq_next
+		if self.vertical then
+			tq_prev, tq_next = res.tq_up, res.tq_down
+		else
+			tq_prev, tq_next = res.tq_left, res.tq_right
+		end
+
+		-- XXX WIP
+		local button_ox, button_oy
+		if self.b_pressing == "prev" then
+			button_ox, button_oy = res.button_ox, res.button_oy
+			sl_button = res.sl_button
+		else
+			button_ox, button_oy = 0, 0
+			sl_button = res.sl_button_up
+		end
+		uiGraphics.drawSlice(sl_button, vp2.x, vp2.y, vp2.w, vp2.h)
+		uiGraphics.quadShrinkOrCenterXYWH(tq_prev, vp2.x + button_ox, vp2.y + button_oy, vp2.w, vp2.h)
+
+		if self.b_pressing == "next" then
+			button_ox, button_oy = res.button_ox, res.button_oy
+			sl_button = res.sl_button
+		else
+			button_ox, button_oy = 0, 0
+			sl_button = res.sl_button_up
+		end
+		uiGraphics.drawSlice(sl_button, vp3.x, vp3.y, vp3.w, vp3.h)
+		uiGraphics.quadShrinkOrCenterXYWH(tq_next, vp3.x + button_ox, vp3.y + button_oy, vp3.w, vp3.h)
+
+		if label.mode then
+			wcLabel.render(self, skin, res.color_label, res.color_label_ul, 0, 0, ox, oy)
+		end
+	end,
+
+
+	--renderLast = function(self, ox, oy) end,
+	--renderThimble = function(self, ox, oy) end,
+}
+
+
+return def

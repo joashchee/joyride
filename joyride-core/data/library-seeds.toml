@@ -1281,3 +1281,36 @@ git = "https://github.com/immortalx74/lovr-ui2d"
 module = "ui2d.ui2d"
 caution = "Finds its font beside its own file (debug.getinfo), so keep the ui2d folder intact. A window is needed to draw; the Benchmark has only checked that it initialises. Licence: MIT."
 summary = "An immediate mode GUI for LÖVE and LÖVR, pure Lua, inspired by microui and Dear ImGui."
+
+[[library]]
+name = "wave"
+git = "https://github.com/Ulydev/wave"
+module = "wave"
+caution = "Last commit 2018 (LÖVE 0.10 era), so it may misbehave on 11 and 12. Licence: MIT."
+summary = "A sound manager for LÖVE with tracks, filters and audio parsing."
+
+[[library]]
+name = "telescope"
+git = "https://github.com/norman/telescope"
+module = "telescope"
+licence = "MIT"   # the MIT text is in the README; no licence file
+caution = "Written for Lua 5.1 and 5.2 and last touched in 2013: it uses getfenv, setfenv and loadfile to run a test file in its own environment, so only run test files you wrote. Its compat_env module writes and removes a tmp.lua when its own self-test runs. Licence: MIT (README text only; no licence file)."
+summary = "A test library with nested contexts, before and after hooks and BDD-style names."
+
+[[library]]
+name = "prod_ui"
+git = "https://codeberg.org/frank-f-trafton/prod_ui"
+module = "prod_ui"
+licence = "MIT"
+display = true   # reads love.mouse while it loads, which the headless probe lacks
+licence_wins = true   # LICENSE lists MIT code (ProdUI, AtlasB, InputField, nativefs, PILE, Serpent) and OFL-1.1 fonts (Noto)
+caution = "Unfinished by its author's own word, tested on LÖVE 11.5 only. Licence: MIT for the code; the bundled Noto fonts are SIL OFL 1.1. Its theme_works folder is the author's build tooling (it runs rsvg-convert through os.execute and ships nativefs copies that use the FFI): do not run it; the library itself (prod_ui) does none of that. It reads its resources through love.filesystem paths, so keep its folders intact."
+summary = "A user interface library for LÖVE (unfinished by its author's own word; LÖVE 11.5)."
+
+[[library]]
+name = "Lua-Opus"
+git = "https://github.com/GwyrddGlas/Lua-Opus"
+module = "OpusPlayer"
+kind = "ffi"
+native = "Needs the opus and ogg shared libraries (opus.dll and ogg.dll on Windows) next to the game."
+summary = "Streams and decodes Ogg Opus audio into a queueable LÖVE source, through LuaJIT's FFI."

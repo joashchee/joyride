@@ -1,0 +1,42 @@
+local context = select(1, ...)
+
+
+local edCom = {}
+
+
+-- LÖVE Supplemental
+local utf8 = require("utf8")
+
+
+-- ProdUI
+local textUtil = require(context.conf.prod_ui_req .. "lib.text_util")
+
+
+-- stand-in text colors
+edCom.default_text_color = {1, 1, 1, 1}
+edCom.default_text_h_color = {0, 0, 0, 1}
+
+
+edCom.dummy_font = love.graphics.newFont(12)
+
+
+function edCom.cleanString(str, bad_byte_policy, tabs_to_spaces, allow_line_feed)
+	str = textUtil.sanitize(str, bad_byte_policy)
+
+	if not allow_line_feed then
+		-- Stops just before the first line feed.
+		str = string.match(str, "^([^\n]*)")
+	end
+
+	if tabs_to_spaces then
+		str = string.gsub(str, "\t", " ")
+	end
+
+	-- Exclude all remaining ASCII control codes, except for tabs (0x09) and line feeds (0x0a) (conditionally excluded above).
+	str = string.gsub(str, "[%z\x01-\x08\x0b-\x1f]+", "")
+
+	return str
+end
+
+
+return edCom

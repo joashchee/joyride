@@ -1,0 +1,362 @@
+local context = select(1, ...)
+
+
+local pMath = require(context.conf.prod_ui_req .. "lib.p_math")
+local textUtil = require(context.conf.prod_ui_req .. "lib.text_util")
+local themeAssert = context:getLua("core/res/theme_assert")
+local uiAssert = require(context.conf.prod_ui_req .. "ui_assert")
+local uiDummy = require(context.conf.prod_ui_req .. "ui_dummy")
+local uiGraphics = require(context.conf.prod_ui_req .. "ui_graphics")
+local uiSchema = require(context.conf.prod_ui_req .. "ui_schema")
+local uiTable = require(context.conf.prod_ui_req .. "ui_table")
+local uiTheme = require(context.conf.prod_ui_req .. "ui_theme")
+local wcButton = context:getLua("shared/wc/wc_button")
+local widShared = context:getLua("core/wid_shared")
+
+
+local _lerp = pMath.lerp
+
+
+local _nm_align = uiTable.newNamedMapV("TextAlign", "left", "center", "right", "justify")
+local _nm_size_mode = uiTable.newNamedMapV("SizeMode", "h", "v")
+
+
+local def = {
+	skin_id = "text_block1",
+
+	user_callbacks = uiTable.newLutV(
+		"cb_buttonAction",
+		"cb_buttonAction2",
+		"cb_buttonAction3"
+	)
+}
+
+
+local function _openURL(self)
+	love.system.openURL(self.url)
+end
+
+
+-- Widget:cb_buttonAction()
+def.cb_buttonAction = _openURL
+
+-- Widget:cb_buttonAction2()
+def.cb_buttonAction2 = uiDummy.func
+
+-- Widget:cb_buttonAction3()
+def.cb_buttonAction3 = _openURL
+
+
+def.setEnabled = wcButton.setEnabled
+
+
+def.evt_pointerHoverOn = wcButton.evt_pointerHoverOn
+def.evt_pointerHoverOff = wcButton.evt_pointerHoverOff
+def.evt_pointerPress = wcButton.evt_pointerPress
+def.evt_pointerRelease = wcButton.evt_pointerReleaseActivate
+def.evt_pointerUnpress = wcButton.evt_pointerUnpress
+def.evt_thimbleAction = wcButton.evt_thimbleAction
+def.evt_thimbleAction2 = wcButton.evt_thimbleAction2
+
+
+function def:setFont(id)
+	themeAssert.id.fontEval(1, id)
+
+	self.ref_font:setId(id)
+
+	self:reshape()
+
+	return self
+end
+
+
+function def:getFont()
+	return self.ref_font:getId()
+end
+
+
+function def:setText(text)
+	uiAssert.type(1, text, "string")
+
+	self.text = text
+
+	self:reshape()
+
+	return self
+end
+
+
+function def:getText()
+	return self.text
+end
+
+
+function def:setURL(url)
+	uiAssert.type(1, url, "string")
+
+	self.url = url or false
+
+	if self.url then
+		self.cursor_hover = self.skin.cursor_on
+		self.cursor_press = self.skin.cursor_press
+	else
+		self.cursor_hover = nil
+		self.cursor_press = nil
+	end
+
+	self.allow_hover = not not self.url
+
+	if context.thimble1 == self or context.thimble2 == self then
+		self:releaseThimble2()
+		self:releaseThimble1()
+	end
+
+	self.thimble_mode = self.url and 1 or 0
+
+	return self
+end
+
+
+function def:getURL()
+	return self.url
+end
+
+
+function def:setAlign(align)
+	uiAssert.namedMap(1, align, _nm_align)
+
+	self.align = align
+
+	return self
+end
+
+
+function def:getAlign()
+	return self.align
+end
+
+
+function def:setVerticalAlign(v)
+	uiAssert.type(1, v, "number")
+
+	self.align_y = math.max(0, math.min(v, 1))
+
+	return self
+end
+
+
+function def:getVerticalAlign()
+	return self.align_y
+end
+
+
+function def:setAutoSize(mode)
+	uiAssert.namedMapEval(1, mode, _nm_size_mode)
+
+	self.auto_size = mode
+
+	self:reshape()
+
+	return self
+end
+
+
+function def:getAutoSize()
+	return self.auto_size
+end
+
+
+function def:setWrapping(enabled)
+	self.wrap = not not enabled
+
+	self:reshape()
+
+	return self
+end
+
+
+function def:getWrapping()
+	return self.wrap
+end
+
+
+function def:evt_initialize()
+	self.visible = true
+	self.allow_hover = false
+	self.thimble_mode = 0
+
+	widShared.setupViewports(self, 2)
+
+	self.text = ""
+	self.url = false
+
+	self.align = "left" -- "left", "center", "right"
+	self.align_y = 0.0 -- (0.0 - 1.0)
+	self.auto_size = false -- false, "h", "v"
+	self.wrap = false -- only valid when auto_size is "v"
+
+	-- Determined while reshaping.
+	self.text_w = false
+	self.text_h = false
+
+	-- State flags
+	self.enabled = true
+	self.hovered = false
+	self.pressed = false
+
+	self.ref_font = context.resources.fonts:newReference()
+
+	self:skinSetRefs()
+	self:skinInstall()
+
+	self.cursor_hover = false
+end
+
+
+local function _determineTextDimensions(self, wrap_limit)
+	--[[
+	The text dimensions may be requested at multiple points during reshaping. Stuff the work
+	into this function, and only execute it once per reshape event.
+	--]]
+
+	local skin = self.skin
+	local font = self.ref_font.object
+
+	if not self.wrap then
+		self.text_w = font:getWidth(self.text)
+		self.text_h = font:getHeight() * (1 + textUtil.countStringPatterns(self.text, "\n", true))
+	else
+		local lines
+		local border = skin.box.border
+		self.text_w, lines = font:getWrap(self.text, wrap_limit - border.x1 - border.x2)
+		self.text_h = font:getHeight() * #lines
+	end
+end
+
+
+function def:evt_getGrowAxisLength(x_axis, cross_length)
+	if not x_axis and self.auto_size == "v" then
+		_determineTextDimensions(self, cross_length)
+		local border = self.skin.box.border
+		return self.text_h + border.y1 + border.y2, false
+	end
+end
+
+
+function def:evt_reshapePre()
+	-- Viewport #1 is the text bounding box. It may exceed the widget's dimensions, depending on the text
+	-- and auto_size mode.
+	-- Viewport #2 is the border.
+
+	local skin = self.skin
+	local vp, vp2 = self.vp, self.vp2
+
+	vp2:set(0, 0, self.w, self.h)
+	vp2:reduceT(skin.box.border)
+
+	_determineTextDimensions(self, self.w)
+
+	vp.w, vp.h = self.text_w, self.text_h
+
+	vp.x = vp2.x
+	vp.y = math.floor(0.5 + _lerp(vp2.y, vp2.y + vp2.h, self.align_y))
+
+	--print("TextBlock dimensions: ", self.w, self.h)
+	--print("TextBlock parent dimensions: ", self.parent.w, self.parent.h)
+	--print(self.parent.id)
+end
+
+
+function def:evt_destroy(targ)
+	if self == targ then
+		widShared.removeViewports(self, 2)
+	end
+end
+
+
+def.default_skinner = {
+	validate = uiSchema.newKeysX {
+		skinner_id = {uiAssert.type, "string"},
+		box = themeAssert.path.box,
+
+		-- Cursor IDs for hover and press states.
+		cursor_on = {uiAssert.types, "nil", "string"},
+		cursor_press = {uiAssert.types, "nil", "string"},
+
+		color = uiAssert.loveColorTuple,
+		color_hyperlink = uiAssert.loveColorTuple,
+		color_hyperlink_hover = uiAssert.loveColorTuple,
+		color_hyperlink_press = uiAssert.loveColorTuple,
+
+		default_font_id = themeAssert.id.font
+	},
+
+
+	--transform = function(scale, skin)
+
+
+	install = function(self, skinner, skin)
+		uiTheme.skinnerCopyMethods(self, skinner)
+		self.ref_font:setDefaultId(skin.default_font_id)
+	end,
+
+
+	remove = function(self, skinner, skin)
+		uiTheme.skinnerClearData(self)
+		self.ref_font:clear()
+	end,
+
+
+	--refresh = function(self, skinner, skin)
+	--update = function(self, skinner, skin, dt)
+
+
+	render = function(self, ox, oy)
+		love.graphics.push("all")
+
+		local skin = self.skin
+		local vp, vp2 = self.vp, self.vp2
+		local font = self.ref_font.object
+
+		local color
+		if self.url then
+			color = self.pressed and skin.color_hyperlink_press
+			or self.hovered and skin.color_hyperlink_hover
+			or skin.color_hyperlink
+		else
+			color = skin.color
+		end
+
+		love.graphics.setFont(font)
+		love.graphics.setColor(color)
+
+		uiGraphics.intersectScissor(
+			ox + self.x + vp2.x,
+			oy + self.y + vp2.y,
+			vp2.w,
+			vp2.h
+		)
+
+		if self.wrap then
+			love.graphics.printf(self.text, vp2.x, vp2.y, vp2.w, self.align)
+
+		elseif self.align == "left" then
+			love.graphics.print(self.text, vp.x, vp.y)
+
+		elseif self.align == "center" then
+			love.graphics.print(self.text, vp.x + math.floor((vp2.w - vp.w) * 0.5), vp.y)
+
+		else -- self.align == "right"
+			love.graphics.print(self.text, vp.x + vp2.w - vp.w, vp.y)
+		end
+
+		love.graphics.pop()
+	end,
+
+
+	--renderLast = function(self, ox, oy) end,
+	--renderThimble = function(self, ox, oy)
+}
+
+
+return def

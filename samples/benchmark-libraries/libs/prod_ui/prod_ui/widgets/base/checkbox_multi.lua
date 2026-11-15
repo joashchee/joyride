@@ -1,0 +1,227 @@
+--[[
+	A skinned, multi-state checkbox.
+
+	States are represented as an integer in 'self.value', from 1 to 'self.value_max'. The default
+	max value is 3, because it is assumed that this widget will most likely be used to implement
+	tri-state checkboxes.
+
+	The skin must provide graphics for each state; the default skins include graphics for three
+	states. For any states which do not have a graphic, the widget will debug-print 'self.value'
+	using the theme's internal font.
+--]]
+
+
+local context = select(1, ...)
+
+
+local pMath = require(context.conf.prod_ui_req .. "lib.p_math")
+local textUtil = require(context.conf.prod_ui_req .. "lib.text_util")
+local uiAssert = require(context.conf.prod_ui_req .. "ui_assert")
+local uiGraphics = require(context.conf.prod_ui_req .. "ui_graphics")
+local uiScale = require(context.conf.prod_ui_req .. "ui_scale")
+local uiSchema = require(context.conf.prod_ui_req .. "ui_schema")
+local uiTheme = require(context.conf.prod_ui_req .. "ui_theme")
+local wcButton = context:getLua("shared/wc/wc_button")
+local wcLabel = context:getLua("shared/wc/wc_label")
+local widShared = context:getLua("core/wid_shared")
+
+
+local _lerp = pMath.lerp
+
+
+local def = {
+	skin_id = "checkbox_multi1",
+
+	user_callbacks = {} -- modified by wcButton
+}
+
+
+wcButton.setupDefCheckboxMulti(def)
+
+
+wcLabel.setupDef(def)
+
+
+function def:evt_initialize()
+	self.visible = true
+	self.allow_hover = true
+	self.thimble_mode = 1
+
+	widShared.setupViewports(self, 2)
+
+	wcLabel.setupInstance(self)
+
+	self.value = 1
+	self.value_max = 3
+
+	-- [XXX 8] (Optional) image associated with the button.
+	--self.graphic = <tq>
+
+	-- State flags
+	self.enabled = true
+	self.hovered = false
+	self.pressed = false
+
+	self:skinSetRefs()
+	self:skinInstall()
+end
+
+
+function def:evt_getGrowAxisLength(x_axis, cross_length)
+	if not x_axis then
+		return self.skin.default_height, true
+	end
+end
+
+
+function def:evt_reshapePre()
+	-- Viewport #1 is the text bounding box.
+	-- Viewport #2 is the graphic drawing rectangle.
+
+	local skin = self.skin
+	local vp, vp2 = self.vp, self.vp2
+
+	vp:set(0, 0, self.w, self.h)
+	vp:reduceT(skin.box.border)
+	vp:split(vp2, skin.bijou_side_h, skin.bijou_spacing)
+
+	vp2:reduceT(skin.box.margin)
+
+	wcLabel.reshapeLabel(self)
+
+	return true
+end
+
+
+function def:evt_destroy(targ)
+	if self == targ then
+		widShared.removeViewports(self, 2)
+	end
+end
+
+
+local themeAssert = context:getLua("core/res/theme_assert")
+
+
+local md_res_quads_state = uiSchema.newModel {
+	array = themeAssert.path.quad
+}
+
+
+local md_res = uiSchema.newKeysX {
+	quads_state = md_res_quads_state,
+
+	color_bijou = uiAssert.loveColorTuple,
+	color_label = uiAssert.loveColorTuple,
+
+	label_ox = uiAssert.integer,
+	label_oy = uiAssert.integer
+}
+
+
+def.default_skinner = {
+	validate = uiSchema.newKeysX {
+		skinner_id = {uiAssert.type, "string"},
+
+		box = themeAssert.path.box,
+		tq_px = themeAssert.path.quad,
+
+		default_height = {uiAssert.numberGe, 0}, -- unscaled
+
+		-- Cursor IDs for hover and press states.
+		cursor_on = {uiAssert.types, "nil", "string"},
+		cursor_press = {uiAssert.types, "nil", "string"},
+
+		-- Checkbox (quad) render size.
+		bijou_w = {uiAssert.numberGe, 0},
+		bijou_h = {uiAssert.numberGe, 0},
+
+		-- Horizontal spacing between checkbox area and text label.
+		bijou_spacing = {uiAssert.numberGe, 0},
+
+		-- Checkbox horizontal placement.
+		bijou_side_h = {uiAssert.namedMap, uiTheme.named_maps.bijou_side_h},
+
+		-- Alignment of bijou within Viewport #2.
+		bijou_align_x = {uiAssert.numberRange, 0.0, 1.0},
+		bijou_align_y = {uiAssert.numberRange, 0.0, 1.0},
+
+		label_defaults = themeAssert.models.default_label_settings,
+
+		res_idle = md_res,
+		res_hovered = md_res,
+		res_pressed = md_res,
+		res_disabled = md_res
+	},
+
+
+	transform = function(scale, skin)
+		uiScale.fieldInteger(scale, skin, "bijou_w")
+		uiScale.fieldInteger(scale, skin, "bijou_h")
+		uiScale.fieldInteger(scale, skin, "bijou_spacing")
+
+		local function _changeRes(scale, res)
+			uiScale.fieldInteger(scale, res, "label_ox")
+			uiScale.fieldInteger(scale, res, "label_oy")
+		end
+
+		_changeRes(scale, skin.res_idle)
+		_changeRes(scale, skin.res_hovered)
+		_changeRes(scale, skin.res_pressed)
+		_changeRes(scale, skin.res_disabled)
+	end,
+
+
+	install = function(self, skinner, skin)
+		uiTheme.skinnerCopyMethods(self, skinner)
+		wcLabel.refreshFontObject(self.label, skin)
+	end,
+
+
+	remove = function(self, skinner, skin)
+		uiTheme.skinnerClearData(self)
+		wcLabel.removeFontObject(self.label)
+	end,
+
+
+	--refresh = function (self, skinner, skin)
+	--update = function(self, skinner, skin, dt)
+
+
+	render = function(self, ox, oy)
+		local label = self.label
+		local skin = self.skin
+		local vp2 = self.vp2
+		local res = uiTheme.pickButtonResource(self, skin)
+		local tex_quad = res.quads_state[self.value]
+
+		-- bijou drawing coordinates
+		local box_x = math.floor(0.5 + _lerp(vp2.x, vp2.x + vp2.w - skin.bijou_w, skin.bijou_align_x))
+		local box_y = math.floor(0.5 + _lerp(vp2.y, vp2.y + vp2.h - skin.bijou_h, skin.bijou_align_y))
+
+		-- Draw the bijou.
+		-- XXX: Scissor to Viewport #2?
+
+		if tex_quad then
+			love.graphics.setColor(res.color_bijou)
+			uiGraphics.quadXYWH(tex_quad, box_x, box_y, skin.bijou_w, skin.bijou_h)
+		else
+			-- Debug-print state values that do not have a matching quad.
+			love.graphics.push("all")
+
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.setFont(context.resources.fonts.internal)
+			love.graphics.print(tostring(self.value), box_x, box_y)
+
+			love.graphics.pop()
+		end
+
+		-- Draw the text label.
+		if label.mode then
+			wcLabel.render(self, skin, res.color_label, res.color_label_ul, res.label_ox, res.label_oy, ox, oy)
+		end
+	end,
+}
+
+
+return def

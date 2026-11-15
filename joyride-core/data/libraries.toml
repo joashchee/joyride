@@ -1621,18 +1621,6 @@ loads_11_5 = "loads"
 loads_12_0 = "loads"
 
 [[library]]
-name = "love2d-lua-websocket"
-git = "https://github.com/flaribbit/love2d-lua-websocket"
-rev = "5a26fb151057b083ea705bee32b71798c7126e5a"
-tag = "v0.21"
-licence = "MIT"
-module = "websocket"
-caution = "Opens a TCP connection to the address you give, through LuaSocket."
-summary = "An event-driven WebSocket client."
-loads_11_5 = "loads"
-loads_12_0 = "loads"
-
-[[library]]
 name = "LowerClass"
 git = "https://github.com/DevonPalma/LowerClass"
 rev = "37df2779fddb6b36d3470fc3a796101352c3ed7d"
@@ -2075,3 +2063,63 @@ caution = "Finds its font beside its own file (debug.getinfo), so keep the ui2d 
 summary = "An immediate mode GUI for LÖVE and LÖVR, pure Lua, inspired by microui and Dear ImGui."
 loads_11_5 = "loads"
 loads_12_0 = "loads"
+
+[[library]]
+name = "Lua-Opus"
+git = "https://github.com/GwyrddGlas/Lua-Opus"
+rev = "4518250f8780e2cf9142334d217917c61d9f839f"
+tag = "1.0.2"
+licence = "MIT"
+module = "OpusPlayer"
+kind = "ffi"
+native = "Needs the opus and ogg shared libraries (opus.dll and ogg.dll on Windows) next to the game."
+summary = "Streams and decodes Ogg Opus audio into a queueable LÖVE source, through LuaJIT's FFI."
+loads_11_5 = "unmeasured"
+loads_12_0 = "unmeasured"
+
+[[library]]
+name = "wave"
+git = "https://github.com/Ulydev/wave"
+rev = "f09abe390be9b9e8f4b6414379cef7de2f80b7e6"
+licence = "MIT"
+module = "wave"
+caution = "Last commit 2018 (LÖVE 0.10 era), so it may misbehave on 11 and 12. Licence: MIT."
+summary = "A sound manager for LÖVE with tracks, filters and audio parsing."
+loads_11_5 = "loads"
+loads_12_0 = "loads"
+
+[[library]]
+name = "telescope"
+git = "https://github.com/norman/telescope"
+rev = "244d13c17b1e6ed2bcdbd07882a081bc59398638"
+tag = "0.6.0"
+licence = "MIT"
+module = "telescope"
+caution = "Written for Lua 5.1 and 5.2 and last touched in 2013: it uses getfenv, setfenv and loadfile to run a test file in its own environment, so only run test files you wrote. Its compat_env module writes and removes a tmp.lua when its own self-test runs. Licence: MIT (README text only; no licence file)."
+summary = "A test library with nested contexts, before and after hooks and BDD-style names."
+loads_11_5 = "loads"
+loads_12_0 = "loads"
+
+[[library]]
+name = "prod_ui"
+git = "https://codeberg.org/frank-f-trafton/prod_ui"
+rev = "a841fd775c7e4f520017284d6c27d1c1699ff79b"
+licence = "MIT"
+module = "prod_ui"
+caution = "Unfinished by its author's own word, tested on LÖVE 11.5 only. Licence: MIT for the code; the bundled Noto fonts are SIL OFL 1.1. Its theme_works folder is the author's build tooling (it runs rsvg-convert through os.execute and ships nativefs copies that use the FFI): do not run it; the library itself (prod_ui) does none of that. It reads its resources through love.filesystem paths, so keep its folders intact."
+summary = "A user interface library for LÖVE (unfinished by its author's own word; LÖVE 11.5)."
+loads_11_5 = "needs-display"
+loads_12_0 = "needs-display"
+
+[[library]]
+name = "love2d-lua-websocket"
+git = "https://github.com/flaribbit/love2d-lua-websocket"
+rev = "5a26fb151057b083ea705bee32b71798c7126e5a"
+tag = "v0.21"
+licence = "MIT"
+module = "websocket"
+caution = "Opens a TCP connection to the address you give, through LuaSocket."
+summary = "An event-driven WebSocket client."
+loads_11_5 = "loads"
+loads_12_0 = "loads"
+

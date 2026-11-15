@@ -240,3 +240,80 @@ git = "https://github.com/JanWerder/soelar"
 decided = "2026-11-15"
 by = "applied when asked to audit the remaining libraries; the maintainer may lift it by deleting this entry"
 facts = "At 7bb8768 (2026-01-11): Unlicense (public domain). stars.lua and comets.lua call love.graphics.setColor(0xff, 0xff, 0xff, c) with 0 to 255 values, which LÖVE 11 and 12 read as 0 to 1, so every star and comet draws solid white and the twinkle is lost (the flaw that refused autobatch). Both set globals (stars, comet) and need a window to load."
+
+[[exclude]]
+name = "L5"
+git = "https://github.com/L5lua/L5"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 2 (no GPL, AGPL or LGPL dependencies), applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At 8e00ac6 (2026-11-11): a Processing-style creative coding framework (L5.lua plus examples). Its LICENSE is the full GNU Lesser General Public License 2.1."
+
+[[exclude]]
+name = "mlib"
+git = "https://github.com/davisdude/mlib"
+decided = "2026-11-15"
+by = "CLAUDE.md rule 2 (a GPL file anywhere in a library's tree keeps it out), applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At 47aa1d8 (2024-01-03): mlib.lua is zlib-licensed (LICENSE.md) with hump's Vector2 (MIT) inside, but Examples/Source/Shapes/mlib.lua is an older copy whose header is the GNU General Public License, so the repository carries a GPL file. The installer clones the whole repository (3.5 MB of Examples). Could be reconsidered if the author removes that copy."
+
+[[exclude]]
+name = "Strike"
+git = "https://github.com/Aweptimum/Strike"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At 8e0e0aa (2023-09-15): MIT, polygon collision. Its lib/DeWallua is a git submodule (github.com/Aweptimum/DeWallua) that the installer never fetches, so require fails. slick (curated) is the polygon collision library."
+
+[[exclude]]
+name = "LuaJIT-ImGui"
+git = "https://github.com/sonoro1234/LuaJIT-ImGui"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At 216d510 (2026-11-12): MIT, Dear ImGui through LuaJIT's FFI, but the repository is CMake sources with nine git submodules (cimgui, cimplot, cimnodes and others) that the installer never fetches, and it builds its own shared library; it is not a LÖVE library (its examples use SDL or GLFW). cimgui-love (curated) is the Dear ImGui binding for LÖVE."
+
+[[exclude]]
+name = "love-imgui"
+git = "https://github.com/slages/love-imgui"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At c401a8d (2019-03-23): MIT, but a C++ module built with CMake (no Lua files at all), Dear ImGui 1.53, for LÖVE 0.10 and 11.1. Unmaintained. cimgui-love (curated) replaces it."
+
+[[exclude]]
+name = "LJIT2SQLite"
+git = "https://github.com/Wiladams/LJIT2SQLite"
+decided = "2026-11-15"
+by = "applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At a346958 (2015-06-15): the README says public domain but there is no licence file, and it ships a sqlite3.dll (a Windows binary) in the repository. Unmaintained since 2015. sqlua and lua-ljsqlite3 (curated) are the SQLite libraries."
+
+[[exclude]]
+name = "busted"
+git = "https://github.com/lunarmodules/busted"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At 22f8089 (2026-08-25): MIT, a test runner for LuaRocks. It requires luassert, say, penlight (pl.*), lua_cliargs, lua-term, mediator and others that are separate LuaRocks packages, and runs as a command line program, so a clone has nothing for require to load inside LÖVE. lust and luaunit (curated) run in LÖVE."
+
+[[exclude]]
+name = "luassert"
+git = "https://github.com/lunarmodules/luassert"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At a1c4902 (2026-08-15): MIT, assertions for busted. Every module requires the separate LuaRocks package say (and some penlight), which a clone of this repository does not contain."
+
+[[exclude]]
+name = "specl"
+git = "https://github.com/gvvaughan/specl"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At 6be00c5 (2026-11-03): MIT, a behaviour-driven test runner. It requires std.normalize, typecheck, macro, yaml and luaposix (posix.unistd, posix.sys.wait, posix.poll), which are separate LuaRocks packages (the posix ones are C modules), and runs from a command line."
+
+[[exclude]]
+name = "lovefs"
+git = "https://github.com/linux-man/lovefs"
+decided = "2026-11-15"
+by = "measured: it does not load on macOS (CLAUDE.md rule 8, macOS first); applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At e2aa001 (v2.0, 2025-01-31): MIT, file browsing and open or save dialogs over LuaJIT's FFI, audited and read. lovefs/lovefs_osx.lua line 14 has `char d_name[256]` with no semicolon in its struct dirent, so require fails on real LÖVE 11.5 and 12.0 on macOS with \"';' expected near '}' at line 7\" (tried with the module required as lovefs/lovefs from libs/). It also needs the module name written with slashes to find its platform files. Its Windows and Linux files were not tried. nativefs (curated) covers files anywhere on the computer."
+
+[[exclude]]
+name = "love-ws"
+git = "https://github.com/holywyvern/love-ws"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to finish the library audits; the maintainer may lift it by deleting this entry"
+facts = "At d57addf (2018-10-27): a C++ WebSocket client and server built with CMake over Boost and OpenSSL, one git submodule and a compiled binary in the repository; last touched in 2018. love2d-lua-websocket (curated) is the pure Lua client."

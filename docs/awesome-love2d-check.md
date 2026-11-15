@@ -11,7 +11,9 @@ Update 2026-11-15 (later): the GitLab, Codeberg, SourceHut and gist entries were
 
 Update 2026-11-15 (last): the ten left were audited (`require-lua`, `lovr-ui2d` added; `servelove`, `andromeda`, `MeowUI`, `soelar` refused) and the tools and editors are in `docs/reference-kit.md`.
 
-Nothing here has been audited, probed or licence-checked: a name on this list is only a candidate. Rule 14 (`CLAUDE.md`) applies before any is added: `scripts/audit-libraries.py`, read the findings, then `curate_libraries`, the Benchmark sample and the ingest. `windfield` is excluded for good (`joyride-core/data/library-exclusions.toml`); `MLib` is windfield's bundled math library, whose older copies carry GPL-2.0-or-later headers, so read its licence at the pinned commit first.
+Update 2026-11-15 (final): the entries still unmatched were audited (`wave`, `telescope`, `prod_ui`, `Lua-Opus` added; `L5`, `mlib`, `Strike`, `LuaJIT-ImGui`, `love-imgui`, `LJIT2SQLite`, `busted`, `luassert`, `specl` refused; `Specl` and `Telescope` were listed by their web pages). `Grease` and `NPad93` were refused earlier.
+
+The lists below are as first checked: nothing here has been audited, probed or licence-checked: a name on this list is only a candidate. Rule 14 (`CLAUDE.md`) applies before any is added: `scripts/audit-libraries.py`, read the findings, then `curate_libraries`, the Benchmark sample and the ingest. `windfield` is excluded for good (`joyride-core/data/library-exclusions.toml`); `MLib` is windfield's bundled math library, whose older copies carry GPL-2.0-or-later headers, so read its licence at the pinned commit first.
 
 ## Ours, on the list
 

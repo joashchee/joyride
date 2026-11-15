@@ -2547,3 +2547,48 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 0
 reviewed = "read require.lua in full (replaces global require with a callable table; require.tree loads a folder) and the ui2d source around its debug.getinfo uses (finds its own font folder) and its io/system calls (none); no HIGH or MED findings, no secrets, no binaries"
+
+[[audit]]
+name = "wave"
+rev = "f09abe390be9b9e8f4b6414379cef7de2f80b7e6"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the findings and the flagged sources: wave and Lua-Opus clean (Opus is FFI by design); telescope's loadfile/setfenv is its runner and tmp.lua only in its self-test; prod_ui's exec and FFI are in theme_works/demo tooling, none in prod_ui/"
+
+[[audit]]
+name = "telescope"
+rev = "244d13c17b1e6ed2bcdbd07882a081bc59398638"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 88
+reviewed = "read the findings and the flagged sources: wave and Lua-Opus clean (Opus is FFI by design); telescope's loadfile/setfenv is its runner and tmp.lua only in its self-test; prod_ui's exec and FFI are in theme_works/demo tooling, none in prod_ui/"
+
+[[audit]]
+name = "Lua-Opus"
+rev = "4518250f8780e2cf9142334d217917c61d9f839f"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read the findings and the flagged sources: wave and Lua-Opus clean (Opus is FFI by design); telescope's loadfile/setfenv is its runner and tmp.lua only in its self-test; prod_ui's exec and FFI are in theme_works/demo tooling, none in prod_ui/"
+
+[[audit]]
+name = "prod_ui"
+rev = "a841fd775c7e4f520017284d6c27d1c1699ff79b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 11
+med = 24
+reviewed = "read the findings and the flagged sources: wave and Lua-Opus clean (Opus is FFI by design); telescope's loadfile/setfenv is its runner and tmp.lua only in its self-test; prod_ui's exec and FFI are in theme_works/demo tooling, none in prod_ui/"
+
+[[audit]]
+name = "lovefs"
+rev = "e2aa001a657990b9c23807e917e6b9d869ac5a2e"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 19
+reviewed = "read the findings and flagged sources: websocket is plain luasocket tcp, no exec or file access; lovefs is FFI over libc by design, its file writes are the point, shell calls are only in the unused lovefs-noffi folder (noted in the caution)"

@@ -1,0 +1,780 @@
+
+--[[
+wimp/dropdown_pop: The "drawer" component of a dropdown menu.
+
+'self.wid_ref' points to the invoking dropdown base widget.
+
+These are not real OS widgets, so they are limited to the boundaries of the window.
+They may act strangely if the window is too small for the menu contents.
+
+See `wimp/dropdown_box.lua` for more notes.
+--]]
+
+
+local context = select(1, ...)
+
+
+local textUtil = require(context.conf.prod_ui_req .. "lib.text_util")
+local uiAssert = require(context.conf.prod_ui_req .. "ui_assert")
+local uiGraphics = require(context.conf.prod_ui_req .. "ui_graphics")
+local uiScale = require(context.conf.prod_ui_req .. "ui_scale")
+local uiSchema = require(context.conf.prod_ui_req .. "ui_schema")
+local uiTable = require(context.conf.prod_ui_req .. "ui_table")
+local uiTheme = require(context.conf.prod_ui_req .. "ui_theme")
+local wcIconsAndText = context:getLua("shared/wc/wc_icons_and_text")
+local wcMenu = context:getLua("shared/wc/wc_menu")
+local wcPopUp = context:getLua("shared/wc/wc_pop_up")
+local wcScrollBar = context:getLua("shared/wc/wc_scroll_bar")
+local widShared = context:getLua("core/wid_shared")
+
+
+local def = {
+	skin_id = "dropdown_pop1",
+
+	trickle = {}
+}
+
+
+def.setShowIcons = wcIconsAndText.methods.setShowIcons
+def.getShowIcons = wcIconsAndText.methods.getShowIcons
+def.setIconSetId = wcIconsAndText.methods.setIconSetId
+def.getIconSetId = wcIconsAndText.methods.getIconSetId
+
+
+wcMenu.attachMenuMethods(def)
+widShared.scrollSetMethods(def)
+wcScrollBar.setupDef(def)
+def.impl_scroll_bar = context:getLua("shared/impl_scroll_bar1")
+
+
+local _arrange_tb = wcMenu.arrangers["list-tb"]
+function def:arrangeItems(first, last)
+	_arrange_tb(self, self.vp, true, first, last, 0, 0)
+end
+
+
+-- * Scroll helpers *
+
+
+def.getInBounds = wcMenu.getItemInBoundsY
+def.selectionInView = wcMenu.selectionInView
+
+
+-- * Spatial selection *
+
+
+def.getItemAtPoint = wcMenu.widgetGetItemAtPointVClamp -- (self, px, py, first, last)
+def.trySelectItemAtPoint = wcMenu.widgetTrySelectItemAtPoint -- (self, x, y, first, last)
+
+
+-- * Selection movement *
+
+
+def.movePrev = wcMenu.widgetMovePrev
+def.moveNext = wcMenu.widgetMoveNext
+def.moveFirst = wcMenu.widgetMoveFirst
+def.moveLast = wcMenu.widgetMoveLast
+def.movePageUp = wcMenu.widgetMovePageUp
+def.movePageDown = wcMenu.widgetMovePageDown
+
+
+local function _updateDocumentHeight(self)
+	local last_item = self.MN_items[#self.MN_items]
+	self.doc_h = last_item and last_item.y + last_item.h or 0
+	-- keep 'doc_x' at zero to eliminate horizontal scrolling.
+end
+
+
+local function _updateItemsWidth(self, w)
+	self.items_w = math.max(self.items_w, w)
+end
+
+
+local function _recalculateItemsWidth(self)
+	local max_w = 0
+	for i, item in ipairs(self.MN_items) do
+		max_w = math.max(max_w, item.w)
+	end
+	self.items_w = max_w
+end
+
+
+local function _shapeItem(self, item)
+	local skin = self.skin
+	local font = skin.font
+
+	item.w = font:getWidth(item.text)
+	item.h = math.floor((font:getHeight() * font:getLineHeight()) + skin.item_pad_v)
+	item.tq_icon = wcIconsAndText.getIconQuad(self.icon_set_id, item.icon_id)
+end
+
+
+function def:_closeSelf(update_chosen)
+	if not self._dead then
+		local wid_ref = self.wid_ref
+		if wid_ref and not wid_ref._dead then
+			wid_ref.wid_drawer = false
+
+			if update_chosen then
+				-- Confirm that the linked source item still exists in the main widget.
+				local chosen = self.MN_items[self.MN_index]
+				if chosen and type(chosen.source_item) == "table" then
+					local source_i = wid_ref:menuHasItem(chosen.source_item)
+					if source_i then
+						wid_ref:setSelectionByIndex(source_i)
+					end
+				end
+			end
+		end
+
+		local root = self:nodeGetRoot()
+		if root.pop_up_menu == self then
+			root:destroyPopUp("concluded")
+		end
+	end
+end
+
+
+local _mt_item = {selectable=true}
+_mt_item.__index = _mt_item
+
+
+function def:addItem(text, pos, icon_id, suppress_select)
+	local skin = self.skin
+	local font = skin.font
+	local items = self.MN_items
+
+	uiAssert.type(1, text, "string")
+	uiAssert.integerRangeEval(2, pos, 1, #items + 1)
+	uiAssert.typeEval(3, icon_id, "string")
+
+	pos = pos or #items + 1
+
+	local item = setmetatable({x=0, y=0, w=0, h=0}, _mt_item)
+
+	item.text = text
+	item.icon_id = icon_id
+	item.tq_icon = false
+
+	-- 'item.source_item' is set by the caller for later reference.
+
+	table.insert(items, pos, item)
+
+	_shapeItem(self, item)
+	self:arrangeItems(1, pos, #items)
+	_updateItemsWidth(self, item.w)
+	_updateDocumentHeight(self)
+
+	if not suppress_select then
+		wcMenu.trySelectIfNothingSelected(self)
+	end
+
+	return item
+end
+
+
+function def:removeItem(item_t)
+	uiAssert.type(1, item_t, "table")
+
+	local item_i = self:menuGetItemIndex(item_t)
+	local removed_item = self:removeItemByIndex(item_i)
+	return removed_item
+end
+
+
+function def:removeItemByIndex(item_i)
+	uiAssert.integerGe(1, item_i, 0)
+
+	local items = self.MN_items
+	local removed_item = items[item_i]
+	if not removed_item then
+		error("no item to remove at index: " .. tostring(item_i))
+	end
+
+	local removed = table.remove(items, item_i)
+
+	wcMenu.removeItemIndexCleanup(self, item_i)
+
+	_recalculateItemsWidth(self)
+	_updateDocumentHeight(self)
+
+	return removed_item
+end
+
+
+function def:setSelection(item_t)
+	uiAssert.type(1, item_t, "table")
+
+	local item_i = self:menuGetItemIndex(item_t)
+	self:setSelectionByIndex(item_i)
+end
+
+
+function def:setSelectionByIndex(item_i)
+	uiAssert.integerGe(1, item_i, 0)
+
+	local index_old = self.MN_index
+
+	self:menuSetSelectedIndex(item_i)
+
+	if index_old ~= self.MN_index then
+		if self.wid_ref then
+			self.wid_ref:cb_drawerSelection(self, self.MN_index, self.MN_items[self.MN_index])
+		end
+	end
+end
+
+
+def.keepInBounds = widShared.keepInBoundsOfParent
+
+
+function def:menuChangeCleanup()
+	for i, item in ipairs(self.MN_items) do
+		_shapeItem(self, item)
+	end
+	self:arrangeItems()
+	_recalculateItemsWidth(self)
+	_updateDocumentHeight(self)
+
+	self:menuSetSelectionStep(0, false)
+	self:selectionInView(true)
+	self:scrollClampViewport()
+	self:cacheUpdate()
+end
+
+
+function def:cacheUpdate()
+	wcMenu.widgetAutoRangeV(self)
+end
+
+
+function def:centerSelectedItem(immediate)
+	local selected = self.MN_items[self.MN_index]
+	if selected then
+		self:scrollV(math.floor(0.5 + selected.y + selected.h / 2 - self.vp.h / 2), immediate)
+		self:cacheUpdate()
+	end
+end
+
+
+-- @param wid_ref The widget that owns this drawer.
+function def:evt_initialize(wid_ref)
+	context:assertWidget(wid_ref)
+
+	self.wid_ref = wid_ref
+
+	self.visible = true
+	self.allow_hover = true
+	self.thimble_mode = 2
+	self.clip_scissor = true
+
+	self.sort_id = 7
+
+	wcPopUp.setupInstance(self)
+
+	widShared.setupDoc(self)
+	widShared.setupScroll(self, -1, -1)
+	widShared.setupViewports(self, 5)
+
+	-- The widest of all items.
+	self.items_w = 0
+
+	-- The uniform height of each item. Set in the skin install script.
+	self.item_h = 0
+
+	self.press_busy = false
+
+	-- partial wcIconsAndText stuff
+	self.show_icons = false
+
+	self.S_icon_set_id = false
+
+	self.icon_set_id = "bureau"
+	-- / wcIconsAndText
+
+	wcMenu.setup(self)
+	self.MN_wrap_selection = false
+
+	self:setScrollBars(false, true)
+
+	self:skinSetRefs()
+	self:skinInstall()
+end
+
+
+function def:evt_reshapePre()
+	-- Viewport #1 is the main content viewport.
+	-- Viewport #2 separates embedded controls (scroll bars) from the content.
+	-- Viewport #3 represents the size and horizontal position of one item.
+	-- Viewport #4 is the area for text.
+	-- Viewport #5 is the area for icons.
+
+	local skin = self.skin
+	local vp, vp2, vp3, vp4, vp5 = self.vp, self.vp2, self.vp3, self.vp4, self.vp5
+	local wid_ref = self.wid_ref
+	local root = self:nodeGetRoot()
+
+	if not wid_ref or wid_ref._dead then
+		return true
+	end
+
+	local icon_spacing = self.show_icons and skin.icon_spacing or 0
+	local margin, border = skin.box.margin, skin.box.border
+	local box_pad_x = margin.x1 + margin.x2 + border.x1 + border.x2 + icon_spacing
+	local box_pad_y = margin.y1 + margin.y2 + border.y1 + border.y2
+
+	local temp_width = self.items_w + box_pad_x
+
+	if #self.MN_items == 0 then
+		self.w = wid_ref.w
+		self.h = self.item_h
+	else
+		-- Assume the root widget's dimensions match the display area.
+
+		self.w = math.min(root.w, math.max(wid_ref.w, temp_width))
+		self.h = math.min(root.h, self.item_h * math.min(skin.max_visible_items, #self.MN_items) + box_pad_y)
+		--+ skin.item_pad_v
+	end
+
+	vp:set(0, 0, self.w, self.h)
+
+	-- TODO: rewrite scroll bar arrangement code so that this doesn't have to be called twice.
+	wcScrollBar.arrangeScrollBars(self)
+
+	-- If the item content is so wide that the scroll bar would hide it, increase widget width.
+	local scr_v = self.scr_v
+	if scr_v and scr_v.active and temp_width + scr_v.bar_size >= self.w then
+		self.w = self.w + scr_v.bar_size
+	end
+
+	vp:set(0, 0, self.w, self.h)
+	vp:reduceT(border)
+
+	-- 'Okay-to-click' rectangle.
+	vp:copy(vp2)
+
+	wcScrollBar.arrangeScrollBars(self)
+
+	--vp:reduceT(margin)
+
+	-- Dimensions and horizontal position for one menu item.
+	vp3:set(vp.x, 0, vp.w, self.item_h)
+
+	-- Area for text
+	vp3:copy(vp4)
+
+	-- Area for the icon
+	vp4:splitOrOverlay(vp5, skin.icon_side, icon_spacing)
+
+	-- Additional text padding
+	vp4:reduceT(margin)
+
+	self:keepInBounds()
+
+	self:scrollClampViewport()
+	wcScrollBar.updateScrollState(self)
+
+	self:cacheUpdate()
+
+	return true
+end
+
+
+function def:evt_keyPressed(targ, key, scancode, isrepeat)
+	if targ == self then
+		if scancode == "up" then
+			self:movePrev(1, true, isrepeat)
+			return true
+
+		elseif scancode == "down" then
+			self:moveNext(1, true, isrepeat)
+			return true
+
+		elseif scancode == "home" then
+			self:moveFirst(true)
+			return true
+
+		elseif scancode == "end" then
+			self:moveLast(true)
+			return true
+
+		elseif scancode == "pageup" then
+			self:movePageUp(true)
+			return true
+
+		elseif scancode == "pagedown" then
+			self:movePageDown(true)
+			return true
+
+		elseif scancode == "escape" then
+			self:_closeSelf(false)
+			return true
+
+		-- Enter toggles the pop-up, closing it here. Update the chosen selection.
+		elseif scancode == "return" or scancode == "kpenter" then
+			self:_closeSelf(true)
+			return true
+		end
+	end
+end
+
+
+function def:evt_pointerDrag(targ, mouse_x, mouse_y, mouse_dx, mouse_dy)
+	if self == targ then
+		local rolled = false
+
+		if self.press_busy == "menu-drag" then
+			local vp = self.vp
+
+			-- Implement Drag-to-select.
+			-- Need to test the full range of items because the mouse can drag outside the bounds of the viewport.
+
+			-- Mouse position relative to viewport #1
+			local mx, my = self:getRelativePosition(mouse_x, mouse_y)
+
+			-- test: Only update the selection via dragging if the mouse is within range horizontally.
+			--if mx >= 0 and mx < self.w then
+				mx = mx - vp.x
+				my = my - vp.y
+
+				local item_i, item_t = self:getItemAtPoint(mx + self.scr_x, my + self.scr_y, 1, #self.MN_items)
+				if item_i and item_t.selectable then
+					self:menuSetSelectedIndex(item_i)
+
+				else
+					self:menuSetSelectedIndex(0)
+				end
+			--end
+		end
+	end
+end
+
+
+function def:evt_pointerHover(targ, mouse_x, mouse_y, mouse_dx, mouse_dy)
+	if self == targ then
+		local vp = self.vp
+		local mx, my = self:getRelativePosition(mouse_x, mouse_y)
+
+		wcScrollBar.widgetProcessHover(self, mx, my)
+
+		local xx = mx + self.scr_x - vp.x
+		local yy = my + self.scr_y - vp.y
+
+		if self.vp2:pointOverlap(mx, my) then
+			-- Update item hover
+			local i, item = self:getItemAtPoint(xx, yy, math.max(1, self.MN_items_first), math.min(#self.MN_items, self.MN_items_last))
+
+			if item and item.selectable then
+				self.MN_item_hover = item
+
+				--print("item", item, "MN_index", self.MN_index, "xx|yy", xx, yy, "item.xywh", item.x, item.y, item.w, item.h)
+
+				-- Implement mouse hover-to-select.
+				if (mouse_dx ~= 0 or mouse_dy ~= 0) then
+					local selected_item = self.MN_items[self.MN_index]
+					if item ~= selected_item then
+						self:menuSetSelectedIndex(i)
+					end
+				end
+			end
+		end
+	end
+end
+
+
+function def:evt_pointerHoverOff(targ, mouse_x, mouse_y, mouse_dx, mouse_dy)
+	if self == targ then
+		wcScrollBar.widgetClearHover(self)
+	end
+end
+
+
+function def:evt_pointerPress(targ, x, y, button, istouch, presses)
+	if self == targ then
+		local mx, my, ax, ay = self:getRelativePosition(x, y)
+
+		if self.is_blocking_clicks then
+			if not (mx >= 0 and my >= 0 and mx < self.w and my < self.h) then
+				local root = self:nodeGetRoot()
+				root:destroyPopUp("concluded")
+				return
+			end
+		end
+
+		local handled_scroll_bars
+
+		-- Check for pressing on scroll bar components.
+		if button == 1 then
+			local fixed_step = context.settings.wimp.navigation.scroll_button_click
+			handled_scroll_bars = wcScrollBar.widgetScrollPress(self, x, y, fixed_step)
+		end
+
+		-- Successful mouse interaction with scroll bars should break any existing click-sequence.
+		if handled_scroll_bars then
+			context:clearClickSequence()
+		else
+			local vp, vp2 = self.vp, self.vp2
+
+			if vp2:pointOverlap(mx, my) then
+				x = x - ax + self.scr_x - vp.x
+				y = y - ay + self.scr_y - vp.y
+
+				-- Check for click-able items.
+				if not self.press_busy then
+					local item_i, item_t = self:trySelectItemAtPoint(x, y, math.max(1, self.MN_items_first), math.min(#self.MN_items, self.MN_items_last))
+
+					self.press_busy = "menu-drag"
+					self:cacheUpdate()
+				end
+			end
+		end
+	end
+end
+
+
+function def:evt_pointerPressRepeat(targ, x, y, button, istouch, reps)
+	if self == targ then
+		wcMenu.pointerPressRepeatLogic(self, x, y, button, istouch, reps)
+	end
+end
+
+
+function def:evt_pointerUnpress(targ, x, y, button, istouch, presses)
+	if self == targ
+	and button == context.mouse_pressed_button
+	then
+		wcScrollBar.widgetClearPress(self)
+
+		local old_press_busy = self.press_busy
+		self.press_busy = false
+
+		if old_press_busy == "menu-drag" then
+			-- Handle mouse unpressing over the selected item.
+			if button == 1 then
+				local item_selected = self.MN_items[self.MN_index]
+
+				if item_selected and item_selected.selectable then
+					self:_closeSelf(true)
+					return true
+				end
+			end
+		end
+	end
+end
+
+
+function def:evt_pointerWheel(targ, x, y)
+	if self == targ then
+		-- (Positive Y == rolling wheel upward.)
+		-- Only scroll if we are not at the edge of the scrollable area. Otherwise, the wheel
+		-- event should bubble up.
+
+		-- XXX support mapping single-dimensional wheel to horizontal scroll motion
+		-- XXX support horizontal wheels
+
+		if widShared.checkScrollWheelScroll(self, x, y) then
+			self:cacheUpdate()
+			return true
+		end
+	end
+end
+
+
+function def:evt_update(dt)
+	-- This widget cannot operate if the owner that it extends is gone.
+	local wid_ref = self.wid_ref
+	if not wid_ref then
+		self:destroy()
+		return
+	end
+
+	local scr_x_old, scr_y_old = self.scr_x, self.scr_y
+
+	local needs_update = false
+
+	-- Handle update-time drag-scroll.
+	if self.press_busy == "menu-drag" and widShared.dragToScroll(self, dt) then
+		needs_update = true
+
+	elseif wcScrollBar.press_busy_codes[self.press_busy] then
+		if context.mouse_pressed_ticks > 1 then
+			local mx, my = self:getRelativePosition(context.mouse_x, context.mouse_y)
+			local button_step = 350 -- XXX style/config
+			wcScrollBar.widgetDragLogic(self, mx, my, button_step*dt)
+		end
+	end
+
+	self:scrollUpdate(dt)
+
+	-- Force a cache update if the external scroll position is different.
+	if scr_x_old ~= self.scr_x or scr_y_old ~= self.scr_y then
+		needs_update = true
+	end
+
+	-- Update scroll bar registers and thumb position.
+	wcScrollBar.updateScrollBarShapes(self)
+	wcScrollBar.updateScrollState(self)
+
+	if needs_update then
+		self:cacheUpdate()
+	end
+end
+
+
+function def:evt_destroy(targ)
+	if self == targ then
+		self:_closeSelf(false)
+
+		widShared.removeViewports(self, 5)
+	end
+end
+
+
+local themeAssert = context:getLua("core/res/theme_assert")
+
+
+def.default_skinner = {
+	validate = uiSchema.newKeysX {
+		skinner_id = {uiAssert.type, "string"},
+
+		box = themeAssert.path.box,
+		font = themeAssert.path.font,
+		data_scroll = themeAssert.path.scrollBarData,
+		scr_style = themeAssert.path.scrollBarStyle,
+
+		text_align = {uiAssert.oneOf, "left", "center", "right"},
+
+		icon_side = {uiAssert.oneOf, "left", "right"},
+		icon_spacing = {uiAssert.integerGe, 0},
+
+		-- Item height is determined by the font height + line height and 'item_pad_v'.
+		item_pad_v = {uiAssert.integerGe, 0},
+
+		-- The drawer's maximum height, as measured by the number of visible items (plus margins).
+		-- Drawer height is limited by the size of the application window.
+		max_visible_items = uiAssert.integer,
+
+		slice = themeAssert.path.slice,
+
+		color_body = uiAssert.loveColorTuple,
+		color_text = uiAssert.loveColorTuple,
+		color_selected = uiAssert.loveColorTuple
+	},
+
+
+	transform = function(scale, skin)
+		uiScale.fieldInteger(scale, skin, "icon_spacing")
+		uiScale.fieldInteger(scale, skin, "item_pad_v")
+	end,
+
+
+	install = function(self, skinner, skin)
+		uiTheme.skinnerCopyMethods(self, skinner)
+		-- Update the scroll bar style
+		wcScrollBar.refreshScrollBars(self)
+
+		local font = skin.font
+		self.item_h = math.floor(font:getHeight() * font:getLineHeight() + skin.item_pad_v)
+
+		-- Fix item dimensions, icon references, etc.
+		self:menuChangeCleanup()
+	end,
+
+
+	remove = function(self, skinner, skin)
+		uiTheme.skinnerClearData(self)
+	end,
+
+
+	--refresh = function(self, skinner, skin)
+	--update = function(self, skinner, skin, dt)
+
+
+	render = function(self, ox, oy)
+		local skin = self.skin
+		local vp, vp3, vp4, vp5 = self.vp, self.vp3, self.vp4, self.vp5
+		local font = skin.font
+		local items = self.MN_items
+
+		love.graphics.push("all")
+
+		local old_r, old_g, old_b, old_a = love.graphics.getColor()
+
+		uiGraphics.intersectScissor(ox + self.x, oy + self.y, self.w, self.h)
+
+		-- Back panel body.
+		love.graphics.setColor(skin.color_body)
+		uiGraphics.drawSlice(skin.slice, 0, 0, self.w, self.h)
+
+		wcScrollBar.drawScrollBarsV(self, self.skin.data_scroll)
+
+		-- Scroll offsets.
+		--love.graphics.translate(-self.scr_x + vp.x, -self.scr_y + vp.y)
+		love.graphics.translate(-self.scr_x, -self.scr_y)
+		uiGraphics.intersectScissor(ox + self.x + vp.x, oy + self.y + vp.y, vp.w, vp.h)
+
+		-- Dropdown drawers do not render hover-glow.
+
+		-- Selection glow.
+		local selected_item = self.MN_items[self.MN_index]
+		if selected_item then
+			love.graphics.setColor(skin.color_selected)
+			love.graphics.rectangle("fill", 0, selected_item.y, vp3.w, selected_item.h)
+		end
+
+
+		local i_min, i_max = math.max(1, self.MN_items_first), math.min(#items, self.MN_items_last)
+
+		-- Item icons.
+		if vp5.w > 0 then
+			love.graphics.setColor(old_r, old_g, old_b, old_a)
+			for i = i_min, i_max do
+				local item = items[i]
+				local tq_icon = item.tq_icon
+				if tq_icon then
+					uiGraphics.quadShrinkOrCenterXYWH(tq_icon, vp5.x, item.y + vp5.y, vp5.w, vp5.h)
+				end
+			end
+		end
+
+		-- Item text.
+		love.graphics.setColor(skin.color_text)
+		love.graphics.setFont(font)
+
+		for i = i_min, i_max do
+			local item = items[i]
+			local xx = vp4.x + textUtil.getAlignmentOffset(item.text, font, skin.text_align, vp4.w)
+			love.graphics.print(item.text, xx, item.y)
+		end
+
+		love.graphics.pop()
+
+		-- Debug: draw viewports
+		--[===[
+		--[[
+		-- Widget body:
+		love.graphics.push("all")
+		love.graphics.setColor(1, 0, 0, 0.5)
+		love.graphics.rectangle("fill", 0, 0, self.w, self.h)
+		love.graphics.pop()
+		--]]
+
+		widShared.debug.debugDrawViewport(self, 1)
+		widShared.debug.debugDrawViewport(self, 2)
+		--widShared.debug.debugDrawViewport(self, 3)
+		--widShared.debug.debugDrawViewport(self, 4)
+		--widShared.debug.debugDrawViewport(self, 5)
+		--]===]
+	end,
+
+
+	--renderLast = function(self, ox, oy) end,
+
+
+	renderThimble = function(self, ox, oy)
+		-- Don't render thimble focus.
+	end
+}
+
+
+return def

@@ -1,0 +1,1002 @@
+local context = select(1, ...)
+
+
+local widLayout = {}
+
+
+local pMath = require(context.conf.prod_ui_req .. "lib.p_math")
+local uiAssert = require(context.conf.prod_ui_req .. "ui_assert")
+local uiTable = require(context.conf.prod_ui_req .. "ui_table")
+local uiTheme = require(context.conf.prod_ui_req .. "ui_theme")
+
+
+local _roundInf, _lerp = pMath.roundInf, pMath.lerp
+
+
+local sash_styles = context.resources.sash_styles
+
+
+local _nm_axis2d = uiTheme.named_maps.axis_2d
+
+
+widLayout._nm_layout_base = uiTable.newNamedMapV("LayoutBase",
+	"zero",
+	"self",
+	"viewport",
+	"viewport-full",
+	"viewport-width",
+	"viewport-height",
+	"unbounded"
+)
+
+
+widLayout._nm_seg_edge = uiTable.newNamedMapV("SegmentEdge", "left", "right", "top", "bottom")
+widLayout._nm_card_measure = uiTable.newNamedMapV("CardSizeMeasure", "pixel", "unit")
+widLayout._nm_stack_len_measure = uiTable.newNamedMapV("StackLengthMeasure", "pixel", "unit")
+widLayout._nm_unit_mode = uiTable.newNamedMapV("UnitMode", "in", "mid", "out") -- or false/nil
+
+
+
+--[[
+The parameters of each geometry mode:
+
+"grid":
+	x, y: (integer) Tile positions, from 0 to len - 1.
+	w, h: (integer) Number of tiles the widget occupies.
+	(Refer also to the parent's 'LO_grid' table.)
+
+"null":
+	(No parameters.)
+
+"relative":
+	x, y: (number) Position. These are scaled integers when the associated 'unit_' paremeters are false. Otherwise, a
+		number from 0.0 to 1.0.
+	w, h: (integer) Dimensions. Always scaled.
+	flip_x, flip_y: (boolean) When true, the position is against the other side of the layout space.
+	unit_x, unit_y: (false/nil, "in", "mid", "out") When non-false, the widget is placed based on the widget
+		dimensions and the layout dimensions (where x 0.5, y 0.5 is dead center). The strings control how far out the
+		widget is placed: "in" to place the widget just within the layout edge, "mid" to place the widget mid-point
+		on the layout edge, and "out" to place the widget just outside the layout edge.
+
+"remaining":
+	(No parameters.)
+
+"segment":
+	edge: (_nm_seg_edge)
+	len: (integer or false/nil) The desired length of the segment. The final length may be reduced to make room
+		for a sash. When false, the widget is queried for a default length. Zero is used as a last resort.
+	len_min, len_max: (integer) The preferred (not guaranteed) minimum and maximum segment length.
+	sash_style (string|false/nil) When a string, this segment has a sash on the opposite edge.
+	sash_x, sash_y, sash_w, sash_h: (integer) Position and dimensions of the sash bounding box. Internal use.
+
+"segment-unit":
+	edge: (_nm_seg_edge)
+	unit: (number) The desired portion of the segment, from 0.0 to 1.0. This is a percentage of the original
+		parent layout space along the segment's axis.
+
+"stack":
+	len: Desired length of the widget (height in vertical stacks, width in horizontal stacks). When false,
+		the parent provides a default length.
+	measure: How 'len' should be interpreted: "pixel" for (scaled) pixels, "unit" for a portion of the
+		parent's remaining layout space. When false, the parent provides a default value.
+	(Refer also the parent's 'LO_stack' table.)
+
+"static":
+	x, y: (number) Position. These are scaled integers when the associated 'unit_' paremeters are false. Otherwise, a
+		number from 0.0 to 1.0.
+	w, h: (integer) Dimensions. Always scaled.
+	flip_x, flip_y: (boolean) When true, the position is against the other side of the layout space.
+	unit_x, unit_y: (false/nil, "in", "mid", "out") When non-false, the widget is placed based on the widget
+		dimensions and the layout dimensions (where x 0.5, y 0.5 is dead center). The strings control how far out the
+		widget is placed: "in" to place the widget just within the layout edge, "mid" to place the widget mid-point
+		on the layout edge, and "out" to place the widget just outside the layout edge.
+
+"wallet":
+	(No parameters. Refer to the parent's 'LO_wallet' table.)
+--]]
+
+
+widLayout.geo_null = {mode="null"}
+widLayout.geo_remaining = {mode="remaining"}
+widLayout.geo_wallet = {mode="wallet"}
+
+
+local function _initGE(self, mode)
+	-- Do not call with the "null", "remaining" or "wallet" modes.
+
+	local GE = self.GE
+
+	if GE and GE.mode == mode then
+		return GE
+	else
+		GE = {mode=mode}
+		self.GE = GE
+		return GE
+	end
+end
+
+
+widLayout.geometry_setters = {
+	grid = function(self, x, y, w, h)
+		uiAssert.numberNotNan(1, x)
+		uiAssert.numberNotNan(2, y)
+		uiAssert.numberNotNanEval(3, w)
+		uiAssert.numberNotNanEval(4, h)
+
+		local GE = _initGE(self, "grid")
+
+		GE.x = x
+		GE.y = y
+		GE.w = w and math.max(0, w) or 1
+		GE.h = h and math.max(0, h) or 1
+
+		return self
+	end,
+
+	null = function(self)
+		self.GE = widLayout.geo_null
+
+		return self
+	end,
+
+	relative = function(self, x, y, w, h, flip_x, flip_y, unit_x, unit_y)
+		uiAssert.numberNotNan(1, x)
+		uiAssert.numberNotNan(2, y)
+		uiAssert.numberNotNan(3, w)
+		uiAssert.numberNotNan(4, h)
+		-- don't assert 'flip_x'
+		-- don't assert 'flip_y'
+		uiAssert.namedMapEval(7, unit_x, widLayout._nm_unit_mode)
+		uiAssert.namedMapEval(8, unit_y, widLayout._nm_unit_mode)
+
+		local GE = _initGE(self, "relative")
+
+		GE.x = x
+		GE.y = y
+		GE.w = math.max(0, w)
+		GE.h = math.max(0, h)
+		GE.flip_x = not not flip_x
+		GE.flip_y = not not flip_y
+		GE.unit_x = unit_x or nil
+		GE.unit_y = unit_y or nil
+
+		return self
+	end,
+
+	remaining = function(self)
+		self.GE = widLayout.geo_remaining
+
+		return self
+	end,
+
+	segment = function(self, edge, len, sash_style, len_min, len_max)
+		uiAssert.namedMap(1, edge, widLayout._nm_seg_edge)
+		uiAssert.numberNotNanEval(2, len)
+		uiAssert.typeEval(3, sash_style, "string")
+		uiAssert.numberNotNanEval(4, len_min)
+		uiAssert.numberNotNanEval(5, len_max)
+
+		local GE = _initGE(self, "segment")
+
+		GE.edge = edge
+		GE.len_min = len_min and math.max(0, len_min) or 0
+		GE.len_max = len_max and math.max(0, len_max) or math.huge
+		GE.len = len and math.max(GE.len_min, math.min(len, GE.len_max)) or false
+		GE.sash_style = sash_style or nil
+		GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = 0, 0, 0, 0 -- internal use
+
+		return self
+	end,
+
+	["segment-unit"] = function(self, edge, unit)
+		uiAssert.namedMap(1, edge, widLayout._nm_seg_edge)
+		uiAssert.numberNotNan(2, unit)
+
+		local GE = _initGE(self, "segment-unit")
+
+		GE.edge = edge
+		GE.unit = math.max(0.0, math.min(unit, 1.0))
+
+		return self
+	end,
+
+	stack = function(self, measure, len)
+		uiAssert.namedMapEval(1, measure, widLayout._nm_stack_len_measure)
+		uiAssert.numberGeEval(1, len, 0)
+
+		local GE = _initGE(self, "stack")
+
+		if not measure then
+			GE.measure = false
+			GE.len = false
+		else
+			if measure == "unit" then
+				len = math.min(1.0, len)
+			end
+
+			GE.measure = measure
+			GE.len = len
+		end
+
+		return self
+	end,
+
+	static = function(self, x, y, w, h, flip_x, flip_y, unit_x, unit_y)
+		uiAssert.numberNotNan(1, x)
+		uiAssert.numberNotNan(2, y)
+		uiAssert.numberNotNan(3, w)
+		uiAssert.numberNotNan(4, h)
+		-- don't assert 'flip_x'
+		-- don't assert 'flip_y'
+		uiAssert.namedMapEval(7, unit_x, widLayout._nm_unit_mode)
+		uiAssert.namedMapEval(8, unit_y, widLayout._nm_unit_mode)
+
+		local GE = _initGE(self, "static")
+
+		GE.x = x
+		GE.y = y
+		GE.w = math.max(0, w)
+		GE.h = math.max(0, h)
+		GE.flip_x = not not flip_x
+		GE.flip_y = not not flip_y
+		GE.unit_x = unit_x or nil
+		GE.unit_y = unit_y or nil
+
+		return self
+	end,
+
+	wallet = function(self)
+		self.GE = widLayout.geo_wallet
+
+		return self
+	end,
+}
+
+
+local function _calculateSegment(len, sash_half, layout_len, do_scale) -- TODO: just scale beforehand?
+	layout_len = math.max(0, layout_len - sash_half*2)
+	len = math.max(0, len - sash_half)
+	local scale = do_scale and context.scale or 1.0
+	local cut = math.floor(math.max(0, math.min(len * scale, layout_len)))
+	return cut, layout_len - cut
+end
+
+
+local function _querySegmentLength(wid, GE, x_axis, cross_length) -- TODO: just scale beforehand?
+	if GE.len then
+		return GE.len, true -- len, do_scale
+	end
+
+	local len, do_scale = wid:evt_getGrowAxisLength(x_axis, cross_length)
+	if len then
+		return len, do_scale
+	end
+
+	return 0, true
+end
+
+
+local function _getSashBreadth(style_id)
+	if style_id then
+		local style = sash_styles[style_id]
+		if not style then
+			error("unprovisioned sash style: " .. style_id)
+		end
+		return style.breadth_half
+	end
+	return 0
+end
+
+
+function widLayout.getSashStyleTable(id)
+	local style = sash_styles[id]
+	if not style then
+		error("unprovisioned sash style: " .. id)
+	end
+	return style
+end
+
+
+local function _calculateSegmentUnit(unit, layout_len, original_layout_len)
+	unit = math.max(0, math.min(unit, 1))
+	local cut = math.floor(unit * original_layout_len)
+	return cut, layout_len - cut
+end
+
+
+local function _staticPlaceOneAxis(nx, nw, px, pw, gx, gw, scale, flip, unit)
+	nw = math.floor(gw * scale)
+
+	if unit == "in" then
+		nx = _roundInf(_lerp(0, pw - nw, gx))
+
+	elseif unit == "mid" then
+		nx = _roundInf(_lerp(-nw*.5, pw - nw*.5, gx))
+
+	elseif unit == "out" then
+		nx = _roundInf(_lerp(-nw, pw, gx))
+
+	else
+		nx = math.floor(gx * scale)
+	end
+
+	if flip then
+		nx = pw - nw - nx
+	end
+	nx = nx + px
+
+	return nx, nw
+end
+
+
+-- arguments: np (parent), nc (child, to be resized), GE (child's geometry table), orig_x, orig_y, orig_w, orig_h
+widLayout.handlers = {
+	grid = function(np, nc, GE)
+		local grid = np.LO_grid
+
+		-- TODO: raise an error here if the table is missing (or don't?)
+
+		if grid then
+			local cols, rows = grid.cols, grid.rows
+			if cols > 0 and rows > 0 then
+				nc.x = np.LO_x + math.floor(GE.x * np.LO_w / rows)
+				nc.y = np.LO_y + math.floor(GE.y * np.LO_h / cols)
+				nc.w = math.floor(np.LO_w / rows * GE.w)
+				nc.h = math.floor(np.LO_h / cols * GE.h)
+
+				return
+			end
+		end
+
+		nc.x, nc.y, nc.w, nc.h = 0, 0, 0, 0
+	end,
+
+	null = function()
+		-- do nothing
+	end,
+
+	relative = function(np, nc, GE)
+		local scale = context.scale
+
+		local px, py, pw, ph = np.LO_x, np.LO_y, np.LO_w, np.LO_h
+
+		nc.x, nc.w = _staticPlaceOneAxis(nc.x, nc.w, px, pw, GE.x, GE.w, scale, GE.flip_x, GE.unit_x)
+		nc.y, nc.h = _staticPlaceOneAxis(nc.y, nc.h, py, ph, GE.y, GE.h, scale, GE.flip_y, GE.unit_y)
+	end,
+
+	remaining = function(np, nc)
+		nc.x, nc.y, nc.w, nc.h = np.LO_x, np.LO_y, np.LO_w, np.LO_h
+	end,
+
+	segment = function(np, nc, GE)
+		local edge, sash_style = GE.edge, GE.sash_style
+		local sash_half = _getSashBreadth(sash_style)
+		-- NOTE: the sash box is placed on the opposite side of 'edge'.
+
+		-- TODO: floor (or ceil) 'len'?
+
+		if edge == "left" then
+			nc.y, nc.h = np.LO_y, np.LO_h
+			local len, do_scale = _querySegmentLength(nc, GE, true, nc.h)
+			len = math.max(GE.len_min, math.min(len, GE.len_max))
+			nc.w, np.LO_w = _calculateSegment(len, sash_half, np.LO_w, do_scale)
+			nc.x = np.LO_x
+			np.LO_x = np.LO_x + nc.w + sash_half*2
+			if sash_style then
+				GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = nc.w, 0, sash_half*2, nc.h
+			else
+				GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = 0, 0, 0, 0
+			end
+
+		elseif edge == "right" then
+			nc.y, nc.h = np.LO_y, np.LO_h
+			local len, do_scale = _querySegmentLength(nc, GE, true, nc.h)
+			len = math.max(GE.len_min, math.min(len, GE.len_max))
+			local old_LO_w = np.LO_w
+			nc.w, np.LO_w = _calculateSegment(len, sash_half, np.LO_w, do_scale)
+			nc.x = np.LO_x + old_LO_w - nc.w
+			if sash_style then
+				GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = -sash_half*2, 0, sash_half*2, nc.h
+			else
+				GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = 0, 0, 0, 0
+			end
+
+		elseif edge == "top" then
+			nc.x, nc.w = np.LO_x, np.LO_w
+			local len, do_scale = _querySegmentLength(nc, GE, false, nc.w)
+			len = math.max(GE.len_min, math.min(len, GE.len_max))
+			nc.h, np.LO_h = _calculateSegment(len, sash_half, np.LO_h, do_scale)
+			nc.y = np.LO_y
+			np.LO_y = np.LO_y + nc.h + sash_half*2
+			if sash_style then
+				GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = 0, nc.h, nc.w, sash_half * 2
+			else
+				GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = 0, 0, 0, 0
+			end
+
+		elseif edge == "bottom" then
+			nc.x, nc.w = np.LO_x, np.LO_w
+			local len, do_scale = _querySegmentLength(nc, GE, false, nc.w)
+			len = math.max(GE.len_min, math.min(len, GE.len_max))
+			local old_LO_h = np.LO_h
+			nc.h, np.LO_h = _calculateSegment(len, sash_half, np.LO_h, do_scale)
+			nc.y = np.LO_y + old_LO_h - nc.h
+			if sash_style then
+				GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = 0, -sash_half*2, nc.w, sash_half*2
+			else
+				GE.sash_x, GE.sash_y, GE.sash_w, GE.sash_h = 0, 0, 0, 0
+			end
+
+		else
+			error("bad segment edge ID")
+		end
+	end,
+
+	["segment-unit"] = function(np, nc, GE, orig_x, orig_y, orig_w, orig_h)
+		local edge = GE.edge
+
+		if edge == "left" then
+			nc.y, nc.h = np.LO_y, np.LO_h
+			nc.w, np.LO_w = _calculateSegmentUnit(GE.unit, np.LO_w, orig_w)
+			nc.x = np.LO_x
+			np.LO_x = np.LO_x + nc.w
+
+		elseif edge == "right" then
+			nc.y, nc.h = np.LO_y, np.LO_h
+			nc.w, np.LO_w = _calculateSegmentUnit(GE.unit, np.LO_w, orig_w)
+			nc.x = np.LO_x + np.LO_w
+
+		elseif edge == "top" then
+			nc.x, nc.w = np.LO_x, np.LO_w
+			nc.h, np.LO_h = _calculateSegmentUnit(GE.unit, np.LO_h, orig_h)
+			nc.y = np.LO_y
+			np.LO_y = np.LO_y + nc.h
+
+		elseif edge == "bottom" then
+			nc.x, nc.w = np.LO_x, np.LO_w
+			nc.h, np.LO_h = _calculateSegmentUnit(GE.unit, np.LO_h, orig_h)
+			nc.y = np.LO_y + np.LO_h
+
+		else
+			error("bad segment edge ID")
+		end
+	end,
+
+	stack = function(np, nc, GE, orig_x, orig_y, orig_w, orig_h, i, list_len)
+		local scale = context.scale
+
+		-- TODO: raise an error here if the table is missing (or don't?)
+
+		local stk = np.LO_stack
+		if not stk then
+			nc.x, nc.y, nc.w, nc.h = 0, 0, 0, 0
+			return
+		end
+
+		local axis, dir = stk.axis, stk.dir
+		local b_space = (i < list_len) and stk.between_spacing or 0
+
+		local measure, len
+		if GE.measure then
+			measure, len = GE.measure, GE.len
+		else
+			measure, len = stk.default_measure, stk.default_len
+		end
+
+		if stk.axis == "x" then
+			if measure == "unit" then
+				len = math.floor(np.LO_h * len)
+			else -- measure == "pixel"
+				len = math.floor(len * scale)
+			end
+
+			len = math.min(len, np.LO_w)
+			nc.y, nc.h = np.LO_y, np.LO_h
+
+			if dir == 1 then
+				nc.x, nc.w = np.LO_x, len
+				np.LO_x, np.LO_w = np.LO_x + len + b_space, math.max(0, np.LO_w - len - b_space)
+			else -- dir == -1
+				nc.x, nc.w = np.LO_x + np.LO_w - len, len
+				np.LO_w = math.max(0, np.LO_w - len - b_space)
+			end
+		else -- axis == "x"
+			if measure == "unit" then
+				len = math.floor(np.LO_w * len)
+			else -- measure == "pixel"
+				len = math.floor(len * scale)
+			end
+
+			len = math.min(len, np.LO_h)
+			nc.x, nc.w = np.LO_x, np.LO_w
+
+			if dir == 1 then
+				nc.y, nc.h = np.LO_y, len
+				np.LO_y, np.LO_h = np.LO_y + len + b_space, math.max(0, np.LO_h - len - b_space)
+			else -- dir == -1
+				nc.y, nc.h = np.LO_y + np.LO_h - len, len
+				np.LO_h = math.max(0, np.LO_h - len - b_space)
+			end
+		end
+	end,
+
+	static = function(np, nc, GE, orig_x, orig_y, orig_w, orig_h)
+		local scale = context.scale
+
+		local px, py, pw, ph = orig_x, orig_y, orig_w, orig_h
+
+		nc.x, nc.w = _staticPlaceOneAxis(nc.x, nc.w, px, pw, GE.x, GE.w, scale, GE.flip_x, GE.unit_x)
+		nc.y, nc.h = _staticPlaceOneAxis(nc.y, nc.h, py, ph, GE.y, GE.h, scale, GE.flip_y, GE.unit_y)
+	end,
+
+	wallet = function(np, nc, GE, orig_x, orig_y, orig_w, orig_h)
+		local scale = context.scale
+
+		-- TODO: raise an error here if the table is missing (or don't?)
+
+		local wal = np.LO_wallet
+		if not wal then
+			nc.x, nc.y, nc.w, nc.h = 0, 0, 0, 0
+			return
+		end
+
+		local meas_x, meas_y = wal.meas_x, wal.meas_y
+		local cw, ch
+		if meas_x == "pixel" then
+			cw = math.floor(wal.card_w * scale)
+		else -- meas_x == "unit"
+			cw = math.floor(np.LO_w * wal.card_w)
+		end
+
+		if meas_y == "pixel" then
+			ch = math.floor(wal.card_h * scale)
+		else -- meas_y == "unit"
+			ch = math.floor(np.LO_h * wal.card_h)
+		end
+
+		local main_axis = wal.main_axis
+		local cpl = wal.cards_per_line
+		local dx, dy = wal.dx, wal.dy
+
+		nc.x, nc.y, nc.w, nc.h = wal.x, wal.y, cw, ch
+
+		if wal.main_axis == "x" then
+			wal.x = wal.x + cw*dx
+			wal.count = wal.count + 1
+			if dx < 0 then
+				if cpl == 0 and wal.x < np.LO_x
+				or cpl > 0 and wal.count >= cpl
+				then
+					wal.x = np.LO_x + np.LO_w - cw
+					wal.y = wal.y + ch*dy
+					wal.count = 0
+				end
+
+			elseif dx > 0 then
+				if cpl == 0 and wal.x >= np.LO_x + np.LO_w - cw
+				or cpl > 0 and wal.count >= cpl
+				then
+					wal.x = np.LO_x
+					wal.y = wal.y + ch*dy
+					wal.count = 0
+				end
+			end
+		else -- main_axis == "y"
+			wal.y = wal.y + ch*dy
+			wal.count = wal.count + 1
+			if dy < 0 then
+				if cpl == 0 and wal.y < np.LO_y
+				or cpl > 0 and wal.count >= cpl
+				then
+					wal.y = np.LO_y + np.LO_h - ch
+					wal.x = wal.x + cw*dx
+					wal.count = 0
+				end
+
+			elseif dy > 0 then
+				if cpl == 0 and wal.y >= np.LO_y + np.LO_h - ch
+				or cpl > 0 and wal.count >= cpl
+				then
+					wal.y = np.LO_y
+					wal.x = wal.x + cw*dx
+					wal.count = 0
+				end
+			end
+		end
+	end
+}
+
+
+local methods = {}
+
+
+local function _hof_sortLayoutList(a, b)
+	return (a.GE_order or a:nodeGetIndex()) < (b.GE_order or b:nodeGetIndex())
+end
+
+
+function methods:layoutSort()
+	table.sort(self.LO_list, _hof_sortLayoutList)
+end
+
+
+function methods:layoutSetBase(layout_base)
+	uiAssert.namedMap(1, layout_base, widLayout._nm_layout_base)
+
+	self.LO_base = layout_base
+
+	return self
+end
+
+
+function methods:layoutGetBase()
+	return self.LO_base
+end
+
+
+function methods:layoutSetMargin(x1, y1, x2, y2)
+	uiAssert.numberNotNan(1, x1)
+
+	if y1 then
+		uiAssert.numberNotNan(2, y1)
+		uiAssert.numberNotNan(3, x2)
+		uiAssert.numberNotNan(4, y2)
+
+		self.LO_margin_x1 = math.max(0, x1)
+		self.LO_margin_y1 = math.max(0, y1)
+		self.LO_margin_x2 = math.max(0, x2)
+		self.LO_margin_y2 = math.max(0, y2)
+	else
+		self.LO_margin_x1 = math.max(0, x1)
+		self.LO_margin_y1 = math.max(0, x1)
+		self.LO_margin_x2 = math.max(0, x1)
+		self.LO_margin_y2 = math.max(0, x1)
+	end
+
+	return self
+end
+
+
+function methods:layoutGetMargin()
+	return self.LO_margin_x1, self.LO_margin_y1, self.LO_margin_x2, self.LO_margin_y2
+end
+
+
+-- parent.LO_grid
+local _mt_grid = {
+	-- The numbers of columns and rows in the grid.
+	cols = 0,
+	rows = 0
+}
+
+
+local function _checkGridTable(self)
+	self.LO_grid = self.LO_grid or setmetatable({}, _mt_grid)
+
+	return self.LO_grid
+end
+
+
+function methods:layoutSetGridDimensions(cols, rows)
+	uiAssert.numberNotNan(1, cols)
+	uiAssert.numberNotNan(2, rows)
+
+	local LO_grid = _checkGridTable(self)
+
+	LO_grid.cols = cols
+	LO_grid.rows = rows
+
+	return self
+end
+
+
+function methods:layoutGetGridDimensions(cols, rows)
+	local LO_grid = _checkGridTable(self)
+
+	return LO_grid.cols, LO_grid.rows
+end
+
+
+-- parent.LO_wallet
+local _mt_wallet = {
+	-- Dimensions of the wallet cards. Must be zero or greater.
+	card_w=0, card_h=0,
+
+	-- How to measure cards along each axis.
+	-- pixel: as (scaled) pixels
+	-- unit: as a portion of the layout space, from 0.0 to 1.0.
+	meas_x="pixel", meas_y="pixel",
+
+	-- Number of items per line (along the main axis). Must be zero or greater; when
+	-- zero, the limit is based on the layout space.
+	cards_per_line=0,
+
+	-- Increment vector, to get to the next card position.
+	dx=1, dy=1,
+
+	-- Which axis increments first: "x" or "y".
+	main_axis="x",
+
+	-- The temporary card position while updating the layout. Do not modify.
+	x=0, y=0,
+
+	-- The temporary count of cards on this line. Do not modify.
+	count=0,
+}
+_mt_wallet.__index = _mt_wallet
+
+
+local function _checkWalletTable(self)
+	self.LO_wallet = self.LO_wallet or setmetatable({}, _mt_wallet)
+
+	return self.LO_wallet
+end
+
+
+function methods:layoutSetWalletCardSize(meas_x, meas_y, card_w, card_h)
+	uiAssert.namedMap(1, meas_x, widLayout._nm_card_measure)
+	uiAssert.namedMap(2, meas_y, widLayout._nm_card_measure)
+	uiAssert.numberGe(3, card_w, 0)
+	uiAssert.numberGe(4, card_h, 0)
+
+	if meas_x == "unit" then
+		card_w = math.min(card_w, 1.0)
+	end
+
+	if meas_y == "unit" then
+		card_h = math.min(card_h, 1.0)
+	end
+
+	local LO_wallet = _checkWalletTable(self)
+
+	LO_wallet.meas_x = meas_x
+	LO_wallet.meas_y = meas_y
+	LO_wallet.card_w = card_w
+	LO_wallet.card_h = card_h
+
+	return self
+end
+
+
+function methods:layoutGetWalletCardSize()
+	local LO_wallet = _checkWalletTable(self)
+
+	return LO_wallet.meas_x, LO_wallet.meas_y, LO_wallet.card_w, LO_wallet.card_h
+end
+
+
+function methods:layoutSetWalletCardsPerLine(cards_per_line)
+	uiAssert.numberGe(1, cards_per_line, 0)
+
+	local LO_wallet = _checkWalletTable(self)
+
+	LO_wallet.cards_per_line = cards_per_line
+
+	return self
+end
+
+
+function methods:layoutGetWalletCardsPerLine()
+	local LO_wallet = _checkWalletTable(self)
+
+	return LO_wallet.cards_per_line
+end
+
+
+function methods:layoutSetWalletFlow(main_axis, dx, dy)
+	uiAssert.namedMap(1, main_axis, _nm_axis2d)
+	uiAssert.oneOf(2, dx, -1, 1)
+	uiAssert.oneOf(3, dy, -1, 1)
+
+	local LO_wallet = _checkWalletTable(self)
+
+	LO_wallet.main_axis = main_axis
+	LO_wallet.dx = dx
+	LO_wallet.dy = dy
+
+	return self
+end
+
+
+function methods:layoutGetWalletFlow()
+	local LO_wallet = _checkWalletTable(self)
+
+	return LO_wallet.main_axis, LO_wallet.dx, LO_wallet.dy
+end
+
+
+-- parent.LO_stack
+local _mt_stack = {
+	-- The primary axis: "x" or "y".
+	axis="x",
+
+	-- Step direction: -1 (up/left) or 1 (down/right).
+	dir=1,
+
+	-- Default widget length and measurement.
+	-- "pixel": (scaled) pixels.
+	-- "unit": A portion of the remaining layout space on the primary axis, from 0.0 to 1.0.
+	default_len=0,
+	default_meas="pixel",
+
+	-- Spacing between widgets. Always scaled.
+	-- (The handler applies spacing if this widget is not the last entry in the layout.)
+	between_spacing=0,
+}
+_mt_stack.__index = _mt_stack
+
+
+local function _checkStackTable(self)
+	self.LO_stack = self.LO_stack or setmetatable({}, _mt_stack)
+
+	return self.LO_stack
+end
+
+
+function methods:layoutSetStackFlow(axis, dir)
+	uiAssert.namedMap(1, axis, _nm_axis2d)
+	uiAssert.oneOf(2, dir, -1, 1)
+
+	local LO_stack = _checkStackTable(self)
+
+	LO_stack.axis = axis
+	LO_stack.dir = dir
+
+	return self
+end
+
+
+function methods:layoutGetStackFlow()
+	local LO_stack = _checkStackTable(self)
+
+	return LO_stack.axis, LO_stack.dir
+end
+
+
+function methods:layoutSetStackDefaultWidgetSize(default_meas, default_len)
+	uiAssert.namedMap(1, default_meas, widLayout._nm_stack_len_measure)
+	uiAssert.numberGe(2, default_len, 0)
+
+	if default_meas == "unit" then
+		default_len = math.min(default_len, 1.0)
+	end
+
+	local LO_stack = _checkStackTable(self)
+
+	LO_stack.default_meas = default_meas
+	LO_stack.default_len = default_len
+
+	return self
+end
+
+
+function methods:layoutGetStackDefaultWidgetSize()
+	local LO_stack = _checkStackTable(self)
+
+	return LO_stack.default_meas, LO_stack.default_len
+end
+
+
+function methods:layoutSetStackBetweenSpacing(between_spacing)
+	uiAssert.numberGe(1, between_spacing, 0)
+
+	local LO_stack = _checkStackTable(self)
+
+	LO_stack.between_spacing = between_spacing
+
+	return self
+end
+
+
+function methods:layoutGetStackBetweenSpacing()
+	local LO_stack = _checkStackTable(self)
+
+	return LO_stack.between_spacing
+end
+
+
+function widLayout.setupContainerDef(def)
+	uiTable.patch(def, methods, true)
+end
+
+
+function widLayout.setupLayoutList(self)
+	self.LO_list = {}
+	self.LO_base = "self"
+	self.LO_x, self.LO_y, self.LO_w, self.LO_h = 0, 0, 0, 0
+	self.LO_margin_x1, self.LO_margin_y1, self.LO_margin_x2, self.LO_margin_y2 = 0, 0, 0, 0
+
+	-- 'LO_grid' and 'LO_wallet' are created upon calling their associated setter/getter methods.
+end
+
+
+function widLayout.resetLayoutSpace(self)
+	local to = self.LO_base
+
+	if to == "zero" then
+		self.LO_x, self.LO_y, self.LO_w, self.LO_h = 0, 0, 0, 0
+
+	elseif to == "self" then
+		self.LO_x, self.LO_y, self.LO_w, self.LO_h = 0, 0, self.w, self.h
+
+	elseif to == "viewport" then
+		local vp = self.vp
+		self.LO_x, self.LO_y, self.LO_w, self.LO_h = 0, 0, vp.w, vp.h
+
+	elseif to == "viewport-full" then
+		local vp = self.vp
+		self.LO_x, self.LO_y, self.LO_w, self.LO_h = vp.x, vp.y, vp.w, vp.h
+
+	elseif to == "viewport-width" then
+		self.LO_x, self.LO_y, self.LO_w, self.LO_h = 0, 0, self.vp.w, math.huge
+
+	elseif to == "viewport-height" then
+		self.LO_x, self.LO_y, self.LO_w, self.LO_h = 0, 0, math.huge, self.vp.h
+
+	elseif to == "unbounded" then
+		self.LO_x, self.LO_y, self.LO_w, self.LO_h = 0, 0, math.huge, math.huge
+
+	else
+		error("invalid layout base mode.")
+	end
+end
+
+
+function widLayout.applyLayout(self)
+	-- check 'self.LO_list' before calling.
+
+	--print("widLayout.applyLayout(): start")
+
+	local scale = context.scale
+
+	-- Margin reduction
+	local mx1 = math.floor(self.LO_margin_x1 * scale)
+	local my1 = math.floor(self.LO_margin_y1 * scale)
+	local mx2 = math.floor(self.LO_margin_x2 * scale)
+	local my2 = math.floor(self.LO_margin_y2 * scale)
+
+	self.LO_x = self.LO_x + mx1
+	self.LO_y = self.LO_y + my1
+	self.LO_w = math.max(0, self.LO_w - mx1 - mx2)
+	self.LO_h = math.max(0, self.LO_h - my1 - my2)
+
+	local orig_x, orig_y, orig_w, orig_h = self.LO_x, self.LO_y, self.LO_w, self.LO_h
+
+	local LO_wallet = self.LO_wallet
+	if LO_wallet then
+		LO_wallet.x = (LO_wallet.dx == 1) and self.LO_x or self.LO_x + self.LO_w - LO_wallet.card_w
+		LO_wallet.y = (LO_wallet.dy == 1) and self.LO_y or self.LO_y + self.LO_h - LO_wallet.card_h
+		LO_wallet.count = 0
+	end
+
+	local LO_list = self.LO_list
+	local LO_list_len = #LO_list
+
+	for i, child in ipairs(LO_list) do
+		local GE = child.GE
+		local handler = widLayout.handlers[GE.mode]
+		if not handler then
+			error("invalid or missing layout handler: " .. tostring(GE.mode))
+		end
+
+		--print("old self XYWH", self.x, self.y, self.w, self.h, i, LO_list_len)
+		handler(self, child, GE, orig_x, orig_y, orig_w, orig_h, i, LO_list_len)
+		--print("new self XYWH", self.x, self.y, self.w, self.h, i, LO_list_len)
+
+		-- Outpad reduction
+		local ox1 = math.floor(child.GE_outpad_x1 * scale)
+		local oy1 = math.floor(child.GE_outpad_y1 * scale)
+		local ox2 = math.floor(child.GE_outpad_x2 * scale)
+		local oy2 = math.floor(child.GE_outpad_y2 * scale)
+
+		child.x = child.x + ox1
+		child.y = child.y + oy1
+		child.w = math.max(0, child.w - ox1 - ox2)
+		child.h = math.max(0, child.h - oy1 - oy2)
+	end
+
+	--print("widLayout.applyLayout(): end")
+end
+
+
+return widLayout

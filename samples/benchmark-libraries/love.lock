@@ -199,6 +199,12 @@ spec = "rev=37df2779fddb6b36d3470fc3a796101352c3ed7d"
 commit = "37df2779fddb6b36d3470fc3a796101352c3ed7d"
 
 [[package]]
+name = "Lua-Opus"
+git = "https://github.com/GwyrddGlas/Lua-Opus"
+spec = "rev=4518250f8780e2cf9142334d217917c61d9f839f"
+commit = "4518250f8780e2cf9142334d217917c61d9f839f"
+
+[[package]]
 name = "Lua-star"
 git = "https://github.com/wesleywerner/lua-star"
 spec = "rev=b444e278fc1a481b3235d9acffde6034ce9c20e6"
@@ -907,6 +913,12 @@ spec = "rev=40b276c29ec480539f9b79756f8a61ffc1c491ef"
 commit = "40b276c29ec480539f9b79756f8a61ffc1c491ef"
 
 [[package]]
+name = "prod_ui"
+git = "https://codeberg.org/frank-f-trafton/prod_ui"
+spec = "rev=a841fd775c7e4f520017284d6c27d1c1699ff79b"
+commit = "a841fd775c7e4f520017284d6c27d1c1699ff79b"
+
+[[package]]
 name = "profile"
 git = "https://github.com/2dengine/profile.lua"
 spec = "rev=febbb8ab53555d0290872e01181d259664d492cd"
@@ -1093,6 +1105,12 @@ spec = "rev=057501c37a62a02d9ea6b7bb9c2d51d02330a51d"
 commit = "057501c37a62a02d9ea6b7bb9c2d51d02330a51d"
 
 [[package]]
+name = "telescope"
+git = "https://github.com/norman/telescope"
+spec = "rev=244d13c17b1e6ed2bcdbd07882a081bc59398638"
+commit = "244d13c17b1e6ed2bcdbd07882a081bc59398638"
+
+[[package]]
 name = "tick"
 git = "https://github.com/rxi/tick"
 spec = "rev=4708b24b44554a1bc410c618737bfcac66bcc943"
@@ -1121,6 +1139,12 @@ name = "tween"
 git = "https://github.com/kikito/tween.lua"
 spec = "rev=65d13504e54d85831a752e4aaa47ceba059a5035"
 commit = "65d13504e54d85831a752e4aaa47ceba059a5035"
+
+[[package]]
+name = "wave"
+git = "https://github.com/Ulydev/wave"
+spec = "rev=f09abe390be9b9e8f4b6414379cef7de2f80b7e6"
+commit = "f09abe390be9b9e8f4b6414379cef7de2f80b7e6"
 
 [[package]]
 name = "xsys"

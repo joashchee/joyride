@@ -180,9 +180,12 @@ fn main() {
             }
             (tag, git(&["rev-parse", "HEAD"], Some(&dir)).unwrap())
         };
-        let spdx = ["LICENSE", "LICENSE.md", "LICENSE.txt", "license.txt", "COPYING", "README.md", "readme.md"]
+        // `licence_wins = true` in a seed: the repository's LICENSE lists several licences (code and bundled fonts, say), the scanner picks the wrong one, and the seed's `licence` is what was read by hand.
+        let seed_wins = lib.get("licence_wins").and_then(|v| v.as_bool()).unwrap_or(false);
+        let seed_licence = lib.get("licence").and_then(|v| v.as_str()).map(|v| v.to_string());
+        let spdx = seed_licence.clone().filter(|_| seed_wins).or_else(|| ["LICENSE", "LICENSE.md", "LICENSE.txt", "license.txt", "COPYING", "README.md", "readme.md"]
             .iter()
-            .find_map(|f| licence::guess_for(&dir.join(f), &dir).map(|g| g.spdx))
+            .find_map(|f| licence::guess_for(&dir.join(f), &dir).map(|g| g.spdx)))
             .or_else(|| licence::guess_for(&dir.join("init.lua"), &dir).map(|g| g.spdx))
             // Some libraries keep the licence in docs/ or in a source header.
             .or_else(|| {
