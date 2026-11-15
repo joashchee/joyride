@@ -212,3 +212,31 @@ git = "https://codeberg.org/apicici/pathfun"
 decided = "2026-11-15"
 by = "cannot be installed as JoyrIDE installs libraries; applied when asked to add the remaining libraries; the maintainer may lift it by deleting this entry"
 facts = "At 276ca73 (2023-12-12): MIT (LICENSE file), but the repository holds only the MoonScript source (src/*.moon); the README says the Lua library is a release download or a MoonScript compile, so a clone of the repository has nothing for require to load. The curated pathfinders are jumper, Lua-star and Luafinding."
+
+[[exclude]]
+name = "servelove"
+git = "https://github.com/YellowButShort/servelove"
+decided = "2026-11-15"
+by = "applied when asked to audit the remaining libraries; the maintainer may lift it by deleting this entry"
+facts = "At c0d6465 (2024-11-02): MIT, a Flask-like HTTP/S server over LuaSec. It ships four compiled binaries in src/lib (ssl_win32.dll, ssl_win64.dll, __ssl.dll and ssl_lin64.so, 1.5 MB each for the 64-bit Windows ones) and the README lists Windows and Linux only: no macOS, mobile or web."
+
+[[exclude]]
+name = "andromeda"
+git = "https://github.com/itzKiwiSky/Andromeda"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to audit the remaining libraries; the maintainer may lift it by deleting this entry"
+facts = "At 59bbafe (2024-07-22): MIT, an asset loader with a loading screen. Andromeda.new (andromeda/init.lua) does love.filesystem.load(Andromedapath .. \"/LoadingScreen.lua\") where Andromedapath is the module name it was required by, a path from the game's root folder, so the folder must sit at the root and cannot run from libs/ (the same flaw as Shadows). It also leaves a global named Andromedapath."
+
+[[exclude]]
+name = "MeowUI"
+git = "https://github.com/MoonGameLab/MeowUI"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to audit the remaining libraries; the maintainer may lift it by deleting this entry"
+facts = "At f5d6c5c (2024-10-13): the default branch holds MoonScript source only (28 .moon files, no .lua) and a git submodule (utf8.lua) that the installer never fetches; the compiled Lua is on a separate master-lua branch (7f5b740) and curate_libraries pins the default branch. Its licence was not checked. Could be reconsidered by pinning master-lua."
+
+[[exclude]]
+name = "soelar"
+git = "https://github.com/JanWerder/soelar"
+decided = "2026-11-15"
+by = "applied when asked to audit the remaining libraries; the maintainer may lift it by deleting this entry"
+facts = "At 7bb8768 (2026-01-11): Unlicense (public domain). stars.lua and comets.lua call love.graphics.setColor(0xff, 0xff, 0xff, c) with 0 to 255 values, which LÖVE 11 and 12 read as 0 to 1, so every star and comet draws solid white and the twinkle is lost (the flaw that refused autobatch). Both set globals (stars, comet) and need a window to load."

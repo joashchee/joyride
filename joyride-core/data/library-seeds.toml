@@ -1267,3 +1267,17 @@ git = "https://gist.github.com/rm-code/4118d4a97d8cde16952199d94b84ead0"
 module = "ArrayRotation"
 licence = "MIT"   # the MIT text is the header of ArrayRotation.lua; no licence file
 summary = "Rotates two-dimensional arrays, square and non-square."
+
+[[library]]
+name = "require-lua"
+git = "https://github.com/premek/require.lua"
+module = "require"
+caution = "Replaces the global require with a callable table: require(\"x\") still works, but type(require) is \"table\", so code that checks for a function (or a lint that expects one) can misjudge it. require.tree loads every file in a folder at once. Licence: MIT."
+summary = "Requires every file in a folder (kikito's require.tree)."
+
+[[library]]
+name = "lovr-ui2d"
+git = "https://github.com/immortalx74/lovr-ui2d"
+module = "ui2d.ui2d"
+caution = "Finds its font beside its own file (debug.getinfo), so keep the ui2d folder intact. A window is needed to draw; the Benchmark has only checked that it initialises. Licence: MIT."
+summary = "An immediate mode GUI for LÖVE and LÖVR, pure Lua, inspired by microui and Dear ImGui."

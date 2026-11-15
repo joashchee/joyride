@@ -751,6 +751,12 @@ spec = "rev=bbe0900d18492bfc9a6a585da12e10d9bff5afa5"
 commit = "bbe0900d18492bfc9a6a585da12e10d9bff5afa5"
 
 [[package]]
+name = "lovr-ui2d"
+git = "https://github.com/immortalx74/lovr-ui2d"
+spec = "rev=170f147e2fc1736f753919cdc3957c7099180bb3"
+commit = "170f147e2fc1736f753919cdc3957c7099180bb3"
+
+[[package]]
 name = "lua-discordRPC"
 git = "https://github.com/pfirsich/lua-discordRPC"
 spec = "rev=86f1a3ad9f1a1cdcb3191c951dcf099b12a0e3fc"
@@ -923,6 +929,12 @@ name = "reflowprint"
 git = "https://github.com/josefnpat/reflowprint"
 spec = "rev=1bc510618697c278ebd0ce13c14a07bbbae0044e"
 commit = "1bc510618697c278ebd0ce13c14a07bbbae0044e"
+
+[[package]]
+name = "require-lua"
+git = "https://github.com/premek/require.lua"
+spec = "rev=d112b82fbb39f856633d7680d087d922b9501f91"
+commit = "d112b82fbb39f856633d7680d087d922b9501f91"
 
 [[package]]
 name = "resolution_solution"

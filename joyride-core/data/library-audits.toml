@@ -2529,3 +2529,21 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 0
 reviewed = "read ArrayRotation.lua in full: pure array functions, no I/O, MIT header"
+
+[[audit]]
+name = "require-lua"
+rev = "d112b82fbb39f856633d7680d087d922b9501f91"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read require.lua in full (replaces global require with a callable table; require.tree loads a folder) and the ui2d source around its debug.getinfo uses (finds its own font folder) and its io/system calls (none); no HIGH or MED findings, no secrets, no binaries"
+
+[[audit]]
+name = "lovr-ui2d"
+rev = "170f147e2fc1736f753919cdc3957c7099180bb3"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read require.lua in full (replaces global require with a callable table; require.tree loads a folder) and the ui2d source around its debug.getinfo uses (finds its own font folder) and its io/system calls (none); no HIGH or MED findings, no secrets, no binaries"

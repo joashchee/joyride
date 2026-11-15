@@ -504,6 +504,10 @@ rev = "41654061ae78864c565128750559cbdda61db95f"
 git = "https://github.com/dknight/loveprofiler"
 rev = "bbe0900d18492bfc9a6a585da12e10d9bff5afa5"
 
+[dependencies.lovr-ui2d]
+git = "https://github.com/immortalx74/lovr-ui2d"
+rev = "170f147e2fc1736f753919cdc3957c7099180bb3"
+
 [dependencies.lua-discordRPC]
 git = "https://github.com/pfirsich/lua-discordRPC"
 rev = "86f1a3ad9f1a1cdcb3191c951dcf099b12a0e3fc"
@@ -619,6 +623,10 @@ rev = "bebf8813d5a41f0b250d416da387095a8fae2160"
 [dependencies.reflowprint]
 git = "https://github.com/josefnpat/reflowprint"
 rev = "1bc510618697c278ebd0ce13c14a07bbbae0044e"
+
+[dependencies.require-lua]
+git = "https://github.com/premek/require.lua"
+rev = "d112b82fbb39f856633d7680d087d922b9501f91"
 
 [dependencies.resolution_solution]
 git = "https://github.com/grif-on/love2d_resolution_solution"

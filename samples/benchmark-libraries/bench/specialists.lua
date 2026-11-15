@@ -852,6 +852,23 @@ S.list = {
       local ctx = h.newContext()
       return type(ctx) == "table" and type(h.setViewport) == "function", "a context can be made; no control was laid out or drawn"
     end },
+  { lib = "require-lua", job = "requiring a whole folder",
+    run = function()
+      -- The library replaces the global require; the sample restores it after loading, so run the library's own file in a private environment.
+      local chunk = love.filesystem.load("libs/require-lua/require.lua")
+      if not chunk then return "skip", "the library's file is not readable here" end
+      local env = setmetatable({ love = love, require = require }, { __index = _G })
+      setfenv(chunk, env)
+      chunk()
+      local r = env.require
+      return type(r) == "table" and r.path("a.b.c") == "a.b" and r("string") == string and type(r.tree) == "function" and type(r.relative) == "function",
+        "require became a callable table: require('string') still works and path('a.b.c') is 'a.b'; tree() was not run on a folder"
+    end },
+  { lib = "lovr-ui2d", job = "immediate mode GUI", needs = "window",
+    run = function(UI2D)
+      UI2D.Init("love")
+      return UI2D.GetFontSize() == 14 and type(UI2D.Button) == "function" and type(UI2D.Begin) == "function", "initialised with the default font size 14; no window was laid out or drawn"
+    end },
 }
 
 --- Run one specialist's check. Returns a cell: { status, note, ms }.
