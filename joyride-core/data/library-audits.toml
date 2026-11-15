@@ -2493,3 +2493,39 @@ scanner = "audit-libraries.py v1"
 high = 0
 med = 2
 reviewed = "renamed and re-pinned from the awesome-love2d batch stamp (turtle, evolved, pvector: a dotted folder name made require pick the folder; same commits and findings as reviewed there); SYSL-Text's code lives in example/library (slog-*.lua, loadstring only in a bundled helper); LOVELi and LikeliHUD refused; nothing run before this stamp"
+
+[[audit]]
+name = "Lovely-Toasts"
+rev = "327209d869434e0b353d2278b7317ea0e631976b"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read every MED finding and the source: Lovely-Toasts 5 KB, no I/O, creates a font at require and a global _toasts; Lynx no I/O, swaps global require during load and restores it, classic.lua is rxi's MIT; Hanker's jprof (file write, socket) and MessagePack (loadstring, string.dump) are only reached by the optional profile-hooks and are not required by the library, clipboard is the edit box, scripts/ (doc generator, Node font tool) never run; no secrets, no binaries"
+
+[[audit]]
+name = "lynx"
+rev = "a5fcaf050176c4710fdad8d225b168de786973b3"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 1
+reviewed = "read every MED finding and the source: Lovely-Toasts 5 KB, no I/O, creates a font at require and a global _toasts; Lynx no I/O, swaps global require during load and restores it, classic.lua is rxi's MIT; Hanker's jprof (file write, socket) and MessagePack (loadstring, string.dump) are only reached by the optional profile-hooks and are not required by the library, clipboard is the edit box, scripts/ (doc generator, Node font tool) never run; no secrets, no binaries"
+
+[[audit]]
+name = "Hanker"
+rev = "ca89767c081e82802faefbd01522b53a0ed395fb"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 8
+reviewed = "read every MED finding and the source: Lovely-Toasts 5 KB, no I/O, creates a font at require and a global _toasts; Lynx no I/O, swaps global require during load and restores it, classic.lua is rxi's MIT; Hanker's jprof (file write, socket) and MessagePack (loadstring, string.dump) are only reached by the optional profile-hooks and are not required by the library, clipboard is the edit box, scripts/ (doc generator, Node font tool) never run; no secrets, no binaries"
+
+[[audit]]
+name = "ArrayRotation"
+rev = "043792b820de0082c168c4cd388bdc7f487772d5"
+date = "2026-11-15"
+scanner = "audit-libraries.py v1"
+high = 0
+med = 0
+reviewed = "read ArrayRotation.lua in full: pure array functions, no I/O, MIT header"

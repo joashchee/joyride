@@ -825,6 +825,33 @@ S.list = {
       imgui.love.RenderDrawLists()
       return true, "a window with a button laid out and drawn"
     end },
+  { lib = "ArrayRotation", job = "rotating 2D arrays",
+    run = function(AR)
+      local a = { { 1, 2, 3 }, { 4, 5, 6 } }
+      local r = AR.rotate(a, 1)
+      local back = AR.rotate(AR.rotate(AR.rotate(AR.rotate(a, 1), 1), 1), 1)
+      local half = AR.rotate(a, 2)
+      return #r == 3 and #r[1] == 2 and back[2][3] == 6 and back[1][1] == 1 and half[1][1] == 6 and half[2][3] == 1,
+        "a 2x3 array became 3x2 at 90 degrees, 180 degrees reversed it, four quarter turns came back to the start"
+    end },
+  { lib = "lynx", job = "list-based menus",
+    run = function(lynx)
+      local m = lynx.menu({ { selectable = true }, { selectable = true } })
+      m:down()
+      return m.current == 2 and type(lynx.love_lynx.draw_text) == "function", "a two-item menu moved down to item 2; drawing needs a window and was not run"
+    end },
+  { lib = "Lovely-Toasts", job = "toast messages", needs = "window",
+    run = function(t)
+      t.show("hello", 0.1)
+      local shown = #_toasts == 1
+      for _ = 1, 20 do t.update(0.1) end
+      return shown and #_toasts == 0, "a toast was queued, then removed after its time (drawing was not looked at)"
+    end },
+  { lib = "Hanker", job = "mixed immediate and retained UI", needs = "window",
+    run = function(h)
+      local ctx = h.newContext()
+      return type(ctx) == "table" and type(h.setViewport) == "function", "a context can be made; no control was laid out or drawn"
+    end },
 }
 
 --- Run one specialist's check. Returns a cell: { status, note, ms }.

@@ -7,6 +7,8 @@ Update 2026-11-14: `tactile`, `lighter`, `Patchy` and `input` have since been ad
 
 Update 2026-11-15: the rest of the list was worked through (90 added, 24 refused with recorded reasons: `ROADMAP.md`, `CHANGELOG.md`, `joyride-core/data/library-exclusions.toml`); entries below that are now curated are the ones in `libraries.toml`.
 
+Update 2026-11-15 (later): the GitLab, Codeberg, SourceHut and gist entries were done too (`Hanker`, `Lovely-Toasts`, `lynx`, `ArrayRotation` added; `love-gltf`, `pathfun` refused; `Polywell`, `text2.love` are editors).
+
 Nothing here has been audited, probed or licence-checked: a name on this list is only a candidate. Rule 14 (`CLAUDE.md`) applies before any is added: `scripts/audit-libraries.py`, read the findings, then `curate_libraries`, the Benchmark sample and the ingest. `windfield` is excluded for good (`joyride-core/data/library-exclusions.toml`); `MLib` is windfield's bundled math library, whose older copies carry GPL-2.0-or-later headers, so read its licence at the pinned commit first.
 
 ## Ours, on the list

@@ -303,7 +303,7 @@ mod tests {
             // (sock.lua) makes it impossible to require.
             assert!(!e.name.contains('.'), "{}: a dot in the name cannot be required", e.name);
             assert!(manifest::valid_dep_name(&e.name) && manifest::valid_git_url(&e.git), "{}", e.name);
-            assert!(e.git.starts_with("https://github.com/") || e.git.starts_with("https://codeberg.org/"), "{}", e.name);
+            assert!(["https://github.com/", "https://gist.github.com/", "https://codeberg.org/", "https://gitlab.com/"].iter().any(|h| e.git.starts_with(h)), "{}", e.name);
             assert!(e.rev.len() == 40 && e.rev.chars().all(|c| c.is_ascii_hexdigit()), "{} has no exact commit", e.name);
             assert!(!e.module.is_empty() && !e.summary.is_empty());
             assert_ne!(e.licence, "unknown", "{} has no recorded licence", e.name);

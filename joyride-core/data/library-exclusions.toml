@@ -198,3 +198,17 @@ git = "https://github.com/matiasah/shadows"
 decided = "2026-11-15"
 by = "cannot be installed as JoyrIDE installs libraries; applied when asked to work through the awesome-love2d list; the maintainer may lift it by deleting this entry"
 facts = "At bc4cd56: its src/shadows/init.lua loads its own files with love.filesystem.load(\"shadows/DPI.lua\"), a path from the game's root folder, so the folder must sit at the root and cannot run from libs/ (the probe failed with 'Could not open file shadows/DPI.lua' on real LÖVE 11.5 and 12.0); its DEMOS folder also holds encoded data."
+
+[[exclude]]
+name = "love-gltf"
+git = "https://gitlab.com/Alloyed/love-gltf"
+decided = "2026-11-15"
+by = "applied when asked to add the remaining libraries; the maintainer may lift it by deleting this entry"
+facts = "At b9084c4 (2020-02-13): no licence file (the README says MIT, (c) kyle mclamb); the repository is 155 MB, 135 MB of it sketchfab-samples (glTF models of unchecked licences), plus the glTF-Sample-Models git submodule (which JoyrIDE's installer never fetches) and a bundled cpml, jprof and inspect. The installer clones the whole repository into every project that adds it. Menori (curated) loads glTF models too."
+
+[[exclude]]
+name = "pathfun"
+git = "https://codeberg.org/apicici/pathfun"
+decided = "2026-11-15"
+by = "cannot be installed as JoyrIDE installs libraries; applied when asked to add the remaining libraries; the maintainer may lift it by deleting this entry"
+facts = "At 276ca73 (2023-12-12): MIT (LICENSE file), but the repository holds only the MoonScript source (src/*.moon); the README says the Lua library is a release download or a MoonScript compile, so a clone of the repository has nothing for require to load. The curated pathfinders are jumper, Lua-star and Luafinding."

@@ -19,6 +19,12 @@ spec = "rev=2d2e2b235ac3a490f0c74f32c536f6e012bfa7af"
 commit = "2d2e2b235ac3a490f0c74f32c536f6e012bfa7af"
 
 [[package]]
+name = "ArrayRotation"
+git = "https://gist.github.com/rm-code/4118d4a97d8cde16952199d94b84ead0"
+spec = "rev=043792b820de0082c168c4cd388bdc7f487772d5"
+commit = "043792b820de0082c168c4cd388bdc7f487772d5"
+
+[[package]]
 name = "Artal"
 git = "https://github.com/EvineDev/Artal"
 spec = "rev=0a8af8c9a376abc992bbea567b6bba8dc5480fbe"
@@ -97,6 +103,12 @@ spec = "rev=be26eba8c76f41ab8de274d99c102f00162db91c"
 commit = "be26eba8c76f41ab8de274d99c102f00162db91c"
 
 [[package]]
+name = "Hanker"
+git = "https://gitlab.com/Alloyed/hanker"
+spec = "rev=ca89767c081e82802faefbd01522b53a0ed395fb"
+commit = "ca89767c081e82802faefbd01522b53a0ed395fb"
+
+[[package]]
 name = "Helium"
 git = "https://github.com/qeffects/helium"
 spec = "rev=36cccb99846913ece9cdf67f756216f42b13f872"
@@ -161,6 +173,12 @@ name = "LoveKeys"
 git = "https://github.com/SpaceCat-Chan/LoveKeys"
 spec = "rev=79ffbe3779696e119375d23358330277299b85a9"
 commit = "79ffbe3779696e119375d23358330277299b85a9"
+
+[[package]]
+name = "Lovely-Toasts"
+git = "https://codeberg.org/togfox/Lovely-Toasts"
+spec = "rev=327209d869434e0b353d2278b7317ea0e631976b"
+commit = "327209d869434e0b353d2278b7317ea0e631976b"
 
 [[package]]
 name = "LoverNet"
@@ -803,6 +821,12 @@ name = "lust"
 git = "https://github.com/bjornbytes/lust"
 spec = "rev=7b4f12844e0e00dfc501b67f5a644232c3b275fe"
 commit = "7b4f12844e0e00dfc501b67f5a644232c3b275fe"
+
+[[package]]
+name = "lynx"
+git = "https://gitlab.com/TSnake41/lynx"
+spec = "rev=a5fcaf050176c4710fdad8d225b168de786973b3"
+commit = "a5fcaf050176c4710fdad8d225b168de786973b3"
 
 [[package]]
 name = "middleclass"
