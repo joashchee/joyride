@@ -64,13 +64,21 @@ def parse(path):
         found = re.findall(r'\{ id = "([^"]+)", short = "[^"]*", lib = "([^"]+)"', src)
         for mid, lname in found:
             members.setdefault(fn[:-4], {})[mid] = (lname, len(found))
+    fail_d, fail_why, fail_extra = None, "", []
     for l in lines:
         m = re.match(r"== (.*) ==$", l)
         if m:
             section = m.group(1)
             continue
         if section == "libraries":
+            # The rest of a load error's message: indented lines under the library's own line (lib/report.lua, R.failureLines).
+            cont = re.match(r"^ {4}\| (.*)$", l)
+            if cont and fail_d is not None:
+                fail_extra.append(cont.group(1).strip())
+                fail_d["loads"] = ("fails: " + (fail_why + " " + " ".join(fail_extra)).strip().replace('"', "'"))[:240]
+                continue
             m = re.match(r"(PASS|FAIL|INFO|SKIP) (\S+): (.*)$", l)
+            fail_d = None
             if not m:
                 continue
             st, name, rest = m.groups()
@@ -87,6 +95,7 @@ def parse(path):
                 known = re.search(r"known on this LÖVE: (.*?); did not load", rest)
                 why = known.group(1) if known else rest.split("did not load: ", 1)[1]
                 d["loads"] = "fails: " + why.replace('"', "'")[:160]
+                fail_d, fail_why, fail_extra = d, why, []
             elif st == "SKIP" and "needs a window" in rest:
                 d["loads"] = "needs-display"
         elif section and section.startswith("compare "):

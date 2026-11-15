@@ -245,6 +245,26 @@ do
   -- isolation: nothing a library required under a bare name is left behind
   check(package.loaded["class"] == nil and package.loaded["heap"] == nil, "bare helper names are forgotten after a library loads")
   check(libload.getPath() == package.path, "the require path is put back")
+  -- a load that fails with a driver's multi-line message keeps all of it: the first line is the one-line result, the rest goes under it
+  local report = require("lib.report")
+  package.preload["zz-multiline"] = function() error("Error validating vertex shader code:\nERROR: 0:12: 'flat' : syntax error\n\nERROR: 0:13: bit operations", 0) end
+  libload.by["zz-multiline"] = { name = "zz-multiline", module = "zz-multiline", kind = "lua", loc = 3 }
+  local rec = libload.load("zz-multiline", {})
+  eq(rec.status, "FAIL", "a library whose require raises is a FAIL")
+  eq(rec.detail, "Error validating vertex shader code:", "the one-line result is still the first line")
+  check(rec.full and rec.full:find("0:12", 1, true) and rec.full:find("0:13", 1, true), "the whole message is kept")
+  local more = report.failureLines(rec.full)
+  eq(#more, 2, "the rest of the message is two lines (the blank one is dropped)")
+  eq(more[1], "    | ERROR: 0:12: 'flat' : syntax error", "a continuation line is indented under the library's line")
+  check(not more[1]:match("^%s*[PFIS][ANIK][SIFO]*[ SP]"), "a continuation line never reads as a PASS, FAIL, INFO or SKIP line")
+  eq(#report.failureLines("one line only"), 0, "a one-line message adds nothing")
+  local long = { "first" }
+  for i = 1, 40 do long[#long + 1] = "line " .. i end
+  local capped = report.failureLines(table.concat(long, "\n"))
+  eq(#capped, 31, "a long driver log is cut at 30 lines and a note")
+  check(capped[31]:find("10 more lines", 1, true), "and the note says how many were left out")
+  eq(#report.failureLines(("x"):rep(500) .. "\n" .. ("y"):rep(500))[1], #"    | " + 300 + 3, "a very long line is cut at 300 characters")
+  libload.by["zz-multiline"], libload.loaded["zz-multiline"], package.preload["zz-multiline"] = nil, nil, nil
 end
 
 print(("unit: %d passed, %d failed"):format(passed, failed))

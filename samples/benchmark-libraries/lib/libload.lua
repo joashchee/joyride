@@ -180,7 +180,10 @@ function L.load(name, env)
     res.status, res.mod, res.detail = "PASS", mod, ("required `%s`"):format(e.module) .. (res.replacedRequire and "; it replaced the global `require` (put back here)" or "") .. (res.globalApi and "; its API is globals, which the check uses as its module" or "")
     return res
   end
-  local msg = tostring(mod):gsub("\n.*", "")
+  -- The first line is the one-line result (what the report line, the table and the ingest read); the whole message is kept too, since a
+  -- driver's explanation of a shader it refused comes after the first line ("Error validating vertex shader code:" and nothing else, before).
+  local full = tostring(mod)
+  local msg = full:gsub("\n.*", "")
   -- "No window" means no graphics module, or a graphics module with no window open (the self-test's mock has the first and not the second).
   local hasWindow = love and love.graphics ~= nil and not (love.window and love.window.isOpen and not love.window.isOpen())
   local needsBinary = e.native and e.native:find("^Needs") ~= nil
@@ -194,6 +197,7 @@ function L.load(name, env)
     return L.previous[name]
   else
     res.status, res.detail = "FAIL", msg
+    if full ~= msg then res.full = full end
     local major = love and love.getVersion and love.getVersion()
     local known = L.known[name] and L.known[name][major]
     if known then res.known = known end

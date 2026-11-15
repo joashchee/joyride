@@ -22,6 +22,27 @@ local function status(c)
   return "INFO"
 end
 
+--- The rest of a load error's message (everything after its first line) as indented continuation lines, `    | text`, to go under the
+--- library's own line. They never start with PASS, FAIL, INFO or SKIP, so a reader of the report's lines (scripts/ingest-benchmark.py,
+--- grep) sees them as belonging to the line above. Capped, since a driver's log can run to pages: 30 lines of 300 characters.
+function R.failureLines(full, maxLines, maxChars)
+  maxLines, maxChars = maxLines or 30, maxChars or 300
+  local out, first, extra = {}, true, 0
+  for line in tostring(full or ""):gmatch("[^\r\n]+") do
+    if first then
+      first = false -- the first line is already on the library's own line
+    elseif line:find("%S") then
+      if #out < maxLines then
+        out[#out + 1] = "    | " .. (#line > maxChars and (line:sub(1, maxChars) .. "...") or line)
+      else
+        extra = extra + 1
+      end
+    end
+  end
+  if extra > 0 then out[#out + 1] = ("    | ... (%d more line%s)"):format(extra, extra == 1 and "" or "s") end
+  return out
+end
+
 function R.build(s, how)
   local major, minor, rev = love.getVersion()
   local profile = s.profile
@@ -61,6 +82,7 @@ function R.build(s, how)
         if rec.known then st = "INFO"; line = line .. "; known on this LÖVE: " .. rec.known end
         if st == "FAIL" then loadFails = loadFails + 1 end
         r:line(st, e.name, ("%s; did not load: %s"):format(line, rec.detail))
+        for _, more in ipairs(R.failureLines(rec.full)) do r:raw(more) end
       end
     end
   end
