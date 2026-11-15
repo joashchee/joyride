@@ -13,12 +13,12 @@ Define a class, inherit, call super, test the type, mix in methods.
 | Type test (is-a) | **5** | **5** | - | **5** |
 | Mixins | 5 | 5 | 5 | 5 |
 | __tostring etc. | 5 | 5 | 5 | 5 |
-| Create objects | 3 (4.6M objects/s) | **5 (9.4M objects/s)** | **5 (9.2M objects/s)** | **5 (9.4M objects/s)** |
-| Method calls | 4 (20.9M calls/s) | 4 (25.5M calls/s) | **5 (37.4M calls/s)** | 4 (24.4M calls/s) |
-| Load time | 3 (0.51 ms) | **5 (0.27 ms)** | **5 (0.25 ms)** | 1 (6.03 ms) |
+| Create objects | 4 (4.8M objects/s) | **5 (9.4M objects/s)** | **5 (9.4M objects/s)** | **5 (9.3M objects/s)** |
+| Method calls | 4 (19.6M calls/s) | 4 (24.9M calls/s) | **5 (36.7M calls/s)** | 4 (25.2M calls/s) |
+| Load time | 3 (0.59 ms) | **5 (0.28 ms)** | **5 (0.27 ms)** | 1 (6.39 ms) |
 | Memory kept | 3 (12.3 KB) | **5 (3.13 KB)** | 4 (4.54 KB) | 1 (194 KB) |
 | Code size | 3 (242 lines) | **5 (69.0 lines)** | 2 (1.2k lines) | 1 (6.2k lines) |
-| **Overall** | 4.37 | **4.88 best** | 4.21 | 4.37 |
+| **Overall** | 4.50 | **4.88 best** | 4.21 | 4.37 |
 
 ### Tweening
 
@@ -32,8 +32,8 @@ Move a number to a target over time, with easing, callbacks and stopping.
 | Completion | 5 | 5 | 5 |
 | Delay and chain | - | **5** | **5** |
 | Stop a tween | - | **5** | **5** |
-| Run 100 tweens | 4 (287k tweens/s) | **5 (427k tweens/s)** | 4 (307k tweens/s) |
-| Load time | 3 (0.70 ms) | 4 (0.40 ms) | **5 (0.25 ms)** |
+| Run 100 tweens | 4 (293k tweens/s) | **5 (421k tweens/s)** | 4 (300k tweens/s) |
+| Load time | 3 (0.67 ms) | 4 (0.38 ms) | **5 (0.27 ms)** |
 | Memory kept | 2 (24.9 KB) | 3 (21.7 KB) | **5 (4.54 KB)** |
 | Code size | 4 (368 lines) | **5 (225 lines)** | 2 (1.2k lines) |
 | **Overall** | 2.88 | 4.25 | **4.75 best** |
@@ -50,11 +50,11 @@ Call something after a delay, every interval, or while time passes; stop it; fol
 | Progress | **5** | **5** | - | - |
 | Cancel | **5** | - | - | **5** |
 | Wait in a script | **5** | - | - | - |
-| 1000 timers | 4 (772k timers/s) | 4 (701k timers/s) | **5 (1.1M timers/s)** | **5 (1.1M timers/s)** |
-| Load time | **5 (0.25 ms)** | 1 (6.03 ms) | 3 (0.53 ms) | **5 (0.28 ms)** |
+| 1000 timers | 4 (762k timers/s) | 4 (667k timers/s) | **5 (1.1M timers/s)** | **5 (1.2M timers/s)** |
+| Load time | **5 (0.27 ms)** | 1 (6.39 ms) | 4 (0.50 ms) | **5 (0.29 ms)** |
 | Memory kept | **5 (4.54 KB)** | 1 (194 KB) | 4 (6.38 KB) | 4 (7.66 KB) |
 | Code size | 2 (1.2k lines) | 1 (6.2k lines) | **5 (107 lines)** | 4 (167 lines) |
-| **Overall** | **4.75 best** | 2.50 | 2.38 | 3.04 |
+| **Overall** | **4.75 best** | 2.50 | 2.42 | 3.04 |
 
 ### Events and messages
 
@@ -67,8 +67,8 @@ Register a listener, send a message with arguments, remove the listener, listen 
 | Listen once | - | **5** |
 | Wildcards | 5 | 5 |
 | Change mid-send | 5 | 5 |
-| 10000 sends | **5 (7.6M sends/s)** | 3 (2.0M sends/s) |
-| Load time | **5 (0.25 ms)** | 1 (6.03 ms) |
+| 10000 sends | **5 (7.7M sends/s)** | 3 (1.9M sends/s) |
+| Load time | **5 (0.27 ms)** | 1 (6.39 ms) |
 | Memory kept | **5 (4.54 KB)** | 1 (194 KB) |
 | Code size | **5 (1.2k lines)** | 2 (6.2k lines) |
 | **Overall** | **4.29 best** | 4.18 |
@@ -86,10 +86,10 @@ Switch between states with enter and leave callbacks, pass arguments, push and p
 | Self-transition | 5 | 5 | 5 |
 | Ask where we are | **5** | **5** | - |
 | 20000 switches | **5 (7.9M switches/s)** | 3 (3.7M switches/s) | 4 (6.6M switches/s) |
-| Load time | **5 (0.25 ms)** | 1 (6.03 ms) | **5 (0.27 ms)** |
+| Load time | **5 (0.27 ms)** | 1 (6.39 ms) | 4 (0.33 ms) |
 | Memory kept | **5 (4.54 KB)** | 1 (194 KB) | 4 (6.50 KB) |
 | Code size | 2 (1.2k lines) | 1 (6.2k lines) | **5 (130 lines)** |
-| **Overall** | **4.87 best** | 3.00 | 4.21 |
+| **Overall** | **4.87 best** | 3.00 | 4.17 |
 
 ### 2D vectors
 
@@ -103,9 +103,9 @@ Add, scale, length, normalise, rotate, dot, distance and project: as operators, 
 | Rotate | 5 | 5 | 5 | 5 |
 | Dot, project | **5** | **5** | **5** | - |
 | Interpolate | - | - | **5** | **5** |
-| 1000 steps | 2 (1.6M steps/s) | **5 (12.4M steps/s)** | 3 (4.1M steps/s) | 2 (1.3M steps/s) |
+| 1000 steps | 2 (1.5M steps/s) | **5 (12.6M steps/s)** | 3 (4.1M steps/s) | 2 (1.3M steps/s) |
 | Garbage made | 1 (438 KB) | **5 (0.00 KB)** | **5 (0.22 KB)** | 1 (328 KB) |
-| Load time | **5 (0.25 ms)** | **5 (0.25 ms)** | 1 (6.03 ms) | 2 (4.59 ms) |
+| Load time | **5 (0.27 ms)** | **5 (0.27 ms)** | 1 (6.39 ms) | 2 (4.71 ms) |
 | Memory kept | **5 (4.54 KB)** | **5 (4.54 KB)** | 1 (194 KB) | 1 (166 KB) |
 | Code size | **5 (1.2k lines)** | **5 (1.2k lines)** | 2 (6.2k lines) | 3 (5.5k lines) |
 | **Overall** | 3.67 | **4.45 best** | 4.36 | 3.33 |
@@ -130,9 +130,9 @@ Map, filter, reduce, search, copy and merge: lume against batteries' functional 
 | Copy (deep) | - | **5** |
 | Merge | 5 | 5 |
 | Keys | 5 | 5 |
-| map+filter+reduce | **5 (16.0M elements/s)** | 4 (11.2M elements/s) |
-| Copy 1000 | 5 (145.2M elements/s) | 5 (140.6M elements/s) |
-| Load time | **5 (0.74 ms)** | 2 (6.03 ms) |
+| map+filter+reduce | **5 (15.3M elements/s)** | 4 (11.0M elements/s) |
+| Copy 1000 | 5 (144.0M elements/s) | 5 (140.3M elements/s) |
+| Load time | **5 (0.76 ms)** | 2 (6.39 ms) |
 | Memory kept | **5 (40.6 KB)** | 3 (194 KB) |
 | Code size | **5 (773 lines)** | 2 (6.2k lines) |
 | **Overall** | 4.12 | **4.49 best** |
@@ -152,8 +152,8 @@ Clamp, round, interpolate, smooth, ping-pong, wrap, distance and angles.
 | Remap a range | - | **5** |
 | Distance, angle | 5 | 5 |
 | Sign | 5 | 5 |
-| 10000 clamp+lerp | 5 (19.6M ops/s) | 5 (18.8M ops/s) |
-| Load time | **5 (0.74 ms)** | 2 (6.03 ms) |
+| 10000 clamp+lerp | 5 (19.9M ops/s) | 5 (18.9M ops/s) |
+| Load time | **5 (0.76 ms)** | 2 (6.39 ms) |
 | Memory kept | **5 (40.6 KB)** | 3 (194 KB) |
 | Code size | **5 (773 lines)** | 2 (6.2k lines) |
 | **Overall** | 4.09 | **4.75 best** |
@@ -171,8 +171,8 @@ Split, trim, test prefixes, fill templates, wrap and title-case.
 | Word wrap | **5** | - |
 | Title case | - | **5** |
 | Contains | - | **5** |
-| Split 1000 fields | **5 (8.9M fields/s)** | 3 (4.1M fields/s) |
-| Load time | **5 (0.74 ms)** | 2 (6.03 ms) |
+| Split 1000 fields | **5 (8.9M fields/s)** | 3 (4.2M fields/s) |
+| Load time | **5 (0.76 ms)** | 2 (6.39 ms) |
 | Memory kept | **5 (40.6 KB)** | 3 (194 KB) |
 | Code size | **5 (773 lines)** | 2 (6.2k lines) |
 | **Overall** | 3.34 | **3.92 best** |
@@ -190,12 +190,12 @@ Save a table to text or bytes and read it back: how much survives, how big, how 
 | Cycles | **5** | **5** | **5** | **5** | **5** | 1 (FAIL) | 1 (FAIL) | 1 (FAIL) |
 | Binary strings | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 |
 | Output size | 4 (8.1k bytes) | **5 (6.6k bytes)** | 4 (13k bytes) | 3 (14k bytes) | 3 (18k bytes) | 4 (13k bytes) | 3 (20k bytes) | 3 (15k bytes) |
-| Save speed | 4 (1.7k saves/s) | 4 (1.3k saves/s) | 1 (92.5 saves/s) | 4 (1.5k saves/s) | 4 (1.5k saves/s) | 3 (549 saves/s) | **5 (2.5k saves/s)** | 4 (1.7k saves/s) |
-| Load speed | 4 (2.5k loads/s) | 3 (1.6k loads/s) | **5 (4.5k loads/s)** | 3 (1.3k loads/s) | 4 (3.8k loads/s) | 2 (680 loads/s) | 4 (3.9k loads/s) | 2 (824 loads/s) |
-| Load time | 3 (0.71 ms) | 4 (0.38 ms) | 4 (0.36 ms) | 4 (0.31 ms) | **5 (0.27 ms)** | 4 (0.43 ms) | 3 (0.74 ms) | 4 (0.35 ms) |
+| Save speed | 4 (1.8k saves/s) | 4 (1.3k saves/s) | 1 (91.5 saves/s) | 4 (1.5k saves/s) | 4 (1.5k saves/s) | 3 (575 saves/s) | **5 (2.5k saves/s)** | 4 (1.7k saves/s) |
+| Load speed | 4 (2.5k loads/s) | 3 (1.6k loads/s) | **5 (4.3k loads/s)** | 3 (1.3k loads/s) | 4 (3.8k loads/s) | 2 (691 loads/s) | **5 (4.0k loads/s)** | 2 (838 loads/s) |
+| Load time | 3 (0.73 ms) | 4 (0.41 ms) | 4 (0.36 ms) | 4 (0.33 ms) | **5 (0.26 ms)** | 4 (0.39 ms) | 3 (0.76 ms) | 4 (0.34 ms) |
 | Memory kept | 3 (24.4 KB) | 3 (23.4 KB) | 3 (25.8 KB) | 4 (11.1 KB) | **5 (7.11 KB)** | 3 (26.7 KB) | 2 (40.6 KB) | 3 (14.7 KB) |
 | Code size | 3 (627 lines) | 3 (577 lines) | **5 (141 lines)** | 4 (214 lines) | 4 (208 lines) | 2 (1.0k lines) | 2 (773 lines) | 3 (611 lines) |
-| **Overall** | 4.50 | 4.53 | 4.40 | 4.40 | **4.57 best** | 3.80 | 3.63 | 2.63 |
+| **Overall** | 4.50 | 4.53 | 4.40 | 4.40 | **4.57 best** | 3.80 | 3.73 | 2.63 |
 
 ### Printing tables
 
@@ -208,8 +208,8 @@ Readable text for a table: every key, the same order every time, cycles, metatab
 | Cycles | 5 | 5 |
 | Metatables | **5** | 1 (FAIL) |
 | Depth limit | **5** | - |
-| Print 200 units | **5 (831 prints/s)** | 4 (546 prints/s) |
-| Load time | **5 (0.82 ms)** | 2 (6.03 ms) |
+| Print 200 units | **5 (812 prints/s)** | 4 (572 prints/s) |
+| Load time | **5 (0.87 ms)** | 2 (6.39 ms) |
 | Memory kept | **5 (16.5 KB)** | 2 (194 KB) |
 | Code size | **5 (451 lines)** | 2 (6.2k lines) |
 | **Overall** | **5.00 best** | 3.14 |
@@ -227,8 +227,8 @@ Do boxes, circles and polygons touch; stop a mover at a wall; find every overlap
 | Push apart | 5 | 5 | 5 |
 | No tunnelling | **5** | - | - |
 | Ray cast | **5** | 1 (FAIL) | - |
-| Find all overlaps | **5 (400k boxes/s)** | 2 (68k boxes/s) | 1 (7.4k boxes/s) |
-| Load time | **5 (0.76 ms)** | 3 (2.00 ms) | 2 (6.03 ms) |
+| Find all overlaps | **5 (402k boxes/s)** | 2 (68k boxes/s) | 1 (7.2k boxes/s) |
+| Load time | **5 (0.85 ms)** | 3 (1.83 ms) | 2 (6.39 ms) |
 | Memory kept | **5 (25.6 KB)** | 3 (69.3 KB) | 2 (194 KB) |
 | Code size | **5 (776 lines)** | 3 (1.8k lines) | 2 (6.2k lines) |
 | **Overall** | **3.89 best** | 3.44 | 3.11 |
@@ -244,11 +244,11 @@ The shortest way across a grid with walls, no way at all, and a 40 by 40 maze.
 | Diagonal moves | 5 | 5 | 5 | 5 |
 | Terrain costs | - | **5** | - | - |
 | Jump point search | **5** | - | - | - |
-| 40 by 40 maze | 2 (464 paths/s) | 2 (153 paths/s) | 1 (15.6 paths/s) | **5 (3.0k paths/s)** |
-| Load time | 2 (3.37 ms) | 2 (6.03 ms) | **5 (0.32 ms)** | 3 (0.70 ms) |
+| 40 by 40 maze | 2 (467 paths/s) | 2 (155 paths/s) | 1 (15.3 paths/s) | **5 (2.9k paths/s)** |
+| Load time | 2 (3.55 ms) | 1 (6.39 ms) | **5 (0.26 ms)** | 3 (0.75 ms) |
 | Memory kept | 2 (57.6 KB) | 1 (194 KB) | **5 (7.74 KB)** | 4 (14.5 KB) |
 | Code size | 2 (2.2k lines) | 1 (6.2k lines) | **5 (209 lines)** | 3 (678 lines) |
-| **Overall** | **3.42 best** | 3.33 | 3.01 | 2.76 |
+| **Overall** | **3.42 best** | 3.28 | 3.01 | 2.76 |
 
 ### Cameras
 
@@ -262,8 +262,8 @@ Screen to world and back with zoom and rotation; keep the view inside the world;
 | There and back | 5 | 5 |
 | World bounds | **5** | - |
 | Follow a target | - | **5** |
-| 10000 conversions | **5 (10.9M points/s)** | 4 (6.2M points/s) |
-| Load time | 3 (0.64 ms) | **5 (0.25 ms)** |
+| 10000 conversions | **5 (10.7M points/s)** | 4 (6.0M points/s) |
+| Load time | 3 (0.59 ms) | **5 (0.27 ms)** |
 | Memory kept | 3 (11.3 KB) | **5 (4.54 KB)** |
 | Code size | **5 (209 lines)** | 2 (1.2k lines) |
 | **Overall** | **4.21 best** | 4.12 |
@@ -280,8 +280,8 @@ Check a value, fail with a message that says what was wrong, group checks into t
 | Compare tables | **5** | 1 (FAIL) | **5** |
 | Describe / it | **5** | - | **5** |
 | Before / after | **5** | - | **5** |
-| 10000 checks | 1 (1.1M checks/s) | **5 (72.4M checks/s)** | 3 (21.4M checks/s) |
-| Load time | **5 (0.55 ms)** | 2 (6.03 ms) | 3 (1.42 ms) |
+| 10000 checks | 1 (1.0M checks/s) | **5 (64.2M checks/s)** | 3 (21.8M checks/s) |
+| Load time | **5 (0.58 ms)** | 2 (6.39 ms) | 3 (1.39 ms) |
 | Memory kept | **5 (13.8 KB)** | 2 (194 KB) | 2 (127 KB) |
 | Code size | **5 (241 lines)** | 1 (6.2k lines) | 2 (4.6k lines) |
 | **Overall** | **4.50 best** | 2.83 | 4.41 |
@@ -296,8 +296,8 @@ Time a function, count the memory it uses, find which functions the time went to
 | Which function | **5** | - |
 | Memory used | - | **5** |
 | Mean, min, max | - | **5** |
-| Cost of measuring | 2 (630 runs/s) | **5 (8.2k runs/s)** |
-| Load time | **5 (0.57 ms)** | 2 (6.03 ms) |
+| Cost of measuring | 2 (623 runs/s) | **5 (8.2k runs/s)** |
+| Load time | **5 (0.52 ms)** | 2 (6.39 ms) |
 | Memory kept | **5 (8.49 KB)** | 1 (194 KB) |
 | Code size | **5 (227 lines)** | 1 (6.2k lines) |
 | **Overall** | 2.84 | **3.55 best** |
@@ -311,11 +311,11 @@ Build a frame of widgets, click a button with a simulated mouse, count how many 
 | One frame | 5 | 5 | 5 | 5 |
 | Click a button | 5 | ~ | 5 | 5 |
 | Checkbox, slider | 5 | ~ | 5 | 5 |
-| 100 buttons | 4 (755k widgets/s) | 2 (181k widgets/s) | 4 (754k widgets/s) | **5 (913k widgets/s)** |
-| Load time | 3 (2.76 ms) | 2 (11.0 ms) | **5 (1.14 ms)** | 2 (6.81 ms) |
-| Memory kept | 3 (57.8 KB) | 1 (420 KB) | **5 (19.5 KB)** | 1 (588 KB) |
+| 100 buttons | 3 (736k widgets/s) | 2 (177k widgets/s) | 3 (754k widgets/s) | **5 (1.6M widgets/s)** |
+| Load time | 3 (2.59 ms) | 2 (10.3 ms) | **5 (1.02 ms)** | 2 (6.08 ms) |
+| Memory kept | 3 (57.8 KB) | 1 (418 KB) | **5 (19.5 KB)** | 1 (588 KB) |
 | Code size | **5 (1.1k lines)** | 2 (18k lines) | ~ | 2 (7.7k lines) |
-| **Overall** | 4.53 | 2.88 | **4.79 best** | 4.32 |
+| **Overall** | 4.33 | 2.88 | **4.57 best** | 4.32 |
 
 ### Libraries that stand alone
 
@@ -459,7 +459,7 @@ Build a frame of widgets, click a button with a simulated mouse, count how many 
 | shack | screen shake and rotation | works |
 | ripple | sound tags, volume, fades | works |
 | moonshine | post-processing shader effects | works |
-| g3d | 3D models and a camera | FAIL did not load: libs/g3d/g3d/init.lua:58: The window must have depth enabled to draw to the main screen's depth buffer. |
+| g3d | 3D models and a camera | works |
 | push | a virtual resolution scaled to the window | FAIL libs/push/push.lua:113: attempt to call upvalue 'getDPI' (a nil value) |
 | love-loader | loading assets on a thread | FAIL it reads its own source as `love-loader.lua` from the game's root folder, so it only works copied there, not from libs/ |
 | lurker | hot reloading of changed files | FAIL did not load: libs/lurker/lurker.lua:55: attempt to call upvalue 'isdir' (a nil value) |
