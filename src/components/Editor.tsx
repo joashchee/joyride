@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor/editor/editor.api.js";
 import "../monaco-setup";
-import { formatOnSave } from "../lib/editorprefs";
-import { colorLiterals, colorText, formatLua, inTauri, integrateClear, integrateMarks, lintLua } from "../lib/backend";
+import { autosaveFiles, formatOnSave } from "../lib/editorprefs";
+import { colorLiterals, colorText, draftDiscard, draftSave, formatLua, inTauri, integrateClear, integrateMarks, lintLua } from "../lib/backend";
 import { trackModel, untrackModel, uriFor } from "../lib/lsp";
 import EditorWorker from "monaco-editor/editor/editor.worker.js?worker";
 import { defineThemes, TEXT_MODE_OPTIONS, themeId } from "../monaco-theme";
@@ -27,6 +27,87 @@ interface Doc {
   reloading?: boolean;
 }
 const docs = new Map<string, Doc>();
+
+const DRAFT_DELAY_MS = 800;
+const AUTOSAVE_DELAY_MS = 2000;
+const draftTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const saveTimers = new Map<string, ReturnType<typeof setTimeout>>();
+let onSaveCb: ((path: string, text: string) => Promise<void>) | null = null;
+let onDirtyCb: ((path: string, dirty: boolean) => void) | null = null;
+
+const isDirty = (d: Doc) => d.model.getAlternativeVersionId() !== d.saved;
+
+/** Keeps the unsaved text as a draft (or drops the draft once the file is clean), so a crash loses a second of typing, not the session.
+ *  Drafts live in the app's own folder; the project's files are written only by a save. */
+function writeDraft(path: string, d: Doc) {
+  if (d.model.isDisposed()) return Promise.resolve();
+  return (isDirty(d) ? draftSave(path, d.model.getValue()) : draftDiscard(path)).catch(() => undefined);
+}
+
+function scheduleDraft(path: string, d: Doc) {
+  if (!inTauri) return;
+  clearTimeout(draftTimers.get(path));
+  draftTimers.set(
+    path,
+    setTimeout(() => {
+      draftTimers.delete(path);
+      void writeDraft(path, d);
+    }, DRAFT_DELAY_MS),
+  );
+}
+
+/** Writes every pending draft now: before the window closes or another project opens. */
+export async function flushDrafts() {
+  for (const t of draftTimers.values()) clearTimeout(t);
+  draftTimers.clear();
+  await Promise.all([...docs].map(([path, d]) => writeDraft(path, d)));
+}
+
+/** Saves a file as written (no formatting) and settles its draft. */
+async function saveDoc(path: string): Promise<boolean> {
+  const d = docs.get(path);
+  if (!d || !onSaveCb || !isDirty(d)) return false;
+  const version = d.model.getAlternativeVersionId();
+  try {
+    await onSaveCb(path, d.model.getValue());
+  } catch {
+    return false; // the app has already said why
+  }
+  d.saved = version;
+  onDirtyCb?.(path, isDirty(d));
+  clearTimeout(draftTimers.get(path));
+  draftTimers.delete(path);
+  void writeDraft(path, d);
+  return true;
+}
+
+/** With "Autosave files" on (Settings), a changed file is saved a moment after typing stops. */
+function scheduleAutosave(path: string) {
+  if (!inTauri || !autosaveFiles()) return;
+  clearTimeout(saveTimers.get(path));
+  saveTimers.set(
+    path,
+    setTimeout(() => {
+      saveTimers.delete(path);
+      void saveDoc(path);
+    }, AUTOSAVE_DELAY_MS),
+  );
+}
+
+/** Puts a recovered draft into the file's tab as an unsaved edit (undoable; the file on disk is untouched until a save).
+ *  Called before the file is opened, or while it is. */
+const restores = new Map<string, string>();
+function applyRestore(path: string, d: Doc, text: string) {
+  if (d.model.getValue() === text) return;
+  d.model.pushEditOperations([], [{ range: d.model.getFullModelRange(), text }], () => null);
+  onDirtyCb?.(path, isDirty(d));
+  scheduleDraft(path, d);
+}
+export function queueRestore(path: string, text: string) {
+  const d = docs.get(path);
+  if (d) applyRestore(path, d, text);
+  else restores.set(path, text);
+}
 
 /** Shows where JoyrIDE inserted code: a colour bar in the gutter on each such line, with a note on hover. */
 async function applyMarks(path: string, doc: Doc) {
@@ -166,6 +247,11 @@ export function insertSnippet(snippet: string): boolean {
 
 /** Forgets a closed file's text and undo history. */
 export function closeDoc(path: string) {
+  clearTimeout(draftTimers.get(path));
+  draftTimers.delete(path);
+  clearTimeout(saveTimers.get(path));
+  saveTimers.delete(path);
+  restores.delete(path);
   const m = docs.get(path)?.model;
   if (m) untrackModel(m);
   m?.dispose();
@@ -192,6 +278,8 @@ export default function Editor(props: {
   const ed = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const cb = useRef(props);
   cb.current = props;
+  onSaveCb = props.onSave;
+  onDirtyCb = props.onDirty;
 
   useEffect(() => {
     defineThemes();
@@ -213,6 +301,7 @@ export default function Editor(props: {
       const m = editor.getModel();
       const path = m && [...docs].find(([, d]) => d.model === m)?.[0];
       if (!m || !path) return;
+      clearTimeout(saveTimers.get(path));
       // Format on save (Settings): a Lua file is run through StyLua first; a syntax error is
       // reported and the file is still saved as written.
       if (inTauri && formatOnSave() && m.getLanguageId() === "lua") {
@@ -227,10 +316,15 @@ export default function Editor(props: {
           cb.current.onNotice?.(`Format: ${String(e)}`);
         }
       }
+      // Cmd+S writes even an unchanged file, as before.
+      const d = docs.get(path)!;
       const version = m.getAlternativeVersionId();
       await cb.current.onSave(path, m.getValue());
-      docs.get(path)!.saved = version;
-      cb.current.onDirty(path, m.getAlternativeVersionId() !== version);
+      d.saved = version;
+      cb.current.onDirty(path, isDirty(d));
+      clearTimeout(draftTimers.get(path));
+      draftTimers.delete(path);
+      void writeDraft(path, d);
     });
     const sub = editor.onDidChangeModelContent(() => {
       const m = editor.getModel();
@@ -238,6 +332,8 @@ export default function Editor(props: {
       if (path) {
         touchMarks(docs.get(path)!);
         cb.current.onDirty(path, m.getAlternativeVersionId() !== docs.get(path)!.saved);
+        scheduleDraft(path, docs.get(path)!);
+        scheduleAutosave(path);
         scheduleLint(path, m);
       }
     });
@@ -322,6 +418,11 @@ export default function Editor(props: {
       void applyMarks(props.path, d);
     }
     ed.current?.setModel(d.model);
+    const restore = restores.get(props.path);
+    if (restore !== undefined) {
+      restores.delete(props.path);
+      applyRestore(props.path, d, restore);
+    }
     scheduleLint(props.path, d.model);
     ed.current?.focus();
   }, [props.path, props.text]);

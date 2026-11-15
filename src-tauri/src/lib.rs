@@ -13,6 +13,7 @@ mod github;
 mod libs;
 mod lsp;
 mod project;
+mod recovery;
 mod fonts;
 mod preview;
 mod run;
@@ -55,6 +56,7 @@ pub(crate) fn source_path(_rel: &str) -> Option<std::path::PathBuf> {
 }
 
 pub fn run() {
+    recovery::install_panic_hook();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
@@ -63,7 +65,22 @@ pub fn run() {
         .manage(run::Game::default())
         .manage(preview::VideoSession::default())
         .manage(lsp::Lsp::default())
-        .plugin(tauri_plugin_log::Builder::new().level(log::LevelFilter::Info).build())
+        .plugin(
+            // The error log: `joyride.log` in the OS log folder, 1 MB a file, the last three kept. Nothing leaves the machine.
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Info)
+                .targets([
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir { file_name: Some("joyride".into()) }),
+                ])
+                .max_file_size(1_000_000)
+                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepSome(3))
+                .build(),
+        )
+        .setup(|app| {
+            recovery::init(app.handle());
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             core_info,
             project::open_project,
@@ -82,6 +99,15 @@ pub fn run() {
             project::lint_lua,
             project::color_literals,
             project::color_text,
+            recovery::draft_save,
+            recovery::draft_discard,
+            recovery::drafts_pending,
+            recovery::drafts_clear,
+            recovery::recovery_startup,
+            recovery::report_frontend_error,
+            recovery::reports_list,
+            recovery::report_read,
+            recovery::reveal_diagnostics,
             export::export_info,
             export::export_project,
             autoport::autoport_scan,
@@ -131,6 +157,11 @@ pub fn run() {
             lsp::lsp_settings,
             lsp::lsp_root
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running JoyrIDE");
+        .build(tauri::generate_context!())
+        .expect("error while building JoyrIDE")
+        .run(|app, event| {
+            if let tauri::RunEvent::Exit = event {
+                recovery::finish(app);
+            }
+        });
 }

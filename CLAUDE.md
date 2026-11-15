@@ -130,6 +130,7 @@ needs the network to build or test (`cargo ... --offline`); `npm` needs
   licences), `kind.rs`. `cargo test --offline --manifest-path
   asset-core/Cargo.toml`.
 - `joyride-core/src/integrate.rs`: the lines JoyrIDE inserts into `main.lua` for a project's libraries and the record that lets the editor bar them (rule 16); `lint_libs.rs`: the lints that know the libraries (a `require` that cannot work, measured pitfalls, near-miss names); both read the library list, and the language server gets the same require path (`lsp::settings_with`).
+- `joyride-core/src/recovery.rs` (+ `src-tauri/src/recovery.rs`, `src/components/Recovery.tsx`): unsaved-edit drafts, the error log, crash reports and the session marker, `docs/recovery.md`; `scripts/ingest-crash.py` reads reports. Drafts never go in the project (rule 4); a new report field bumps `SCHEMA`.
 - `joyride-core/src/detect.rs`: the libraries a project uses (files only), matched with the list; the person's own libraries (`Custom`) and dismissed offers live in app-data, never in a project. A library found in a project is never added to `data/libraries.toml` without rule 14's audit.
 - `joyride-core/`: the other Tauri-free crate, one module per spec area:
   `manifest`/`pkg` (love.toml, installer), `toolchain` (versions, signed

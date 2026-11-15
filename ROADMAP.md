@@ -198,3 +198,14 @@ Whole projects that ship with the app. Opening one copies it to the app-data fol
 - [ ] **Try it in the Tauri window** (not done: no display here): resize, check the text area is whole columns and lines, change font and size with a file open, maximize (no snapping), a 1x external monitor and a 2x laptop. The capability permissions for `setSize`, `innerSize`, `scaleFactor`, `isMaximized` and `isFullscreen` are added but the window was never run.
 - [ ] Cascadia Code and Monaspace (OFL) were left out: Cascadia's release is a 150 MB zip; Monaspace is a large family. Iosevka (OFL) is configurable and large. Bold and italic faces are not shipped (the UI has no bold).
 - [ ] Terminus (OFL) and other bitmap-only fonts need a converted outline form; Spleen already is one.
+
+## 12. Recovery, error log and crash reports (`docs/recovery.md`)
+
+- [x] **Autosave drafts** (2026-11-15): unsaved edits kept in app-data 800 ms after each change, flushed on close and project switch, offered back in the Recovery panel (`joyride-core/src/recovery.rs`, `src/components/Recovery.tsx`, 11 core tests).
+- [x] **Optional autosave to the file** (Settings, off by default, 2 s, no formatting).
+- [x] **Error log** (`joyride.log` in the OS log folder, rotated) with uncaught window errors.
+- [x] **Crash reports**: panic hook, window errors, and an unclean-exit marker; JSON schema 1, redacted, grouped by signature; `scripts/ingest-crash.py` (`--check`, `--show`).
+- [ ] **Try it in the Tauri window** (not done: no display here): type, kill the app (`kill -9`), reopen and Restore; a panic; Settings > Diagnostics buttons; the Recovery panel's rows on the 8 by 16 grid (`checkGrid()`).
+- [ ] **Symbols for release backtraces**: the release build is stripped, so its backtraces are addresses; keep the dSYM or symbols per release and say how to read one.
+- [ ] **A native webview crash** (the web process dying) is only seen as an unclean exit if the whole app goes; Tauri gives no event for it yet.
+- [ ] Linux and Windows: log and report folders come from Tauri's path resolver; untested there.

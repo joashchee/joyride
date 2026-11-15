@@ -38,6 +38,7 @@ pub mod integrate;
 pub mod games;
 pub mod icons;
 pub mod library;
+pub mod recovery;
 pub mod lint;
 pub mod lint_libs;
 pub mod lsp;

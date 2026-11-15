@@ -514,3 +514,33 @@ export const assetsImportPlan = (includeCode: boolean) => invoke<ImportPlanView>
 export const assetsImportApply = (includeCode: boolean, decisions: DecisionIn[]) => invoke<ImportReportView>("assets_import_apply", { includeCode, decisions });
 export const assetsConfirm = (request: ConfirmIn) => invoke<void>("assets_confirm", { request });
 export const assetsUse = (id: number, dest: string) => invoke<string>("assets_use", { id, dest });
+
+// ---- Autosave drafts, the error log and crash reports (docs/recovery.md) ----
+export interface Draft {
+  path: string;
+  text: string;
+  /** Seconds since the epoch. */
+  savedAt: number;
+  /** The file is gone from disk: restoring creates it again. */
+  missing: boolean;
+}
+export interface ReportInfo {
+  file: string;
+  kind: string;
+  time: string;
+  summary: string;
+  signature: string;
+}
+/** Keeps an unsaved edit as a draft in the app's own folder (the project is not touched). */
+export const draftSave = (path: string, text: string) => (inTauri ? invoke<void>("draft_save", { path, text }) : Promise.resolve());
+export const draftDiscard = (path: string) => (inTauri ? invoke<void>("draft_discard", { path }) : Promise.resolve());
+export const draftsPending = () => (inTauri ? invoke<Draft[]>("drafts_pending") : Promise.resolve([] as Draft[]));
+export const draftsClear = () => (inTauri ? invoke<void>("drafts_clear") : Promise.resolve());
+/** The report of the last session's unclean exit, once. */
+export const recoveryStartup = () => (inTauri ? invoke<ReportInfo | null>("recovery_startup") : Promise.resolve(null));
+export const reportFrontendError = (message: string, stack?: string, source?: string) =>
+  inTauri ? invoke<void>("report_frontend_error", { message, stack: stack ?? null, source: source ?? null }).catch(() => undefined) : Promise.resolve();
+export const reportsList = () => (inTauri ? invoke<ReportInfo[]>("reports_list") : Promise.resolve([] as ReportInfo[]));
+export const reportRead = (file: string) => invoke<string>("report_read", { file });
+/** Shows the folder of crash reports, or of the log, in the file manager. */
+export const revealDiagnostics = (logs: boolean) => invoke<void>("reveal_diagnostics", { logs });

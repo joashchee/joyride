@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { soundfontChoose, soundfontList, type SoundChoice } from "../lib/backend";
+import { reportRead, reportsList, revealDiagnostics, soundfontChoose, soundfontList, type ReportInfo, type SoundChoice } from "../lib/backend";
 import Panel from "./Panel";
 import { CODE_FONTS, VGA_ID, cleanSizes, fontById, loadChoice, nearestSize, saveChoice, sizeHint, type CodeChoice } from "../lib/codefonts";
-import { formatOnSave, setFormatOnSave } from "../lib/editorprefs";
+import { autosaveFiles, formatOnSave, setAutosaveFiles, setFormatOnSave } from "../lib/editorprefs";
 import { applyAppearance, currentAppearance, loadSwatch, PALETTES, SWATCHES, type Palette } from "../lib/theme";
 
 /** The appearance options, all of them colour: the palette, and in True
@@ -39,6 +39,27 @@ export default function Settings(props: { onClose: () => void }) {
       .catch((e) => setSoundErr(String(e)));
   };
   const [fmt, setFmt] = useState(formatOnSave);
+  const [auto, setAuto] = useState(autosaveFiles);
+  const [reports, setReports] = useState<ReportInfo[] | null>(null);
+  const [diag, setDiag] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    reportsList()
+      .then((r) => live && setReports(r))
+      .catch(() => live && setReports([]));
+    return () => {
+      live = false;
+    };
+  }, []);
+  const copyLatest = async () => {
+    try {
+      await navigator.clipboard.writeText(await reportRead(reports![0].file));
+      setDiag(`Copied ${reports![0].file}.`);
+    } catch (e) {
+      setDiag(String(e));
+    }
+  };
+  const reveal = (logs: boolean) => revealDiagnostics(logs).catch((e) => setDiag(String(e)));
   const [code, setCode] = useState<CodeChoice>(loadChoice);
   const dpr = window.devicePixelRatio || 1;
   const font = fontById(code.id);
@@ -128,6 +149,31 @@ export default function Settings(props: { onClose: () => void }) {
           Format Lua files with StyLua when saving
           <span className="lib-meta">off by default; a file with a syntax error is saved as written, and the error shows in the status bar</span>
         </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={auto}
+            onChange={(e) => {
+              setAutosaveFiles(e.target.checked);
+              setAuto(e.target.checked);
+            }}
+          />{" "}
+          Save changed files automatically, 2 seconds after typing stops
+          <span className="lib-meta">off by default. Whatever this says, unsaved edits are always kept as drafts in JoyrIDE's own folder (never in your project) and offered back after a crash; autosave does not format</span>
+        </label>
+      </fieldset>
+      <fieldset className="palette-choice">
+        <legend>Diagnostics</legend>
+        <span className="lib-meta">
+          {reports === null ? "…" : reports.length === 0 ? "No crash reports." : `${reports.length} crash report${reports.length === 1 ? "" : "s"}; the newest: ${reports[0].time}, ${reports[0].kind}, ${reports[0].summary.slice(0, 60)}`}
+        </span>
+        <div className="panel-bar">
+          <button onClick={() => reveal(false)}>Show crash reports</button>
+          <button onClick={() => reveal(true)}>Show error log</button>
+          <button disabled={!reports?.length} onClick={() => void copyLatest()}>Copy newest report</button>
+        </div>
+        <span className="lib-meta">Reports and the log stay on this computer; JoyrIDE never sends them. To report a crash, attach the newest report. Your home folder is replaced by ~ in them.</span>
+        {diag && <span role="status" className="lib-meta">{diag}</span>}
       </fieldset>
       <p className="lib-meta">The window snaps to sizes that show whole characters and whole lines in this font.</p>
       {font && (

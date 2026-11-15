@@ -16,15 +16,18 @@ import Docs from "./components/Docs";
 import AutoPort from "./components/AutoPort";
 import GitHub from "./components/GitHub";
 import Settings from "./components/Settings";
+import Recovery from "./components/Recovery";
 import { currentFit } from "./lib/editorfit";
 import { installSnap } from "./lib/windowsnap";
 import { onChoice } from "./lib/codefonts";
-import { projectListing, chooseFolder, librariesDetect, type LibraryChange, type LibraryOffer as Offer, coreInfo, lastProject, inTauri, createDir, createFile, trashPath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
+import { draftDiscard, draftsPending, recoveryStartup, type Draft, type ReportInfo, projectListing, chooseFolder, librariesDetect, type LibraryChange, type LibraryOffer as Offer, coreInfo, lastProject, inTauri, createDir, createFile, trashPath, renamePath, onRun, openProject, readFile, previewFile, projectWarnings, runProject, SCREENS, stopProject, writeFile, type CoreInfo, type Preview, type Listing, type RunLine } from "./lib/backend";
 
 // Monaco loads after the splash has gone, so the first screen never waits on it.
 const Editor = lazy(() => import("./components/Editor"));
 const lsp = () => import("./lib/lsp");
 const closeDoc = (p: string) => import("./components/Editor").then((m) => m.closeDoc(p));
+const queueRestore = (p: string, t: string) => import("./components/Editor").then((m) => m.queueRestore(p, t));
+const flushDrafts = () => import("./components/Editor").then((m) => m.flushDrafts());
 const reloadDoc = (p: string, t: string) => import("./components/Editor").then((m) => m.reloadDoc(p, t));
 
 // What the first screen needs, in order. Heavy things (Monaco, the language
@@ -57,6 +60,8 @@ export default function App() {
   const [exporting, setExporting] = useState(false);
   const [fontOpen, setFontOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // Unsaved edits kept as drafts by a session that ended badly (or by a quit that left them), and the report for a crash.
+  const [recovery, setRecovery] = useState<{ drafts: Draft[]; crash: ReportInfo | null } | null>(null);
 
   // Resizing the window ends on a size that fits the editor's font (whole characters, whole lines); so does changing the font.
   useEffect(() => {
@@ -98,6 +103,14 @@ export default function App() {
     };
   }, []);
 
+  // The last session ended without closing: say so once, with where its report is.
+  useEffect(() => {
+    if (!gone) return;
+    void recoveryStartup()
+      .then((crash) => crash && setRecovery((r) => ({ drafts: r?.drafts ?? [], crash })))
+      .catch(() => {});
+  }, [gone]);
+
   // Back where it was: the last project reopens once the splash is gone.
   const restored = useRef(false);
   useEffect(() => {
@@ -119,7 +132,9 @@ export default function App() {
     let off = () => {};
     let dead = false;
     void import("@tauri-apps/api/window").then(async ({ getCurrentWindow }) => {
-      const u = await getCurrentWindow().onCloseRequested((e) => {
+      const u = await getCurrentWindow().onCloseRequested(async (e) => {
+        // Whatever is answered, the unsaved edits are kept as drafts first.
+        await flushDrafts().catch(() => undefined);
         const n = dirtyRef.current.size;
         if (n > 0 && !window.confirm(`${n} file${n === 1 ? " has" : "s have"} unsaved changes. Quit without saving?`)) e.preventDefault();
       });
@@ -172,6 +187,8 @@ export default function App() {
 
   const openDir = async (dir: string) => {
     try {
+      // Unsaved edits of the project being left are written as drafts before the folder changes.
+      await flushDrafts().catch(() => undefined);
       const l = await openProject(dir);
       tabs.forEach(closeDoc);
       const L = await lsp();
@@ -188,6 +205,8 @@ export default function App() {
       setNotice(l.truncated ? "This project has more files than the tree shows." : null);
       if (l.hasMain) void openFile("main.lua");
       void checkLibraries(false);
+      const drafts = await draftsPending().catch(() => [] as Draft[]);
+      setRecovery((r) => (drafts.length > 0 || r?.crash ? { drafts, crash: r?.crash ?? null } : null));
     } catch (e) {
       fail(e);
     }
@@ -270,6 +289,7 @@ export default function App() {
   const closeTab = (path: string) => {
     if (dirty.has(path) && !window.confirm(`Close ${path} without saving?`)) return;
     void closeDoc(path);
+    void draftDiscard(path).catch(() => undefined); // thrown away on purpose: not offered back
     setDirty((d) => {
       const n = new Set(d);
       n.delete(path);
@@ -399,6 +419,24 @@ export default function App() {
     return () => window.removeEventListener("keydown", key);
   });
 
+  /** The recovery state with one draft handled; it closes itself when nothing is left to say. */
+  const without = (d: Draft) => (r: typeof recovery) => {
+    if (!r) return r;
+    const drafts = r.drafts.filter((x) => x.path !== d.path);
+    return drafts.length === 0 && !r.crash ? null : { ...r, drafts };
+  };
+  /** Puts a draft back in its file's tab as an unsaved edit. */
+  const restoreDraft = async (d: Draft) => {
+    if (d.missing) await createFile(d.path).then(setProject);
+    await queueRestore(d.path, d.text);
+    await openFile(d.path);
+    setRecovery(without(d));
+  };
+  const discardDraft = async (d: Draft) => {
+    await draftDiscard(d.path);
+    setRecovery(without(d));
+  };
+
   const onDirty = (path: string, d: boolean) =>
     setDirty((s) => {
       if (s.has(path) === d) return s;
@@ -447,6 +485,7 @@ export default function App() {
           <span className="project-name">{project?.name ?? "No project open"}</span>
         </div>
         {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
+        {recovery && <Recovery drafts={recovery.drafts} crash={recovery.crash} onRestore={restoreDraft} onDiscard={discardDraft} onClose={() => setRecovery(null)} />}
         {docsOpen && <Docs
             onClose={() => setDocsOpen(false)}
             focusKey={docsKey}
