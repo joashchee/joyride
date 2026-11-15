@@ -25,9 +25,37 @@ DROP_FILES = {"cimgui-love": {"generator.lua"}}
 # repository's root; `*` and `**` work). lighter creates its default light from the image; LoveFrames registers its three skins when it loads
 # and stops with "Could not find an image directory for skin" without their pictures (48 small PNGs, 34 KB); 3DreamEngine loads its sky
 # model (objects/sky.obj, 62 KB) when it loads and stops without it. All are files of the library's own repository, under its licence.
-# lovr-ui2d's font (DejaVuSansMono.ttf, 335 KB) is not kept: the repository states no licence for it (its LICENSE covers the code), so
-# lovr-ui2d's own check reports the missing font until a person confirms the licence (CLAUDE.md rule 11).
-KEEP_FILES = {"lighter": ("media/default_light.png",), "LoveFrames": ("loveframes/skins/*/images/**/*.png",), "3DreamEngine": ("3DreamEngine/objects/sky.obj",)}
+# lovr-ui2d finds its font (ui2d/DejaVuSansMono.ttf, DejaVu Sans Mono 2.34, 335 KB) beside its own file. The repository states no licence for
+# it (its LICENSE covers the code), but the font carries one in its own name table: the Bitstream Vera licence, and DejaVu's changes are public
+# domain. The maintainer confirmed it (2026-11-15) after reading it: free to copy and distribute with software, the notices and permission text
+# in every copy (FONT_LICENCE writes them beside it, read out of the font itself), the font not sold by itself, unmodified. CLAUDE.md rule 11.
+KEEP_FILES = {"lighter": ("media/default_light.png",), "LoveFrames": ("loveframes/skins/*/images/**/*.png",), "3DreamEngine": ("3DreamEngine/objects/sky.obj",),
+              "lovr-ui2d": ("ui2d/DejaVuSansMono.ttf",)}
+# A kept font and the file its licence is written to: the copyright and licence text from the font's own `name` table (IDs 0 and 13).
+FONT_LICENCE = {"lovr-ui2d": ("ui2d/DejaVuSansMono.ttf", "ui2d/LICENSE-DejaVu.txt")}
+
+
+def font_licence_text(path):
+    """The copyright and licence text a TrueType font carries in its `name` table, as written there."""
+    import struct
+    b = open(path, "rb").read()
+    count_tables = struct.unpack(">H", b[4:6])[0]
+    tables = {b[12 + 16 * i:16 + 16 * i].decode("latin1"): struct.unpack(">II", b[20 + 16 * i:28 + 16 * i]) for i in range(count_tables)}
+    off, _ = tables["name"]
+    _, count, string_offset = struct.unpack(">HHH", b[off:off + 6])
+    found = {}
+    for i in range(count):
+        platform, _, language, name_id, length, o = struct.unpack(">6H", b[off + 6 + 12 * i:off + 18 + 12 * i])
+        raw = b[off + string_offset + o:off + string_offset + o + length]
+        if (platform, language) == (3, 0x409):
+            found.setdefault(name_id, raw.decode("utf-16-be"))
+        elif (platform, language) == (1, 0):
+            found.setdefault(name_id + 1000, raw.decode("latin1"))
+    copyright_text = found.get(0) or found.get(1000)
+    licence_text = found.get(13) or found.get(1013)
+    if not copyright_text or not licence_text:
+        raise RuntimeError(f"{path}: the font carries no copyright and licence text in its name table")
+    return copyright_text.strip() + "\n\n" + licence_text.strip() + "\n"
 DROP_EXT = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".ogg", ".wav", ".mp3", ".flac", ".mid", ".ttf", ".otf", ".woff", ".woff2", ".ico", ".icns", ".psd", ".xcf", ".zip", ".gz",
             ".dll", ".so", ".dylib", ".a", ".lib", ".exe", ".o", ".obj", ".mtl", ".pdf", ".rockspec", ".yml", ".yaml", ".sh", ".bat", ".ps1", ".cpp", ".cc", ".c", ".h", ".hpp", ".cmake", ".mk"}
 
@@ -101,6 +129,9 @@ def vendor(e, libs):
                 out = os.path.join(dest, os.path.relpath(h, src))
                 os.makedirs(os.path.dirname(out), exist_ok=True)
                 shutil.copy2(h, out)
+        if e["name"] in FONT_LICENCE:
+            ttf, licence_file = FONT_LICENCE[e["name"]]
+            open(os.path.join(dest, licence_file), "w", encoding="utf-8").write(font_licence_text(os.path.join(dest, ttf)))
         open(mark, "w").write(e["rev"] + "\n")
         return "vendored"
     finally:

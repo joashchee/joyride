@@ -1282,7 +1282,7 @@ summary = "Requires every file in a folder (kikito's require.tree)."
 name = "lovr-ui2d"
 git = "https://github.com/immortalx74/lovr-ui2d"
 module = "ui2d.ui2d"
-caution = "Finds its font beside its own file (debug.getinfo), so keep the ui2d folder intact. A window is needed to draw; the Benchmark has only checked that it initialises. Licence: MIT."
+caution = "Finds its font beside its own file (debug.getinfo), so keep the ui2d folder intact. A window is needed to draw; the Benchmark has only checked that it initialises. Licence: MIT for the code. The font it ships, DejaVu Sans Mono 2.34, is under the Bitstream Vera licence (copyright Bitstream, Inc.; DejaVu's changes are public domain): keep the font's copyright and permission notice with every copy (the licence text is in the font itself), do not sell the font by itself, and rename it if you change it."
 summary = "An immediate mode GUI for LÖVE and LÖVR, pure Lua, inspired by microui and Dear ImGui."
 
 [[library]]

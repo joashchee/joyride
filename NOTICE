@@ -41,8 +41,10 @@ third-party licence ships in the app (scripts/license-scan.py).
   `vendor/neumetik/synth/data/organya/LICENSE`).
 - The Benchmark Libraries sample (`samples/benchmark-libraries/`): its code is MIT like the rest. `libs/` holds the curated
   libraries (`joyride-core/data/libraries.toml`) at their pinned commits, each with its own licence file (MIT or Zlib; docs, pictures and
-  tests removed; luasteam's Steamworks SDK is never copied). Its one asset, the VGA font, is CC BY-SA 4.0 (VileR), see
-  `samples/benchmark-libraries/assets.tsv`.
+  tests removed; luasteam's Steamworks SDK is never copied). Its assets are the VGA font, CC BY-SA 4.0 (VileR), and DejaVu Sans Mono 2.34 (`libs/lovr-ui2d/ui2d/DejaVuSansMono.ttf`, kept for lovr-ui2d,
+  unmodified), under the Bitstream Vera licence: (c) Bitstream, Inc., DejaVu's changes public domain, the notices and permission text with every
+  copy (`LICENSE-DejaVu.txt` beside it, read out of the font), never sold by itself, renamed if changed (the maintainer confirmed it 2026-11-15).
+  Both are in `samples/benchmark-libraries/assets.tsv`.
 - Two more bundled General MIDI SoundFonts, both CC0 1.0 (public domain: nothing to credit, credited anyway), found through Fontastik's
   catalog (a pointer only) and checked against the text inside each file: `pocketsongs-gm.sf2` ("PocketSongsGM" by Vini, 671,012 bytes,
   from https://archive.org/download/wbs-full_202412/PocketSongsGM.sf2) and `protosquare.sf2` ("ProtoSquare!" by Yingchun Soul, 364,238

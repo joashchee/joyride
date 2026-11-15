@@ -70,6 +70,9 @@ impl Licence {
             "MIT" | "ISC" | "Apache-2.0" | "BSD-2-Clause" | "BSD-3-Clause" | "OFL-1.1" => {
                 l(Yes, Yes, Yes, true, false)
             }
+            // The Bitstream Vera licence (DejaVu's fonts carry it): free use, copying and sale with software, the copyright and
+            // permission notices in every copy, no sale of the font by itself, and a changed font must be renamed. Not copyleft.
+            "Bitstream-Vera" => l(Yes, Yes, Yes, true, false),
             "GPL-2.0-only" | "GPL-3.0-only" | "LGPL-2.1-only" | "LGPL-3.0-only" | "MPL-2.0" => {
                 l(Yes, Yes, Yes, true, true)
             }
@@ -273,6 +276,15 @@ fn guess_in_file(p: &Path) -> Option<Guess> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn bitstream_vera_is_known_asks_for_its_notice_and_is_not_copyleft() {
+        let v = Licence::from_spdx("Bitstream-Vera");
+        assert!(v.allows_commercial_use() && v.attribution_required && !v.share_alike);
+        assert_eq!((v.modification, v.redistribution), (Tri::Yes, Tri::Yes));
+        // An id the library does not know stays unknown, and unknown blocks use.
+        assert_eq!(Licence::from_spdx("Bitstream-Vera-Typo").commercial_use, Tri::Unknown);
+    }
 
     #[test]
     fn flags_follow_the_licence() {

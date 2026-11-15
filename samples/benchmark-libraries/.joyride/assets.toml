@@ -7,3 +7,11 @@ licence = "CC-BY-SA-4.0"
 confirmed = true
 author = "VileR (The Ultimate Oldschool PC Font Pack)"
 source = "https://int10h.org/oldschool-pc-fonts/"
+
+[[asset]]
+path = "libs/lovr-ui2d/ui2d/DejaVuSansMono.ttf"
+hash = "c3003d56bea4e3450e71cdd37703cd78fb2f83fb02da376f5e288b07eb4ade8d"
+licence = "Bitstream-Vera"
+confirmed = true
+author = "Bitstream, Inc. (copyright); DejaVu fonts team (changes, public domain)"
+source = "https://dejavu-fonts.github.io/"
