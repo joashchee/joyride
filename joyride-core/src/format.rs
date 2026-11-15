@@ -22,8 +22,26 @@ pub fn find_stylua(toolchains: Option<&Path>) -> Option<PathBuf> {
 /// style; without one, two-space indents (as the editor uses). A syntax error
 /// is returned as the message StyLua gives, and nothing changes.
 pub fn format_lua(stylua: &Path, project: &Path, text: &str) -> Result<String> {
+    run(stylua, project, text, None)
+}
+
+/// Formats only the bytes `start..end` of `text` (UTF-8 byte offsets, as
+/// StyLua counts them); the rest of the file comes back untouched. StyLua
+/// formats whole statements, so the changed part can be wider than the range.
+pub fn format_lua_range(stylua: &Path, project: &Path, text: &str, start: usize, end: usize) -> Result<String> {
+    if start > end || end > text.len() || !text.is_char_boundary(start) || !text.is_char_boundary(end) {
+        return err(format!("range {start}..{end} is not inside the text ({} bytes)", text.len()));
+    }
+    run(stylua, project, text, Some((start, end)))
+}
+
+fn run(stylua: &Path, project: &Path, text: &str, range: Option<(usize, usize)>) -> Result<String> {
     let mut cmd = Command::new(stylua);
-    cmd.current_dir(project).args(["--search-parent-directories", "-"]);
+    cmd.current_dir(project).args(["--search-parent-directories"]);
+    if let Some((a, b)) = range {
+        cmd.args(["--range-start", &a.to_string(), "--range-end", &b.to_string()]);
+    }
+    cmd.arg("-");
     if !["stylua.toml", ".stylua.toml"].iter().any(|f| project.join(f).is_file()) {
         cmd.args(["--indent-type", "Spaces", "--indent-width", "2"]);
     }
@@ -60,6 +78,21 @@ mod tests {
         let e = format_lua(&b, d.path(), "local = = 1").unwrap_err().to_string();
         assert!(!e.is_empty());
         assert_eq!(format_lua(&b, d.path(), "").unwrap(), "");
+    }
+
+    #[test]
+    fn formats_only_the_selected_statements() {
+        let Some(b) = bin() else { return };
+        let d = tempfile::tempdir().unwrap();
+        // Non-ASCII before the range: byte offsets are not character offsets.
+        let text = "local   s=\"é\"\nlocal   a=1\nlocal   b=2\n";
+        let start = text.find("local   a").unwrap();
+        let end = text.find("local   b").unwrap() - 1;
+        let out = format_lua_range(&b, d.path(), text, start, end).unwrap();
+        assert_eq!(out, "local   s=\"é\"\nlocal a = 1\nlocal   b=2\n", "only the middle line changes");
+        assert!(format_lua_range(&b, d.path(), text, 3, 999).is_err());
+        let inside = text.find('é').unwrap() + 1;
+        assert!(format_lua_range(&b, d.path(), text, inside, end).is_err(), "inside a character is refused");
     }
 
     #[test]

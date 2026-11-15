@@ -269,16 +269,39 @@ pub struct Found {
 /// Most hits one search returns.
 pub const MAX_HITS: usize = 500;
 
+/// How [`search_with`] reads its query.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct SearchOptions {
+    pub case_sensitive: bool,
+    /// Match only where the query is not touching a letter, digit or `_`.
+    pub whole_word: bool,
+    /// Read the query as a regular expression (Rust `regex` syntax: no
+    /// look-around, no back-references, and so no catastrophic backtracking).
+    pub regex: bool,
+}
+
 /// Finds `query` as plain text (not a pattern) in the project's text files,
 /// in tree order. Files over [`MAX_TEXT_BYTES`], non-UTF-8 files and
 /// symlinks are skipped; hidden folders are not searched.
 pub fn search(root: &Path, query: &str, case_sensitive: bool) -> Result<Found> {
+    search_with(root, query, SearchOptions { case_sensitive, ..Default::default() })
+}
+
+/// [`search`] with whole-word and regular-expression modes. A bad pattern is
+/// an error carrying the pattern's own message, never a silent empty result.
+pub fn search_with(root: &Path, query: &str, opts: SearchOptions) -> Result<Found> {
     if query.is_empty() {
         return Ok(Found { hits: vec![], truncated: false });
     }
+    let source = if opts.regex { query.to_string() } else { regex::escape(query) };
+    let source = if opts.whole_word { format!(r"(?:^|[^\p{{L}}\p{{N}}_])(?:{source})(?:[^\p{{L}}\p{{N}}_]|$)") } else { source };
+    let re = regex::RegexBuilder::new(&source)
+        .case_insensitive(!opts.case_sensitive)
+        .size_limit(1 << 20)
+        .build()
+        .or_else(|e| err(format!("not a valid pattern: {e}")))?;
     let root = root.canonicalize()?;
     let listing = list(&root)?;
-    let needle = if case_sensitive { query.to_string() } else { query.to_lowercase() };
     let mut hits = Vec::new();
     for e in listing.entries.iter().filter(|e| !e.dir) {
         let p = root.join(&e.path);
@@ -289,8 +312,7 @@ pub fn search(root: &Path, query: &str, case_sensitive: bool) -> Result<Found> {
         let Ok(bytes) = fs::read(&p) else { continue };
         let Ok(text) = String::from_utf8(bytes) else { continue };
         for (i, line) in text.lines().enumerate() {
-            let found = if case_sensitive { line.contains(&needle) } else { line.to_lowercase().contains(&needle) };
-            if !found {
+            if !re.is_match(line) {
                 continue;
             }
             if hits.len() >= MAX_HITS {
@@ -469,5 +491,22 @@ mod tests {
         std::os::unix::fs::symlink(outside.path().join("s.txt"), d.path().join("l.txt")).unwrap();
         std::os::unix::fs::symlink(outside.path(), d.path().join("ldir")).unwrap();
         assert!(search(d.path(), "needle", true).unwrap().hits.is_empty());
+    }
+
+    #[test]
+    fn whole_word_and_regex_search() {
+        let d = tempfile::tempdir().unwrap();
+        fs::write(d.path().join("a.lua"), "local player = 1\nlocal players = 2\nx = player_one\nprint(player)\n").unwrap();
+        let r = d.path();
+        let word = SearchOptions { whole_word: true, ..Default::default() };
+        let lines: Vec<u32> = search_with(r, "player", word).unwrap().hits.iter().map(|h| h.line).collect();
+        assert_eq!(lines, vec![1, 4], "players and player_one are other words");
+        let re = SearchOptions { regex: true, case_sensitive: true, ..Default::default() };
+        assert_eq!(search_with(r, r"^local \w+s = \d$", re).unwrap().hits.len(), 1);
+        let both = SearchOptions { regex: true, whole_word: true, ..Default::default() };
+        assert_eq!(search_with(r, "player|players", both).unwrap().hits.len(), 3, "alternation is grouped");
+        let bad = search_with(r, "(", SearchOptions { regex: true, ..Default::default() });
+        assert!(bad.unwrap_err().to_string().contains("not a valid pattern"));
+        assert_eq!(search_with(r, "t(p", Default::default()).unwrap().hits.len(), 1, "plain text is escaped, so the unbalanced ( is just text");
     }
 }

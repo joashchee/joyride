@@ -91,11 +91,13 @@ pub struct MacApp {
     pub name: String,
     pub bundle_id: String,
     pub version: String,
+    /// A square PNG (1024 px is best) that replaces LÖVE's icon.
+    pub icon: Option<PathBuf>,
 }
 
 /// macOS: copies `love.app` to `<name>.app`, puts `game.love` in
 /// `Contents/Resources/`, and rewrites `Info.plist` (identifier, names,
-/// version; the `.love` document and type declarations are removed so the
+/// version, and the icon when one is given; the `.love` document and type declarations are removed so the
 /// game does not claim every `.love` file). Signing is the caller's step:
 /// ad hoc for local trials, Developer ID for release.
 pub fn macos(love_app: &Path, game_love: &Path, out_dir: &Path, app: &MacApp) -> Result<PathBuf> {
@@ -120,6 +122,19 @@ pub fn macos(love_app: &Path, game_love: &Path, out_dir: &Path, app: &MacApp) ->
     d.insert("CFBundleVersion".into(), app.version.clone().into());
     for k in ["UTExportedTypeDeclarations", "CFBundleDocumentTypes"] {
         d.remove(k);
+    }
+    if let Some(icon) = &app.icon {
+        // love.app's icon is an asset catalog (`CFBundleIconName` into
+        // Assets.car), which macOS prefers over `CFBundleIconFile`; both go,
+        // so the .icns is the only icon left.
+        let img = crate::icons::load(icon)?;
+        let res = dest.join("Contents/Resources");
+        for old in ["OS X AppIcon.icns", "Assets.car"] {
+            let _ = fs::remove_file(res.join(old));
+        }
+        fs::write(res.join("AppIcon.icns"), crate::icons::icns(&img)?)?;
+        d.insert("CFBundleIconFile".into(), "AppIcon".into());
+        d.remove("CFBundleIconName");
     }
     v.to_file_xml(&p).map_err(|e| crate::Error::Msg(format!("Info.plist: {e}")))?;
     Ok(dest)
@@ -351,6 +366,41 @@ mod tests {
     }
 
     #[test]
+    fn macos_icon_replaces_the_asset_catalog_icon() {
+        let d = tempfile::tempdir().unwrap();
+        let s = staged(d.path());
+        let love = d.path().join("g.love");
+        love_archive(&s, &love).unwrap();
+        let app = d.path().join("love.app");
+        fs::create_dir_all(app.join("Contents/MacOS")).unwrap();
+        fs::create_dir_all(app.join("Contents/Resources")).unwrap();
+        fs::write(app.join("Contents/MacOS/love"), b"bin").unwrap();
+        fs::write(app.join("Contents/Resources/OS X AppIcon.icns"), b"old").unwrap();
+        fs::write(app.join("Contents/Resources/Assets.car"), b"old").unwrap();
+        let mut dict = plist::Dictionary::new();
+        dict.insert("CFBundleIdentifier".into(), "org.love2d.love".into());
+        dict.insert("CFBundleIconFile".into(), "OS X AppIcon".into());
+        dict.insert("CFBundleIconName".into(), "OS X AppIcon".into());
+        plist::Value::Dictionary(dict).to_file_xml(app.join("Contents/Info.plist")).unwrap();
+        let png = d.path().join("icon.png");
+        image::RgbaImage::from_pixel(256, 256, image::Rgba([200, 30, 30, 255])).save(&png).unwrap();
+        let mk = |icon| MacApp { name: "G".into(), bundle_id: "a.b".into(), version: "1".into(), icon };
+        let out = macos(&app, &love, &d.path().join("mac"), &mk(Some(png.clone()))).unwrap();
+        let v = plist::Value::from_file(out.join("Contents/Info.plist")).unwrap();
+        let p = v.as_dictionary().unwrap();
+        assert_eq!(p["CFBundleIconFile"].as_string(), Some("AppIcon"));
+        assert!(!p.contains_key("CFBundleIconName"), "the catalog name would win over the file");
+        let icns = fs::read(out.join("Contents/Resources/AppIcon.icns")).unwrap();
+        assert_eq!(&icns[..4], b"icns");
+        assert!(!out.join("Contents/Resources/Assets.car").exists() && !out.join("Contents/Resources/OS X AppIcon.icns").exists());
+        // Without an icon LÖVE's own stays untouched.
+        let out = macos(&app, &love, &d.path().join("mac2"), &mk(None)).unwrap();
+        assert!(out.join("Contents/Resources/Assets.car").is_file());
+        // A bad icon stops the build rather than shipping LÖVE's.
+        assert!(macos(&app, &love, &d.path().join("mac3"), &mk(Some(d.path().join("missing.png")))).is_err());
+    }
+
+    #[test]
     fn macos_app_gets_the_game_and_a_new_identity() {
         let d = tempfile::tempdir().unwrap();
         let s = staged(d.path());
@@ -372,7 +422,7 @@ mod tests {
         dict.insert("UTExportedTypeDeclarations".into(), plist::Value::Array(vec![]));
         dict.insert("CFBundleDocumentTypes".into(), plist::Value::Array(vec![]));
         plist::Value::Dictionary(dict).to_file_xml(app.join("Contents/Info.plist")).unwrap();
-        let out = macos(&app, &love, &d.path().join("mac"), &MacApp { name: "My Game".into(), bundle_id: "dev.joyride.mygame".into(), version: "1.2.0".into() }).unwrap();
+        let out = macos(&app, &love, &d.path().join("mac"), &MacApp { name: "My Game".into(), bundle_id: "dev.joyride.mygame".into(), version: "1.2.0".into(), icon: None }).unwrap();
         assert!(out.join("Contents/Resources/game.love").is_file());
         let v = plist::Value::from_file(out.join("Contents/Info.plist")).unwrap();
         let d2 = v.as_dictionary().unwrap();
@@ -385,7 +435,7 @@ mod tests {
             assert!(fs::symlink_metadata(out.join("Contents/link")).unwrap().file_type().is_symlink());
             assert_eq!(fs::metadata(out.join("Contents/MacOS/love")).unwrap().permissions().mode() & 0o111, 0o111);
         }
-        assert!(macos(&d.path().join("nope.app"), &love, &d.path().join("m2"), &MacApp { name: "x".into(), bundle_id: "a.b".into(), version: "1".into() }).is_err());
+        assert!(macos(&d.path().join("nope.app"), &love, &d.path().join("m2"), &MacApp { name: "x".into(), bundle_id: "a.b".into(), version: "1".into(), icon: None }).is_err());
     }
 
     /// Runs the launch script under bash against a fake PortMaster: a control

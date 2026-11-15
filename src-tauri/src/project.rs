@@ -122,24 +122,30 @@ pub fn delete_project_path(state: State<Project>, path: String) -> Result<Listin
     files::list(&root).map_err(msg)
 }
 
-/// Plain-text search over the project, off the UI thread.
+/// Search over the project (plain text, whole word or regular expression), off the UI thread.
 #[tauri::command]
-pub async fn search_project(state: State<'_, Project>, query: String, case_sensitive: bool) -> Result<files::Found, String> {
+pub async fn search_project(state: State<'_, Project>, query: String, case_sensitive: bool, whole_word: Option<bool>, regex: Option<bool>) -> Result<files::Found, String> {
     let root = state.root()?;
-    tauri::async_runtime::spawn_blocking(move || files::search(&root, &query, case_sensitive).map_err(msg))
+    let opts = files::SearchOptions { case_sensitive, whole_word: whole_word.unwrap_or(false), regex: regex.unwrap_or(false) };
+    tauri::async_runtime::spawn_blocking(move || files::search_with(&root, &query, opts).map_err(msg))
         .await
         .map_err(|e| e.to_string())?
 }
 
 /// Formats Lua text with the bundled StyLua (off the UI thread). The project
-/// folder is the working directory, so its `stylua.toml` applies.
+/// folder is the working directory, so its `stylua.toml` applies. `range` is
+/// a pair of UTF-8 byte offsets: only that part is formatted.
 #[tauri::command]
-pub async fn format_lua(app: AppHandle, state: State<'_, Project>, text: String) -> Result<String, String> {
+pub async fn format_lua(app: AppHandle, state: State<'_, Project>, text: String, range: Option<(usize, usize)>) -> Result<String, String> {
     let root = state.root()?;
     let tc = crate::bundled_toolchains(&app);
     tauri::async_runtime::spawn_blocking(move || {
         let bin = joyride_core::format::find_stylua(tc.as_deref()).ok_or("StyLua was not found. Run scripts/fetch-toolchains.py.")?;
-        joyride_core::format::format_lua(&bin, &root, &text).map_err(msg)
+        match range {
+            Some((a, b)) => joyride_core::format::format_lua_range(&bin, &root, &text, a, b),
+            None => joyride_core::format::format_lua(&bin, &root, &text),
+        }
+        .map_err(msg)
     })
     .await
     .map_err(|e| e.to_string())?

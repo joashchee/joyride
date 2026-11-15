@@ -36,6 +36,7 @@ pub mod format;
 pub mod github;
 pub mod integrate;
 pub mod games;
+pub mod icons;
 pub mod library;
 pub mod lint;
 pub mod lint_libs;

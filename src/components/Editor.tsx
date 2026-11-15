@@ -257,6 +257,24 @@ export default function Editor(props: {
           },
         })
       : null;
+    // Format Selection: StyLua gets UTF-8 byte offsets (Monaco counts UTF-16 units).
+    const rangeFormatter = inTauri
+      ? monaco.languages.registerDocumentRangeFormattingEditProvider("lua", {
+          displayName: "StyLua",
+          async provideDocumentRangeFormattingEdits(model, r) {
+            try {
+              const full = model.getValue();
+              const bytes = (offset: number) => new TextEncoder().encode(full.slice(0, offset)).length;
+              const text = await formatLua(full, [bytes(model.getOffsetAt({ lineNumber: r.startLineNumber, column: r.startColumn })), bytes(model.getOffsetAt({ lineNumber: r.endLineNumber, column: r.endColumn }))]);
+              cb.current.onNotice?.(null);
+              return text === full ? [] : [{ range: model.getFullModelRange(), text }];
+            } catch (e) {
+              cb.current.onNotice?.(`Format: ${String(e)}`);
+              return [];
+            }
+          },
+        })
+      : null;
     // Colour swatches on love.graphics.setColor(0.2, 0.4, 1): click to pick, the numbers are rewritten.
     const colors = inTauri
       ? monaco.languages.registerColorProvider("lua", {
@@ -283,6 +301,7 @@ export default function Editor(props: {
       offPalette();
       offFont();
       formatter?.dispose();
+      rangeFormatter?.dispose();
       colors?.dispose();
       sub.dispose();
       editor.dispose();

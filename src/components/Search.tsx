@@ -5,6 +5,8 @@ import { searchProject, type Hit } from "../lib/backend";
 export default function Search(props: { onOpen: (path: string, line: number) => void; focusKey: number }) {
   const [q, setQ] = useState("");
   const [matchCase, setMatchCase] = useState(false);
+  const [wholeWord, setWholeWord] = useState(false);
+  const [regex, setRegex] = useState(false);
   const [hits, setHits] = useState<Hit[] | null>(null);
   const [more, setMore] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -22,12 +24,13 @@ export default function Search(props: { onOpen: (path: string, line: number) => 
     const n = ++seq.current;
     if (!q) return setHits(null);
     try {
-      const r = await searchProject(q, matchCase);
+      const r = await searchProject(q, matchCase, wholeWord, regex);
       if (n !== seq.current) return; // a newer search has started
       setHits(r.hits);
       setMore(r.truncated);
       setErr(null);
     } catch (e) {
+      setHits(null);
       setErr(String(e));
     }
   };
@@ -43,6 +46,12 @@ export default function Search(props: { onOpen: (path: string, line: number) => 
         <input ref={input} aria-label="Find in files" placeholder="Find in files" value={q} onChange={(e) => setQ(e.target.value)} spellCheck={false} />
         <label>
           <input type="checkbox" checked={matchCase} onChange={(e) => setMatchCase(e.target.checked)} /> Match case
+        </label>
+        <label>
+          <input type="checkbox" checked={wholeWord} onChange={(e) => setWholeWord(e.target.checked)} /> Whole word
+        </label>
+        <label>
+          <input type="checkbox" checked={regex} onChange={(e) => setRegex(e.target.checked)} /> Regex
         </label>
       </form>
       {err && <p className="empty" role="alert">{err}</p>}

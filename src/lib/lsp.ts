@@ -1,8 +1,9 @@
 // A small Language Server client for lua-language-server over Tauri events
 // (src-tauri/src/lsp.rs). Monaco 0.57's own `monaco-lsp-client` is not
 // published to npm, so this covers what the editor needs: document sync
-// (full text), diagnostics, completion, hover, signature help and
-// go-to-definition. Positions are Monaco 1-based, the protocol 0-based.
+// (full text), diagnostics, completion, hover, signature help,
+// go-to-definition, references, rename, document highlights, document
+// symbols (outline, Cmd+Shift+O) and code actions (quick fixes). Positions are Monaco 1-based, the protocol 0-based.
 import { invoke } from "@tauri-apps/api/core";
 import * as monaco from "monaco-editor/editor/editor.api.js";
 
@@ -190,6 +191,112 @@ function register() {
   );
 }
 
+const SYMBOL_KINDS = monaco.languages.SymbolKind;
+// LSP SymbolKind (1-based) → Monaco's.
+const SYMBOL_MAP = [SYMBOL_KINDS.File, SYMBOL_KINDS.Module, SYMBOL_KINDS.Namespace, SYMBOL_KINDS.Package, SYMBOL_KINDS.Class, SYMBOL_KINDS.Method, SYMBOL_KINDS.Property, SYMBOL_KINDS.Field, SYMBOL_KINDS.Constructor, SYMBOL_KINDS.Enum, SYMBOL_KINDS.Interface, SYMBOL_KINDS.Function, SYMBOL_KINDS.Variable, SYMBOL_KINDS.Constant, SYMBOL_KINDS.String, SYMBOL_KINDS.Number, SYMBOL_KINDS.Boolean, SYMBOL_KINDS.Array, SYMBOL_KINDS.Object, SYMBOL_KINDS.Key, SYMBOL_KINDS.Null, SYMBOL_KINDS.EnumMember, SYMBOL_KINDS.Struct, SYMBOL_KINDS.Event, SYMBOL_KINDS.Operator, SYMBOL_KINDS.TypeParameter];
+
+/** LSP DocumentSymbol (nested) or SymbolInformation (flat) → Monaco's outline. */
+function toSymbol(s: Json): monaco.languages.DocumentSymbol {
+  const r = s.range ?? s.location.range;
+  return {
+    name: s.name,
+    detail: s.detail ?? s.containerName ?? "",
+    kind: SYMBOL_MAP[(s.kind ?? 13) - 1] ?? SYMBOL_KINDS.Variable,
+    tags: [],
+    range: range(r),
+    selectionRange: range(s.selectionRange ?? r),
+    children: (s.children ?? []).map(toSymbol),
+  };
+}
+
+/** Turns an LSP WorkspaceEdit into Monaco's, or says which closed files it needs. */
+function toWorkspaceEdit(e: Json): monaco.languages.WorkspaceEdit {
+  const byUri: Record<string, Json[]> = { ...(e?.changes ?? {}) };
+  for (const c of e?.documentChanges ?? []) if (c.textDocument) (byUri[c.textDocument.uri] ??= []).push(...c.edits);
+  const closed = Object.keys(byUri).filter((u) => !tracked.has(key(u)));
+  if (closed.length) {
+    const names = closed.map((u) => decodeURIComponent(u.slice(u.lastIndexOf("/") + 1)));
+    throw new Error(`Open ${names.slice(0, 5).join(", ")}${names.length > 5 ? ` and ${names.length - 5} more` : ""} first: a rename only changes files that are open.`);
+  }
+  return {
+    edits: Object.entries(byUri).flatMap(([u, edits]) =>
+      edits.map((t) => ({ resource: monaco.Uri.parse(u), versionId: undefined, textEdit: { range: range(t.range), text: t.newText } })),
+    ),
+  };
+}
+
+function registerNavigation() {
+  const lang = "lua";
+  providers.push(
+    monaco.languages.registerReferenceProvider(lang, {
+      async provideReferences(model, p, ctx) {
+        if (!tracked.has(key(model.uri))) return null;
+        const r = await request<Json[]>("textDocument/references", { textDocument: doc(model), position: pos(p), context: { includeDeclaration: ctx.includeDeclaration } }).catch(() => null);
+        return (r ?? []).map((l) => ({ uri: monaco.Uri.parse(l.uri), range: range(l.range) }));
+      },
+    }),
+    monaco.languages.registerDocumentHighlightProvider(lang, {
+      async provideDocumentHighlights(model, p) {
+        if (!tracked.has(key(model.uri))) return null;
+        const r = await request<Json[]>("textDocument/documentHighlight", { textDocument: doc(model), position: pos(p) }).catch(() => null);
+        return (r ?? []).map((h) => ({ range: range(h.range), kind: [0, monaco.languages.DocumentHighlightKind.Text, monaco.languages.DocumentHighlightKind.Read, monaco.languages.DocumentHighlightKind.Write][h.kind ?? 1] }));
+      },
+    }),
+    monaco.languages.registerDocumentSymbolProvider(lang, {
+      displayName: "Lua",
+      async provideDocumentSymbols(model) {
+        if (!tracked.has(key(model.uri))) return null;
+        const r = await request<Json[]>("textDocument/documentSymbol", { textDocument: doc(model) }).catch(() => null);
+        return (r ?? []).map(toSymbol);
+      },
+    }),
+    monaco.languages.registerRenameProvider(lang, {
+      async resolveRenameLocation(model, p) {
+        if (!tracked.has(key(model.uri))) return { text: "", range: new monaco.Range(1, 1, 1, 1), rejectReason: "Open the file in the editor first." };
+        const r = await request<Json>("textDocument/prepareRename", { textDocument: doc(model), position: pos(p) }).catch(() => null);
+        const rg = r?.range ?? r;
+        if (!rg?.start) return { text: "", range: new monaco.Range(p.lineNumber, p.column, p.lineNumber, p.column), rejectReason: "There is no name to rename here." };
+        const mr = range(rg);
+        return { range: mr, text: model.getValueInRange(mr) };
+      },
+      async provideRenameEdits(model, p, newName) {
+        const r = await request<Json>("textDocument/rename", { textDocument: doc(model), position: pos(p), newName }).catch((e: Error) => {
+          throw e;
+        });
+        if (!r) return { edits: [], rejectReason: "The language server cannot rename this." };
+        try {
+          return toWorkspaceEdit(r);
+        } catch (e) {
+          return { edits: [], rejectReason: String((e as Error).message) };
+        }
+      },
+    }),
+    monaco.languages.registerCodeActionProvider(lang, {
+      async provideCodeActions(model, rg, ctx) {
+        if (!tracked.has(key(model.uri))) return null;
+        const diagnostics = ctx.markers
+          .filter((m) => m.source !== undefined)
+          .map((m) => ({ range: { start: { line: m.startLineNumber - 1, character: m.startColumn - 1 }, end: { line: m.endLineNumber - 1, character: m.endColumn - 1 } }, message: m.message, severity: m.severity === monaco.MarkerSeverity.Error ? 1 : m.severity === monaco.MarkerSeverity.Warning ? 2 : 3, source: m.source, code: m.code }));
+        const r = await request<Json[]>("textDocument/codeAction", {
+          textDocument: doc(model),
+          range: { start: { line: rg.startLineNumber - 1, character: rg.startColumn - 1 }, end: { line: rg.endLineNumber - 1, character: rg.endColumn - 1 } },
+          context: { diagnostics, only: ctx.only ? [ctx.only] : undefined },
+        }).catch(() => null);
+        const actions: monaco.languages.CodeAction[] = [];
+        for (const a of r ?? []) {
+          if (!a.edit) continue; // commands the client would have to run are not supported
+          try {
+            actions.push({ title: a.title, kind: a.kind, isPreferred: a.isPreferred, edit: toWorkspaceEdit(a.edit) });
+          } catch {
+            /* an action that needs a closed file is left out */
+          }
+        }
+        return { actions, dispose() {} };
+      },
+    }),
+  );
+}
+
 /** Starts the server for the open project. Safe to call again for another project. */
 export function startLsp(): Promise<void> {
   stopLsp();
@@ -226,11 +333,17 @@ export function startLsp(): Promise<void> {
           completion: { completionItem: { snippetSupport: true, documentationFormat: ["markdown", "plaintext"] } },
           signatureHelp: { signatureInformation: { documentationFormat: ["markdown", "plaintext"] } },
           definition: {},
+          references: {},
+          documentHighlight: {},
+          documentSymbol: { hierarchicalDocumentSymbolSupport: true },
+          rename: { prepareSupport: true },
+          codeAction: { codeActionLiteralSupport: { codeActionKind: { valueSet: ["quickfix", "refactor", "source"] } } },
         },
       },
     });
     await notify("initialized", {});
     register();
+    registerNavigation();
     setStatus("ready");
     // Documents opened before the server was ready.
     tracked.forEach((t) => open(t.model, t));

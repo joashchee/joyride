@@ -84,7 +84,8 @@ export const deletePath = (path: string) => invoke<Listing>("delete_project_path
 /** Moves to the Trash where there is one (the Mac), else deletes for good: `trashed` says which happened. */
 export const trashPath = (path: string) => invoke<{ listing: Listing; trashed: boolean }>("trash_project_path", { path });
 
-export const formatLua = (text: string) => invoke<string>("format_lua", { text });
+/** `range` is a pair of UTF-8 byte offsets; without it the whole text is formatted. */
+export const formatLua = (text: string, range?: [number, number]) => invoke<string>("format_lua", { text, range: range ?? null });
 
 export interface LintItem {
   line: number;
@@ -110,8 +111,8 @@ export interface Hit {
   line: number;
   text: string;
 }
-export const searchProject = (query: string, caseSensitive: boolean) =>
-  invoke<{ hits: Hit[]; truncated: boolean }>("search_project", { query, caseSensitive });
+export const searchProject = (query: string, caseSensitive: boolean, wholeWord = false, regex = false) =>
+  invoke<{ hits: Hit[]; truncated: boolean }>("search_project", { query, caseSensitive, wholeWord, regex });
 
 export interface UseRow {
   api: string;
