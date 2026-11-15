@@ -8,8 +8,7 @@ use tauri::{AppHandle, Manager};
 /// repository's `samples/` under `tauri dev`.
 fn shipped(app: &AppHandle) -> Option<PathBuf> {
     let installed = app.path().resource_dir().ok().map(|d| d.join("_up_/samples"));
-    let source = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../samples");
-    installed.filter(|p| p.is_dir()).or_else(|| source.is_dir().then_some(source))
+    installed.filter(|p| p.is_dir()).or_else(|| crate::source_path("../samples").filter(|p| p.is_dir()))
 }
 
 #[tauri::command]

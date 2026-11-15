@@ -25,7 +25,7 @@ fn choice_file(app: &AppHandle) -> Result<PathBuf, String> {
 /// Where the shipped SoundFonts are: beside the app's other resources, or (a development build) in the source tree.
 pub fn resources(app: &AppHandle) -> PathBuf {
     let installed = app.path().resource_dir().ok().map(|d| d.join("resources/soundfonts"));
-    installed.filter(|p| p.is_dir()).unwrap_or_else(|| std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/soundfonts"))
+    installed.filter(|p| p.is_dir()).or_else(|| crate::source_path("resources/soundfonts")).unwrap_or_else(|| PathBuf::from("resources/soundfonts"))
 }
 
 /// The chosen bank, loaded (or the cached one). `None` for the built-in sound, or if the file cannot be read: the preview then plays

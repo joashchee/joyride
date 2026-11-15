@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- For the LÖVE that JoyrIDE bundles and runs a person's game with
+       (scripts/sign-macos.sh). Measured on LÖVE 11.5 under the hardened
+       runtime: with neither of the next two it is killed at start (only
+       allow-jit does not help); with allow-unsigned-executable-memory it
+       runs. LuaJIT needs that memory. -->
+  <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+  <true/>
+  <!-- Not needed in that measurement (LuaJIT's JIT was off on this Mac), but
+       LuaJIT in JIT mode on Apple silicon maps its code with MAP_JIT. -->
+  <key>com.apple.security.cs.allow-jit</key>
+  <true/>
+  <!-- A game loads its own native libraries (the FFI libraries in the
+       library list, a C module in a project), which JoyrIDE cannot sign, so
+       library validation would refuse them. -->
+  <key>com.apple.security.cs.disable-library-validation</key>
+  <true/>
+</dict>
+</plist>

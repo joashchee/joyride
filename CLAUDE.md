@@ -206,6 +206,7 @@ unsupported API is never faked, so feature tests keep answering truthfully.
   credentials in the repo. `JOYRIDE_UNSIGNED=1` for local trials. "Build
   the macOS app" means the `.app` only. Run it first when Tauri exists:
   it assumes `src-tauri/` and `package.json`.
+- The release script prepares what goes into the app and checks it: `scripts/stage-samples.sh` (only git-tracked sample files, never `bin/` or `results/`), `scripts/build-nttplay.sh`, and `scripts/sign-macos.sh` (symlinks restored, every Mach-O signed with the Developer ID, hardened runtime and timestamp, each audited; the bundled LÖVE's entitlements are in `src-tauri/macos/`). Never use `env!("CARGO_MANIFEST_DIR")` in code a release build compiles: use `crate::source_path` (debug only), or the release script refuses the app for the home path in it. After `scripts/fetch-toolchains.py` (it clears `resources/toolchains/`) run `build-nttplay.sh`.
 - Linux and Windows build on GitHub-hosted runners (`.github/workflows`),
   published by `scripts/publish-release.sh`. Standard runners only, so
   it stays free. No AppImage of the IDE itself (it would ship LGPL

@@ -181,7 +181,8 @@ fn looks_like_text(head: &[u8], size: u64) -> bool {
     }
 }
 
-/// `nttplay`, if there is one: `JOYRIDE_NTTPLAY`, one beside the app's tools,
+/// `nttplay`, if there is one: `JOYRIDE_NTTPLAY`, the one bundled with the app
+/// (`toolchains/nttplay/`, built by `scripts/build-nttplay.sh`), one beside the app's tools,
 /// the copy built from `vendor/neumetik` in a development tree, then the PATH.
 pub fn find_nttplay(tools: Option<&Path>) -> Option<PathBuf> {
     if let Some(p) = std::env::var_os("JOYRIDE_NTTPLAY").map(PathBuf::from) {
@@ -190,9 +191,10 @@ pub fn find_nttplay(tools: Option<&Path>) -> Option<PathBuf> {
     let mut c: Vec<PathBuf> = Vec::new();
     if let Some(t) = tools {
         c.push(t.join("nttplay"));
-        c.push(t.join("nttplay/nttplay"));
+        // What scripts/build-nttplay.sh puts in the app's resources.
+        c.push(t.join(if cfg!(windows) { "nttplay/nttplay.exe" } else { "nttplay/nttplay" }));
     }
-    c.push(Path::new(env!("CARGO_MANIFEST_DIR")).join("../vendor/neumetik/nttplay/target/release/nttplay"));
+    c.extend(crate::source_path("../vendor/neumetik/nttplay/target/release/nttplay"));
     if let Some(path) = std::env::var_os("PATH") {
         c.extend(std::env::split_paths(&path).map(|d| d.join("nttplay")));
     }
@@ -200,6 +202,7 @@ pub fn find_nttplay(tools: Option<&Path>) -> Option<PathBuf> {
 }
 
 /// Builds the preview of `rel` inside `root`, with what LÖVE does with the file.
+#[cfg(test)]
 pub fn build(root: &Path, rel: &str, nttplay: Option<&Path>) -> Result<Preview, String> {
     build_with_sound(root, rel, nttplay, None)
 }
@@ -990,6 +993,31 @@ mod tests {
             }
             b => panic!("{b:?}"),
         }
+    }
+
+    /// The bundled copy is found the way the app finds it, and it plays.
+    /// Skips when `scripts/build-nttplay.sh` has not been run here.
+    #[test]
+    fn the_bundled_nttplay_is_found_in_the_toolchains_folder_and_runs() {
+        let tools = Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/toolchains");
+        if !tools.join("nttplay").is_dir() {
+            eprintln!("skipped: scripts/build-nttplay.sh not run");
+            return;
+        }
+        if std::env::var_os("JOYRIDE_NTTPLAY").is_some() {
+            return; // the override wins by design
+        }
+        let found = find_nttplay(Some(&tools)).expect("nttplay is in the toolchains folder");
+        assert!(found.starts_with(&tools), "found {} instead of the bundled copy", found.display());
+        let d = proj();
+        let t = [0u8, 0x90, 60, 100, 96, 0x80, 60, 0, 0, 0xFF, 0x2F, 0];
+        let mut m = b"MThd".to_vec();
+        m.extend([0, 0, 0, 6, 0, 0, 0, 1, 0, 96, b'M', b'T', b'r', b'k', 0, 0, 0, t.len() as u8]);
+        m.extend(t);
+        std::fs::write(d.path().join("song.mid"), m).unwrap();
+        let p = build(d.path(), "song.mid", Some(&found)).unwrap();
+        assert_eq!(p.kind, "music", "{:?} {:?}", p.facts, p.note);
+        assert!(matches!(p.body, Body::Audio { data_url: Some(_), .. }));
     }
 
     #[test]

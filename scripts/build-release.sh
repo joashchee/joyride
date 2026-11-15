@@ -9,6 +9,17 @@
 # rewrites them. When several prefixes match, rustc applies the last one,
 # so the more specific project path comes after $HOME.
 #
+# What goes into the app besides the Rust and the page, all prepared below
+# before the build and checked after it (see scripts/sign-macos.sh):
+#   - the bundled programs (fetch-toolchains.py: LÖVE, lua-language-server,
+#     StyLua; build-nttplay.sh: nttplay), the SoundFonts, and the sample
+#     projects as the files git tracks (stage-samples.sh), never whatever
+#     else is on this disk;
+#   - every executable and library in them signed with the Developer ID, the
+#     hardened runtime and a secure timestamp, and the symlinks Tauri's
+#     resource copy flattened put back, by sign-macos.sh, between the build
+#     and notarization. Notarization refuses the app for one that is not.
+#
 # Arguments are passed on to `tauri build`, e.g. `--bundles app`.
 # Afterwards the built app is searched for $HOME, and the script fails if
 # it's still there. Always build releases with this script. Finally the
@@ -61,10 +72,40 @@ if [ -z "$UNSIGNED" ]; then
 fi
 
 export RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=$HOME=~ --remap-path-prefix=$ROOT=."
+# The C the crates compile in (the Theora decoder, SQLite) bakes source paths
+# in through __FILE__; clang's -ffile-prefix-map is the same rewrite for it.
+export CFLAGS="${CFLAGS:-} -ffile-prefix-map=$HOME=~ -ffile-prefix-map=$ROOT=."
+export CXXFLAGS="${CXXFLAGS:-} -ffile-prefix-map=$HOME=~ -ffile-prefix-map=$ROOT=."
+
+# ---- What goes into the app -------------------------------------------------
+TOOLS="$ROOT/src-tauri/resources/toolchains"
+# The pinned LÖVE, lua-language-server and StyLua (this clears the folder, so
+# only when they are missing; run it by hand to refresh them).
+[ -d "$TOOLS/love-11.5/love.app" ] || python3 -I scripts/fetch-toolchains.py
+# Running a tool by hand leaves files in its own folder (lua-language-server
+# writes log/ beside itself); the app passes it a log folder in app-data, so
+# none belongs in the bundle. Finder leaves .DS_Store files.
+find "$TOOLS"/lua-language-server -path '*/log/*' -type f -delete 2>/dev/null || true
+find "$ROOT/src-tauri/resources" -name .DS_Store -delete 2>/dev/null || true
+# nttplay (the file preview's MIDI and tracker player): after the fetch,
+# which clears its folder; built with the flags above so no home folder is in
+# it, and universal.
+"$ROOT/scripts/build-nttplay.sh"
+# Every third-party licence, written fresh from what this build links.
+python3 -I scripts/third-party-licenses.py
+# The samples, from git's file list. (Tauri's own resource list takes a
+# folder as it is, with bin/ builds and reports in it.)
+"$ROOT/scripts/stage-samples.sh"
+
+# The bundle's resources, as a map so the staged samples land where the app
+# looks for them (Resources/_up_/samples, as the slice in tauri.conf.json
+# puts the repository's own samples/ for `tauri dev`). A directory key keeps
+# its structure under its target; a glob key would flatten it.
+RESOURCES='{"bundle":{"resources":{"resources/toolchains":"resources/toolchains","resources/soundfonts":"resources/soundfonts","../build/samples-stage/samples":"_up_/samples"}}}'
 
 # Both architectures, built one after the other and joined by lipo.
 # Tauri warns that it skips notarization: this script notarizes below.
-npm run tauri build -- --target universal-apple-darwin "$@"
+npm run tauri build -- --target universal-apple-darwin --config "$RESOURCES" "$@"
 
 TARGETS="$ROOT/src-tauri/target"
 TARGET="$TARGETS/universal-apple-darwin/release"
@@ -78,6 +119,7 @@ LEAKS=$(grep -r -l -a -F "$HOME" "$TARGET/bundle/macos" "$TARGETS/aarch64-apple-
 if [ -n "$LEAKS" ]; then
   echo "The build still contains $HOME in:" >&2
   echo "$LEAKS" >&2
+  echo "If the paths are a C library's, cargo does not rebuild it when CFLAGS change: clean it and rebuild." >&2
   exit 1
 fi
 echo "Checked: no $HOME paths in the release build."
@@ -88,6 +130,8 @@ case "$ARCHS" in
   *) echo "Not universal: $ARCHS" >&2; exit 1 ;;
 esac
 
+# Signs everything inside, then the app again, and checks each executable.
+"$ROOT/scripts/sign-macos.sh" "$APP"
 codesign --verify --deep --strict "$APP"
 if [ -z "$UNSIGNED" ]; then
   codesign -dvv "$APP" 2>&1 | grep -q "Authority=Developer ID Application" || { echo "Not signed with a Developer ID." >&2; exit 1; }
@@ -117,7 +161,10 @@ if [ -z "$UNSIGNED" ]; then
   spctl --assess --type execute -vv "$APP" 2>&1 | grep -q "source=Notarized Developer ID" || { echo "Gatekeeper doesn't accept the app." >&2; exit 1; }
   echo "Checked: Gatekeeper accepts it as notarized."
 
-  # A DMG, when one was asked for, is notarized and stapled on its own.
+  # A DMG, when one was asked for, is rebuilt from the stapled app (the one
+  # Tauri made holds the app as it was before signing), then notarized and
+  # stapled on its own.
+  "$ROOT/scripts/sign-macos.sh" --dmg "$APP"
   for DMG in "$TARGET"/bundle/dmg/*.dmg; do
     [ -f "$DMG" ] || continue
     notarize "$DMG"

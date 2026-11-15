@@ -36,8 +36,22 @@ fn core_info() -> CoreInfo {
 pub(crate) fn bundled_toolchains(app: &tauri::AppHandle) -> Option<std::path::PathBuf> {
     use tauri::Manager;
     let installed = app.path().resource_dir().ok().map(|d| d.join("resources/toolchains"));
-    let source = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/toolchains");
-    installed.filter(|p| p.is_dir()).or_else(|| source.is_dir().then_some(source))
+    installed.filter(|p| p.is_dir()).or_else(|| source_path("resources/toolchains").filter(|p| p.is_dir()))
+}
+
+/// A path inside the source tree, for `tauri dev` (the app runs from
+/// `target/debug`, with its resources still in the repository). A release
+/// build has none: `env!("CARGO_MANIFEST_DIR")` would put the builder's home
+/// folder in the binary, `--remap-path-prefix` does not rewrite an `env!`
+/// string, and `scripts/build-release.sh` refuses an app with a home folder
+/// in it. Tests that need the tree use `env!` themselves.
+#[cfg(debug_assertions)]
+pub(crate) fn source_path(rel: &str) -> Option<std::path::PathBuf> {
+    Some(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(rel))
+}
+#[cfg(not(debug_assertions))]
+pub(crate) fn source_path(_rel: &str) -> Option<std::path::PathBuf> {
+    None
 }
 
 pub fn run() {
