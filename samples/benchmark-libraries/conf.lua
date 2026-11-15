@@ -16,6 +16,9 @@ function love.conf(t)
   t.window.resizable = true
   t.window.highdpi = true
   t.window.vsync = 1
+  -- g3d calls love.graphics.setDepthMode when it loads. LÖVE 12.0's window has no depth buffer unless asked, and it stops with "The window must
+  -- have depth enabled to draw to the main screen's depth buffer" (measured, 2026-11-15); 11.5 loaded it without. A game using g3d asks too.
+  t.window.depth = 24
   t.modules.physics = true         -- breezefield (a love.physics wrapper) is tried for real
   if report then
     t.window = false               -- no window, no graphics: the headless run
