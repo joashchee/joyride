@@ -13,6 +13,7 @@
 pub mod add;
 pub mod audio;
 pub mod catalog;
+pub mod decode;
 pub mod dedup;
 pub mod font;
 pub mod generated;

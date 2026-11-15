@@ -50,7 +50,7 @@ export type PreviewBody =
   | { type: "text" }
   | { type: "image"; dataUrl: string; width: number; height: number; pixelArt: boolean; palette: string[] }
   | { type: "audio"; dataUrl: string | null; waveform: number[] | null; seconds: number | null }
-  | { type: "video"; source: "ogv" | "web"; dataUrl: string | null; width: number; height: number; fps: number; frames: number | null; seconds: number | null; poster: string | null }
+  | { type: "video"; source: "ogv" | "web"; dataUrl: string | null; width: number; height: number; fps: number; frames: number | null; seconds: number | null; poster: string | null; audioUrl: string | null }
   | { type: "font"; dataUrl: string }
   | { type: "members"; names: { name: string; size: number }[]; more: number }
   | { type: "hex"; dump: string };

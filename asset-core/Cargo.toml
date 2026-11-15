@@ -8,6 +8,9 @@ description = "JoyrIDE's Asset Library core: catalog, licences, de-duplication a
 [dependencies]
 blake3 = "1"
 image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif", "bmp", "webp", "tiff", "hdr", "exr", "qoi", "dds", "tga"] }
+# Pure-Rust decoders for the preview (waveforms, and Ogg Vorbis played as WAV
+# because the webview may not play it). MPL-2.0, per file (CLAUDE.md rule 2).
+symphonia = { version = "0.6", default-features = false, features = ["wav", "pcm", "mp3", "flac", "vorbis", "ogg"] }
 rusqlite = { version = "0.32", features = ["bundled"] }
 thiserror = "2"
 walkdir = "2"

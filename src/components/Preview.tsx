@@ -49,7 +49,7 @@ export default function Preview(props: { data: PreviewData; onClose: () => void;
         </div>
       )}
       {b.type === "audio" && <AudioPlayer key={data.path} url={b.dataUrl} seconds={b.seconds} waveform={b.waveform} />}
-      {b.type === "video" && b.source === "ogv" && <OgvPlayer key={data.path} path={data.path} width={b.width} height={b.height} poster={b.poster} />}
+      {b.type === "video" && b.source === "ogv" && <OgvPlayer key={data.path} path={data.path} width={b.width} height={b.height} poster={b.poster} audioUrl={b.audioUrl} />}
       {b.type === "video" && b.source === "web" && <WebVideo key={data.path} url={b.dataUrl} />}
       {b.type === "font" && <FontSample key={data.path} url={b.dataUrl} />}
       {b.type === "members" && (
@@ -159,13 +159,26 @@ const AHEAD = 12; // frames kept decoded ahead of the picture
 const BATCH = 8;
 
 /** Plays an Ogg Theora video: frames come in batches from the backend and are
- *  drawn on time by the clock. Theora's sound track is not played here. */
-function OgvPlayer(props: { path: string; width: number; height: number; poster: string | null }) {
+ *  drawn on time. Its Vorbis sound track (decoded to WAV by the backend) is
+ *  the clock while it plays, so picture and sound cannot drift; if the sound is
+ *  shorter than the picture, or there is none, the wall clock takes over. */
+function OgvPlayer(props: { path: string; width: number; height: number; poster: string | null; audioUrl: string | null }) {
   const canvas = useRef<HTMLCanvasElement | null>(null);
-  const run = useRef({ buf: [] as { f: VideoFrame; img: HTMLImageElement }[], next: 0, end: false, fetching: false, t0: 0, last: 0, raf: 0, playing: false, alive: true, shown: -1 });
+  const run = useRef({ buf: [] as { f: VideoFrame; img: HTMLImageElement }[], next: 0, end: false, fetching: false, t0: 0, last: 0, raf: 0, playing: false, alive: true, shown: -1, stalled: false, soundEnded: 0 });
+  const sound = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [at, setAt] = useState(0);
   const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!props.audioUrl) return;
+    const a = new Audio(props.audioUrl);
+    sound.current = a;
+    return () => {
+      a.pause();
+      sound.current = null;
+    };
+  }, [props.audioUrl]);
 
   const draw = (img: HTMLImageElement) => {
     const c = canvas.current;
@@ -216,15 +229,30 @@ function OgvPlayer(props: { path: string; width: number; height: number; poster:
     const r = run.current;
     if (!r.alive || !r.playing) return;
     if (r.buf.length < AHEAD) fetchMore();
+    const a = sound.current;
     if (r.buf.length === 0) {
       if (r.end) {
         r.playing = false;
+        a?.pause();
         setPlaying(false);
         return;
       }
       r.t0 += now - r.last; // starved: the clock waits for the next frame
+      if (a && !a.paused) {
+        a.pause(); // and so does the sound
+        r.stalled = true;
+      }
     } else {
-      const t = (now - r.t0) / 1000;
+      if (a && r.stalled) {
+        r.stalled = false;
+        void a.play().catch(() => {});
+      }
+      let t = (now - r.t0) / 1000;
+      if (a && !r.stalled) {
+        if (a.ended && !r.soundEnded) r.soundEnded = now;
+        // The sound is the clock until it ends; after that the wall clock carries on from where it stopped.
+        t = a.ended ? a.duration + (now - r.soundEnded) / 1000 : a.currentTime;
+      }
       let show: (typeof r.buf)[number] | null = null;
       while (r.buf.length > 0 && r.buf[0].f.time <= t) show = r.buf.shift()!;
       if (show) {
@@ -234,6 +262,7 @@ function OgvPlayer(props: { path: string; width: number; height: number; poster:
       }
       if (r.buf.length === 0 && r.end) {
         r.playing = false;
+        a?.pause();
         setPlaying(false);
         return;
       }
@@ -244,22 +273,29 @@ function OgvPlayer(props: { path: string; width: number; height: number; poster:
 
   const play = () => {
     const r = run.current;
+    const a = sound.current;
     if (r.playing) {
       r.playing = false;
+      a?.pause();
       cancelAnimationFrame(r.raf);
       setPlaying(false);
       return;
     }
+    r.stalled = false;
+    r.soundEnded = 0;
     if (r.end && r.buf.length === 0) {
       // Played to the end: start again.
       r.next = 0;
       r.end = false;
       r.shown = -1;
       r.t0 = performance.now();
+      if (a) a.currentTime = 0;
       setAt(0);
     } else {
       r.t0 = performance.now() - at * 1000;
+      if (a) a.currentTime = Math.min(at, a.duration || at);
     }
+    if (a) void a.play().catch(() => setErr("This system cannot play the sound here; the picture plays without it."));
     r.playing = true;
     r.last = performance.now();
     setPlaying(true);
@@ -270,6 +306,10 @@ function OgvPlayer(props: { path: string; width: number; height: number; poster:
   const restart = () => {
     const r = run.current;
     cancelAnimationFrame(r.raf);
+    sound.current?.pause();
+    if (sound.current) sound.current.currentTime = 0;
+    r.stalled = false;
+    r.soundEnded = 0;
     r.playing = false;
     r.buf = [];
     r.next = 0;

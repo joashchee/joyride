@@ -47,7 +47,7 @@ pub enum Body {
     Audio { data_url: Option<String>, waveform: Option<Vec<u8>>, seconds: Option<f64> },
     /// "ogv": frames come from `preview_video_frames`; "web": the system plays `data_url`.
     #[serde(rename_all = "camelCase")]
-    Video { source: &'static str, data_url: Option<String>, width: u32, height: u32, fps: f64, frames: Option<u64>, seconds: Option<f64>, poster: Option<String> },
+    Video { source: &'static str, data_url: Option<String>, width: u32, height: u32, fps: f64, frames: Option<u64>, seconds: Option<f64>, poster: Option<String>, audio_url: Option<String> },
     #[serde(rename_all = "camelCase")]
     Font { data_url: String },
     #[serde(rename_all = "camelCase")]
@@ -437,7 +437,22 @@ fn audio(p: &mut Preview, path: &Path, kind: Sniff, size: u64) -> bool {
         seconds = Some(i.duration_ms as f64 / 1000.0);
         p.facts.push(fact("Length", clock(i.duration_ms as f64 / 1000.0)));
     }
-    let waveform = asset_core::preview::waveform(path, 96).ok().flatten();
+    // A WAV is read directly; MP3, FLAC and Ogg Vorbis are decoded (streamed, so a long file is not held).
+    let waveform = asset_core::preview::waveform(path, 96).ok().flatten().or_else(|| if size <= MAX_READ { asset_core::decode::waveform(path, 96).ok().flatten() } else { None });
+    if kind == Sniff::Ogg {
+        // The webview may not play Ogg Vorbis (WKWebView does not), so it is
+        // decoded here and played as WAV. Anything Symphonia cannot decode
+        // (Opus, say) is handed to the webview as it is.
+        let channels = info.as_ref().map_or(2, |i| i.channels.max(1) as u64);
+        if let Ok(pcm) = asset_core::decode::decode_file(path, MAX_PLAY / (2 * channels)) {
+            if pcm.truncated {
+                p.note = Some(format!("Played as sound decoded here; only the first {} fits.", clock(pcm.seconds())));
+            }
+            let seconds = seconds.or(Some(pcm.seconds()));
+            p.body = Body::Audio { data_url: Some(data_url("audio/wav", &asset_core::decode::wav16(&pcm))), waveform, seconds };
+            return true;
+        }
+    }
     let mime = match kind {
         Sniff::Wav => "audio/wav",
         Sniff::Flac => "audio/flac",
@@ -489,11 +504,22 @@ fn ogv_video(p: &mut Preview, path: &Path, size: u64) -> bool {
     if let Some(d) = v.duration {
         p.facts.push(fact("Length", clock(d)));
     }
+    let mut audio_url = None;
     if let Some(a) = &info.audio {
-        p.facts.push(fact("Sound track", format!("Vorbis, {} channel(s), {} Hz (not played in the preview)", a.channels, a.rate)));
+        p.facts.push(fact("Sound track", format!("Vorbis, {} channel(s), {} Hz", a.channels, a.rate)));
+        // The sound pages are pulled out of the interleaved file and decoded to WAV for the player.
+        match asset_core::decode::vorbis_only(&bytes).ok_or("no Vorbis stream").map_err(|e| e.to_string()).and_then(|ogg| asset_core::decode::decode_bytes(ogg, Some("ogg"), MAX_PLAY / (2 * a.channels.max(1) as u64)).map_err(|e| e.to_string())) {
+            Ok(pcm) => {
+                if pcm.truncated {
+                    p.note = Some(format!("The sound plays for the first {} only.", clock(pcm.seconds())));
+                }
+                audio_url = Some(data_url("audio/wav", &asset_core::decode::wav16(&pcm)));
+            }
+            Err(e) => p.note = Some(format!("The sound track could not be decoded, so the video plays silent: {e}")),
+        }
     }
     let poster = ogv::Decoder::new(&bytes[..]).ok().and_then(|mut d| d.next_frame().ok().flatten()).and_then(|f| asset_core::preview::jpeg_from_rgba(f.width, f.height, &f.rgba, 85).ok()).map(|j| data_url("image/jpeg", &j));
-    p.body = Body::Video { source: "ogv", data_url: None, width: v.width, height: v.height, fps: v.fps, frames: v.frames, seconds: v.duration, poster };
+    p.body = Body::Video { source: "ogv", data_url: None, width: v.width, height: v.height, fps: v.fps, frames: v.frames, seconds: v.duration, poster, audio_url };
     true
 }
 
@@ -506,7 +532,7 @@ fn web_video(p: &mut Preview, path: &Path, kind: Sniff, size: u64) -> bool {
         p.note = Some("This video is too large to play here.".into());
         None
     };
-    p.body = Body::Video { source: "web", data_url: data, width: 0, height: 0, fps: 0.0, frames: None, seconds: None, poster: None };
+    p.body = Body::Video { source: "web", data_url: data, width: 0, height: 0, fps: 0.0, frames: None, seconds: None, poster: None, audio_url: None };
     true
 }
 
@@ -855,6 +881,65 @@ mod tests {
             }
             b => panic!("{b:?}"),
         }
+    }
+
+    fn io_audio(name: &str) -> std::path::PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("../samples/io-checker/assets/audio").join(name)
+    }
+
+    #[test]
+    fn mp3_and_flac_get_a_waveform_from_the_decoders() {
+        let d = proj();
+        for name in ["jingle.mp3", "jingle.flac"] {
+            std::fs::copy(io_audio(name), d.path().join(name)).unwrap();
+            let p = build(d.path(), name, None).unwrap();
+            match p.body {
+                Body::Audio { data_url, waveform, .. } => {
+                    assert!(data_url.is_some(), "{name} still plays as it is");
+                    let w = waveform.unwrap_or_else(|| panic!("{name}: no waveform"));
+                    assert_eq!(w.len(), 96);
+                    assert!(w.iter().any(|&v| v > 40), "{name}: a silent waveform: {w:?}");
+                }
+                b => panic!("{b:?}"),
+            }
+        }
+    }
+
+    #[test]
+    fn ogg_vorbis_is_played_as_wav_because_the_webview_may_not_play_it() {
+        let d = proj();
+        std::fs::copy(io_audio("jingle.ogg"), d.path().join("jingle.ogg")).unwrap();
+        let p = build(d.path(), "jingle.ogg", None).unwrap();
+        match p.body {
+            Body::Audio { data_url, waveform, seconds } => {
+                assert!(data_url.unwrap().starts_with("data:audio/wav;base64,"), "decoded here, not handed over as Ogg");
+                assert_eq!(waveform.unwrap().len(), 96);
+                assert!((seconds.unwrap() - 4.137).abs() < 0.05);
+            }
+            b => panic!("{b:?}"),
+        }
+        // What Symphonia cannot decode is still handed over unchanged.
+        let mut fake = b"OggS\0\x02".to_vec();
+        fake.extend([0u8; 40]);
+        std::fs::write(d.path().join("odd.ogg"), fake).unwrap();
+        if let Ok(p) = build(d.path(), "odd.ogg", None) {
+            if let Body::Audio { data_url: Some(u), .. } = p.body {
+                assert!(u.starts_with("data:audio/ogg;base64,"), "{u:.40}");
+            }
+        }
+    }
+
+    #[test]
+    fn a_theora_video_carries_its_vorbis_sound_as_wav() {
+        let d = proj();
+        std::fs::write(d.path().join("intro.ogv"), include_bytes!("../../ogv/tests/bars.ogv")).unwrap();
+        let p = build(d.path(), "intro.ogv", None).unwrap();
+        assert!(p.facts.iter().any(|f| f.label == "Sound track" && !f.value.contains("not played")), "{:?}", p.facts);
+        match p.body {
+            Body::Video { audio_url, .. } => assert!(audio_url.unwrap().starts_with("data:audio/wav;base64,")),
+            b => panic!("{b:?}"),
+        }
+        assert!(p.note.is_none(), "{:?}", p.note);
     }
 
     const BARS: &[u8] = include_bytes!("../../ogv/tests/bars.ogv");

@@ -12,6 +12,7 @@ third-party licence ships in the app (scripts/license-scan.py).
 - love-api and LuaCATS definitions, MIT.
 - luacheck, MIT.
 - StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
+- Symphonia (`symphonia` and its codec and format crates), MPL-2.0, unmodified, linked as a library for the file preview's MP3, FLAC, Ogg Vorbis and WAV decoding (MPL's copyleft is per file; decided 2026-11-14).
 - love.js (Davidobot's, MIT), whose `love.js`/`love.wasm` carry LÖVE (zlib) and its libraries, and the `love` iOS Xcode project and `love-android` Gradle project (zlib / as their repositories state), when a build bundles them.
 - PortMaster runtimes, as the PortMaster project states.
 - Monaco Editor, MIT.
