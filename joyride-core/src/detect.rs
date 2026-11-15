@@ -499,7 +499,7 @@ pub fn detect(root: &Path, lib: &Library) -> Result<Detection> {
             None => d.new.push(f),
         }
     }
-    d.used.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+    d.used.sort_by_key(|a| a.name.to_lowercase());
     d.new.sort_by(|a, b| (b.required, &a.name).cmp(&(a.required, &b.name)).then(a.name.cmp(&b.name)));
     Ok(d)
 }
@@ -559,7 +559,7 @@ pub fn add_custom(path: &Path, found: &[Found], project: &str) -> Result<Vec<Cus
         list.retain(|x| !x.name.eq_ignore_ascii_case(&c.name));
         list.push(c);
     }
-    list.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+    list.sort_by_key(|a| a.name.to_lowercase());
     if let Some(d) = path.parent() {
         fs::create_dir_all(d)?;
     }
@@ -730,7 +730,7 @@ mod tests {
         // an address git would read as an option is dropped, not stored
         let list = add_custom(&store, &[bad_git], "proj").unwrap();
         assert!(list[0].git.is_none());
-        let list = add_custom(&store, &[good.clone()], "proj").unwrap();
+        let list = add_custom(&store, std::slice::from_ref(&good), "proj").unwrap();
         assert_eq!(list.len(), 1, "the same name replaces");
         let list = load_custom(&store);
         assert_eq!(list[0].git.as_deref(), Some("https://example.org/f/frob"));

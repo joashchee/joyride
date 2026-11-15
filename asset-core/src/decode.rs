@@ -46,10 +46,10 @@ fn walk(src: Box<dyn MediaSource>, ext: Option<&str>, mut each: impl FnMut(u32, 
         hint.with_extension(e);
     }
     let mss = MediaSourceStream::new(src, Default::default());
-    let mut format = symphonia::default::get_probe().probe(&hint, mss, FormatOptions::default(), MetadataOptions::default()).map_err(|e| bad(e))?;
+    let mut format = symphonia::default::get_probe().probe(&hint, mss, FormatOptions::default(), MetadataOptions::default()).map_err(bad)?;
     let track = format.default_track(TrackType::Audio).ok_or_else(|| bad("no sound track"))?;
     let params = track.codec_params.as_ref().and_then(|p| p.audio()).ok_or_else(|| bad("no sound parameters"))?;
-    let mut decoder = symphonia::default::get_codecs().make_audio_decoder(params, &AudioDecoderOptions::default()).map_err(|e| bad(e))?;
+    let mut decoder = symphonia::default::get_codecs().make_audio_decoder(params, &AudioDecoderOptions::default()).map_err(bad)?;
     let id = track.id;
     let mut buf: Vec<f32> = Vec::new();
     let mut any = false;

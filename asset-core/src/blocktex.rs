@@ -342,7 +342,7 @@ mod tests {
     #[test]
     fn etc1_individual_and_differential() {
         // individual: both halves base (15,0,0)*17 = (255,0,0), table 0, every index 0 -> +2 on each channel
-        let r = decode(&pkm(0, &[0xF0, 0x00, 0x00, 0x00 | (0 << 5), 0, 0, 0, 0], 4, 4)).unwrap();
+        let r = decode(&pkm(0, &[0xF0, 0x00, 0x00, 0x00, 0, 0, 0, 0], 4, 4)).unwrap();
         assert_eq!(&r.rgba[0..4], &[255, 2, 2, 255]);
         // differential: base 16 (grey 132), delta 0, table 0, index 3 (-8) on pixel (0,0): msb bit16, lsb bit0
         let bits = (1u32 << 16) | 1;

@@ -183,6 +183,7 @@ fn bdf(b: &[u8]) -> Result<Font, String> {
     let text = String::from_utf8_lossy(b);
     let mut f = Font { glyphs: HashMap::new(), ascent: 0, descent: 0, cell: (0, 0), name: None, warning: None, own_colours: false };
     let (mut ascent, mut descent) = (None, None);
+    #[allow(clippy::type_complexity)]
     let (mut enc, mut bbx, mut dw, mut rows): (Option<i64>, (i32, i32, i32, i32), Option<i32>, Option<Vec<Vec<u8>>>) = (None, (0, 0, 0, 0), None, None);
     let n = |s: &str| s.parse::<i32>().ok();
     for line in text.lines() {

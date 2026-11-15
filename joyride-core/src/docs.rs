@@ -358,7 +358,7 @@ fn parse_luacats(src: &str, out: &mut Vec<Entry>, version: &mut String) {
                 sig = split_top(args_src).into_iter().map(|n| Arg { name: n.to_string(), ty: "any".into(), optional: false }).collect();
             }
             let mut signatures = vec![sig];
-            signatures.extend(overloads.drain(..));
+            signatures.append(&mut overloads);
             let (full, kind) = if let Some((ty, m)) = name.split_once(':') {
                 (format!("{}:{m}", ty.strip_prefix("love.").unwrap_or(ty)), EntryKind::Method)
             } else if CALLBACKS.contains(&name.strip_prefix("love.").unwrap_or("")) && name.matches('.').count() == 1 {

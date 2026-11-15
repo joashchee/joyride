@@ -234,7 +234,7 @@ pub fn sync(root: &Path, lib: &Library) -> Result<Synced> {
                 out.removed.push(name);
             }
             None => {
-                if !r.owned || lines.iter().any(|l| *l == r.text) {
+                if !r.owned || lines.contains(&r.text) {
                     out.kept.push(name);
                 }
             }
@@ -245,7 +245,7 @@ pub fn sync(root: &Path, lib: &Library) -> Result<Synced> {
     let mut to_add: Vec<&Line> = Vec::new();
     for w in &want {
         let has_record = recs.iter().any(|r| r.id == w.id && r.file == TARGET);
-        let written_by_hand = lines.iter().any(|l| *l == w.text);
+        let written_by_hand = lines.contains(&w.text);
         if !has_record && !written_by_hand {
             to_add.push(w);
         } else if !has_record && written_by_hand {
