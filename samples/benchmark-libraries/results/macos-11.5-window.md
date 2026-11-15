@@ -13,12 +13,12 @@ Define a class, inherit, call super, test the type, mix in methods.
 | Type test (is-a) | **5** | **5** | - | **5** |
 | Mixins | 5 | 5 | 5 | 5 |
 | __tostring etc. | 5 | 5 | 5 | 5 |
-| Create objects | 3 (4.8M objects/s) | **5 (9.5M objects/s)** | **5 (9.7M objects/s)** | **5 (9.6M objects/s)** |
-| Method calls | 4 (19.3M calls/s) | 4 (24.3M calls/s) | **5 (35.2M calls/s)** | 4 (24.3M calls/s) |
-| Load time | 3 (0.88 ms) | 4 (0.50 ms) | **5 (0.33 ms)** | 2 (6.20 ms) |
+| Create objects | 3 (4.6M objects/s) | **5 (9.4M objects/s)** | **5 (9.5M objects/s)** | **5 (9.5M objects/s)** |
+| Method calls | 4 (19.2M calls/s) | 4 (25.4M calls/s) | **5 (36.9M calls/s)** | 4 (25.4M calls/s) |
+| Load time | 3 (0.57 ms) | **5 (0.25 ms)** | **5 (0.23 ms)** | 1 (5.60 ms) |
 | Memory kept | 3 (12.3 KB) | **5 (3.13 KB)** | 4 (4.54 KB) | 1 (192 KB) |
 | Code size | 3 (242 lines) | **5 (69.0 lines)** | 2 (1.2k lines) | 1 (6.2k lines) |
-| **Overall** | 4.37 | **4.83 best** | 4.21 | 4.41 |
+| **Overall** | 4.37 | **4.88 best** | 4.21 | 4.37 |
 
 ### Tweening
 
@@ -32,8 +32,8 @@ Move a number to a target over time, with easing, callbacks and stopping.
 | Completion | 5 | 5 | 5 |
 | Delay and chain | - | **5** | **5** |
 | Stop a tween | - | **5** | **5** |
-| Run 100 tweens | 4 (292k tweens/s) | **5 (426k tweens/s)** | 4 (310k tweens/s) |
-| Load time | 3 (0.69 ms) | 4 (0.37 ms) | **5 (0.33 ms)** |
+| Run 100 tweens | 4 (291k tweens/s) | **5 (411k tweens/s)** | 4 (302k tweens/s) |
+| Load time | 3 (0.70 ms) | 4 (0.37 ms) | **5 (0.23 ms)** |
 | Memory kept | 2 (25.9 KB) | 3 (21.7 KB) | **5 (4.54 KB)** |
 | Code size | 4 (368 lines) | **5 (225 lines)** | 2 (1.2k lines) |
 | **Overall** | 2.88 | 4.25 | **4.75 best** |
@@ -50,11 +50,11 @@ Call something after a delay, every interval, or while time passes; stop it; fol
 | Progress | **5** | **5** | - | - |
 | Cancel | **5** | - | - | **5** |
 | Wait in a script | **5** | - | - | - |
-| 1000 timers | 4 (787k timers/s) | 4 (677k timers/s) | **5 (1.1M timers/s)** | **5 (1.2M timers/s)** |
-| Load time | 4 (0.33 ms) | 1 (6.20 ms) | 3 (0.52 ms) | **5 (0.26 ms)** |
+| 1000 timers | 4 (785k timers/s) | 4 (677k timers/s) | **5 (1.1M timers/s)** | **5 (1.1M timers/s)** |
+| Load time | **5 (0.23 ms)** | 1 (5.60 ms) | 3 (0.57 ms) | 4 (0.30 ms) |
 | Memory kept | **5 (4.54 KB)** | 1 (192 KB) | 4 (6.38 KB) | 4 (7.66 KB) |
 | Code size | 2 (1.2k lines) | 1 (6.2k lines) | **5 (107 lines)** | 4 (167 lines) |
-| **Overall** | **4.71 best** | 2.50 | 2.38 | 3.04 |
+| **Overall** | **4.75 best** | 2.50 | 2.38 | 3.00 |
 
 ### Events and messages
 
@@ -67,11 +67,11 @@ Register a listener, send a message with arguments, remove the listener, listen 
 | Listen once | - | **5** |
 | Wildcards | 5 | 5 |
 | Change mid-send | 5 | 5 |
-| 10000 sends | **5 (7.7M sends/s)** | 3 (1.9M sends/s) |
-| Load time | **5 (0.33 ms)** | 2 (6.20 ms) |
+| 10000 sends | **5 (7.5M sends/s)** | 3 (1.9M sends/s) |
+| Load time | **5 (0.23 ms)** | 1 (5.60 ms) |
 | Memory kept | **5 (4.54 KB)** | 1 (192 KB) |
 | Code size | **5 (1.2k lines)** | 2 (6.2k lines) |
-| **Overall** | **4.29 best** | 4.23 |
+| **Overall** | **4.29 best** | 4.18 |
 
 ### Game states
 
@@ -85,11 +85,11 @@ Switch between states with enter and leave callbacks, pass arguments, push and p
 | Push and pop | **5** | - | **5** |
 | Self-transition | 5 | 5 | 5 |
 | Ask where we are | **5** | **5** | - |
-| 20000 switches | **5 (8.0M switches/s)** | 3 (3.7M switches/s) | 4 (6.7M switches/s) |
-| Load time | **5 (0.33 ms)** | 2 (6.20 ms) | 4 (0.37 ms) |
+| 20000 switches | **5 (8.1M switches/s)** | 3 (3.6M switches/s) | 4 (6.7M switches/s) |
+| Load time | **5 (0.23 ms)** | 1 (5.60 ms) | 4 (0.31 ms) |
 | Memory kept | **5 (4.54 KB)** | 1 (192 KB) | 4 (6.50 KB) |
 | Code size | 2 (1.2k lines) | 1 (6.2k lines) | **5 (130 lines)** |
-| **Overall** | **4.87 best** | 3.04 | 4.17 |
+| **Overall** | **4.87 best** | 3.00 | 4.17 |
 
 ### 2D vectors
 
@@ -103,12 +103,12 @@ Add, scale, length, normalise, rotate, dot, distance and project: as operators, 
 | Rotate | 5 | 5 | 5 | 5 |
 | Dot, project | **5** | **5** | **5** | - |
 | Interpolate | - | - | **5** | **5** |
-| 1000 steps | 2 (1.5M steps/s) | **5 (12.6M steps/s)** | 3 (4.1M steps/s) | 2 (1.3M steps/s) |
+| 1000 steps | 2 (1.6M steps/s) | **5 (12.6M steps/s)** | 3 (4.1M steps/s) | 2 (1.3M steps/s) |
 | Garbage made | 1 (438 KB) | **5 (0.00 KB)** | **5 (0.22 KB)** | 1 (328 KB) |
-| Load time | **5 (0.33 ms)** | **5 (0.33 ms)** | 2 (6.20 ms) | 2 (4.87 ms) |
-| Memory kept | **5 (4.54 KB)** | **5 (4.54 KB)** | 1 (192 KB) | 1 (164 KB) |
+| Load time | **5 (0.23 ms)** | **5 (0.23 ms)** | 1 (5.60 ms) | 1 (5.18 ms) |
+| Memory kept | **5 (4.54 KB)** | **5 (4.54 KB)** | 1 (192 KB) | 1 (166 KB) |
 | Code size | **5 (1.2k lines)** | **5 (1.2k lines)** | 2 (6.2k lines) | 3 (5.5k lines) |
-| **Overall** | 3.67 | **4.45 best** | 4.40 | 3.33 |
+| **Overall** | 3.67 | **4.45 best** | 4.36 | 3.29 |
 
 ### Arrays and tables
 
@@ -130,9 +130,9 @@ Map, filter, reduce, search, copy and merge: lume against batteries' functional 
 | Copy (deep) | - | **5** |
 | Merge | 5 | 5 |
 | Keys | 5 | 5 |
-| map+filter+reduce | **5 (16.0M elements/s)** | 4 (11.1M elements/s) |
-| Copy 1000 | 5 (144.9M elements/s) | 5 (142.9M elements/s) |
-| Load time | **5 (0.79 ms)** | 2 (6.20 ms) |
+| map+filter+reduce | **5 (15.9M elements/s)** | 4 (11.1M elements/s) |
+| Copy 1000 | 5 (145.0M elements/s) | 5 (140.4M elements/s) |
+| Load time | **5 (0.72 ms)** | 2 (5.60 ms) |
 | Memory kept | **5 (40.6 KB)** | 3 (192 KB) |
 | Code size | **5 (773 lines)** | 2 (6.2k lines) |
 | **Overall** | 4.12 | **4.49 best** |
@@ -152,8 +152,8 @@ Clamp, round, interpolate, smooth, ping-pong, wrap, distance and angles.
 | Remap a range | - | **5** |
 | Distance, angle | 5 | 5 |
 | Sign | 5 | 5 |
-| 10000 clamp+lerp | 5 (19.5M ops/s) | 5 (19.1M ops/s) |
-| Load time | **5 (0.79 ms)** | 2 (6.20 ms) |
+| 10000 clamp+lerp | 5 (19.6M ops/s) | 5 (18.8M ops/s) |
+| Load time | **5 (0.72 ms)** | 2 (5.60 ms) |
 | Memory kept | **5 (40.6 KB)** | 3 (192 KB) |
 | Code size | **5 (773 lines)** | 2 (6.2k lines) |
 | **Overall** | 4.09 | **4.75 best** |
@@ -171,8 +171,8 @@ Split, trim, test prefixes, fill templates, wrap and title-case.
 | Word wrap | **5** | - |
 | Title case | - | **5** |
 | Contains | - | **5** |
-| Split 1000 fields | **5 (8.9M fields/s)** | 3 (4.1M fields/s) |
-| Load time | **5 (0.79 ms)** | 2 (6.20 ms) |
+| Split 1000 fields | **5 (8.8M fields/s)** | 3 (4.1M fields/s) |
+| Load time | **5 (0.72 ms)** | 2 (5.60 ms) |
 | Memory kept | **5 (40.6 KB)** | 3 (192 KB) |
 | Code size | **5 (773 lines)** | 2 (6.2k lines) |
 | **Overall** | 3.34 | **3.92 best** |
@@ -190,12 +190,12 @@ Save a table to text or bytes and read it back: how much survives, how big, how 
 | Cycles | **5** | **5** | **5** | **5** | **5** | 1 (FAIL) | 1 (FAIL) | 1 (FAIL) |
 | Binary strings | 5 | 5 | 5 | 5 | 5 | 5 | 5 | 5 |
 | Output size | 4 (8.1k bytes) | **5 (6.6k bytes)** | 4 (13k bytes) | 3 (14k bytes) | 3 (18k bytes) | 4 (13k bytes) | 3 (20k bytes) | 3 (15k bytes) |
-| Save speed | 4 (1.7k saves/s) | 3 (1.2k saves/s) | 1 (91.0 saves/s) | 4 (1.5k saves/s) | 4 (1.5k saves/s) | 3 (568 saves/s) | **5 (2.6k saves/s)** | 4 (1.6k saves/s) |
-| Load speed | 4 (2.5k loads/s) | 3 (1.6k loads/s) | **5 (4.5k loads/s)** | 3 (1.3k loads/s) | 4 (3.7k loads/s) | 2 (691 loads/s) | 4 (4.0k loads/s) | 2 (826 loads/s) |
-| Load time | 3 (0.68 ms) | 4 (0.48 ms) | 4 (0.40 ms) | 4 (0.34 ms) | **5 (0.30 ms)** | 4 (0.40 ms) | 3 (0.79 ms) | 4 (0.42 ms) |
-| Memory kept | 3 (25.5 KB) | 3 (23.4 KB) | 3 (25.8 KB) | 4 (11.1 KB) | **5 (7.11 KB)** | 3 (26.8 KB) | 2 (40.6 KB) | 3 (14.8 KB) |
+| Save speed | 4 (1.7k saves/s) | 4 (1.3k saves/s) | 1 (89.1 saves/s) | 4 (1.5k saves/s) | 4 (1.5k saves/s) | 3 (560 saves/s) | **5 (2.5k saves/s)** | 4 (1.7k saves/s) |
+| Load speed | 4 (2.5k loads/s) | 3 (1.6k loads/s) | **5 (4.5k loads/s)** | 3 (1.3k loads/s) | 4 (3.7k loads/s) | 2 (702 loads/s) | 4 (4.0k loads/s) | 2 (794 loads/s) |
+| Load time | 3 (0.73 ms) | 4 (0.44 ms) | 4 (0.44 ms) | 4 (0.51 ms) | **5 (0.30 ms)** | 4 (0.55 ms) | 3 (0.72 ms) | 4 (0.51 ms) |
+| Memory kept | 3 (24.4 KB) | 3 (23.4 KB) | 3 (25.8 KB) | 4 (11.1 KB) | **5 (7.11 KB)** | 3 (26.8 KB) | 2 (40.6 KB) | 3 (14.8 KB) |
 | Code size | 3 (627 lines) | 3 (577 lines) | **5 (141 lines)** | 4 (214 lines) | 4 (208 lines) | 2 (1.0k lines) | 2 (773 lines) | 3 (611 lines) |
-| **Overall** | 4.50 | 4.43 | 4.40 | 4.40 | **4.57 best** | 3.80 | 3.63 | 2.63 |
+| **Overall** | 4.50 | 4.53 | 4.40 | 4.40 | **4.57 best** | 3.80 | 3.63 | 2.63 |
 
 ### Printing tables
 
@@ -208,8 +208,8 @@ Readable text for a table: every key, the same order every time, cycles, metatab
 | Cycles | 5 | 5 |
 | Metatables | **5** | 1 (FAIL) |
 | Depth limit | **5** | - |
-| Print 200 units | **5 (836 prints/s)** | 4 (585 prints/s) |
-| Load time | **5 (0.87 ms)** | 2 (6.20 ms) |
+| Print 200 units | **5 (798 prints/s)** | 4 (600 prints/s) |
+| Load time | **5 (0.82 ms)** | 2 (5.60 ms) |
 | Memory kept | **5 (16.5 KB)** | 2 (192 KB) |
 | Code size | **5 (451 lines)** | 2 (6.2k lines) |
 | **Overall** | **5.00 best** | 3.14 |
@@ -227,8 +227,8 @@ Do boxes, circles and polygons touch; stop a mover at a wall; find every overlap
 | Push apart | 5 | 5 | 5 |
 | No tunnelling | **5** | - | - |
 | Ray cast | **5** | 1 (FAIL) | - |
-| Find all overlaps | **5 (407k boxes/s)** | 2 (68k boxes/s) | 1 (7.4k boxes/s) |
-| Load time | **5 (0.77 ms)** | 3 (1.83 ms) | 2 (6.20 ms) |
+| Find all overlaps | **5 (396k boxes/s)** | 2 (68k boxes/s) | 1 (7.2k boxes/s) |
+| Load time | **5 (0.79 ms)** | 3 (1.87 ms) | 2 (5.60 ms) |
 | Memory kept | **5 (25.6 KB)** | 3 (69.3 KB) | 2 (192 KB) |
 | Code size | **5 (776 lines)** | 3 (1.8k lines) | 2 (6.2k lines) |
 | **Overall** | **3.89 best** | 3.44 | 3.11 |
@@ -244,9 +244,9 @@ The shortest way across a grid with walls, no way at all, and a 40 by 40 maze.
 | Diagonal moves | 5 | 5 | 5 | 5 |
 | Terrain costs | - | **5** | - | - |
 | Jump point search | **5** | - | - | - |
-| 40 by 40 maze | 2 (467 paths/s) | 2 (155 paths/s) | 1 (15.3 paths/s) | **5 (3.0k paths/s)** |
-| Load time | 2 (3.51 ms) | 1 (6.20 ms) | **5 (0.28 ms)** | 3 (0.83 ms) |
-| Memory kept | 2 (57.6 KB) | 1 (192 KB) | **5 (7.74 KB)** | 4 (14.5 KB) |
+| 40 by 40 maze | 2 (459 paths/s) | 2 (153 paths/s) | 1 (15.4 paths/s) | **5 (2.9k paths/s)** |
+| Load time | 2 (3.63 ms) | 1 (5.60 ms) | **5 (0.27 ms)** | 3 (0.83 ms) |
+| Memory kept | 2 (58.6 KB) | 1 (192 KB) | **5 (7.74 KB)** | 4 (14.5 KB) |
 | Code size | 2 (2.2k lines) | 1 (6.2k lines) | **5 (209 lines)** | 3 (678 lines) |
 | **Overall** | **3.42 best** | 3.28 | 3.01 | 2.76 |
 
@@ -262,11 +262,11 @@ Screen to world and back with zoom and rotation; keep the view inside the world;
 | There and back | 5 | 5 |
 | World bounds | **5** | - |
 | Follow a target | - | **5** |
-| 10000 conversions | **5 (11.3M points/s)** | 4 (6.2M points/s) |
-| Load time | 4 (0.55 ms) | **5 (0.33 ms)** |
+| 10000 conversions | **5 (10.7M points/s)** | 4 (5.8M points/s) |
+| Load time | 3 (0.49 ms) | **5 (0.23 ms)** |
 | Memory kept | 3 (11.3 KB) | **5 (4.54 KB)** |
 | Code size | **5 (209 lines)** | 2 (1.2k lines) |
-| **Overall** | **4.25 best** | 4.12 |
+| **Overall** | **4.21 best** | 4.12 |
 
 ### Assertions and tests
 
@@ -280,8 +280,8 @@ Check a value, fail with a message that says what was wrong, group checks into t
 | Compare tables | **5** | 1 (FAIL) | **5** |
 | Describe / it | **5** | - | **5** |
 | Before / after | **5** | - | **5** |
-| 10000 checks | 1 (1.1M checks/s) | **5 (73.0M checks/s)** | 3 (22.2M checks/s) |
-| Load time | **5 (0.57 ms)** | 2 (6.20 ms) | 3 (1.44 ms) |
+| 10000 checks | 1 (1.1M checks/s) | **5 (70.4M checks/s)** | 3 (20.7M checks/s) |
+| Load time | **5 (0.61 ms)** | 2 (5.60 ms) | 3 (1.92 ms) |
 | Memory kept | **5 (13.8 KB)** | 2 (192 KB) | 2 (128 KB) |
 | Code size | **5 (241 lines)** | 1 (6.2k lines) | 2 (4.6k lines) |
 | **Overall** | **4.50 best** | 2.83 | 4.41 |
@@ -296,8 +296,8 @@ Time a function, count the memory it uses, find which functions the time went to
 | Which function | **5** | - |
 | Memory used | - | **5** |
 | Mean, min, max | - | **5** |
-| Cost of measuring | 2 (635 runs/s) | **5 (8.2k runs/s)** |
-| Load time | **5 (0.51 ms)** | 2 (6.20 ms) |
+| Cost of measuring | 2 (637 runs/s) | **5 (8.3k runs/s)** |
+| Load time | **5 (0.58 ms)** | 2 (5.60 ms) |
 | Memory kept | **5 (8.49 KB)** | 1 (192 KB) |
 | Code size | **5 (227 lines)** | 1 (6.2k lines) |
 | **Overall** | 2.84 | **3.55 best** |
@@ -311,8 +311,8 @@ Build a frame of widgets, click a button with a simulated mouse, count how many 
 | One frame | 5 | 5 | 5 | 5 |
 | Click a button | 5 | ~ | 5 | 5 |
 | Checkbox, slider | 5 | ~ | 5 | 5 |
-| 100 buttons | 3 (745k widgets/s) | 2 (225k widgets/s) | 3 (607k widgets/s) | **5 (2.3M widgets/s)** |
-| Load time | 3 (3.08 ms) | 2 (10.5 ms) | **5 (1.11 ms)** | 2 (6.69 ms) |
+| 100 buttons | 3 (676k widgets/s) | 2 (220k widgets/s) | 3 (595k widgets/s) | **5 (2.0M widgets/s)** |
+| Load time | 3 (3.08 ms) | 2 (13.2 ms) | **5 (1.21 ms)** | 2 (6.33 ms) |
 | Memory kept | 3 (57.8 KB) | 1 (418 KB) | **5 (19.5 KB)** | 1 (588 KB) |
 | Code size | **5 (1.1k lines)** | 2 (18k lines) | ~ | 2 (7.7k lines) |
 | **Overall** | 4.33 | 2.88 | **4.57 best** | 4.32 |
@@ -433,7 +433,7 @@ Build a frame of widgets, click a button with a simulated mouse, count how many 
 | Badr | UI components | works |
 | CatUI | a light-weight GUI | works |
 | gooi | a GUI for Android | works |
-| LoveFrames | a GUI with many controls | FAIL did not load: libs/LoveFrames/loveframes/libraries/utils.lua:294: [Love Frames] Skin registration error: Could not find an image directory for skin 'Blue'. |
+| LoveFrames | a GUI with many controls | works |
 | plan | rule-based layout | works |
 | TuxRedux | an immediate-mode UI | works |
 | yalg | a reactive UI | works |
@@ -452,7 +452,7 @@ Build a frame of widgets, click a button with a simulated mouse, count how many 
 | Sysl-Pixel | a pixel-art scaler | works |
 | loveblobs | softbody physics | works |
 | SYSL-Text | animated text | works |
-| 3DreamEngine | a 3D engine | FAIL did not load: libs/3DreamEngine/3DreamEngine/loader.lua:172: object unnamed not found (libs/3DreamEngine/3DreamEngine/objects/sky) |
+| 3DreamEngine | a 3D engine | FAIL did not load: libs/3DreamEngine/3DreamEngine/loader.lua:172: object unnamed not found (libs/3DreamEngine/3DreamEngine/objects/cube) |
 | Lovox | pseudo-3D voxels | works |
 | FPSGraph | an FPS graph | works |
 | LoveDebug | an inline debug console | works |
@@ -479,7 +479,7 @@ Build a frame of widgets, click a button with a simulated mouse, count how many 
 | Lovely-Toasts | toast messages | works |
 | Hanker | mixed immediate and retained UI | works |
 | require-lua | requiring a whole folder | works |
-| lovr-ui2d | immediate mode GUI | FAIL Could not open file libs/lovr-ui2d/ui2d/DejaVuSansMono.ttf. Does not exist. |
+| lovr-ui2d | immediate mode GUI | works |
 | wave | sound manager with beat tracking | works |
 | telescope | BDD-style tests | works |
 | prod_ui | user interface library (unfinished) | works |

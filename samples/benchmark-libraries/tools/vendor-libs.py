@@ -23,13 +23,15 @@ EXTRA_DROP = {"luasteam": {"sdk", "generator", "luals"}, "cimgui-love": {"cparse
 DROP_FILES = {"cimgui-love": {"generator.lua"}}
 # Files a library loads when it is required or set up, so they stay although their type is dropped (the entries are paths from the
 # repository's root; `*` and `**` work). lighter creates its default light from the image; LoveFrames registers its three skins when it loads
-# and stops with "Could not find an image directory for skin" without their pictures (48 small PNGs, 34 KB); 3DreamEngine loads its sky
-# model (objects/sky.obj, 62 KB) when it loads and stops without it. All are files of the library's own repository, under its licence.
+# and stops with "Could not find an image directory for skin" without their pictures (48 small PNGs, 34 KB); 3DreamEngine's init.lua loads its sky,
+# cube and plane models (objects/*.obj, 63 KB) and six pictures (res/, 48 KB) when it loads and stops at the first one missing (the Reports found them
+# one at a time: sky, then cube); its res/cubeUV.png (131 KB) is not loaded by its Lua and is left out. All are files of the library's own repository, under its licence.
 # lovr-ui2d finds its font (ui2d/DejaVuSansMono.ttf, DejaVu Sans Mono 2.34, 335 KB) beside its own file. The repository states no licence for
 # it (its LICENSE covers the code), but the font carries one in its own name table: the Bitstream Vera licence, and DejaVu's changes are public
 # domain. The maintainer confirmed it (2026-11-15) after reading it: free to copy and distribute with software, the notices and permission text
 # in every copy (FONT_LICENCE writes them beside it, read out of the font itself), the font not sold by itself, unmodified. CLAUDE.md rule 11.
-KEEP_FILES = {"lighter": ("media/default_light.png",), "LoveFrames": ("loveframes/skins/*/images/**/*.png",), "3DreamEngine": ("3DreamEngine/objects/sky.obj",),
+KEEP_FILES = {"lighter": ("media/default_light.png",), "LoveFrames": ("loveframes/skins/*/images/**/*.png",), "3DreamEngine": ("3DreamEngine/objects/*.obj", "3DreamEngine/res/default.png", "3DreamEngine/res/defaultNormal.png", "3DreamEngine/res/godray.png",
+                              "3DreamEngine/res/noise.png", "3DreamEngine/res/foam.png", "3DreamEngine/res/brdfLut.png"),
               "lovr-ui2d": ("ui2d/DejaVuSansMono.ttf",)}
 # A kept font and the file its licence is written to: the copyright and licence text from the font's own `name` table (IDs 0 and 13).
 FONT_LICENCE = {"lovr-ui2d": ("ui2d/DejaVuSansMono.ttf", "ui2d/LICENSE-DejaVu.txt")}

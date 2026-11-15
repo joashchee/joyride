@@ -977,7 +977,7 @@ summary = "A radial keyboard."
 name = "bitumbra"
 git = "https://github.com/a13X-B/bitumbra"
 module = "bitumbra"
-caution = "Did not load on LÖVE 11.5 on macOS with a window (measured: \"Error validating vertex shader code\"; the report keeps only that first line). Its shaders use `gl_InstanceID`, `gl_VertexID`, `flat` integer varyings and bit operations and carry no `#pragma language glsl3`, which GLSL 1 lacks: the likely reason, read from its source and not measured."
+caution = "Did not load on LÖVE 11.5 on macOS with a window (measured: \"Error validating vertex shader code: Line 1: ERROR: '' : syntax error, unexpected IDENTIFIER\"). The shader code inside bitumbra.lua begins with `flat varying int light_id;` and uses `gl_InstanceID`, `gl_VertexID` and bit operations, with no `#pragma language glsl3`: GLSL 1 has none of these, which fits a syntax error on line 1 (the cause is read from its source; only the error text was measured). The shaders are strings in the library itself, so using it would mean editing it."
 display = true   # it uses love.graphics while it loads
 summary = "GPU-accelerated 2D shadows for many lights."
 
@@ -1122,7 +1122,7 @@ summary = "A GUI aimed at Android, with buttons, sliders and dialogs."
 name = "LoveFrames"
 git = "https://github.com/linux-man/LoveFrames"
 module = "loveframes"
-caution = "A large GUI with its own bundled middleclass, tween and utf8 modules (MIT); its demo folder is not needed in a game. Require it as `libs.LoveFrames.loveframes`: it finds its objects, templates and skins from the name it was required by (measured with a window on LÖVE 11.5: required as `loveframes` its base object was nil)."
+caution = "A large GUI with its own bundled middleclass, tween and utf8 modules (MIT); its demo folder is not needed in a game. Require it as `libs.LoveFrames.loveframes`: it finds its objects, templates and skins from the name it was required by (measured with a window on LÖVE 11.5: required as `loveframes` its base object was nil; required as `libs.LoveFrames.loveframes` it loads and its check passes, measured 2026-11-15)."
 summary = "A GUI with many controls and skins (an 11.2 fork)."
 
 [[library]]
