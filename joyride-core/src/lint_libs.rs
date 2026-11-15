@@ -26,6 +26,10 @@ const WRONG_REQUIRE: &[(&str, &[&str], &str, &str)] = &[
     ("serpent", &["serpent"], "libs.serpent.src.serpent", "its only file is src/serpent.lua"),
     ("Helium", &["helium"], "libs.Helium", "the repository root is the library and it requires its own files by the name it was loaded with"),
     ("cimgui-love", &["cimgui", "cimgui-love"], "libs.cimgui-love.src", "the Lua side of cimgui-love is its src folder"),
+    ("lighter", &["lighter"], "libs.lighter", "it builds the path of its default light image from the name it was required by (measured: it looked for lighter/media/default_light.png)"),
+    ("Light", &["light"], "libs.Light.light", "it takes the folder of its shaders from the name it was required by (measured: it looked for light/shadow_map.glsl)"),
+    ("LoveFrames", &["loveframes"], "libs.LoveFrames.loveframes", "it finds its objects, templates and skins from the name it was required by (measured: its base object was nil)"),
+    ("3DreamEngine", &["3DreamEngine"], "libs.3DreamEngine.3DreamEngine", "it finds its shaders from the name it was required by (measured: \"required shader textured is not registered\")"),
 ];
 
 struct Pitfall {

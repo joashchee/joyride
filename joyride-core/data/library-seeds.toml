@@ -83,6 +83,7 @@ summary = "Tiny logging module."
 name = "lurker"
 git = "https://github.com/rxi/lurker"
 module = "lurker"
+caution = "Does not load on LÖVE 12.0: it calls `love.filesystem.isDirectory` when it loads and `love.filesystem.getLastModified` to watch files, which 12.0 removed (measured on 12.0: \"attempt to call upvalue 'isdir' (a nil value)\"); on 11.5 both print deprecation warnings. It needs lume."
 summary = "Auto-swaps changed Lua files in a running game (needs lume)."
 
 [[library]]
@@ -387,7 +388,7 @@ name = "lighter"
 git = "https://github.com/speakk/lighter"
 module = "lighter"
 pin = "head"   # no release tags; a 2026 repository
-caution = "Needs a window to load (it creates its default light image when required). It draws with love.graphics.stencil and setStencilTest, whose behaviour on LÖVE 12.0 was not measured (needs a display). It bundles hump.class, vector-light and rxi's shash (MIT) and a shadow-casting algorithm from OneLoneCoder under OLC-3 (a BSD-3 style licence): keep libs/licenses/ with the game."
+caution = "Needs a window to load (it creates its default light image when required). It draws with love.graphics.stencil and setStencilTest, whose behaviour on LÖVE 12.0 was not measured (needs a display). It bundles hump.class, vector-light and rxi's shash (MIT) and a shadow-casting algorithm from OneLoneCoder under OLC-3 (a BSD-3 style licence): keep libs/licenses/ with the game. Require it as `libs.lighter`: it builds the path of its default light image from the name it was required by (measured with a window on LÖVE 11.5: required as `lighter` it looked for `lighter/media/default_light.png`)."
 summary = "Dynamic 2D lights and shadows: add lights and polygon occluders, draw the lit scene (stencil based, with a default gradient image)."
 
 [[library]]
@@ -483,7 +484,7 @@ summary = "Behaviour trees as plain functions: sequence, selector, parallel, rep
 name = "breezefield"
 git = "https://github.com/HDictus/breezefield"
 module = "breezefield"
-caution = "Needs love.physics (the module must not be disabled); create colliders with `bf.Collider.new(world, \"Circle\", x, y, r)`. On LÖVE 12.0 it prints a deprecation warning (its require strings use forward slashes). It is a wrapper: Box2D's own limits apply. It replaces windfield for the common cases but not all of its features."
+caution = "Needs love.physics (the module must not be disabled); create colliders with `world:newCollider(\"Circle\", {x, y, r})` (the older `bf.Collider.new(world, \"Circle\", x, y, r)` works but prints a deprecation notice on every call). On LÖVE 12.0 it prints a deprecation warning (its require strings use forward slashes). It is a wrapper: Box2D's own limits apply. It replaces windfield for the common cases but not all of its features."
 summary = "A thin wrapper over love.physics: a world of colliders with collision classes and callbacks."
 
 [[library]]
@@ -704,7 +705,7 @@ name = "3DreamEngine"
 git = "https://github.com/3dreamengine/3DreamEngine"
 module = "3DreamEngine"
 display = true   # it uses love.graphics while it loads
-caution = "A large engine (416 Lua files, about 14 MB with examples): delete `examples` before shipping. It writes screenshots and a shaderErrored.glsl through love.filesystem, opens the screenshot folder in the file manager, and uses ffi for mesh data."
+caution = "A large engine (416 Lua files, about 14 MB with examples): delete `examples` before shipping. It writes screenshots and a shaderErrored.glsl through love.filesystem, opens the screenshot folder in the file manager, and uses ffi for mesh data. Require it as `libs.3DreamEngine.3DreamEngine`: it finds its own files and shaders from the name it was required by (measured with a window on LÖVE 11.5: required as `3DreamEngine` it stopped with \"required shader textured is not registered\")."
 summary = "A 3D engine with PBR materials, lights, shadows, animations and many model formats."
 
 [[library]]
@@ -976,6 +977,7 @@ summary = "A radial keyboard."
 name = "bitumbra"
 git = "https://github.com/a13X-B/bitumbra"
 module = "bitumbra"
+caution = "Did not load on LÖVE 11.5 on macOS with a window (measured: \"Error validating vertex shader code\"; the report keeps only that first line). Its shaders use `gl_InstanceID`, `gl_VertexID`, `flat` integer varyings and bit operations and carry no `#pragma language glsl3`, which GLSL 1 lacks: the likely reason, read from its source and not measured."
 display = true   # it uses love.graphics while it loads
 summary = "GPU-accelerated 2D shadows for many lights."
 
@@ -983,6 +985,7 @@ summary = "GPU-accelerated 2D shadows for many lights."
 name = "Light"
 git = "https://github.com/xiejiangzhi/light"
 module = "light"
+caution = "Require it as `libs.Light.light`: it takes the folder of its shaders from the name it was required by (measured with a window on LÖVE 11.5: required as `light` it looked for `light/shadow_map.glsl`). It creates canvases and shaders when it loads, so it needs a window."
 display = true   # it uses love.graphics while it loads
 summary = "A simple dynamic light."
 
@@ -1119,7 +1122,7 @@ summary = "A GUI aimed at Android, with buttons, sliders and dialogs."
 name = "LoveFrames"
 git = "https://github.com/linux-man/LoveFrames"
 module = "loveframes"
-caution = "A large GUI with its own bundled middleclass, tween and utf8 modules (MIT); its demo folder is not needed in a game."
+caution = "A large GUI with its own bundled middleclass, tween and utf8 modules (MIT); its demo folder is not needed in a game. Require it as `libs.LoveFrames.loveframes`: it finds its objects, templates and skins from the name it was required by (measured with a window on LÖVE 11.5: required as `loveframes` its base object was nil)."
 summary = "A GUI with many controls and skins (an 11.2 fork)."
 
 [[library]]

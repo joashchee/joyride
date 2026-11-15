@@ -210,7 +210,7 @@ S.list = {
     run = function(bf)
       if not (love and love.physics) then return "skip", "needs LÖVE's physics module" end
       local world = bf.newWorld(0, 100, true)
-      local ball = bf.Collider.new(world, "Circle", 10, 10, 5)
+      local ball = world:newCollider("Circle", { 10, 10, 5 }) -- Collider.new is deprecated and prints on every call
       for _ = 1, 30 do world:update(1 / 60) end
       local fell = ball:getY() > 10
       pcall(ball.destroy, ball)

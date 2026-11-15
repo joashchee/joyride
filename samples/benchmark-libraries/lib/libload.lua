@@ -24,7 +24,10 @@ L.windowLibs = { prod_ui = true, g3d = true, push = true, Slab = true, ["cimgui-
 
 -- Libraries whose own name for themselves matters: g3d finds its shader from the module name it was required by (`libs.g3d.g3d` ->
 -- `libs/g3d/g3d/g3d.vert`), so it must be required by its path from the game's root, not as `g3d`.
-L.moduleFor = { g3d = "libs.g3d.g3d", Helium = "libs.Helium" }
+-- lighter, Light, LoveFrames and 3DreamEngine build their asset, shader and sub-module paths from the name they were required by
+-- (measured with a window on 11.5: required by their bare names they looked for `lighter/media/...`, `light/shadow_map.glsl` and so on in the
+-- game's root, and failed), so they are required by their path from the root too.
+L.moduleFor = { g3d = "libs.g3d.g3d", Helium = "libs.Helium", lighter = "libs.lighter", Light = "libs.Light.light", LoveFrames = "libs.LoveFrames.loveframes", ["3DreamEngine"] = "libs.3DreamEngine.3DreamEngine" }
 
 -- A library that is known not to load on a LÖVE major version, and why: a finding about the library, not a failure of this project.
 -- (Checked against the real LÖVE binaries; the report says INFO, not FAIL.)
