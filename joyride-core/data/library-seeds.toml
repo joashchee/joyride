@@ -705,7 +705,7 @@ name = "3DreamEngine"
 git = "https://github.com/3dreamengine/3DreamEngine"
 module = "3DreamEngine"
 display = true   # it uses love.graphics while it loads
-caution = "A large engine (416 Lua files, about 14 MB with examples): delete `examples` before shipping. It writes screenshots and a shaderErrored.glsl through love.filesystem, opens the screenshot folder in the file manager, and uses ffi for mesh data. Require it as `libs.3DreamEngine.3DreamEngine`: it finds its own files and shaders from the name it was required by (measured with a window on LÖVE 11.5: required as `3DreamEngine` it stopped with \"required shader textured is not registered\")."
+caution = "A large engine (416 Lua files, about 14 MB with examples): delete `examples` before shipping. It writes screenshots and a shaderErrored.glsl through love.filesystem, opens the screenshot folder in the file manager, and uses ffi for mesh data. Require it as `libs.3DreamEngine.3DreamEngine`: it finds its own files and shaders from the name it was required by (measured with a window on LÖVE 11.5: required as `3DreamEngine` it stopped with \"required shader textured is not registered\"; required as `libs.3DreamEngine.3DreamEngine` it loads and its check passes, measured 2026-11-15). It loads its three models (`objects/*.obj`) and its pictures (`res/`) when it loads and stops at the first one missing (measured: sky, then cube), so keep both folders."
 summary = "A 3D engine with PBR materials, lights, shadows, animations and many model formats."
 
 [[library]]
