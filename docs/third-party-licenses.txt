@@ -9767,6 +9767,88 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ==============================================================================
+Bundled tools (NOTICE)
+==============================================================================
+JoyrIDE
+Copyright 2026 ansiapps
+
+Licensed under the MIT License (see LICENSE).
+
+JoyrIDE bundles or downloads the following, each under its own licence.
+An entry is added here when its binary is first bundled, and every
+third-party licence ships in the app (scripts/license-scan.py).
+
+- LÖVE (love2d.org), zlib licence.
+- lua-language-server, MIT.
+- love-api and LuaCATS definitions, MIT.
+- luacheck, MIT.
+- StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
+- Symphonia (`symphonia` and its codec and format crates), MPL-2.0, unmodified, linked as a library for the file preview's MP3, FLAC, Ogg Vorbis and WAV decoding (MPL's copyleft is per file; decided 2026-11-14).
+- love.js (Davidobot's, MIT), whose `love.js`/`love.wasm` carry LÖVE (zlib) and its libraries, and the `love` iOS Xcode project and `love-android` Gradle project (zlib / as their repositories state), when a build bundles them.
+- PortMaster runtimes, as the PortMaster project states.
+- Monaco Editor, MIT.
+- IBM VGA 8x16 (`WebPlus_IBM_VGA_8x16.woff`) from The Ultimate Oldschool PC Font Pack
+  v2.2 by VileR (int10h.org), CC BY-SA 4.0: shipped unmodified, byte for byte, as its own
+  file in `public/fonts/ansiapps/` with its licence beside it, and credited in Settings.
+  Never subset, convert or inline it.
+- Painter (`art-sprites`), Composer (`music-composer`) and Animator
+  (`sprite-animator`), ansiapps' own engines, vendored in `src/vendor/` and
+  relicensed MIT for JoyrIDE (decided 2026-11-13; the engines' own
+  repositories stay proprietary). Each keeps its own NOTICE for what it
+  includes from others: Painter's CoffeeMUD data (Apache-2.0, text in
+  `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
+  (CC BY-SA 4.0, unmodified, with its licence in
+  `src/vendor/art-sprites/docs/fonts/`).
+- libogg 1.3.6 and the decoder of libtheora 1.2.0 (Xiph.org Foundation, BSD-3-Clause),
+  vendored unmodified in `vendor/xiph/` by `scripts/vendor-xiph.sh` (pinned by SHA-256;
+  licences in `vendor/xiph/ogg/COPYING` and `vendor/xiph/theora/COPYING`), to play Theora video.
+- Neumetik's players (`midi`, `bgn`, `synth`, `visual`, `tracker`) and
+  `nttplay`, the command-line player built from them, ansiapps' own code,
+  vendored in `vendor/neumetik/` by `scripts/vendor-neumetik.sh` and
+  relicensed MIT for JoyrIDE (decided by the maintainer 2026-11-13, so the
+  file preview can play MIDI, tracker modules and music written as text; the
+  Neumetik repository stays proprietary apart from `midi/`). Standard library
+  only. It includes the Organya editor's waveforms and drum samples (BSD,
+  `vendor/neumetik/synth/data/organya/LICENSE`).
+- The Benchmark Libraries sample (`samples/benchmark-libraries/`): its code is MIT like the rest. `libs/` holds the curated
+  libraries (`joyride-core/data/libraries.toml`) at their pinned commits, each with its own licence file (MIT or Zlib; docs, pictures and
+  tests removed; luasteam's Steamworks SDK is never copied). Its assets are the VGA font, CC BY-SA 4.0 (VileR), and DejaVu Sans Mono 2.34 (`libs/lovr-ui2d/ui2d/DejaVuSansMono.ttf`, kept for lovr-ui2d,
+  unmodified), under the Bitstream Vera licence: (c) Bitstream, Inc., DejaVu's changes public domain, the notices and permission text with every
+  copy (`LICENSE-DejaVu.txt` beside it, read out of the font), never sold by itself, renamed if changed (the maintainer confirmed it 2026-11-15).
+  Both are in `samples/benchmark-libraries/assets.tsv`.
+- Two more bundled General MIDI SoundFonts, both CC0 1.0 (public domain: nothing to credit, credited anyway), found through Fontastik's
+  catalog (a pointer only) and checked against the text inside each file: `pocketsongs-gm.sf2` ("PocketSongsGM" by Vini, 671,012 bytes,
+  from https://archive.org/download/wbs-full_202412/PocketSongsGM.sf2) and `protosquare.sf2` ("ProtoSquare!" by Yingchun Soul, 364,238
+  bytes, a chip-style bank, from https://archive.org/download/wbs-full_202412/Game%20Gear.sf2). Their provenance beyond the files' own
+  CC0 text is not known (see their `LICENSE-*.txt`). Which sound MIDI has is the person's choice in Settings.
+- The bundled General MIDI SoundFont (`src-tauri/resources/soundfonts/sony-ericsson-p800-gm.sf2`, 334,920 bytes, SHA-256
+  4d78a19f…f5fa): Brian Salter's General MIDI patches for Beatnik (2000), as a SoundFont by "DroidLite" (2021), under the New BSD licence
+  of Beatnik's miniBAE (https://github.com/heyigor/miniBAE; copyright 2009 Beatnik, Inc). The licence text, the provenance and the
+  no-endorsement clause are in `LICENSE-sony-ericsson-p800.txt` beside it; keep that file with the bank. Chosen as the smallest General MIDI SoundFont with a
+  permissive licence in Fontastik's catalog (2026-11-14).
+- The IO Checker sample (`samples/io-checker/`): its code is MIT like the rest. Its assets are
+  listed one by one, with licence, author, source and recipe, in `samples/io-checker/assets.tsv`
+  (and as the Asset Library's record in `.joyride/assets.toml`): most are CC0-1.0, made by
+  Painter, Composer and Animator and by hand; the tracker modules, the Theora clip and three tiny
+  test fonts are MIT, copied from the r3i6nos corpus (the same owner); and the IBM VGA 8x16 font
+  (`assets/fonts/vga.woff`, unmodified, with its licence in `LICENSE-vga-font.txt`) and the BMFont
+  page made from Painter's atlas of it (unmodified) are CC BY-SA 4.0 by VileR.
+  Also `assets/fonts/SourceCodePro-Regular.otf`: Source Code Pro by Adobe, SIL OFL 1.1, unmodified
+  (Reserved Font Name 'Source'), licence in `samples/io-checker/LICENSE-source-code-pro.txt`.
+- Coding fonts offered in Settings, each Regular and unmodified, as its project published it,
+  with its licence in `public/fonts/code/licences/` and credited in Settings
+  (`scripts/check-code-fonts.ts` checks each file and licence):
+  JetBrains Mono (The JetBrains Mono Project Authors, OFL-1.1);
+  Source Code Pro (Adobe, OFL-1.1, Reserved Font Name "Source");
+  Hack (Source Foundry Authors, MIT, from DejaVu and Bitstream Vera);
+  IBM Plex Mono (IBM Corp., OFL-1.1, Reserved Font Name "Plex");
+  Inconsolata (The Inconsolata Project Authors, OFL-1.1);
+  Fira Code (The Fira Code Project Authors, OFL-1.1);
+  Intel One Mono (The Intel One Mono Project Authors, OFL-1.1, Reserved Font Name "Intel");
+  DejaVu Sans Mono (Bitstream Inc., DejaVu changes public domain, Bitstream Vera licence);
+  Spleen in five cell sizes (Frederic Cambus, BSD-2-Clause).
+
+==============================================================================
 zip 8.6.0
 ==============================================================================
 The MIT License (MIT)
@@ -15511,86 +15593,6 @@ Apache License
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
-==============================================================================
-Bundled tools (NOTICE)
-==============================================================================
-JoyrIDE
-Copyright 2026 ansiapps
-
-Licensed under the MIT License (see LICENSE).
-
-JoyrIDE bundles or downloads the following, each under its own licence.
-An entry is added here when its binary is first bundled, and every
-third-party licence ships in the app (scripts/license-scan.py).
-
-- LÖVE (love2d.org), zlib licence.
-- lua-language-server, MIT.
-- love-api and LuaCATS definitions, MIT.
-- luacheck, MIT.
-- StyLua, MPL-2.0 (an unmodified binary, run as a separate program).
-- Symphonia (`symphonia` and its codec and format crates), MPL-2.0, unmodified, linked as a library for the file preview's MP3, FLAC, Ogg Vorbis and WAV decoding (MPL's copyleft is per file; decided 2026-11-14).
-- love.js (Davidobot's, MIT), whose `love.js`/`love.wasm` carry LÖVE (zlib) and its libraries, and the `love` iOS Xcode project and `love-android` Gradle project (zlib / as their repositories state), when a build bundles them.
-- PortMaster runtimes, as the PortMaster project states.
-- Monaco Editor, MIT.
-- IBM VGA 8x16 (`WebPlus_IBM_VGA_8x16.woff`) from The Ultimate Oldschool PC Font Pack
-  v2.2 by VileR (int10h.org), CC BY-SA 4.0: shipped unmodified, byte for byte, as its own
-  file in `public/fonts/ansiapps/` with its licence beside it, and credited in Settings.
-  Never subset, convert or inline it.
-- Painter (`art-sprites`), Composer (`music-composer`) and Animator
-  (`sprite-animator`), ansiapps' own engines, vendored in `src/vendor/` and
-  relicensed MIT for JoyrIDE (decided 2026-11-13; the engines' own
-  repositories stay proprietary). Each keeps its own NOTICE for what it
-  includes from others: Painter's CoffeeMUD data (Apache-2.0, text in
-  `src/vendor/art-sprites/LICENSES/`) and the IBM VGA 8x16 font by VileR
-  (CC BY-SA 4.0, unmodified, with its licence in
-  `src/vendor/art-sprites/docs/fonts/`).
-- libogg 1.3.6 and the decoder of libtheora 1.2.0 (Xiph.org Foundation, BSD-3-Clause),
-  vendored unmodified in `vendor/xiph/` by `scripts/vendor-xiph.sh` (pinned by SHA-256;
-  licences in `vendor/xiph/ogg/COPYING` and `vendor/xiph/theora/COPYING`), to play Theora video.
-- Neumetik's players (`midi`, `bgn`, `synth`, `visual`, `tracker`) and
-  `nttplay`, the command-line player built from them, ansiapps' own code,
-  vendored in `vendor/neumetik/` by `scripts/vendor-neumetik.sh` and
-  relicensed MIT for JoyrIDE (decided by the maintainer 2026-11-13, so the
-  file preview can play MIDI, tracker modules and music written as text; the
-  Neumetik repository stays proprietary apart from `midi/`). Standard library
-  only. It includes the Organya editor's waveforms and drum samples (BSD,
-  `vendor/neumetik/synth/data/organya/LICENSE`).
-- The Benchmark Libraries sample (`samples/benchmark-libraries/`): its code is MIT like the rest. `libs/` holds the curated
-  libraries (`joyride-core/data/libraries.toml`) at their pinned commits, each with its own licence file (MIT or Zlib; docs, pictures and
-  tests removed; luasteam's Steamworks SDK is never copied). Its one asset, the VGA font, is CC BY-SA 4.0 (VileR), see
-  `samples/benchmark-libraries/assets.tsv`.
-- Two more bundled General MIDI SoundFonts, both CC0 1.0 (public domain: nothing to credit, credited anyway), found through Fontastik's
-  catalog (a pointer only) and checked against the text inside each file: `pocketsongs-gm.sf2` ("PocketSongsGM" by Vini, 671,012 bytes,
-  from https://archive.org/download/wbs-full_202412/PocketSongsGM.sf2) and `protosquare.sf2` ("ProtoSquare!" by Yingchun Soul, 364,238
-  bytes, a chip-style bank, from https://archive.org/download/wbs-full_202412/Game%20Gear.sf2). Their provenance beyond the files' own
-  CC0 text is not known (see their `LICENSE-*.txt`). Which sound MIDI has is the person's choice in Settings.
-- The bundled General MIDI SoundFont (`src-tauri/resources/soundfonts/sony-ericsson-p800-gm.sf2`, 334,920 bytes, SHA-256
-  4d78a19f…f5fa): Brian Salter's General MIDI patches for Beatnik (2000), as a SoundFont by "DroidLite" (2021), under the New BSD licence
-  of Beatnik's miniBAE (https://github.com/heyigor/miniBAE; copyright 2009 Beatnik, Inc). The licence text, the provenance and the
-  no-endorsement clause are in `LICENSE-sony-ericsson-p800.txt` beside it; keep that file with the bank. Chosen as the smallest General MIDI SoundFont with a
-  permissive licence in Fontastik's catalog (2026-11-14).
-- The IO Checker sample (`samples/io-checker/`): its code is MIT like the rest. Its assets are
-  listed one by one, with licence, author, source and recipe, in `samples/io-checker/assets.tsv`
-  (and as the Asset Library's record in `.joyride/assets.toml`): most are CC0-1.0, made by
-  Painter, Composer and Animator and by hand; the tracker modules, the Theora clip and three tiny
-  test fonts are MIT, copied from the r3i6nos corpus (the same owner); and the IBM VGA 8x16 font
-  (`assets/fonts/vga.woff`, unmodified, with its licence in `LICENSE-vga-font.txt`) and the BMFont
-  page made from Painter's atlas of it (unmodified) are CC BY-SA 4.0 by VileR.
-  Also `assets/fonts/SourceCodePro-Regular.otf`: Source Code Pro by Adobe, SIL OFL 1.1, unmodified
-  (Reserved Font Name 'Source'), licence in `samples/io-checker/LICENSE-source-code-pro.txt`.
-- Coding fonts offered in Settings, each Regular and unmodified, as its project published it,
-  with its licence in `public/fonts/code/licences/` and credited in Settings
-  (`scripts/check-code-fonts.ts` checks each file and licence):
-  JetBrains Mono (The JetBrains Mono Project Authors, OFL-1.1);
-  Source Code Pro (Adobe, OFL-1.1, Reserved Font Name "Source");
-  Hack (Source Foundry Authors, MIT, from DejaVu and Bitstream Vera);
-  IBM Plex Mono (IBM Corp., OFL-1.1, Reserved Font Name "Plex");
-  Inconsolata (The Inconsolata Project Authors, OFL-1.1);
-  Fira Code (The Fira Code Project Authors, OFL-1.1);
-  Intel One Mono (The Intel One Mono Project Authors, OFL-1.1, Reserved Font Name "Intel");
-  DejaVu Sans Mono (Bitstream Inc., DejaVu changes public domain, Bitstream Vera licence);
-  Spleen in five cell sizes (Frederic Cambus, BSD-2-Clause).
 
 ==============================================================================
 fiat-crypto 0.2.9
