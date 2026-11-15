@@ -4,7 +4,7 @@
 //! a library at the commit it pins (the findings the Benchmark Libraries sample made, kept here as a short table) or a name so close to
 //! one the library does define that it is nearly always a typo. Nothing is run: a library's source is read, never executed.
 //!
-//! * **version**: requiring a library that does not load on the project's LÖVE version.
+//! * **version**: requiring a library that does not load on the project's LÖVE version, or that loads and does not work there (`push` on 12.0).
 //! * **require**: requiring a library by a name that cannot find it (g3d needs `libs.g3d.g3d`).
 //! * **pitfall**: a call a library documents badly or gets wrong (HC's `raycast`, a type test hump.class does not have).
 //! * **call**: `lib.neWorld(...)` where the library defines `newWorld` and no `neWorld`.
@@ -31,6 +31,14 @@ const WRONG_REQUIRE: &[(&str, &[&str], &str, &str)] = &[
     ("LoveFrames", &["loveframes"], "libs.LoveFrames.loveframes", "it finds its objects, templates and skins from the name it was required by (measured: its base object was nil)"),
     ("3DreamEngine", &["3DreamEngine"], "libs.3DreamEngine.3DreamEngine", "it finds its shaders from the name it was required by (measured: \"required shader textured is not registered\")"),
 ];
+
+/// Libraries that load on LÖVE 12.0 and later but do not work there, with what was measured (the Benchmark's windowed run on 12.0). One that
+/// fails to load is `library-version`'s from the benchmark data; these load, so the data cannot say. Each is also in the library's caution
+/// (a test checks it, so the two cannot drift apart).
+const BROKEN_ON_12: &[(&str, &str)] = &[(
+    "push",
+    "it tests `love.getVersion() == 11`, so 12.0 counts as older than 0.11 and it calls `love.window.getPixelScale`, which no current LÖVE has (measured on 12.0: its check stopped with a nil call at push.lua:113)",
+)];
 
 struct Pitfall {
     /// The curated library.
@@ -184,6 +192,10 @@ pub fn lint(root: &Path, source: &str, lib: &Library, version: LoveVersion) -> V
         if let Some(e) = entry_for(lib, &r.module) {
             if e.known_broken_on(version) {
                 out.push(diag(r.line, Severity::Error, "library-version", format!("{} does not load on LÖVE {version}: {}", e.name, e.badge(version).label().trim_start_matches("Does not load: "))));
+            } else if version.is_12_or_later() {
+                if let Some((_, why)) = BROKEN_ON_12.iter().find(|(n, _)| *n == e.name) {
+                    out.push(diag(r.line, Severity::Error, "library-version", format!("{} does not work on LÖVE {version}: {why}", e.name)));
+                }
             }
             used.push((e, r));
         }
@@ -264,6 +276,38 @@ mod tests {
         assert_eq!(r.len(), 1);
         assert_eq!((r[0].0, r[0].1), (1, "library-version"));
         assert!(r[0].2.contains("lurker does not load on LÖVE 12.0") && r[0].2.contains("isDirectory"), "{}", r[0].2);
+    }
+
+    #[test]
+    fn push_is_an_error_on_12_0_only_though_it_loads() {
+        // push loads on both (its benchmark data says `loads`), so the data alone would not flag it.
+        let lib = Library::bundled();
+        let e = lib.get("push").expect("push is curated");
+        assert!(!e.known_broken_on(v("12.0")), "it loads on 12.0: that is why the lint needs its own table");
+        for src in ["local push = require 'push'\n", "local push = require(\"libs.push\")\n"] {
+            assert!(rules(src, "11.5").is_empty(), "push works on 11.5: {src}");
+            let r = rules(src, "12.0");
+            assert_eq!(r.len(), 1, "{r:?}");
+            assert_eq!((r[0].0, r[0].1), (1, "library-version"));
+            assert!(r[0].2.starts_with("push does not work on LÖVE 12.0") && r[0].2.contains("getPixelScale"), "{}", r[0].2);
+        }
+        // not a different library with push in its name, and not a file that never requires it
+        assert!(rules("local x = require 'pusher'\nlocal push = {}\n", "12.0").is_empty());
+        // lurker fails to load on 12.0: it gets the load message, not a second one
+        let r = rules("local l = require 'lurker'\nlocal p = require 'push'\n", "12.0");
+        assert_eq!(r.len(), 2, "{r:?}");
+        assert!(r[0].2.contains("does not load") && r[1].2.contains("does not work"));
+    }
+
+    #[test]
+    fn every_library_in_the_12_0_table_is_curated_and_says_so_in_its_caution() {
+        let lib = Library::bundled();
+        for (name, _) in BROKEN_ON_12 {
+            let e = lib.get(name).unwrap_or_else(|| panic!("{name} is not a curated library"));
+            let caution = e.caution.as_deref().unwrap_or("");
+            assert!(caution.contains("12.0") && caution.contains("Does not work"), "{name}'s caution does not say it fails on 12.0: {caution}");
+            assert!(!e.known_broken_on(v("12.0")), "{name} fails to load on 12.0: the data already flags it, drop it from the table");
+        }
     }
 
     #[test]
