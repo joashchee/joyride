@@ -41,6 +41,8 @@ jobs:
       - run: cargo clippy --all-targets --manifest-path ogv/Cargo.toml -- -D warnings
       - name: Licenses (no copyleft, and the shipped license file is current)
         run: |
+          # third-party-licenses.py reads each npm package's license file from node_modules
+          npm ci --omit=dev --ignore-scripts
           python3 scripts/license-scan.py --online
           python3 scripts/third-party-licenses.py --online --check
 
